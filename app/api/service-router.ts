@@ -7,6 +7,7 @@ import {
   updateService,
   deleteService,
 } from "./queries/salon";
+import { auditAction } from "./lib/audit";
 
 export const serviceRouter = createRouter({
   list: authedQuery
@@ -32,13 +33,15 @@ export const serviceRouter = createRouter({
         postCareInstructions: z.string().optional(),
       })
     )
-    .mutation(({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { salonId, price, ...data } = input;
-      return createService({
+      const result = await createService({
         salonId,
         ...data,
         price: String(price),
       });
+      await auditAction("create", "service", salonId, ctx.user?.id, result?.id ?? undefined, undefined, { name: data.name });
+      return result;
     }),
 
   update: authedQuery
@@ -57,15 +60,21 @@ export const serviceRouter = createRouter({
         postCareInstructions: z.string().optional(),
       })
     )
-    .mutation(({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { id, salonId, price, ...data } = input;
-      return updateService(id, salonId, {
+      const result = await updateService(id, salonId, {
         ...data,
         ...(price !== undefined ? { price: String(price) } : {}),
       });
+      await auditAction("update", "service", salonId, ctx.user?.id, id, undefined, data);
+      return result;
     }),
 
   delete: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
-    .mutation(({ input }) => deleteService(input.id, input.salonId)),
+    .mutation(async ({ input, ctx }) => {
+      await deleteService(input.id, input.salonId);
+      await auditAction("delete", "service", input.salonId, ctx.user?.id, input.id);
+      return { success: true };
+    }),
 });

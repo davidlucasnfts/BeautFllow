@@ -1,109 +1,194 @@
-# BeautyFlow — Contexto Rapido
+# BeautyFlow — Session Context
 
-Ultima atualizacao: 06/05/2026
-
-## O que e
-SaaS multi-tenant para saloes de beleza. Stack: React 19 + Vite + Tailwind + shadcn/ui + tRPC + Drizzle ORM + Hono + PostgreSQL (Supabase). Auth: OAuth 2.0 Kimi + JWT.
-
-## Quem usa
-David Lucas — analista de sistemas, nao desenvolvedor. Usa Kimi Code como ferramenta principal. Quer resultado direto, sem narracao. Sempre em portugues.
-
-## Foco do Projeto: SaaS Escalavel e Vendavel
-
-### Principios
-- **Multi-tenancy robusto:** isolamento completo de dados por salao (RLS no Supabase)
-- **Seguranca:** LGPD nativo, criptografia, audit logs, backups automaticos
-- **Escalabilidade:** serverless, pay-as-you-grow, sem infraestrutura para gerenciar
-- **UX profissional:** identidade visual premium, micro-interacoes, mobile-first
-- **Conversao:** landing page que vende, trial gratuito, upgrade facil
-
-### Stack de Producao
-| Camada | Tecnologia | Motivo |
-|--------|-----------|--------|
-| Frontend | React 19 + Vite + Tailwind + shadcn/ui | Performance, DX, consistencia visual |
-| Backend | Hono + tRPC + Drizzle ORM | Type-safe, rapido, moderno |
-| Database | Supabase PostgreSQL | Gratis ate 500MB, RLS, Realtime, Auth, Storage |
-| Auth | OAuth 2.0 Kimi + JWT | Rapido de implementar, migravel para Supabase Auth |
-| Deploy | Vercel | Serverless, preview deploys, CDN global, gratis |
-| Pagamentos | Stripe (futuro) | Padrao de mercado para SaaS |
-| Email | Resend (futuro) | Gratis ate 3000/dia, simples |
-| WhatsApp | Evolution API ou 360dialog (futuro) | Omnichannel real |
-| Imagens | Supabase Storage (futuro) | Integrado, barato |
-
-### Regras de Qualidade
-- Max 400 linhas/arquivo (exceto shadcn/ui)
-- Leitura unica (ler 1x, escrever 1x). So reler se houver erro
-- Sempre atualizar ROADMAP.md ao entregar funcionalidades
-- Datas no formato `Funcionalidade — DD/MM`
-- Sugerir tecnologias melhores quando identificar oportunidade
-- Nunca duplicar informacao entre Registro de Alteracoes e Fases do Projeto
-
-## Decisoes de Arquitetura
-
-### Banco de Dados: Supabase (PostgreSQL)
-- **Gratis ate 500MB / 2 milhoes de requisicoes/mes**
-- PostgreSQL com extensao pgvector (futuro: busca semantica)
-- Row Level Security (RLS) para multi-tenancy nativo
-- Realtime subscriptions (notificacoes em tempo real)
-- Storage para imagens (fotos de clientes, documentos)
-- Auth nativo (migravel do Kimi OAuth no futuro)
-- Backups automaticos
-
-### Deploy: Vercel
-- **Gratis para projetos pessoais / hobby**
-- Serverless functions (API routes)
-- Edge Network (CDN global)
-- Preview deployments para cada PR
-- Analytics integrado
-
-## Estrutura
-```
-app/
-├── api/           # tRPC + Hono (routers, middleware, queries)
-│   ├── kimi/      # OAuth SDK (NAO MODIFICAR)
-│   └── lib/       # Framework internals (NAO MODIFICAR)
-├── db/            # Drizzle schema, relations, seed (PostgreSQL)
-├── src/
-│   ├── pages/     # Paginas (Home, Dashboard, Clients, etc)
-│   ├── components/# AuthLayout, ui/
-│   ├── hooks/     # useAuth, use-mobile
-│   └── providers/ # trpc.tsx, salon.tsx
-└── contracts/     # Tipos compartilhados
-```
-
-## Comandos
-```powershell
-cd app
-npm run dev        # Dev
-npm run check      # Type-check
-npm run db:push    # Schema DB (Supabase)
-npm run build      # Build
-```
-
-## Regras tecnicas
-- Backend: `authedQuery`, filtrar por `salonId`, nunca mexer em `api/lib/` ou `api/kimi/`
-- Frontend: usar `useSalon()`, desabilitar queries com `{ enabled: !!salon }`, invalidar apos mutations
-- DB: nunca raw SQL, FK `bigint("col", { mode: "number" })`, tipos `typeof table.$inferSelect`
-
-## Fases em andamento
-| Fase | Status | Proxima tarefa |
-|------|--------|----------------|
-| 1. Identidade Visual | ✅ | Concluida — 05/05 |
-| 2. Dashboard Rico | ✅ | Concluida — 05/05 |
-| 3. Migracao Supabase | [~] | Em andamento — 06/05 |
-| 4. Calendario Pro | [ ] | View diaria, drag-and-drop |
-| 5. Landing Page | [ ] | Imagens IA, depoimentos |
-| 6. Integracoes | [ ] | WhatsApp API, PDF, push |
-| 7. Relatorios | [ ] | Faturamento, ocupacao, CSV |
-| 8. Micro-interacoes | [ ] | Toasts, loaders, animacoes |
-| 9. Seguranca | [ ] | LGPD, audit logs, rate limit |
-
-## UX/UI (aplicar em toda implementacao)
-- Hero compacto (sem `min-h-screen`), conteudo acima do fold
-- Headline na dor, CTA repetido, prova social no hero
-- Cores distintas por card, botoes sempre visiveis
-- Mobile: touch 44px+, stack vertical, menu hamburguer
+> **LEIA ESTE ARQUIVO PRIMEIRO** em toda sessão. Contém 100% do contexto necessário.
 
 ---
 
-**Documentacao completa:** `AGENTS.md` (regras de trabalho) | `ROADMAP.md` (changelog e tarefas detalhadas)
+## 🚀 Início Rápido
+
+```
+1. Ler este arquivo (MEMORY.md) ← VOCÊ ESTÁ AQUI
+2. Se precisar de regras de trabalho → AGENTS.md
+3. Se precisar do roadmap detalhado → ROADMAP.md
+4. Se precisar de decisões arquiteturais → docs/adr/
+```
+
+**Última atualização:** 07/05/2026
+
+---
+
+## 📊 Status do Projeto
+
+| Check | Status |
+|-------|--------|
+| Type-check | ✅ Passando |
+| Lint | ✅ Passando (0 erros) |
+| Build | ✅ Passando |
+| Testes | ⚠️ 0% (meta 80% configurada) |
+| Deploy Vercel | ⚠️ Não configurado |
+| Supabase DB | ⚠️ Projeto não criado |
+
+---
+
+## 🎯 Foco Atual
+
+**Fase 5: Landing Page que Vende** — Concluída (07/05)
+
+Fases 1-5 concluídas. Ver ROADMAP.md para detalhes completos.
+
+---
+
+## 🏗️ Stack
+
+React 19 + Vite + Tailwind + shadcn/ui + tRPC + Drizzle ORM + Hono + PostgreSQL (Supabase) + OAuth 2.0 Kimi
+
+---
+
+## 📁 Estrutura de Pastas
+
+```
+app/
+├── api/              # Backend tRPC + Hono
+│   ├── router.ts     # Registro de routers
+│   ├── middleware.ts # authedQuery, adminQuery
+│   ├── boot.ts       # Entrypoint Hono (CORS, headers, /health)
+│   ├── lib/audit.ts  # Helper de audit log
+│   ├── queries/salon.ts  # Queries do negócio
+│   ├── *-router.ts   # Routers por domínio
+│   ├── kimi/         # OAuth SDK (NÃO MODIFICAR)
+│   └── lib/          # Framework internals (NÃO MODIFICAR)
+├── db/
+│   ├── schema.ts     # 11 tabelas Drizzle (PostgreSQL)
+│   └── relations.ts
+├── src/
+│   ├── pages/        # 10 páginas (Home, Dashboard, Clients...)
+│   ├── components/   # AuthLayout, ui/
+│   ├── providers/    # trpc.tsx, salon.tsx, useSalon.ts
+│   └── hooks/        # useAuth, use-mobile
+└── contracts/        # Tipos compartilhados
+
+docs/
+├── adr/              # 3 ADRs (stack, Supabase, Vercel)
+├── runbooks/         # deploy, rollback, debug
+├── DOR.md, DOD.md    # Ready/Done checklists
+└── LGPD.md           # Compliance
+
+.github/workflows/ci.yml  # Pipeline CI/CD
+```
+
+---
+
+## ⚡ Comandos Essenciais
+
+```powershell
+cd app
+npm run dev        # Dev server
+npm run check      # Type-check
+npm run lint       # ESLint
+npm run quality    # Lint + type-check + test + format-check
+npm run db:push    # Push schema para Supabase
+npm run build      # Build produção
+```
+
+---
+
+## 🛡️ Regras de Ouro
+
+1. **Backend:** `authedQuery` para endpoints com login, filtrar por `salonId`, nunca raw SQL
+2. **Frontend:** `useSalon()` para salão ativo, `{ enabled: !!salon }` em queries
+3. **Arquivos proibidos:** `api/lib/`, `api/kimi/`, `src/components/ui/`
+4. **Limite:** 400 linhas/arquivo (exceto shadcn/ui)
+5. **Leitura única:** ler 1x, escrever 1x. Só reler se houver erro
+
+---
+
+## 👤 Perfil do Usuário
+
+David Lucas — analista de sistemas, não desenvolvedor. Usa Kimi Code como ferramenta principal. Quer resultado direto, sem narração. Sempre em português.
+
+---
+
+## 🎯 Onde Paramos (Última Sessão)
+
+**Data:** 07/05/2026
+**Entregue:** Fase 5 — Landing Page que Vende completa
+- DashboardMockup, TestimonialsSection, HowItWorksSection, SocialProofSection, CTASection
+- SEO: meta tags, Open Graph, Twitter Cards, canonical
+- Type-check ✅ | Build ✅ | ROADMAP atualizado
+
+**Próximo passo:** Fase 6 — Integrações (WhatsApp, PDF, push, webhooks)
+
+---
+
+## 🔴 Ações Manuais Pendentes (VERIFICAR SEMPRE)
+
+> **Regra:** Toda vez que uma fase exigir ação manual sua, eu aviso aqui. Você deve executar antes de prosseguir.
+
+| # | Ação | Quando executar | Status | Quem faz |
+|---|------|-----------------|--------|----------|
+| 1 | Criar projeto no Supabase | **AGORA — ver passo a passo abaixo** | ⏳ PENDENTE | Você |
+| 2 | Configurar `DATABASE_URL` no `.env` | Após criar Supabase | ⏳ PENDENTE | Você |
+| 3 | Rodar `npm run db:push` no Supabase | Após configurar DATABASE_URL | ⏳ PENDENTE | Eu |
+| 4 | Criar projeto no Vercel | Quando for deployar | ⏳ PENDENTE | Você |
+| 5 | Configurar variáveis de ambiente no Vercel | Após criar projeto | ⏳ PENDENTE | Você |
+| 6 | Configurar OAuth Kimi (callback URL) | Após ter URL do Vercel | ⏳ PENDENTE | Você |
+| 7 | Rodar testes (`npm run test`) e atingir 80% | Antes de cada release | ⏳ PENDENTE | Eu aviso |
+| 8 | Criar repositório no GitHub (se ainda não tiver) | Antes do CI/CD funcionar | ⏳ PENDENTE | Você |
+
+---
+
+## 🛠️ PASSO A PASSO — Criar Supabase (Ação Manual #1)
+
+> Execute agora. Sem isso o banco não funciona e o app não sobe.
+
+1. Acesse [supabase.com](https://supabase.com) e faça login (ou crie conta)
+2. Clique **"New Project"**
+3. Preencha:
+   - **Organization:** sua organização (ou pessoal)
+   - **Project name:** `beautyflow`
+   - **Database password:** crie uma senha forte (salve em local seguro)
+   - **Region:** `sa-east-1` (São Paulo — menor latência para Brasil)
+4. Clique **"Create new project"** (demora ~2 min)
+5. Após criar, vá em **Project Settings → Database**
+6. Copie a **Connection string** no formato:
+   ```
+   postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
+   ```
+7. Cole essa string aqui na conversa para eu atualizar o `.env`
+
+**Quando terminar, me avise que eu configuro o resto.**
+
+**Como usar esta tabela:**
+- Eu atualizo o Status para ✅ quando a ação for concluída
+- Eu adiciono novas linhas quando novas ações manuais aparecerem
+- Você executa as ações marcadas como "Você" quando eu avisar no final da resposta
+
+---
+
+## 📚 Documentação Completa
+
+| Arquivo | Quando usar |
+|---------|-------------|
+| `AGENTS.md` | Regras de trabalho, estrutura detalhada, comandos completos |
+| `ROADMAP.md` | Registro de alterações, requisitos RF-NNN, fases do projeto |
+| `docs/skills-active.md` | **Skills ativas, checklists pré-deploy, métricas de gatilho** |
+| `docs/adr/` | Decisões arquiteturais |
+| `docs/runbooks/` | Procedimentos operacionais |
+| `docs/DOR.md` | Checklist: tarefa pronta para desenvolver? |
+| `docs/DOD.md` | Checklist: tarefa realmente concluída? |
+| `docs/LGPD.md` | Compliance |
+
+## 🛠️ Skills Ativas
+
+Todas as 4 skills foram ativadas. Detalhes completos em `docs/skills-active.md`.
+
+| Skill | Aplicada em | Próxima ação |
+|-------|-------------|--------------|
+| **Security** | Headers, CORS, audit logs | Revisão OWASP pré-deploy |
+| **Scalability** | PostgreSQL, multi-tenancy | PgBouncer quando >100 users |
+| **Cost Reducer** | Componentes reutilizáveis | Auditar custos antes de escalar |
+| **Self-Healing** | Aguardando padrão recorrente | Criar skill automática no 2º caso |
+
+---
+
+> **Próxima sessão:** "Oi Kimi, vamos continuar o BeautyFlow."

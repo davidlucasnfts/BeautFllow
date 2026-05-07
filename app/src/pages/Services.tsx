@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/providers/trpc";
-import { useSalon } from "@/providers/salon";
+import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

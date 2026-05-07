@@ -6,6 +6,7 @@ import {
   getProfessionalById,
   updateProfessional,
 } from "./queries/salon";
+import { auditAction } from "./lib/audit";
 
 export const professionalRouter = createRouter({
   list: authedQuery
@@ -29,13 +30,15 @@ export const professionalRouter = createRouter({
         workingHours: z.string().optional(),
       })
     )
-    .mutation(({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { salonId, commissionRate, ...data } = input;
-      return createProfessional({
+      const result = await createProfessional({
         salonId,
         ...data,
         commissionRate: String(commissionRate),
       });
+      await auditAction("create", "professional", salonId, ctx.user?.id, result?.id ?? undefined, undefined, { name: data.name });
+      return result;
     }),
 
   update: authedQuery
@@ -53,11 +56,13 @@ export const professionalRouter = createRouter({
         isActive: z.boolean().optional(),
       })
     )
-    .mutation(({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { id, salonId, commissionRate, ...data } = input;
-      return updateProfessional(id, salonId, {
+      const result = await updateProfessional(id, salonId, {
         ...data,
         ...(commissionRate !== undefined ? { commissionRate: String(commissionRate) } : {}),
       });
+      await auditAction("update", "professional", salonId, ctx.user?.id, id, undefined, data);
+      return result;
     }),
 });

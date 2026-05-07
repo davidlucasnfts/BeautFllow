@@ -2,7 +2,7 @@ import { getDb } from "../api/queries/connection";
 // TODO: import tables from "./schema"
 
 async function seed() {
-  const db = getDb();
+  getDb();
   console.log("Seeding database...");
 
   // TODO: insert seed data, e.g.
@@ -11,7 +11,7 @@ async function seed() {
   // ]);
 
   console.log("Done.");
-  process.exit(0); // close MySQL connection pool
+  process.exit(0);
 }
 
 seed();

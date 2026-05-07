@@ -1,37 +1,88 @@
 import { Button } from "@/components/ui/button";
-
-function Logo({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M6 2C6 2 3 6 3 9C3 12 5 14 7 14C9 14 11 12 11 9C11 6 8 2 8 2"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="text-primary"
-      />
-      <path
-        d="M18 2C18 2 21 6 21 9C21 12 19 14 17 14C15 14 13 12 13 9C13 6 16 2 16 2"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="text-secondary"
-      />
-      <circle cx="7" cy="18" r="2" fill="currentColor" className="text-primary" />
-      <circle cx="17" cy="18" r="2" fill="currentColor" className="text-secondary" />
-    </svg>
-  );
-}
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarDays, Users, MessageSquare, ShieldCheck, TrendingUp, ArrowRight } from "lucide-react";
+import {
+  CalendarDays,
+  Users,
+  MessageSquare,
+  ShieldCheck,
+  TrendingUp,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 import { Link } from "react-router";
+import { Logo } from "@/components/landing/Logo";
+import { DashboardMockup } from "@/components/landing/DashboardMockup";
+import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
+import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
+import { SocialProofSection } from "@/components/landing/SocialProofSection";
+import { CTASection } from "@/components/landing/CTASection";
+
+const stats = [
+  { value: "35%", label: "Redução de No-Show" },
+  { value: "5min", label: "Ativação do Sistema" },
+  { value: "LGPD", label: "Compliance Nativo" },
+  { value: "100%", label: "Omnichannel" },
+];
+
+const features = [
+  {
+    icon: CalendarDays,
+    title: "Agendamento Inteligente",
+    desc: "Calendário multi-profissional, agendamento online público, confirmações automáticas e lista de espera.",
+  },
+  {
+    icon: Users,
+    title: "CRM de Clientes",
+    desc: "Ficha técnica digital, timeline de interações, fotos antes/depois, segmentação automática e retenção.",
+  },
+  {
+    icon: MessageSquare,
+    title: "Comunicação Omnichannel",
+    desc: "WhatsApp Business API integrado, templates automáticos, lembretes inteligentes e campanhas de reativação.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Termos Digitais & LGPD",
+    desc: "Termos de consentimento com assinatura digital, auditoria completa, anonimização e direito à exclusão.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Financeiro & Comissões",
+    desc: "Lançamentos por serviço/produto, controle de comissões por profissional, dashboard de faturamento e relatórios.",
+  },
+  {
+    icon: Sparkles,
+    title: "Experiência do Cliente",
+    desc: "QR code de check-in, pré-checklist automática, pós-cuidados personalizados e avaliação NPS.",
+  },
+];
+
+const plans = [
+  {
+    name: "Free",
+    price: "R$ 0",
+    period: "/mês",
+    features: ["1 profissional", "30 agendamentos/mês", "Confirmação por e-mail", "CRM básico"],
+    cta: "Começar",
+    highlight: false,
+  },
+  {
+    name: "Essencial",
+    price: "R$ 89",
+    period: "/mês",
+    features: ["Até 3 profissionais", "Agendamento ilimitado", "WhatsApp API (500 msg)", "CRM completo", "Financeiro simples"],
+    cta: "Assinar",
+    highlight: true,
+  },
+  {
+    name: "Pro",
+    price: "R$ 179",
+    period: "/mês",
+    features: ["Até 8 profissionais", "Termos digitais", "Automações de retenção", "Comissões avançadas", "2000 msg/mês"],
+    cta: "Assinar",
+    highlight: false,
+  },
+];
 
 export default function Home() {
   return (
@@ -47,60 +98,61 @@ export default function Home() {
             <Button variant="ghost">Entrar</Button>
           </Link>
           <Link to="/login">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">Começar Grátis</Button>
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              Começar Grátis
+            </Button>
           </Link>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="px-6 py-16 md:py-24 max-w-7xl mx-auto text-center">
-        <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-foreground mb-6">
-          Gestão completa para <br className="hidden md:block" />
-          <span className="text-primary">salões de beleza</span>
-        </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-          Do primeiro contato ao pós-venda. Agendamento inteligente, CRM de clientes,
-          comunicação omnichannel e fidelização — tudo em uma única plataforma.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/login">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8">
-              Testar Grátis <ArrowRight className="ml-2 h-4 w-4" />
+      <section className="px-6 pt-16 pb-12 md:pt-24 md:pb-16 max-w-7xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-foreground mb-6">
+            Gestão completa para{" "}
+            <br className="hidden md:block" />
+            <span className="text-primary">salões de beleza</span>
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
+            Do primeiro contato ao pós-venda. Agendamento inteligente, CRM de clientes,
+            comunicação omnichannel e fidelização — tudo em uma única plataforma.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/login">
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8"
+              >
+                Testar Grátis <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() =>
+                document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              Ver Funcionalidades
             </Button>
-          </Link>
-          <Button size="lg" variant="outline" onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}>
-            Ver Funcionalidades
-          </Button>
+          </div>
         </div>
+
+        {/* Dashboard Mockup */}
+        <DashboardMockup />
       </section>
 
       {/* Stats */}
       <section className="px-6 py-12 max-w-5xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="text-center p-4">
-            <CardContent className="pt-4">
-              <p className="text-3xl font-bold text-primary">35%</p>
-              <p className="text-sm text-muted-foreground">Redução de No-Show</p>
-            </CardContent>
-n          </Card>
-          <Card className="text-center p-4">
-            <CardContent className="pt-4">
-              <p className="text-3xl font-bold text-primary">5min</p>
-              <p className="text-sm text-muted-foreground">Ativação do Sistema</p>
-            </CardContent>
-          </Card>
-          <Card className="text-center p-4">
-            <CardContent className="pt-4">
-              <p className="text-3xl font-bold text-primary">LGPD</p>
-              <p className="text-sm text-muted-foreground">Compliance Nativo</p>
-            </CardContent>
-          </Card>
-          <Card className="text-center p-4">
-            <CardContent className="pt-4">
-              <p className="text-3xl font-bold text-primary">100%</p>
-              <p className="text-sm text-muted-foreground">Omnichannel</p>
-            </CardContent>
-          </Card>
+          {stats.map((s) => (
+            <Card key={s.label} className="text-center p-4">
+              <CardContent className="pt-4">
+                <p className="text-3xl font-bold text-primary">{s.value}</p>
+                <p className="text-sm text-muted-foreground">{s.label}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
 
@@ -108,111 +160,97 @@ n          </Card>
       <section id="features" className="px-6 py-16 max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-12">Tudo que seu salão precisa</h2>
         <div className="grid md:grid-cols-3 gap-6">
-          <Card className="p-6">
-            <CalendarDays className="h-8 w-8 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Agendamento Inteligente</h3>
-            <p className="text-muted-foreground text-sm">
-              Calendário multi-profissional, agendamento online público, confirmações automáticas e lista de espera.
-            </p>
-          </Card>
-          <Card className="p-6">
-            <Users className="h-8 w-8 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">CRM de Clientes</h3>
-            <p className="text-muted-foreground text-sm">
-              Ficha técnica digital, timeline de interações, fotos antes/depois, segmentação automática e retenção.
-            </p>
-          </Card>
-          <Card className="p-6">
-            <MessageSquare className="h-8 w-8 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Comunicação Omnichannel</h3>
-            <p className="text-muted-foreground text-sm">
-              WhatsApp Business API integrado, templates automáticos, lembretes inteligentes e campanhas de reativação.
-            </p>
-          </Card>
-          <Card className="p-6">
-            <ShieldCheck className="h-8 w-8 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Termos Digitais & LGPD</h3>
-            <p className="text-muted-foreground text-sm">
-              Termos de consentimento com assinatura digital, auditoria completa, anonimização e direito à exclusão.
-            </p>
-          </Card>
-          <Card className="p-6">
-            <TrendingUp className="h-8 w-8 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Financeiro & Comissões</h3>
-            <p className="text-muted-foreground text-sm">
-              Lançamentos por serviço/produto, controle de comissões por profissional, dashboard de faturamento e relatórios.
-            </p>
-          </Card>
-          <Card className="p-6">
-            <Logo className="h-8 w-8 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Experiência do Cliente</h3>
-            <p className="text-muted-foreground text-sm">
-              QR code de check-in, pré-checklist automática, pós-cuidados personalizados e avaliação NPS.
-            </p>
-          </Card>
+          {features.map((f) => (
+            <Card key={f.title} className="p-6 hover:shadow-md transition-shadow">
+              <f.icon className="h-8 w-8 text-primary mb-4" />
+              <h3 className="text-lg font-semibold mb-2">{f.title}</h3>
+              <p className="text-muted-foreground text-sm">{f.desc}</p>
+            </Card>
+          ))}
         </div>
       </section>
+
+      {/* How it works */}
+      <HowItWorksSection />
+
+      {/* Testimonials */}
+      <TestimonialsSection />
+
+      {/* Social proof */}
+      <SocialProofSection />
 
       {/* Pricing */}
       <section className="px-6 py-16 max-w-5xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12">Planos simples e justos</h2>
+        <h2 className="text-3xl font-bold text-center mb-4">Planos simples e justos</h2>
+        <p className="text-center text-muted-foreground mb-12 max-w-lg mx-auto">
+          Comece grátis e evolua conforme seu salão cresce. Sem taxa de setup, sem surpresas.
+        </p>
         <div className="grid md:grid-cols-3 gap-6">
-          <Card className="p-6 border-2 border-transparent hover:border-primary/20 transition-colors">
-            <div className="mb-4">
-              <p className="text-sm font-medium text-muted-foreground">Free</p>
-              <p className="text-3xl font-bold">R$ 0<span className="text-base font-normal text-muted-foreground">/mês</span></p>
-            </div>
-            <ul className="space-y-2 text-sm text-muted-foreground mb-6">
-              <li>1 profissional</li>
-              <li>30 agendamentos/mês</li>
-              <li>Confirmação por e-mail</li>
-              <li>CRM básico</li>
-            </ul>
-            <Link to="/login" className="block">
-              <Button variant="outline" className="w-full">Começar</Button>
-            </Link>
-          </Card>
-          <Card className="p-6 border-2 border-primary relative">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-rose-500 text-white text-xs px-3 py-1 rounded-full font-medium">
-              Mais Popular
-            </div>
-            <div className="mb-4">
-              <p className="text-sm font-medium text-muted-foreground">Essencial</p>
-              <p className="text-3xl font-bold">R$ 89<span className="text-base font-normal text-muted-foreground">/mês</span></p>
-            </div>
-            <ul className="space-y-2 text-sm text-muted-foreground mb-6">
-              <li>Até 3 profissionais</li>
-              <li>Agendamento ilimitado</li>
-              <li>WhatsApp API (500 msg)</li>
-              <li>CRM completo</li>
-              <li>Financeiro simples</li>
-            </ul>
-            <Link to="/login" className="block">
-              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Assinar</Button>
-            </Link>
-          </Card>
-          <Card className="p-6 border-2 border-transparent hover:border-rose-200 transition-colors">
-            <div className="mb-4">
-              <p className="text-sm font-medium text-muted-foreground">Pro</p>
-              <p className="text-3xl font-bold">R$ 179<span className="text-base font-normal text-muted-foreground">/mês</span></p>
-            </div>
-            <ul className="space-y-2 text-sm text-muted-foreground mb-6">
-              <li>Até 8 profissionais</li>
-              <li>Termos digitais</li>
-              <li>Automações de retenção</li>
-              <li>Comissões avançadas</li>
-              <li>2000 msg/mês</li>
-            </ul>
-            <Link to="/login" className="block">
-              <Button variant="outline" className="w-full">Assinar</Button>
-            </Link>
-          </Card>
+          {plans.map((p) => (
+            <Card
+              key={p.name}
+              className={`p-6 transition-colors ${
+                p.highlight
+                  ? "border-2 border-primary relative"
+                  : "border-2 border-transparent hover:border-primary/20"
+              }`}
+            >
+              {p.highlight && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-rose-500 text-white text-xs px-3 py-1 rounded-full font-medium">
+                  Mais Popular
+                </div>
+              )}
+              <div className="mb-4">
+                <p className="text-sm font-medium text-muted-foreground">{p.name}</p>
+                <p className="text-3xl font-bold">
+                  {p.price}
+                  <span className="text-base font-normal text-muted-foreground">{p.period}</span>
+                </p>
+              </div>
+              <ul className="space-y-2 text-sm text-muted-foreground mb-6">
+                {p.features.map((f) => (
+                  <li key={f} className="flex items-center gap-2">
+                    <div className="h-1 w-1 rounded-full bg-primary" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link to="/login" className="block">
+                <Button
+                  variant={p.highlight ? "default" : "outline"}
+                  className={`w-full ${
+                    p.highlight
+                      ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                      : ""
+                  }`}
+                >
+                  {p.cta}
+                </Button>
+              </Link>
+            </Card>
+          ))}
         </div>
       </section>
 
+      {/* CTA */}
+      <CTASection />
+
       {/* Footer */}
-      <footer className="px-6 py-8 border-t max-w-7xl mx-auto text-center text-sm text-muted-foreground">
-        <p> BeautyFlow. Todos os direitos reservados.</p>
+      <footer className="px-6 py-10 border-t">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Logo className="h-5 w-5" />
+            <span className="font-serif font-bold">BeautyFlow</span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} BeautyFlow. Todos os direitos reservados.
+          </p>
+          <div className="flex gap-6 text-sm text-muted-foreground">
+            <a href="#" className="hover:text-foreground transition-colors">Privacidade</a>
+            <a href="#" className="hover:text-foreground transition-colors">Termos</a>
+            <a href="#" className="hover:text-foreground transition-colors">Contato</a>
+          </div>
+        </div>
       </footer>
     </div>
   );

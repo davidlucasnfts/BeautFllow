@@ -7,6 +7,7 @@ import {
   createConsentSignature,
   getConsentSignaturesByClient,
 } from "./queries/salon";
+import { auditAction } from "./lib/audit";
 
 export const consentRouter = createRouter({
   list: authedQuery
@@ -26,7 +27,11 @@ export const consentRouter = createRouter({
         serviceId: z.number().optional(),
       })
     )
-    .mutation(({ input }) => createConsentForm(input)),
+    .mutation(async ({ input, ctx }) => {
+      const result = await createConsentForm(input);
+      await auditAction("create", "consent_form", input.salonId, ctx.user?.id, result?.id ?? undefined, undefined, { title: input.title });
+      return result;
+    }),
 
   signaturesByClient: authedQuery
     .input(z.object({ clientId: z.number(), salonId: z.number() }))
@@ -44,5 +49,9 @@ export const consentRouter = createRouter({
         userAgent: z.string().optional(),
       })
     )
-    .mutation(({ input }) => createConsentSignature(input)),
+    .mutation(async ({ input, ctx }) => {
+      const result = await createConsentSignature(input);
+      await auditAction("create", "consent_signature", input.salonId, ctx.user?.id, result?.id ?? undefined, undefined, { clientId: input.clientId, formId: input.formId });
+      return result;
+    }),
 });

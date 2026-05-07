@@ -7,6 +7,7 @@ import {
   getAppointmentById,
   updateAppointment,
 } from "./queries/salon";
+import { auditAction } from "./lib/audit";
 
 export const appointmentRouter = createRouter({
   list: authedQuery
@@ -57,14 +58,16 @@ export const appointmentRouter = createRouter({
         source: z.enum(["online", "whatsapp", "phone", "walk_in", "staff"]).default("staff"),
       })
     )
-    .mutation(({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { salonId, ...data } = input;
-      return createAppointment({
+      const result = await createAppointment({
         salonId,
         ...data,
         appointmentDate: data.appointmentDate,
         status: "scheduled",
       });
+      await auditAction("create", "appointment", salonId, ctx.user?.id, result?.id ?? undefined, undefined, { clientId: data.clientId, date: data.appointmentDate });
+      return result;
     }),
 
   update: authedQuery
@@ -93,7 +96,7 @@ export const appointmentRouter = createRouter({
           .optional(),
       })
     )
-    .mutation(({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { id, salonId, price, appointmentDate, ...data } = input;
       const updateData: Record<string, unknown> = { ...data };
       if (price !== undefined) updateData.price = String(price);
@@ -101,6 +104,8 @@ export const appointmentRouter = createRouter({
       if (data.status === "checked_in") updateData.checkedInAt = new Date();
       if (data.status === "completed") updateData.completedAt = new Date();
       if (data.status === "cancelled") updateData.cancelledAt = new Date();
-      return updateAppointment(id, salonId, updateData);
+      const result = await updateAppointment(id, salonId, updateData);
+      await auditAction("update", "appointment", salonId, ctx.user?.id, id, undefined, data);
+      return result;
     }),
 });

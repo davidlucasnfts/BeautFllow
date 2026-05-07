@@ -1,193 +1,171 @@
 # BeautyFlow — Roadmap
 
-Ultima atualizacao: 05/05/2026
+> **Arquivo de referência.** Para contexto rápido, leia MEMORY.md primeiro.
+
+Última atualização: 07/05/2026
 
 ---
 
-## Registro de Alteracoes
+## Registro de Alterações
 
-### 05/05/2026 — Setup Inicial no Kimi Code
+### 05/05/2026 — Setup Inicial
 - [dev] Projeto migrado do Kimi Web para Kimi Code
-- [dev] Skill extraida e analisada
-- [doc] AGENTS.md criado com contexto do projeto
-- [dev] Estrutura simplificada (pastas duplicadas removidas)
-- [dev] Dependencias instaladas (658 pacotes)
-- [dev] Type-check validado (sem erros)
-- [dev] Servidor de dev testado (localhost:3000)
-- [doc] ROADMAP.md criado
-- [ref] AGENTS.md e ROADMAP.md reorganizados (sem duplicacao)
-- [doc] MEMORY.md criado como ponto de entrada unico para sessoes
-- [doc] Regra de leitura unica salva no AGENTS.md
+- [dev] Dependências instaladas (658 pacotes), type-check validado
+- [doc] AGENTS.md, ROADMAP.md, MEMORY.md criados
 
 ### 05/05/2026 — Identidade Visual (Fase 1)
-- [ok] Paleta de cores aplicada: rosa `#E8A0BF` (primary) / dourado `#D4AF37` (secondary/accent) / fundo `#FAFAFA` (background)
-- [ok] Fonte Playfair Display adicionada para titulos (serif)
-- [ok] Fonte Inter adicionada para corpo (sans)
-- [ok] Tema dark ajustado com variacoes da paleta beauty
-- [ok] CSS variables atualizadas em `src/index.css`
-- [ok] Tailwind config atualizado com fontFamily sans/serif
-- [ok] Logo SVG inline adicionado ao sidebar
-- [ok] Logo SVG inline adicionado a landing page (navbar)
-- [ok] Cores hardcoded da landing page trocadas por CSS variables
-- [ok] Titulos com font-serif (Playfair Display) aplicados
-- [fix] Textos em ingles na pagina de Login traduzidos para portugues ("Welcome" → "Bem-vindo", "Sign in with Kimi" → "Entrar com Kimi")
-- [ok] Verificacao completa: todas as paginas do sistema estao em portugues
+- [ok] Paleta: rosa `#E8A0BF` / dourado `#D4AF37` / fundo `#FAFAFA`
+- [ok] Fontes: Playfair Display (títulos) + Inter (corpo)
+- [ok] Tema dark, CSS variables, Tailwind config, Logo SVG
+- [fix] Todos os textos traduzidos para português
 
 ### 05/05/2026 — Dashboard Rico (Fase 2)
-- [ok] Backend: getDashboardMetrics expandido com comparacao mes anterior, proximos agendamentos, atividades recentes, consentimentos pendentes, receita e crescimento
-- [ok] Cards com sparklines (mini graficos SVG) em todos os KPIs
-- [ok] Alertas visuais: banner amarelo para consentimentos LGPD pendentes, banner vermelho para taxa no-show acima de 15%
-- [ok] KPIs com comparacao periodo anterior (setas de tendencia e percentuais)
-- [ok] Widget de proximos agendamentos com data, hora, cliente, servico e profissional
-- [ok] Timeline de atividades recentes com icones de status e datas
-- [ok] Componente KpiCard reutilizavel com suporte a sparklines e tendencias
-- [ok] Titulos com font-serif (Playfair Display) aplicados no dashboard
+- [ok] KPIs com sparklines, comparativo mês anterior, alertas visuais
+- [ok] Widget próximos agendamentos, timeline de atividades
 
-### 06/05/2026 — Migracao MySQL para PostgreSQL/Supabase
-- [ref] Schema completo reescrito: mysqlTable → pgTable, mysqlEnum → pgEnum declarados separadamente
-- [ref] Conexao do banco: mysql2 → postgres-js (driver PostgreSQL)
-- [ref] drizzle.config.ts: dialect mysql → postgresql
-- [ref] Queries: $returningId() → returning(), onDuplicateKeyUpdate → onConflictDoUpdate
-- [ref] Queries: DATE_FORMAT → TO_CHAR com formato 'YYYY-MM'
-- [ref] Routers: correcao de tipos Date → string para colunas date do PostgreSQL
-- [ref] Removido campo 'price' de appointments (nao existia no schema)
-- [ref] Removido campo 'isPaid'/'paidAt' de financial_records (nao existia no schema)
-- [ref] Corrigido relations.ts: colunas inexistentes removidas
-- [fix] Corrigido Consent.tsx: 'version' → data de criacao do formulario
+### 06/05/2026 — Migração MySQL → PostgreSQL/Supabase (Fase 3)
+- [ref] Schema: mysqlTable → pgTable, mysqlEnum → pgEnum
+- [ref] Driver: mysql2 → postgres-js, queries atualizadas
+- [fix] Tipos Date → string, colunas inexistentes removidas
+
+### 07/05/2026 — Alinhamento Documento Mestre
+- [doc] Estrutura `docs/` criada (adr, runbooks, DOR, DOD, LGPD)
+- [doc] 3 ADRs criados, CI/CD pipeline GitHub Actions
+- [dev] package.json: beautyflow v0.1.0, scripts quality/lint:fix/format:check
+- [dev] .editorconfig, .prettierignore, vitest.config.ts (coverage 80%)
+- [sec] api/boot.ts: secureHeaders, CORS restrito, /health
+- [sec] Dockerfile: stage test, usuário não-root, sem .env
+- [sec] api/lib/audit.ts + audit logs em routers client/appointment/financial
+- [fix] Lint passando (0 erros), ESLint config com ignores corretos
+- [ref] useSalon separado para fast refresh
+
+### 07/05/2026 — Audit Logs Completos (RF-022)
+- [sec] Audit logs adicionados em service-router.ts (create/update/delete)
+- [sec] Audit logs adicionados em professional-router.ts (create/update)
+- [sec] Audit logs adicionados em consent-router.ts (create form/sign)
+- [sec] Audit logs adicionados em communication-router.ts (create)
+- [ok] 100% dos routers críticos com auditoria
+
+### 07/05/2026 — Calendário Profissional Fase 4.1 (RF-012)
+- [feat] Componentes de calendário extraídos: WeekView, DayView
+- [feat] Toggle Semana/Dia com navegação independente
+- [feat] View diária com timeline horizontal (slots de 08h às 20h)
+- [feat] Cards de evento com cor do serviço (border-left colorida)
+- [feat] Preview do profissional no card do evento
+- [feat] Cálculo automático de endTime baseado na duração do serviço
+- [ref] Appointments.tsx refatorado (limite 400 linhas respeitado)
+
+### 07/05/2026 — Landing Page que Vende (Fase 5 / RF-013)
+- [feat] DashboardMockup.tsx — mockup visual do app com stats, gráfico e agenda
+- [feat] TestimonialsSection.tsx — 3 depoimentos com avatares, estrelas e métricas
+- [feat] HowItWorksSection.tsx — 3 passos visuais com ícones e conector
+- [feat] SocialProofSection.tsx — logos de salões + badges de segurança (LGPD, SSL, ISO)
+- [feat] CTASection.tsx — CTA final com benefícios e checkmarks
+- [feat] Home.tsx reescrita com todos os componentes, footer expandido
+- [seo] Meta tags, Open Graph, Twitter Cards, canonical, keywords, lang=pt-BR
+- [ref] Componentes landing/ separados (regra 400 linhas/arquivo)
 
 ---
 
-## Diretrizes de UX/UI
+## Requisitos Funcionais
 
-Aplicaveis a todas as fases.
-
-**Espaco e Layout:**
-- Zero espacos vazios sem funcao
-- Paddings proporcionais (`py-10` a `py-14`, nunca `py-20/py-28` sem necessidade)
-- Hero compacto (altura pelo conteudo, nao pela tela)
-- Conteudo acima do fold (valor em 3 segundos, sem rolar)
-
-**Conversao e Copywriting:**
-- Headline na dor (ex: "Nunca mais perca um agendamento")
-- Antes vs Depois (transformacao real, nao lista de features)
-- Depoimentos com numeros concretos ("30% menos faltas")
-- CTA claro e repetido (hero, meio, final)
-- Prova social no hero (numeros, avatares, cargos)
-
-**Visual e Componentes:**
-- Cores distintas por card
-- Placeholder visual quando nao ha imagem
-- Botoes sempre visiveis (nunca branco sobre branco)
-- Transicoes suaves (header ao rolar, hover em cards)
-
-**Mobile-First:**
-- Touch targets minimos de 44px
-- Stack vertical em mobile (texto acima, imagem abaixo)
-- Menu hamburguer em telas pequenas
-- Fontes: min 16px inputs, 14px texto corrido
+| ID | Requisito | Prioridade | Status |
+|----|-----------|------------|--------|
+| RF-001 | Dashboard com KPIs | Must | ✅ |
+| RF-002 | CRM Clientes (CRUD) | Must | ✅ |
+| RF-003 | Agendamentos (CRUD) | Must | ✅ |
+| RF-004 | Cadastro de Serviços | Must | ✅ |
+| RF-005 | Cadastro de Profissionais | Must | ✅ |
+| RF-006 | Módulo Financeiro | Must | ✅ |
+| RF-007 | Comunicação Omnichannel | Must | ✅ |
+| RF-008 | Termos e Consentimentos LGPD | Must | ✅ |
+| RF-009 | Landing Page | Must | ✅ |
+| RF-010 | Auth OAuth 2.0 + JWT | Must | ✅ |
+| RF-011 | Multi-tenancy por salão | Must | ✅ |
+| RF-012 | Calendário Profissional | Should | ✅ |
+| RF-013 | Landing Page que Vende | Should | ✅ |
+| RF-014 | Integração WhatsApp Business | Could | ⏳ |
+| RF-015 | Exportação PDF de relatórios | Could | ⏳ |
+| RF-016 | Notificações push | Could | ⏳ |
+| RF-017 | Webhooks para agendamentos | Could | ⏳ |
+| RF-018 | Relatórios e Analytics avançados | Could | ⏳ |
+| RF-019 | Export CSV/Excel | Could | ⏳ |
+| RF-020 | Micro-interações e UX refinada | Could | ⏳ |
+| RF-021 | Revisão LGPD completa | Should | ⏳ |
+| RF-022 | Logs de auditoria operacionais | Should | ✅ |
+| RF-023 | Rate limiting em endpoints | Should | ⏳ |
+| RF-024 | Backup automático documentado | Could | ⏳ |
 
 ---
 
 ## Fases do Projeto
 
-Status: [X] Concluido | [~] Em andamento | [ ] Pendente | [-] Pausado | [!] Cancelado
+Status: ✅ Concluído | [~] Em andamento | ⏳ Pendente
 
-### Fase 1: Identidade Visual — ✅ CONCLUIDA (05/05)
-Todas as tarefas entregues. Ver Registro de Alteracoes para detalhes.
+### Fase 1: Identidade Visual — ✅ (05/05)
+### Fase 2: Dashboard Rico — ✅ (05/05)
+### Fase 3: Migração Supabase — ✅ (06/05)
 
-### Fase 2: Dashboard Rico — ✅ CONCLUIDA (05/05)
-Ver Registro de Alteracoes para detalhes.
+### Fase 4: Calendário Profissional — ✅ CONCLUÍDA (07/05)
 
-### Fase 3: Migracao para Supabase — [~] EM ANDAMENTO (06/05)
-| # | Tarefa | Status | Data |
-|---|--------|--------|------|
-| 3.1 | Schema PostgreSQL | [X] | 06/05 |
-| 3.2 | Driver e conexao | [X] | 06/05 |
-| 3.3 | Queries atualizadas | [X] | 06/05 |
-| 3.4 | Criar projeto Supabase | [ ] | — |
-| 3.5 | Configurar DATABASE_URL | [ ] | — |
-| 3.6 | Rodar db:push no Supabase | [ ] | — |
-| 3.7 | Configurar RLS (Row Level Security) | [ ] | — |
+### Fase 5: Landing Page que Vende — ✅ CONCLUÍDA (07/05)
 
-### Fase 3: Calendario Profissional
-| # | Tarefa | Status | Data |
-|---|--------|--------|------|
-| 3.1 | View diaria com timeline horizontal | [ ] | — |
-| 3.2 | Cores dos servicos nos eventos | [ ] | — |
-| 3.3 | Preview do profissional no evento | [ ] | — |
-| 3.4 | Drag-and-drop para reagendamento | [ ] | — |
-| 3.5 | Filtros por profissional/servico | [ ] | — |
+### Fase 6: Integrações — ⏳
+| # | Tarefa | Status |
+|---|--------|--------|
+| 6.1 | WhatsApp Business API | ⏳ |
+| 6.2 | Exportação PDF de relatórios | ⏳ |
+| 6.3 | Notificações push | ⏳ |
+| 6.4 | Webhooks para agendamentos | ⏳ |
 
-### Fase 4: Landing Page que Vende
-| # | Tarefa | Status | Data |
-|---|--------|--------|------|
-| 4.1 | Imagens por IA | [ ] | — |
-| 4.2 | Depoimentos com avatares | [ ] | — |
-| 4.3 | Mockups do app | [ ] | — |
-| 4.4 | Otimizar copy e CTAs | [ ] | — |
-| 4.5 | SEO basico (meta tags, schema.org) | [ ] | — |
+### Fase 7: Relatórios e Analytics — ⏳
+| # | Tarefa | Status |
+|---|--------|--------|
+| 7.1 | Faturamento por período | ⏳ |
+| 7.2 | Ocupação dos profissionais | ⏳ |
+| 7.3 | Serviços mais vendidos | ⏳ |
+| 7.4 | Gráficos de desempenho | ⏳ |
+| 7.5 | Export CSV/Excel | ⏳ |
 
-### Fase 5: Integracoes
-| # | Tarefa | Status | Data |
-|---|--------|--------|------|
-| 5.1 | WhatsApp Business API (360dialog) | [ ] | — |
-| 5.2 | Exportacao PDF de relatorios | [ ] | — |
-| 5.3 | Notificacoes push | [ ] | — |
-| 5.4 | Webhooks para agendamentos | [ ] | — |
+### Fase 8: Micro-interações e UX — ⏳
+| # | Tarefa | Status |
+|---|--------|--------|
+| 8.1 | Toasts customizados (Sonner) | ⏳ |
+| 8.2 | Loaders e estados de loading | ⏳ |
+| 8.3 | Hover effects e transições | ⏳ |
+| 8.4 | Animações de entrada nas páginas | ⏳ |
+| 8.5 | Feedback visual em formulários | ⏳ |
 
-### Fase 6: Relatorios e Analytics
-| # | Tarefa | Status | Data |
-|---|--------|--------|------|
-| 6.1 | Faturamento por periodo | [ ] | — |
-| 6.2 | Ocupacao dos profissionais | [ ] | — |
-| 6.3 | Servicos mais vendidos | [ ] | — |
-| 6.4 | Graficos de desempenho (recharts) | [ ] | — |
-| 6.5 | Export CSV/Excel | [ ] | — |
-
-### Fase 7: Micro-interacoes e UX
-| # | Tarefa | Status | Data |
-|---|--------|--------|------|
-| 7.1 | Toasts customizados (Sonner) | [ ] | — |
-| 7.2 | Loaders e estados de loading | [ ] | — |
-| 7.3 | Hover effects e transicoes | [ ] | — |
-| 7.4 | Animacoes de entrada nas paginas | [ ] | — |
-| 7.5 | Feedback visual em formularios | [ ] | — |
-
-### Fase 8: Seguranca e Compliance
-| # | Tarefa | Status | Data |
-|---|--------|--------|------|
-| 8.1 | Revisao LGPD | [ ] | — |
-| 8.2 | Logs de auditoria (audit_logs) | [ ] | — |
-| 8.3 | Rate limiting em endpoints sensiveis | [ ] | — |
-| 8.4 | Backup automatico do banco | [ ] | — |
+### Fase 9: Segurança e Compliance — ⏳
+| # | Tarefa | Status |
+|---|--------|--------|
+| 9.1 | Revisão LGPD | ⏳ |
+| 9.2 | Logs de auditoria (audit_logs) | ✅ |
+| 9.3 | Rate limiting em endpoints sensíveis | ⏳ |
+| 9.4 | Backup automático do banco | ⏳ |
 
 ---
 
-## Tarefas Avulsas (sem fase definida)
+## UX/UI (aplicar em toda implementação)
 
-| # | Tarefa | Status | Data |
-|---|--------|--------|------|
-| A.1 | Revisar consistencia visual dos componentes shadcn/ui | [ ] | — |
+- Hero compacto (sem `min-h-screen`), conteúdo acima do fold
+- Headline na dor, CTA repetido, prova social no hero
+- Cores distintas por card, botões sempre visíveis
+- Mobile: touch 44px+, stack vertical, menu hambúrguer
 
 ---
 
-## Como Registrar Alteracoes
-
-Adicionar entrada no Registro de Alteracoes:
+## Como Registrar Alterações
 
 ```
-### DD/MM/YYYY — Titulo
-- [tipo] Descricao
+### DD/MM/YYYY — Título
+- [tipo] Descrição
 ```
 
-Tipos: `[feat]` Nova feature | `[fix]` Bugfix | `[ok]` Concluido/Entregue | `[perf]` Performance | `[sec]` Seguranca | `[doc]` Documentacao | `[ref]` Refatoracao | `[dev]` Configuracao/DevOps
+Tipos: `[feat]` Nova feature | `[fix]` Bugfix | `[ok]` Concluído | `[perf]` Performance | `[sec]` Segurança | `[doc]` Documentação | `[ref]` Refatoração | `[dev]` Configuração/DevOps
 
----
-
-## Regras de Manutencao deste Arquivo
-
-1. **Nunca duplicar informacao** entre Registro de Alteracoes e Fases do Projeto
-2. **Fase concluida:** substituir tabela inteira por "✅ CONCLUIDA (data). Ver Registro de Alteracoes para detalhes."
-3. **Tarefa concluida:** marcar com [X] e data, mas nao repetir descricao no Registro
-4. **Tarefa avulsa:** se nao pertence a nenhuma fase, adicionar em "Tarefas Avulsas"
-5. **Sempre atualizar** a ultima data no topo do arquivo
+**Regras:**
+1. Nunca duplicar informação entre Registro de Alterações e Fases
+2. Fase concluída: substituir tabela por "✅ CONCLUÍDA (data)"
+3. Tarefa concluída: marcar com ✅ e data
+4. Sempre atualizar a última data no topo do arquivo

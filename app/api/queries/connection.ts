@@ -15,3 +15,14 @@ export function getDb() {
   }
   return instance;
 }
+
+// Helper para verificar se o banco está acessível
+export async function checkDbConnection(): Promise<boolean> {
+  try {
+    const db = getDb();
+    await db.query.users.findFirst({ columns: { id: true } });
+    return true;
+  } catch {
+    return false;
+  }
+}

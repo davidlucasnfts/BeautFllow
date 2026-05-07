@@ -9,11 +9,24 @@ export default defineConfig({
     alias: {
       "@": path.resolve(templateRoot, "src"),
       "@contracts": path.resolve(templateRoot, "contracts"),
-      "@assets": path.resolve(templateRoot, "attached_assets"),
     },
   },
   test: {
     environment: "node",
-    include: ["api/**/*.test.ts", "api/**/*.spec.ts"],
+    include: [
+      "api/**/*.test.ts",
+      "api/**/*.spec.ts",
+      "src/**/*.test.ts",
+      "src/**/*.spec.ts",
+    ],
+    coverage: {
+      reporter: ["text", "html", "lcov"],
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
+    },
   },
 });

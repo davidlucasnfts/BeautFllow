@@ -5,6 +5,7 @@ import {
   getFinancialRecordsBySalon,
   getFinancialSummaryBySalon,
 } from "./queries/salon";
+import { auditAction } from "./lib/audit";
 
 export const financialRouter = createRouter({
   list: authedQuery
@@ -39,14 +40,16 @@ export const financialRouter = createRouter({
         notes: z.string().optional(),
       })
     )
-    .mutation(({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { salonId, amount, commissionAmount, recordDate, ...data } = input;
-      return createFinancialRecord({
+      const result = await createFinancialRecord({
         salonId,
         ...data,
         amount: String(amount),
         commissionAmount: commissionAmount ? String(commissionAmount) : "0.00",
         recordDate: recordDate,
       });
+      await auditAction("create", "financial_record", salonId, ctx.user?.id, result?.id ?? undefined, undefined, { amount: String(amount), type: data.type });
+      return result;
     }),
 });

@@ -222,7 +222,7 @@ export async function getAppointmentsBySalon(
   fromDate?: string,
   toDate?: string
 ) {
-  let conditions = [eq(appointments.salonId, salonId)];
+  const conditions = [eq(appointments.salonId, salonId)];
   if (fromDate) conditions.push(sql`${appointments.appointmentDate} >= ${fromDate}`);
   if (toDate) conditions.push(sql`${appointments.appointmentDate} <= ${toDate}`);
 
@@ -239,7 +239,7 @@ export async function getAppointmentsByProfessional(
   fromDate?: string,
   toDate?: string
 ) {
-  let conditions = [
+  const conditions = [
     eq(appointments.salonId, salonId),
     eq(appointments.professionalId, professionalId),
   ];
@@ -288,7 +288,7 @@ export async function getFinancialRecordsBySalon(
   fromDate?: string,
   toDate?: string
 ) {
-  let conditions = [eq(financialRecords.salonId, salonId)];
+  const conditions = [eq(financialRecords.salonId, salonId)];
   if (fromDate) conditions.push(sql`${financialRecords.recordDate} >= ${fromDate}`);
   if (toDate) conditions.push(sql`${financialRecords.recordDate} <= ${toDate}`);
 

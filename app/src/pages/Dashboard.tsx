@@ -1,5 +1,5 @@
 import { trpc } from "@/providers/trpc";
-import { useSalon } from "@/providers/salon";
+import { useSalon } from "@/providers/useSalon";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   CalendarDays,

@@ -48,6 +48,26 @@ export const users = pgTable("users", {
   lastSignInAt: timestamp("lastSignInAt").defaultNow().notNull(),
 });
 
+// ==========================================
+// Local Auth (email + password)
+// ==========================================
+export const localUsers = pgTable("local_users", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+  name: varchar("name", { length: 255 }),
+  role: userRoleEnum("role").default("user").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+  lastSignInAt: timestamp("last_sign_in_at").defaultNow().notNull(),
+});
+
+export type LocalUser = typeof localUsers.$inferSelect;
+export type InsertLocalUser = typeof localUsers.$inferInsert;
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 

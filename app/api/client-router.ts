@@ -8,6 +8,7 @@ import {
   deleteClient,
   searchClients,
 } from "./queries/salon";
+import { auditAction } from "./lib/audit";
 
 export const customerRouter = createRouter({
   list: authedQuery
@@ -35,14 +36,16 @@ export const customerRouter = createRouter({
         tags: z.string().optional(),
       })
     )
-    .mutation(({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { salonId, ...data } = input;
-      return createClient({
+      const result = await createClient({
         salonId,
         ...data,
         birthDate: data.birthDate || null,
         segment: "new",
       });
+      await auditAction("create", "client", salonId, ctx.user?.id, result?.id ?? undefined, undefined, { name: data.name });
+      return result;
     }),
 
   update: authedQuery
@@ -60,15 +63,21 @@ export const customerRouter = createRouter({
         segment: z.enum(["new", "active", "vip", "at_risk", "inactive"]).optional(),
       })
     )
-    .mutation(({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { id, salonId, birthDate, ...data } = input;
-      return updateClient(id, salonId, {
+      const result = await updateClient(id, salonId, {
         ...data,
         birthDate: birthDate || undefined,
       });
+      await auditAction("update", "client", salonId, ctx.user?.id, id, undefined, data);
+      return result;
     }),
 
   delete: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
-    .mutation(({ input }) => deleteClient(input.id, input.salonId)),
+    .mutation(async ({ input, ctx }) => {
+      await deleteClient(input.id, input.salonId);
+      await auditAction("delete", "client", input.salonId, ctx.user?.id, input.id);
+      return { success: true };
+    }),
 });

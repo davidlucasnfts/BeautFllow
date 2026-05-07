@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import { useSalon } from "@/providers/salon";
+import { useSalon } from "@/providers/useSalon";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -175,12 +175,6 @@ function AuthLayoutContent({ children, setSidebarWidth }: AuthLayoutContentProps
       });
     }
   }, [salonsData, salon, setSalon]);
-
-  useEffect(() => {
-    if (isCollapsed) {
-      setIsResizing(false);
-    }
-  }, [isCollapsed]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {

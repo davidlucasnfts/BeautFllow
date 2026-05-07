@@ -11,10 +11,17 @@ FROM deps AS build
 COPY . .
 RUN npm run build
 
+FROM deps AS test
+COPY . .
+RUN npm run test
+
 FROM node:20-alpine AS production
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
-COPY package.json .env ./
+COPY package.json ./
+RUN chown -R nodejs:nodejs /app
+USER nodejs
 
 EXPOSE 3000
 CMD ["npm", "start"]

@@ -13,27 +13,51 @@ export function useAuth(options?: UseAuthOptions) {
     options ?? {};
 
   const navigate = useNavigate();
-
   const utils = trpc.useUtils();
 
+  // Tenta auth local primeiro
   const {
-    data: user,
-    isLoading,
-    error,
-    refetch,
-  } = trpc.auth.me.useQuery(undefined, {
+    data: localUser,
+    isLoading: localLoading,
+  } = trpc.localAuth.me.useQuery(undefined, {
     staleTime: 1000 * 60 * 5,
     retry: false,
   });
 
-  const logoutMutation = trpc.auth.logout.useMutation({
+  // Fallback para OAuth (legacy)
+  const {
+    data: oauthUser,
+    isLoading: oauthLoading,
+  } = trpc.auth.me.useQuery(undefined, {
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+    enabled: !localUser && !localLoading,
+  });
+
+  const user = localUser ?? oauthUser ?? null;
+  const isLoading = localLoading || oauthLoading;
+
+  const logoutLocal = trpc.localAuth.logout.useMutation({
     onSuccess: async () => {
       await utils.invalidate();
       navigate(redirectPath);
     },
   });
 
-  const logout = useCallback(() => logoutMutation.mutate(), [logoutMutation]);
+  const logoutOAuth = trpc.auth.logout.useMutation({
+    onSuccess: async () => {
+      await utils.invalidate();
+      navigate(redirectPath);
+    },
+  });
+
+  const logout = useCallback(() => {
+    if (localUser) {
+      logoutLocal.mutate();
+    } else {
+      logoutOAuth.mutate();
+    }
+  }, [localUser, logoutLocal, logoutOAuth]);
 
   useEffect(() => {
     if (redirectOnUnauthenticated && !isLoading && !user) {
@@ -46,13 +70,15 @@ export function useAuth(options?: UseAuthOptions) {
 
   return useMemo(
     () => ({
-      user: user ?? null,
+      user,
       isAuthenticated: !!user,
-      isLoading: isLoading || logoutMutation.isPending,
-      error,
+      isLoading: isLoading || logoutLocal.isPending || logoutOAuth.isPending,
       logout,
-      refresh: refetch,
+      refresh: () => {
+        utils.localAuth.me.invalidate();
+        utils.auth.me.invalidate();
+      },
     }),
-    [user, isLoading, logoutMutation.isPending, error, logout, refetch],
+    [user, isLoading, logoutLocal.isPending, logoutOAuth.isPending, logout, utils],
   );
 }

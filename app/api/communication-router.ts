@@ -5,6 +5,7 @@ import {
   getCommunicationsByClient,
   getCommunicationsBySalon,
 } from "./queries/salon";
+import { auditAction } from "./lib/audit";
 
 export const communicationRouter = createRouter({
   listByClient: authedQuery
@@ -36,10 +37,12 @@ export const communicationRouter = createRouter({
         status: z.enum(["pending", "sent", "delivered", "read", "failed"]).default("sent"),
       })
     )
-    .mutation(({ input }) =>
-      createCommunication({
+    .mutation(async ({ input, ctx }) => {
+      const result = await createCommunication({
         ...input,
         sentAt: input.status === "sent" ? new Date() : undefined,
-      })
-    ),
+      });
+      await auditAction("create", "communication", input.salonId, ctx.user?.id, result?.id ?? undefined, undefined, { clientId: input.clientId, type: input.type });
+      return result;
+    }),
 });

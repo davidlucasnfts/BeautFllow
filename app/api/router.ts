@@ -1,4 +1,5 @@
 import { authRouter } from "./auth-router";
+import { localAuthRouter } from "./local-auth-router";
 import { createRouter, publicQuery } from "./middleware";
 import { salonRouter } from "./salon-router";
 import { customerRouter } from "./client-router";
@@ -13,6 +14,7 @@ import { dashboardRouter } from "./dashboard-router";
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
   auth: authRouter,
+  localAuth: localAuthRouter,
   salon: salonRouter,
   customer: customerRouter,
   service: serviceRouter,

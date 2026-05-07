@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useState, type ReactNode } from "react";
 
 export type SalonRole = "owner" | "admin" | "professional" | "receptionist";
 
@@ -10,7 +10,7 @@ export type SalonContextType = {
   plan: string;
 };
 
-const SalonContext = createContext<{
+export const SalonContext = createContext<{
   salon: SalonContextType | null;
   setSalon: (salon: SalonContextType | null) => void;
 } | null>(null);
@@ -22,7 +22,9 @@ export function SalonProvider({ children }: { children: ReactNode }) {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) return JSON.parse(raw);
-    } catch {}
+    } catch {
+      return null;
+    }
     return null;
   });
 
@@ -37,10 +39,4 @@ export function SalonProvider({ children }: { children: ReactNode }) {
       {children}
     </SalonContext.Provider>
   );
-}
-
-export function useSalon() {
-  const ctx = useContext(SalonContext);
-  if (!ctx) throw new Error("useSalon must be used within SalonProvider");
-  return ctx;
 }

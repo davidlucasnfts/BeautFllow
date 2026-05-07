@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/providers/trpc";
-import { useSalon } from "@/providers/salon";
+import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
