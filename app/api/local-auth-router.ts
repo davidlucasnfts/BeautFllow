@@ -32,6 +32,35 @@ async function verifyToken(token: string): Promise<{ userId: number; email: stri
   }
 }
 
+export async function authenticateLocalRequest(headers: Headers) {
+  const cookies = headers.get("cookie") || "";
+  const match = cookies.match(new RegExp(`${Session.cookieName}=([^;]+)`));
+  const token = match?.[1];
+  if (!token) return null;
+
+  const claim = await verifyToken(token);
+  if (!claim) return null;
+
+  const db = getDb();
+  const [user] = await db
+    .select({
+      id: localUsers.id,
+      email: localUsers.email,
+      name: localUsers.name,
+      role: localUsers.role,
+      unionId: localUsers.email,
+      avatar: localUsers.name,
+      createdAt: localUsers.createdAt,
+      updatedAt: localUsers.updatedAt,
+      lastSignInAt: localUsers.lastSignInAt,
+    })
+    .from(localUsers)
+    .where(eq(localUsers.id, claim.userId))
+    .limit(1);
+
+  return user ?? null;
+}
+
 export const localAuthRouter = createRouter({
   register: publicQuery
     .input(
