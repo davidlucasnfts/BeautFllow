@@ -65,6 +65,16 @@
 - [seo] Meta tags, Open Graph, Twitter Cards, canonical, keywords, lang=pt-BR
 - [ref] Componentes landing/ separados (regra 400 linhas/arquivo)
 
+### 07/05/2026 — Auth Independente + Deploy Vercel + Supabase
+- [feat] Auth local com email+senha (bcryptjs, JWT) — 100% independente de plataforma
+- [feat] Tabela local_users no schema
+- [ref] Remove pasta api/kimi/ (OAuth legado da plataforma geradora)
+- [sec] Rate limiting em memória, sanitização de input
+- [dev] Deploy Vercel: https://beaut-fllow.vercel.app/
+- [dev] Supabase PostgreSQL conectado e schema aplicado
+- [dev] GitHub: github.com/davidlucasnfts/BeautFllow
+- [doc] Skills ativas documentadas (Security, Scalability, Cost Reducer, Self-Healing)
+
 ---
 
 ## Requisitos Funcionais
@@ -93,7 +103,7 @@
 | RF-020 | Micro-interações e UX refinada | Could | ⏳ |
 | RF-021 | Revisão LGPD completa | Should | ⏳ |
 | RF-022 | Logs de auditoria operacionais | Should | ✅ |
-| RF-023 | Rate limiting em endpoints | Should | ⏳ |
+| RF-023 | Rate limiting em endpoints | Should | ✅ |
 | RF-024 | Backup automático documentado | Could | ⏳ |
 
 ---
@@ -136,12 +146,12 @@ Status: ✅ Concluído | [~] Em andamento | ⏳ Pendente
 | 8.4 | Animações de entrada nas páginas | ⏳ |
 | 8.5 | Feedback visual em formulários | ⏳ |
 
-### Fase 9: Segurança e Compliance — ⏳
+### Fase 9: Segurança e Compliance — [~] Em andamento
 | # | Tarefa | Status |
 |---|--------|--------|
 | 9.1 | Revisão LGPD | ⏳ |
 | 9.2 | Logs de auditoria (audit_logs) | ✅ |
-| 9.3 | Rate limiting em endpoints sensíveis | ⏳ |
+| 9.3 | Rate limiting em endpoints sensíveis | ✅ |
 | 9.4 | Backup automático do banco | ⏳ |
 
 ---

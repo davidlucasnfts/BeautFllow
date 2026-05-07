@@ -25,8 +25,8 @@
 | Lint | ✅ Passando (0 erros) |
 | Build | ✅ Passando |
 | Testes | ⚠️ 0% (meta 80% configurada) |
-| Deploy Vercel | ⚠️ Não configurado |
-| Supabase DB | ⚠️ Projeto não criado |
+| Deploy Vercel | ✅ Online: https://beaut-fllow.vercel.app/ |
+| Supabase DB | ✅ Conectado e schema aplicado |
 
 ---
 
@@ -126,11 +126,11 @@ David Lucas — analista de sistemas, não desenvolvedor. Usa Kimi Code como fer
 
 | # | Ação | Quando executar | Status | Quem faz |
 |---|------|-----------------|--------|----------|
-| 1 | Criar projeto no Supabase | **AGORA — ver passo a passo abaixo** | ⏳ PENDENTE | Você |
-| 2 | Configurar `DATABASE_URL` no `.env` | Após criar Supabase | ⏳ PENDENTE | Você |
-| 3 | Rodar `npm run db:push` no Supabase | Após configurar DATABASE_URL | ⏳ PENDENTE | Eu |
-| 4 | Criar projeto no Vercel | Quando for deployar | ⏳ PENDENTE | Você |
-| 5 | Configurar variáveis de ambiente no Vercel | Após criar projeto | ⏳ PENDENTE | Você |
+| 1 | Criar projeto no Supabase | ✅ CONCLUÍDO | ✅ | Você |
+| 2 | Configurar `DATABASE_URL` no `.env` | ✅ CONCLUÍDO | ✅ | Você |
+| 3 | Rodar `npm run db:push` no Supabase | ✅ CONCLUÍDO | ✅ | Eu |
+| 4 | Criar projeto no Vercel | ✅ CONCLUÍDO | ✅ | Você |
+| 5 | Configurar variáveis de ambiente no Vercel | ✅ CONCLUÍDO | ✅ | Você |
 | 6 | Configurar OAuth Kimi (callback URL) | Após ter URL do Vercel | ⏳ PENDENTE | Você |
 | 7 | Rodar testes (`npm run test`) e atingir 80% | Antes de cada release | ⏳ PENDENTE | Eu aviso |
 | 8 | Criar repositório no GitHub (se ainda não tiver) | Antes do CI/CD funcionar | ⏳ PENDENTE | Você |
