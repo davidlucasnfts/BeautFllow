@@ -2,7 +2,7 @@
 
 > **Arquivo de referência.** Para contexto rápido, leia MEMORY.md primeiro.
 
-Última atualização: 07/05/2026
+Última atualização: 12/05/2026
 
 ---
 
@@ -38,6 +38,23 @@
 - [sec] api/lib/audit.ts + audit logs em routers client/appointment/financial
 - [fix] Lint passando (0 erros), ESLint config com ignores corretos
 - [ref] useSalon separado para fast refresh
+
+### 12/05/2026 — Alinhamento Padrão Mestre v1.0
+- [sec] Rate limiting: 100 req/min IP, 5 req/min auth (hono-rate-limiter)
+- [dev] Husky: pre-commit (lint+check), pre-push (test+build)
+- [doc] MEMORY.md + SESSION-CONTEXT.md + MestreBeaut.md criados
+- [sec] Migrations organizadas (001-002) + schema_safe.sql idempotente
+- [sec] Zod validação em 10/11 routers tRPC
+- [sec] RLS policies aplicadas no Supabase
+- [dev] Conexão DB recria quando DATABASE_URL muda
+- [ref] Appointments.tsx refatorado (< 400 linhas)
+- [doc] PRD + 3 User Stories (RF-001 a RF-003)
+- [dev] CI/CD com deploy automático Vercel
+- [dev] ESLint strict mode
+- [dev] Testes unitários (24 testes, 3 arquivos)
+- [dev] Sentry configurado (@sentry/react + @sentry/node)
+- [doc] AGENTS.md atualizado com regras completas
+- [doc] Runbook de processos manuais criado
 
 ### 07/05/2026 — Audit Logs Completos (RF-022)
 - [sec] Audit logs adicionados em service-router.ts (create/update/delete)
@@ -146,13 +163,19 @@ Status: ✅ Concluído | [~] Em andamento | ⏳ Pendente
 | 8.4 | Animações de entrada nas páginas | ⏳ |
 | 8.5 | Feedback visual em formulários | ⏳ |
 
-### Fase 9: Segurança e Compliance — [~] Em andamento
+### Fase 9: Segurança e Compliance — ✅ CONCLUÍDA (12/05)
 | # | Tarefa | Status |
 |---|--------|--------|
-| 9.1 | Revisão LGPD | ⏳ |
+| 9.1 | Revisão LGPD | ✅ |
 | 9.2 | Logs de auditoria (audit_logs) | ✅ |
 | 9.3 | Rate limiting em endpoints sensíveis | ✅ |
-| 9.4 | Backup automático do banco | ⏳ |
+| 9.4 | Backup automático do banco (Supabase) | ✅ |
+| 9.5 | RLS policies em todas as tabelas | ✅ |
+| 9.6 | ESLint strict mode | ✅ |
+| 9.7 | Husky + pre-commit/pre-push | ✅ |
+| 9.8 | CI/CD com deploy automático | ✅ |
+| 9.9 | Testes unitários (24 testes) | ✅ |
+| 9.10 | Sentry configurado | ✅ |
 
 ---
 

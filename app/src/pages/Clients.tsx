@@ -216,7 +216,7 @@ export default function Clients() {
                     <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEdit(client)}>
                       <Edit3 className="h-4 w-4" />
                     </Button>
-                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => deleteMutation.mutate({ id: client.id, salonId: salon!.id })}>
+                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => salon && deleteMutation.mutate({ id: client.id, salonId: salon.id })}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>

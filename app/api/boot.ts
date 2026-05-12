@@ -2,12 +2,22 @@ import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
+import { rateLimiter } from "hono-rate-limiter";
+import * as Sentry from "@sentry/node";
 import type { HttpBindings } from "@hono/node-server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { appRouter } from "./router";
 import { createContext } from "./context";
 import { env } from "./lib/env";
 import { getDb } from "./queries/connection";
+
+// Sentry — error tracking (só em produção)
+if (env.isProduction && process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 0.1,
+  });
+}
 
 const app = new Hono<{ Bindings: HttpBindings }>();
 
@@ -34,6 +44,28 @@ app.use(cors({
 }));
 
 app.use(bodyLimit({ maxSize: 50 * 1024 * 1024 }));
+
+// Rate limiting — por IP (100 req/min) e por usuário autenticado (300 req/min)
+const ipLimiter = rateLimiter({
+  windowMs: 60 * 1000, // 1 minuto
+  limit: 100,
+  standardHeaders: "draft-6",
+  keyGenerator: (c) => c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "unknown",
+});
+
+const authLimiter = rateLimiter({
+  windowMs: 60 * 1000,
+  limit: 5,
+  standardHeaders: "draft-6",
+  keyGenerator: (c) => {
+    const auth = c.req.header("authorization") || "";
+    return auth.slice(0, 50) || c.req.header("x-forwarded-for") || "unknown";
+  },
+});
+
+app.use("/api/trpc/*", ipLimiter);
+app.use("/api/trpc/localAuth.*", authLimiter);
+app.use("/api/trpc/auth.*", authLimiter);
 
 // Health check
 app.get("/health", async (c) => {

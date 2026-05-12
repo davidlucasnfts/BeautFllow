@@ -7,9 +7,12 @@ import * as relations from "@db/relations";
 const fullSchema = { ...schema, ...relations };
 
 let instance: ReturnType<typeof drizzle<typeof fullSchema>>;
+let currentDatabaseUrl: string;
 
 export function getDb() {
-  if (!instance) {
+  // Recria conexão se DATABASE_URL mudar (evita cache de senha antiga)
+  if (!instance || currentDatabaseUrl !== env.databaseUrl) {
+    currentDatabaseUrl = env.databaseUrl;
     const client = postgres(env.databaseUrl, { prepare: false });
     instance = drizzle(client, { schema: fullSchema });
   }
