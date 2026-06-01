@@ -10,6 +10,7 @@ import Professionals from "./pages/Professionals"
 import Financial from "./pages/Financial"
 import Communications from "./pages/Communications"
 import Consent from "./pages/Consent"
+import Proposal from "./pages/Proposal"
 import AuthLayout from "./components/AuthLayout"
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
       <Route path="/financial" element={<AuthLayout><Financial /></AuthLayout>} />
       <Route path="/communications" element={<AuthLayout><Communications /></AuthLayout>} />
       <Route path="/consent" element={<AuthLayout><Consent /></AuthLayout>} />
+      <Route path="/proposta" element={<Proposal />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   )
