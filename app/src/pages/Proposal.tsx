@@ -122,10 +122,26 @@ const plans = [
 ];
 
 const timeline = [
-  { phase: "Semana 1", title: "Setup & Cadastro", desc: "Cadastro do salão, profissionais, serviços e horários de funcionamento." },
-  { phase: "Semana 2", title: "Importação & Treino", desc: "Importação de clientes, treinamento da equipe e configuração de notificações." },
-  { phase: "Semana 3", title: "Go-Live", desc: "Início dos agendamentos reais no sistema com acompanhamento diário." },
-  { phase: "Semana 4", title: "Otimização", desc: "Ajustes finos, relatórios iniciais e ativação das automações de retenção." },
+  {
+    phase: "Semana 1",
+    title: "Setup & Cadastro",
+    desc: "Cadastro do salão, profissionais, serviços e horários de funcionamento.",
+  },
+  {
+    phase: "Semana 2",
+    title: "Importação & Treino",
+    desc: "Importação de clientes, treinamento da equipe e configuração de notificações.",
+  },
+  {
+    phase: "Semana 3",
+    title: "Go-Live",
+    desc: "Início dos agendamentos reais no sistema com acompanhamento diário.",
+  },
+  {
+    phase: "Semana 4",
+    title: "Otimização",
+    desc: "Ajustes finos, relatórios iniciais e ativação das automações de retenção.",
+  },
 ];
 
 const guarantees = [
@@ -138,7 +154,11 @@ const guarantees = [
 
 export default function Proposal() {
   const today = new Date();
-  const validUntil = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
+  const validUntil = new Date(
+    today.getFullYear(),
+    today.getMonth() + 1,
+    today.getDate()
+  );
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -148,8 +168,12 @@ export default function Proposal() {
           <div className="flex items-center gap-3">
             <Logo className="h-8 w-8" />
             <div>
-              <h1 className="text-xl font-serif font-bold tracking-tight">BeautyFlow</h1>
-              <p className="text-xs text-muted-foreground">Gestão Inteligente para Salões</p>
+              <h1 className="text-xl font-serif font-bold tracking-tight">
+                BeautyFlow
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                Gestão Inteligente para Salões
+              </p>
             </div>
           </div>
           <Badge variant="outline" className="text-sm px-3 py-1">
@@ -181,8 +205,8 @@ export default function Proposal() {
             Transforme a gestão do seu salão
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Proposta comercial para implementação do <strong>BeautyFlow</strong> —
-            plataforma completa de agendamento, CRM, financeiro e comunicação.
+            Proposta comercial para implementação do <strong>BeautyFlow</strong>{" "}
+            — plataforma completa de agendamento, CRM, financeiro e comunicação.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link to="/login">
@@ -193,7 +217,11 @@ export default function Proposal() {
             <Button
               size="lg"
               variant="outline"
-              onClick={() => document.getElementById("investimento")?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() =>
+                document
+                  .getElementById("investimento")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
             >
               Ver Investimento
             </Button>
@@ -204,7 +232,7 @@ export default function Proposal() {
         <section>
           <h3 className="text-2xl font-bold mb-6">O Desafio</h3>
           <div className="grid md:grid-cols-3 gap-4">
-            {painPoints.map((p) => (
+            {painPoints.map(p => (
               <Card key={p.title} className="p-5">
                 <p.icon className="h-6 w-6 text-red-500 mb-3" />
                 <h4 className="font-semibold mb-1">{p.title}</h4>
@@ -218,9 +246,10 @@ export default function Proposal() {
         <section className="bg-primary/5 rounded-2xl p-8">
           <h3 className="text-2xl font-bold mb-4">A Solução: BeautyFlow</h3>
           <p className="text-muted-foreground mb-6 max-w-3xl">
-            Plataforma 100% web e responsiva que centraliza todos os processos do seu salão em um único lugar.
-            Reduza no-shows, organize a agenda, fidelize clientes e tenha controle total do financeiro —
-            sem planilhas, sem papel, sem estresse.
+            Plataforma 100% web e responsiva que centraliza todos os processos
+            do seu salão em um único lugar. Reduza no-shows, organize a agenda,
+            fidelize clientes e tenha controle total do financeiro — sem
+            planilhas, sem papel, sem estresse.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             {[
@@ -228,7 +257,7 @@ export default function Proposal() {
               { value: "5min", label: "Ativação do Sistema" },
               { value: "LGPD", label: "Compliance Nativo" },
               { value: "100%", label: "Omnichannel" },
-            ].map((s) => (
+            ].map(s => (
               <div key={s.label} className="bg-white rounded-xl p-4">
                 <p className="text-2xl font-bold text-primary">{s.value}</p>
                 <p className="text-xs text-muted-foreground">{s.label}</p>
@@ -241,7 +270,7 @@ export default function Proposal() {
         <section>
           <h3 className="text-2xl font-bold mb-6">Funcionalidades Incluídas</h3>
           <div className="grid md:grid-cols-2 gap-4">
-            {features.map((f) => (
+            {features.map(f => (
               <Card key={f.title} className="p-5 flex gap-4 items-start">
                 <div className={`p-3 rounded-lg shrink-0 ${f.color}`}>
                   <f.icon className="h-5 w-5" />
@@ -268,8 +297,11 @@ export default function Proposal() {
               { name: "Financeiro", desc: "Receitas e despesas" },
               { name: "Comunicação", desc: "WhatsApp e e-mail" },
               { name: "Consentimentos", desc: "Termos digitais" },
-            ].map((m) => (
-              <Card key={m.name} className="p-4 text-center hover:shadow-md transition-shadow">
+            ].map(m => (
+              <Card
+                key={m.name}
+                className="p-4 text-center hover:shadow-md transition-shadow"
+              >
                 <div className="h-20 bg-slate-100 rounded-lg mb-3 flex items-center justify-center text-xs text-slate-400">
                   Preview
                 </div>
@@ -279,7 +311,8 @@ export default function Proposal() {
             ))}
           </div>
           <p className="text-xs text-muted-foreground text-center mt-3">
-            * Os previews acima são representações. Na demonstração ao vivo você navegará em todas as telas reais.
+            * Os previews acima são representações. Na demonstração ao vivo você
+            navegará em todas as telas reais.
           </p>
         </section>
 
@@ -290,7 +323,7 @@ export default function Proposal() {
             Sem taxa de setup. Sem fidelidade. Cancele quando quiser.
           </p>
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {plans.map((p) => (
+            {plans.map(p => (
               <Card
                 key={p.name}
                 className={`p-6 transition-colors ${
@@ -305,14 +338,18 @@ export default function Proposal() {
                   </div>
                 )}
                 <div className="mb-4">
-                  <p className="text-sm font-medium text-muted-foreground">{p.name}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {p.name}
+                  </p>
                   <p className="text-3xl font-bold">
                     {p.price}
-                    <span className="text-base font-normal text-muted-foreground">{p.period}</span>
+                    <span className="text-base font-normal text-muted-foreground">
+                      {p.period}
+                    </span>
                   </p>
                 </div>
                 <ul className="space-y-2 text-sm text-muted-foreground mb-6">
-                  {p.features.map((f) => (
+                  {p.features.map(f => (
                     <li key={f} className="flex items-center gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
                       {f}
@@ -334,7 +371,9 @@ export default function Proposal() {
 
         {/* Cronograma */}
         <section>
-          <h3 className="text-2xl font-bold mb-6">Cronograma de Implementação</h3>
+          <h3 className="text-2xl font-bold mb-6">
+            Cronograma de Implementação
+          </h3>
           <div className="space-y-4">
             {timeline.map((t, i) => (
               <div key={t.phase} className="flex gap-4 items-start">
@@ -348,7 +387,9 @@ export default function Proposal() {
                 </div>
                 <Card className="flex-1 p-4">
                   <div className="flex items-center gap-2 mb-1">
-                    <Badge variant="secondary" className="text-xs">{t.phase}</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      {t.phase}
+                    </Badge>
                     <h4 className="font-semibold">{t.title}</h4>
                   </div>
                   <p className="text-sm text-muted-foreground">{t.desc}</p>
@@ -362,7 +403,7 @@ export default function Proposal() {
         <section className="bg-white rounded-2xl border p-8">
           <h3 className="text-2xl font-bold mb-6">Garantias & Suporte</h3>
           <div className="grid md:grid-cols-2 gap-3">
-            {guarantees.map((g) => (
+            {guarantees.map(g => (
               <div key={g} className="flex items-center gap-3">
                 <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
                 <span className="text-sm">{g}</span>
@@ -392,9 +433,12 @@ export default function Proposal() {
 
         {/* CTA Final */}
         <section className="text-center bg-primary text-primary-foreground rounded-2xl p-10">
-          <h3 className="text-2xl font-bold mb-3">Pronto para modernizar seu salão?</h3>
+          <h3 className="text-2xl font-bold mb-3">
+            Pronto para modernizar seu salão?
+          </h3>
           <p className="mb-6 opacity-90 max-w-lg mx-auto">
-            Teste gratuitamente por 14 dias. Sem cartão de crédito, sem compromisso.
+            Teste gratuitamente por 14 dias. Sem cartão de crédito, sem
+            compromisso.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/login">
@@ -411,7 +455,9 @@ export default function Proposal() {
         <div className="max-w-5xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Logo className="h-5 w-5" />
-            <span className="font-serif font-bold text-foreground">BeautyFlow</span>
+            <span className="font-serif font-bold text-foreground">
+              BeautyFlow
+            </span>
           </div>
           <p>Documento confidencial — uso comercial restrito</p>
           <p>&copy; {new Date().getFullYear()} BeautyFlow</p>

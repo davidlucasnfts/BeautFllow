@@ -11,6 +11,7 @@ export default defineConfig([
     "coverage",
     "api/lib/**",
     "api/kimi/**",
+    "api/index.js",
     "src/components/ui/**",
   ]),
   {
