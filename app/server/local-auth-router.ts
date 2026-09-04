@@ -7,7 +7,7 @@ import { localUsers } from "@db/schema";
 import { eq } from "drizzle-orm";
 import { env } from "./lib/env";
 import { TRPCError } from "@trpc/server";
-import { setCookie } from "hono/cookie";
+import * as cookie from "cookie";
 import { getSessionCookieOptions } from "./lib/cookies";
 import { Session } from "@contracts/constants";
 
@@ -145,14 +145,15 @@ export const localAuthRouter = createRouter({
       const token = await signToken({ userId: user.id, email: user.email });
 
       const cookieOpts = getSessionCookieOptions(ctx.req.headers);
-      setCookie(
-        ctx as unknown as import("hono").Context,
-        Session.cookieName,
-        token,
-        {
-          ...cookieOpts,
+      ctx.resHeaders.append(
+        "Set-Cookie",
+        cookie.serialize(Session.cookieName, token, {
+          httpOnly: cookieOpts.httpOnly,
+          path: cookieOpts.path,
+          sameSite: cookieOpts.sameSite?.toLowerCase() as "lax" | "none",
+          secure: cookieOpts.secure,
           maxAge: 7 * 24 * 60 * 60, // 7 dias
-        }
+        })
       );
 
       return {
@@ -193,14 +194,15 @@ export const localAuthRouter = createRouter({
 
   logout: publicQuery.mutation(async ({ ctx }) => {
     const cookieOpts = getSessionCookieOptions(ctx.req.headers);
-    setCookie(
-      ctx as unknown as import("hono").Context,
-      Session.cookieName,
-      "",
-      {
-        ...cookieOpts,
+    ctx.resHeaders.append(
+      "Set-Cookie",
+      cookie.serialize(Session.cookieName, "", {
+        httpOnly: cookieOpts.httpOnly,
+        path: cookieOpts.path,
+        sameSite: cookieOpts.sameSite?.toLowerCase() as "lax" | "none",
+        secure: cookieOpts.secure,
         maxAge: 0,
-      }
+      })
     );
     return { success: true };
   }),

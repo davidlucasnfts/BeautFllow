@@ -21,6 +21,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 ### Deploy
 - **Deploy padrão: Vercel** — todos os projetos devem ser adaptados para Vercel (serverless)
 - Criar `api/index.ts` como entrypoint, `vercel.json` com rewrites SPA
+- **Sempre testar local antes de produção** — toda mudança validada com `npm run dev` antes de subir. Regra global: `MestreProjects.md` seção 9 (Fluxo Local antes de Produção)
 
 ### Independência de IA
 - **Nunca deixar dependência** de plataforma/oauth do gerador de código (Kimi OAuth, etc.)
@@ -235,14 +236,17 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 
 ```
 app/
-├── api/                    # Backend tRPC + Hono
+├── api/                    # Entrypoint serverless Vercel (só index.js — bundle gerado, NÃO editar)
+├── server/                 # Backend tRPC + Hono
 │   ├── router.ts           # Registro de routers
 │   ├── middleware.ts       # publicQuery, authedQuery, adminQuery
 │   ├── context.ts          # Contexto com user autenticado
 │   ├── boot.ts             # Entrypoint Hono (CORS, headers, /health)
+│   ├── vercel.ts           # Handler serverless para Vercel
 │   ├── lib/audit.ts        # Helper de audit log
 │   ├── lib/env.ts          # Variáveis de ambiente
-│   ├── auth-router.ts      # Auth (me, logout)
+│   ├── auth-router.ts      # Auth OAuth (me, logout)
+│   ├── local-auth-router.ts # Auth local (register, login, logout)
 │   ├── salon-router.ts     # CRUD salões
 │   ├── client-router.ts    # CRUD clientes
 │   ├── service-router.ts   # CRUD serviços
@@ -326,14 +330,15 @@ npm run db:migrate # Aplicar migrations (prod)
 **Backend:**
 1. Sempre usar `authedQuery` para endpoints com login
 2. Sempre filtrar por `salonId` — nunca retornar dados de múltiplos tenants
-3. Nunca modificar `api/lib/` ou `api/kimi/`
+3. Nunca modificar `server/lib/` (framework internals) ou `server/kimi/` (OAuth SDK)
 4. Novas tabelas em `db/schema.ts`, gerar migration em `supabase/migrations/`
-5. Novos routers em `api/*-router.ts`, registrar em `api/router.ts`
-6. Usar `api/queries/salon.ts` para queries reutilizáveis
-7. Operações críticas (create/update/delete) devem gerar audit log via `api/lib/audit.ts`
+5. Novos routers em `server/*-router.ts`, registrar em `server/router.ts`
+6. Usar `server/queries/salon.ts` para queries reutilizáveis
+7. Operações críticas (create/update/delete) devem gerar audit log via `server/lib/audit.ts`
 8. Rate limiting ativo: 100 req/min por IP, 5 req/min em auth endpoints
 9. Sempre validar inputs com Zod antes de processar
 10. Migrations manuais em `supabase/migrations/NNN-descricao.sql`. `schema_safe.sql` é gerado juntando todas
+11. Cookies de sessão são escritos em `ctx.resHeaders` (adapter fetch tRPC) — nunca chamar `setCookie` do Hono com o ctx tRPC
 
 **Frontend:**
 1. Sempre usar `useSalon()` para obter o salão ativo

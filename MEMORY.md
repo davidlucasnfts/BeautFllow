@@ -49,6 +49,9 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Ajustes de consistência pós-renomeação (package-lock, textos) | 24/08 |
 | Variáveis CSS dinâmicas por segmento na landing page | 24/08 |
 | Correção do deploy Vercel (entrypoint serverless pré-compilado) | 04/09 |
+| Migração do backend `api/` → `server/` (build Vercel, histórico Git preservado) | 04/09 |
+| Correção do login/logout local (cookie escrito em `ctx.resHeaders`) | 04/09 |
+| Favicon StudioFlow (`public/favicon.svg`) | 04/09 |
 
 ---
 
@@ -138,6 +141,28 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 - ✅ `npm run quality` passando
 - ✅ `npm run build` passando
 - ✅ 24 testes passando
+
+---
+
+## 📝 Resumo da Sessão 04/09 — Hardening do Deploy e Correção do Auth Local
+
+### Deploy Vercel (produção viva)
+- Backend migrado de `api/` para `server/` — a Vercel compilava todo `.ts` de `api/` com tsc node16 e quebrava o build
+- `api/index.js` agora é bundle esbuild de `server/vercel.ts` e **versionado no Git** (a Vercel escaneia `api/` no clone; sem o arquivo, o rewrite caía no SPA e o cadastro dava "Unexpected end of JSON input")
+- Pre-commit hook roda `npm run build:api` + `npm test`; `.gitattributes` marca `app/api/index.js` como binário
+- Produção: `https://studioflow-navy.vercel.app` (sufixo `-navy` porque `studioflow.vercel.app` pertence a outra conta)
+- Env vars configuradas no novo projeto Vercel `studioflow` (Root Directory = `app`), incl. `CORS_ORIGIN` ajustado por David
+
+### Correção do fluxo de auth local
+- **Bug:** login/logout local retornavam 500 `c.header is not a function` — o código passava o ctx tRPC para o `setCookie` do Hono, que exige um Hono Context
+- **Correção:** cookie serializado com `cookie.serialize` e escrito em `ctx.resHeaders` (mesmo padrão do `auth-router.ts` OAuth)
+- Validado de ponta a ponta via API: register → login → me → logout → me (null)
+- Regra nova no AGENTS.md (Backend #11) para não repetir
+
+### Outros
+- Favicon criado (`app/public/favicon.svg` + link no `index.html`)
+- Regra global nova no MestreProjects.md (seção 9): **sempre testar local antes de produção**
+- AGENTS.md sincronizado com a estrutura real (`server/` no lugar de `api/`)
 
 ---
 

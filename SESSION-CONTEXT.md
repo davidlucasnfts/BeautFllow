@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 24/08/2026
-> **Sessão atual:** Renomeação para StudioFlow + segmentação por tenant (salão, barbearia, estética)
+> **Atualizado em:** 04/09/2026
+> **Sessão atual:** Correção do auth local (login/logout) + favicon + regra global de teste local antes de produção
 
 ---
 
@@ -11,67 +11,38 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 ---
 
 ## Última funcionalidade trabalhada
-**Decisão de estratégia de produto: 3 segmentos + renomeação do app** — 24/08
+**Correção do fluxo de auth local + favicon + regra global de fluxo local → produção** — 04/09
 
 ### O que mudou nesta sessão:
-1. **Renomeação concluída** — `BeautyFlow` → `StudioFlow` em código, documentação e metadados
-2. **Segmentação implementada** — campo `segment` em `salons` com 3 valores: `beauty_salon`, `barbershop`, `aesthetic_clinic`
-3. **Migration 003** — `supabase/migrations/003-salon-segment.sql` + `schema_safe.sql` atualizado
-4. **Backend segmentado** — `salon-router.ts` aceita segmento no create/update
-5. **Onboarding novo** — `CreateSalonForm.tsx` com seleção de segmento e serviços sugeridos
-6. **Labels dinâmicos** — Dashboard, Clientes, Serviços e Profissionais usam termos por segmento
-7. **Landing page segmentada** — `Home.tsx` com seletor de segmento e copy adaptada
-8. **Helpers de segmento** — criados em `app/contracts/segment-*.ts`
-9. **Paleta por segmento** — landing page, CTA e onboarding usam cores do segmento
-10. **Landing page 100% segmentada** — seções "Como funciona" e "Prova social" adaptam copy por segmento
-11. **Ajustes de consistência** — `package-lock.json` renomeado, textos fixos com "salão" generalizados para "negócio"
-12. **Cores dinâmicas na landing page** — variáveis CSS `--primary`, `--secondary`, `--accent` mudam por segmento
-13. **Validação técnica** — `npm run quality` e `npm run build` passando
+1. **Bug crítico corrigido** — login/logout local davam 500 `c.header is not a function` (ctx tRPC passado para `setCookie` do Hono). Agora o cookie é serializado com `cookie.serialize` e escrito em `ctx.resHeaders` (mesmo padrão do `auth-router.ts`)
+2. **Fluxo validado de ponta a ponta** — register → login → me → logout → me (null), tudo via API no servidor local
+3. **Favicon criado** — `app/public/favicon.svg` + link no `index.html` (eliminava o 404 do console)
+4. **Regra global nova** — MestreProjects.md seção 9: sempre testar local antes de produção (referenciada no AGENTS.md)
+5. **AGENTS.md sincronizado** — estrutura de diretórios e regras técnicas agora refletem `server/` (backend migrou de `api/` nesta sessão)
+6. Deploy de produção `studioflow-navy.vercel.app` funcional (3 deploys Ready)
 
-### Arquivos criados:
-- `MestreStudioFlow.md` — renomeado a partir de `MestreBeaut.md`
-- `app/contracts/segment-labels.ts` — labels por segmento
-- `app/contracts/segment-palettes.ts` — paletas por segmento
-- `app/contracts/segment-services.ts` — templates de serviços por segmento
-- `app/contracts/segment-messages.ts` — templates de mensagens por segmento
-- `app/src/components/CreateSalonForm.tsx` — onboarding com seleção de segmento
-- `supabase/migrations/003-salon-segment.sql` — migration de segmento
-
-### Arquivos modificados:
-- Toda documentação e código — `BeautyFlow` → `StudioFlow`
-- `app/db/schema.ts` — adicionado `salonSegmentEnum` e coluna `segment` em `salons`
-- `app/api/salon-router.ts` — segmento no create/update
-- `app/src/providers/salon.tsx` — `SalonContextType` com `segment`
-- `app/src/components/AuthLayout.tsx` — onboarding quando sem salão, menu dinâmico
-- `app/src/pages/Dashboard.tsx` — labels dinâmicos
-- `app/src/pages/Services.tsx` — labels dinâmicos
-- `app/src/pages/Clients.tsx` — labels dinâmicos
-- `app/src/pages/Professionals.tsx` — labels dinâmicos
-- `app/src/pages/Home.tsx` — seletor de segmento na landing page
-- `app/src/components/landing/CTASection.tsx` — copy por segmento
-- `app/index.html` — metadados atualizados
-- `supabase/schema_safe.sql` — migration 003 incluída
-- `MEMORY.md` — histórico atualizado
-- `SESSION-CONTEXT.md` — estado atual (este arquivo)
+### Arquivos modificados nesta sessão:
+- `app/server/local-auth-router.ts` — correção do cookie (login/logout)
+- `app/public/favicon.svg` — criado
+- `app/index.html` — link do favicon
+- `AGENTS.md` — regra de fluxo local → produção + sincronização `server/`
+- `MestreProjects.md` — regra global de fluxo local → produção (fora do repo)
 
 ---
 
 ## Funcionalidade entregue nesta sessão
-**Decisão estratégica de produto + plano de renomeação/segmentação** — 24/08
+**Correção do auth local (login/logout) + favicon + regra de fluxo local → produção** — 04/09
 
 ---
 
 ## Próximo passo definido
-**Ações manuais pendentes para finalizar renomeação e segmentação:**
+**Validar com David no navegador local (cadastro → login → dashboard), depois subir para produção:**
+1. David testa o fluxo completo local (`npm run dev`): cadastro, login, logout
+2. Testar cadastro/login em produção (`https://studioflow-navy.vercel.app`) — deploy automático a cada push
+3. Cobrar redirect URL do OAuth Kimi e destino do projeto Vercel antigo
 
-1. Verificar disponibilidade do domínio `studioflow.com.br` / `studioflow.com`.
-2. Rodar migration `003-salon-segment.sql` no Supabase.
-3. Configurar `CORS_ORIGIN` na Vercel com a URL de produção real.
-4. Deploy.
-
-Após isso, próximas funcionalidades:
+Próximas funcionalidades (após validação):
 - Landing pages específicas por segmento (`/salao-de-beleza`, `/barbearia`, `/estetica`)
-- Paleta de cores aplicada por segmento no onboarding
 - Templates de comunicação usados nas mensagens automáticas
 
 ---
@@ -85,7 +56,8 @@ Nenhum.
 ```
 app/
   src/           → Frontend React (pages, components, hooks, providers)
-  api/           → Backend tRPC/Hono (routers, middleware, context, lib/audit.ts)
+  server/        → Backend tRPC/Hono (routers, middleware, context, lib/audit.ts)
+  api/           → Entrypoint serverless Vercel (só index.js, bundle gerado)
   db/            → Schema Drizzle (schema.ts, relations.ts)
 docs/            → ADRs + requirements + runbooks + DOR/DOD/LGPD
 supabase/        → schema_safe.sql + migrations/ (001-003)
@@ -103,15 +75,18 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [x] Escolher novo nome do app: **StudioFlow**
 - [x] Verificar disponibilidade de domínio `studioflow.com.br` — **disponível**
 - [x] Rodar migration 003-salon-segment.sql no Supabase
-- [x] Criar novo projeto Vercel `studioflow` com env vars (incl. CORS_ORIGIN=https://studioflow.vercel.app)
+- [x] Criar novo projeto Vercel `studioflow` com env vars (CORS_ORIGIN=https://studioflow-navy.vercel.app)
 - [x] Commit + push de todo o código local (estava só no PC desde agosto)
-- [x] Corrigir erro de build Vercel (entrypoint serverless pré-compilado: `server/vercel.ts` → `api/index.js`)
-- [ ] **Atualizar redirect URL no painel OAuth Kimi para `https://studioflow.vercel.app/login`**
-- [ ] **Testar `https://studioflow.vercel.app` após o deploy automático do push**
-- [ ] **Decidir o que fazer com o projeto Vercel antigo (beaut-flow)** — desconectar Git ou deletar após confirmar que o novo funciona
+- [x] Corrigir erro de build Vercel (backend migrado para `server/`, entrypoint `api/index.js` bundle esbuild, versionado no Git)
+- [x] Reativar projeto Supabase (estava pausado) + rodar migration 003
+- [x] Corrigir fluxo de login/logout local (cookie em `ctx.resHeaders`)
+- [ ] **Atualizar redirect URL no painel OAuth Kimi para `https://studioflow-navy.vercel.app/login`** — sem isso o login OAuth falha em produção
+- [ ] **Testar cadastro/login em `https://studioflow-navy.vercel.app`** após o push destas correções
+- [ ] **Decidir o que fazer com o projeto Vercel antigo (`beaut-flow`)** — desconectar Git ou deletar (conflita no mesmo repo, deploya a cada push)
 - [ ] Renomear repositório GitHub `BeautFllow` → `studioflow` (opcional)
 - [ ] Comprar domínio `studioflow.com.br` e configurar na Vercel (quando preparar para vender)
 - [ ] Adicionar `SENTRY_DSN` e `VITE_SENTRY_DSN` na Vercel (opcional — só se quiser usar)
+- [ ] Apagar usuário de teste `teste.kimi.2026@gmail.com` na tabela `local_users` do Supabase (opcional)
 
 ---
 
