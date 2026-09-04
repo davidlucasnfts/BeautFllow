@@ -9,7 +9,10 @@ import DayView from "@/components/calendar/DayView";
 import AppointmentFilters from "@/components/appointments/AppointmentFilters";
 import AppointmentDialog from "@/components/appointments/AppointmentDialog";
 import { useAppointmentForm } from "@/components/appointments/useAppointmentForm";
-import type { ViewMode, CalendarAppointment } from "@/components/calendar/types";
+import type {
+  ViewMode,
+  CalendarAppointment,
+} from "@/components/calendar/types";
 
 export default function Appointments() {
   const { salon } = useSalon();
@@ -68,7 +71,7 @@ export default function Appointments() {
       resetForm();
       toast.success("Agendamento criado");
     },
-    onError: (e) => toast.error(e.message),
+    onError: e => toast.error(e.message),
   });
 
   const updateMutation = trpc.appointment.update.useMutation({
@@ -76,7 +79,7 @@ export default function Appointments() {
       utils.appointment.list.invalidate();
       toast.success("Status atualizado");
     },
-    onError: (e) => toast.error(e.message),
+    onError: e => toast.error(e.message),
   });
 
   function calculateEndTime(start: string, durationMinutes: number): string {
@@ -89,9 +92,9 @@ export default function Appointments() {
 
   function handleReschedule(appointmentId: number, newStartTime: string) {
     if (!salon) return;
-    const appt = appointments?.find((a) => a.id === appointmentId);
+    const appt = appointments?.find(a => a.id === appointmentId);
     if (!appt) return;
-    const service = services?.find((s) => s.id === appt.serviceId);
+    const service = services?.find(s => s.id === appt.serviceId);
     const endTime = service
       ? calculateEndTime(newStartTime, service.durationMinutes)
       : newStartTime;
@@ -106,7 +109,7 @@ export default function Appointments() {
 
   function handleCreate() {
     if (!salon) return;
-    const service = services?.find((s) => s.id === Number(form.serviceId));
+    const service = services?.find(s => s.id === Number(form.serviceId));
     const endTime = service
       ? calculateEndTime(form.startTime, service.durationMinutes)
       : form.startTime;
@@ -124,25 +127,32 @@ export default function Appointments() {
   }
 
   const filteredAppointments = useMemo(() => {
-    return appointments?.filter((a) => {
-      if (filterProfessional !== "all" && a.professionalId !== Number(filterProfessional)) return false;
-      if (filterService !== "all" && a.serviceId !== Number(filterService)) return false;
-      return true;
-    }) ?? [];
+    return (
+      appointments?.filter(a => {
+        if (
+          filterProfessional !== "all" &&
+          a.professionalId !== Number(filterProfessional)
+        )
+          return false;
+        if (filterService !== "all" && a.serviceId !== Number(filterService))
+          return false;
+        return true;
+      }) ?? []
+    );
   }, [appointments, filterProfessional, filterService]);
 
   const appointmentsByDay = useMemo(() => {
     const map: Record<string, typeof appointments> = {};
-    weekDays.forEach((d) => {
+    weekDays.forEach(d => {
       const key = format(d, "yyyy-MM-dd");
-      map[key] = filteredAppointments.filter((a) => a.appointmentDate === key);
+      map[key] = filteredAppointments.filter(a => a.appointmentDate === key);
     });
     return map;
   }, [filteredAppointments, weekDays]);
 
   const dayAppointments = useMemo(() => {
     const key = format(selectedDate, "yyyy-MM-dd");
-    return filteredAppointments.filter((a) => a.appointmentDate === key);
+    return filteredAppointments.filter(a => a.appointmentDate === key);
   }, [filteredAppointments, selectedDate]);
 
   return (
@@ -189,10 +199,12 @@ export default function Appointments() {
         <WeekView
           weekDays={weekDays}
           today={today}
-          appointmentsByDay={appointmentsByDay as Record<string, CalendarAppointment[]>}
+          appointmentsByDay={
+            appointmentsByDay as Record<string, CalendarAppointment[]>
+          }
           clients={clients ?? []}
           services={services ?? []}
-          onCheckIn={(id) => {
+          onCheckIn={id => {
             if (!salon) return;
             updateMutation.mutate({
               id,
@@ -200,7 +212,7 @@ export default function Appointments() {
               status: "checked_in",
             });
           }}
-          onCancel={(id) => {
+          onCancel={id => {
             if (!salon) return;
             updateMutation.mutate({
               id,
@@ -216,7 +228,7 @@ export default function Appointments() {
           clients={clients ?? []}
           services={services ?? []}
           professionals={professionals ?? []}
-          onCheckIn={(id) => {
+          onCheckIn={id => {
             if (!salon) return;
             updateMutation.mutate({
               id,
@@ -224,7 +236,7 @@ export default function Appointments() {
               status: "checked_in",
             });
           }}
-          onCancel={(id) => {
+          onCancel={id => {
             if (!salon) return;
             updateMutation.mutate({
               id,

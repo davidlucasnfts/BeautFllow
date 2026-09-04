@@ -2,7 +2,7 @@
 
 ## Visao Geral
 
-Deploy do BeautyFlow na Vercel (serverless).
+Deploy do StudioFlow na Vercel (serverless).
 
 ## Pre-requisitos
 
@@ -19,7 +19,7 @@ git push origin feature/xxx
 ```
 
 - Vercel gera preview deployment automaticamente
-- URL: `https://beautyflow-xxx.vercel.app`
+- URL: `https://studioflow-xxx.vercel.app`
 
 ### 2. Deploy em Producao
 
@@ -31,7 +31,7 @@ git push origin main
 ```
 
 - Vercel faz deploy automatico da branch `main`
-- URL: `https://beautyflow.vercel.app`
+- URL: `https://studioflow.vercel.app`
 
 ## Variaveis de Ambiente (Vercel Dashboard)
 

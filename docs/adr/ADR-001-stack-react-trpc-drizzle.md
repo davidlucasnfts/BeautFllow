@@ -6,7 +6,7 @@
 
 ## Contexto
 
-BeautyFlow e um SaaS multi-tenant para saloes de beleza. Precisavamos de uma stack moderna, type-safe, rapida de desenvolver e com baixo custo operacional para o MVP.
+StudioFlow e um SaaS multi-tenant para saloes de beleza. Precisavamos de uma stack moderna, type-safe, rapida de desenvolver e com baixo custo operacional para o MVP.
 
 ## Decisao
 

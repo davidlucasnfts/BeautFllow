@@ -1,27 +1,50 @@
 import { ShieldCheck, Lock, Server, Award } from "lucide-react";
+import { getSegmentLabel, type SalonSegment } from "@contracts/segment-labels";
 
 const badges = [
-  { icon: ShieldCheck, label: "LGPD Compliant", desc: "Consentimento digital nativo" },
+  {
+    icon: ShieldCheck,
+    label: "LGPD Compliant",
+    desc: "Consentimento digital nativo",
+  },
   { icon: Lock, label: "SSL 256-bit", desc: "Criptografia de ponta a ponta" },
-  { icon: Server, label: "Hospedado no Brasil", desc: "Servidores com baixa latência" },
-  { icon: Award, label: "ISO 27001", desc: "Gestão de segurança da informação" },
+  {
+    icon: Server,
+    label: "Hospedado no Brasil",
+    desc: "Servidores com baixa latência",
+  },
+  {
+    icon: Award,
+    label: "ISO 27001",
+    desc: "Gestão de segurança da informação",
+  },
 ];
 
 const logos = [
-  "Studio Mariana", "Barbearia JP", "Spa Luiza", "Espaço Bella",
-  "Salão Glamour", "Clínica Estética Rio", "Cabelos & Cia", "Beleza Pura",
+  "Studio Mariana",
+  "Barbearia JP",
+  "Spa Luiza",
+  "Espaço Bella",
+  "Salão Glamour",
+  "Clínica Estética Rio",
+  "Cabelos & Cia",
+  "Beleza Pura",
 ];
 
-export function SocialProofSection() {
+export function SocialProofSection({ segment }: { segment: SalonSegment }) {
+  const segmentNamePlural =
+    segment === "barbershop"
+      ? "barbearias"
+      : `${getSegmentLabel(segment, "segmentName").toLowerCase()}s`;
   return (
     <section className="px-6 py-16 border-y border-border/40 bg-background">
       <div className="max-w-7xl mx-auto">
         {/* Trusted by */}
         <p className="text-center text-xs font-medium text-muted-foreground uppercase tracking-wider mb-8">
-          Confiado por salões em todo o Brasil
+          Confiado por {segmentNamePlural} em todo o Brasil
         </p>
         <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 mb-16 opacity-60">
-          {logos.map((logo) => (
+          {logos.map(logo => (
             <span
               key={logo}
               className="text-sm font-semibold text-muted-foreground whitespace-nowrap"
@@ -33,7 +56,7 @@ export function SocialProofSection() {
 
         {/* Security badges */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {badges.map((b) => (
+          {badges.map(b => (
             <div
               key={b.label}
               className="flex items-center gap-3 rounded-lg border border-border/40 bg-muted/30 px-4 py-3"

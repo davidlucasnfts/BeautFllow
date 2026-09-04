@@ -1,4 +1,4 @@
-# BeautyFlow — Definition of Done (DoD)
+# StudioFlow — Definition of Done (DoD)
 
 > Checklist: uma tarefa so e considerada concluida quando todos os itens abaixo estao marcados.
 

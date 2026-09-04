@@ -47,7 +47,8 @@ export default function DayView({
           {format(day, "EEEE, dd 'de' MMMM", { locale: ptBR })}
         </h2>
         <p className="text-sm text-muted-foreground">
-          {appointments.length} agendamento{appointments.length !== 1 ? "s" : ""}
+          {appointments.length} agendamento
+          {appointments.length !== 1 ? "s" : ""}
         </p>
       </div>
 
@@ -59,16 +60,18 @@ export default function DayView({
             key={hour}
             className="absolute w-full border-b border-dashed border-border/50 flex group"
             style={{ top: index * HOUR_HEIGHT, height: HOUR_HEIGHT }}
-            onDragOver={(e) => {
+            onDragOver={e => {
               if (onReschedule) {
                 e.preventDefault();
                 e.dataTransfer.dropEffect = "move";
               }
             }}
-            onDrop={(e) => {
+            onDrop={e => {
               if (!onReschedule) return;
               e.preventDefault();
-              const appointmentId = Number(e.dataTransfer.getData("appointmentId"));
+              const appointmentId = Number(
+                e.dataTransfer.getData("appointmentId")
+              );
               const newStartTime = `${String(hour).padStart(2, "0")}:00`;
               onReschedule(appointmentId, newStartTime);
             }}
@@ -86,12 +89,12 @@ export default function DayView({
         ))}
 
         {/* Eventos */}
-        {sortedAppointments.map((appt) => {
+        {sortedAppointments.map(appt => {
           const top = getTimePosition(appt.startTime);
           const height = getDurationHeight(
             appt.startTime,
             appt.endTime,
-            services.find((s) => s.id === appt.serviceId)?.durationMinutes
+            services.find(s => s.id === appt.serviceId)?.durationMinutes
           );
 
           return (
@@ -105,9 +108,11 @@ export default function DayView({
             >
               <EventCard
                 appt={appt}
-                client={clients.find((c) => c.id === appt.clientId)}
-                service={services.find((s) => s.id === appt.serviceId)}
-                professional={professionals.find((p) => p.id === appt.professionalId)}
+                client={clients.find(c => c.id === appt.clientId)}
+                service={services.find(s => s.id === appt.serviceId)}
+                professional={professionals.find(
+                  p => p.id === appt.professionalId
+                )}
                 onCheckIn={onCheckIn}
                 onCancel={onCancel}
                 onReschedule={onReschedule}
@@ -136,7 +141,7 @@ function getDurationHeight(
   if (endTime && startTime) {
     const [sh, sm] = startTime.split(":").map(Number);
     const [eh, em] = endTime.split(":").map(Number);
-    const diffMinutes = (eh * 60 + em) - (sh * 60 + sm);
+    const diffMinutes = eh * 60 + em - (sh * 60 + sm);
     return (diffMinutes / 60) * HOUR_HEIGHT;
   }
   if (durationMinutes) {

@@ -6,7 +6,7 @@
 
 ## Contexto
 
-BeautyFlow precisa de deploy rapido, confiavel e com custo zero para o MVP. O frontend e SPA e o backend roda como serverless functions.
+StudioFlow precisa de deploy rapido, confiavel e com custo zero para o MVP. O frontend e SPA e o backend roda como serverless functions.
 
 ## Decisao
 

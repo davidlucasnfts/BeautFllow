@@ -55,7 +55,9 @@ export const appointmentRouter = createRouter({
         startTime: z.string(),
         endTime: z.string(),
         notes: z.string().optional(),
-        source: z.enum(["online", "whatsapp", "phone", "walk_in", "staff"]).default("staff"),
+        source: z
+          .enum(["online", "whatsapp", "phone", "walk_in", "staff"])
+          .default("staff"),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -66,7 +68,15 @@ export const appointmentRouter = createRouter({
         appointmentDate: data.appointmentDate,
         status: "scheduled",
       });
-      await auditAction("create", "appointment", salonId, ctx.user?.id, result?.id ?? undefined, undefined, { clientId: data.clientId, date: data.appointmentDate });
+      await auditAction(
+        "create",
+        "appointment",
+        salonId,
+        ctx.user?.id,
+        result?.id ?? undefined,
+        undefined,
+        { clientId: data.clientId, date: data.appointmentDate }
+      );
       return result;
     }),
 
@@ -100,12 +110,21 @@ export const appointmentRouter = createRouter({
       const { id, salonId, price, appointmentDate, ...data } = input;
       const updateData: Record<string, unknown> = { ...data };
       if (price !== undefined) updateData.price = String(price);
-      if (appointmentDate !== undefined) updateData.appointmentDate = new Date(appointmentDate);
+      if (appointmentDate !== undefined)
+        updateData.appointmentDate = new Date(appointmentDate);
       if (data.status === "checked_in") updateData.checkedInAt = new Date();
       if (data.status === "completed") updateData.completedAt = new Date();
       if (data.status === "cancelled") updateData.cancelledAt = new Date();
       const result = await updateAppointment(id, salonId, updateData);
-      await auditAction("update", "appointment", salonId, ctx.user?.id, id, undefined, data);
+      await auditAction(
+        "update",
+        "appointment",
+        salonId,
+        ctx.user?.id,
+        id,
+        undefined,
+        data
+      );
       return result;
     }),
 });

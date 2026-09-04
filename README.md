@@ -1,4 +1,4 @@
-# BeautyFlow
+# StudioFlow
 
 SaaS multi-tenant para gestão de salões de beleza e centros estéticos.
 
@@ -70,4 +70,4 @@ app/
 
 ## Licença
 
-Proprietário — BeautyFlow
+Proprietário — StudioFlow

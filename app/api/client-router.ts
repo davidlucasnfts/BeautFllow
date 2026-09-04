@@ -44,7 +44,15 @@ export const customerRouter = createRouter({
         birthDate: data.birthDate || null,
         segment: "new",
       });
-      await auditAction("create", "client", salonId, ctx.user?.id, result?.id ?? undefined, undefined, { name: data.name });
+      await auditAction(
+        "create",
+        "client",
+        salonId,
+        ctx.user?.id,
+        result?.id ?? undefined,
+        undefined,
+        { name: data.name }
+      );
       return result;
     }),
 
@@ -60,7 +68,9 @@ export const customerRouter = createRouter({
         cpf: z.string().optional(),
         notes: z.string().optional(),
         tags: z.string().optional(),
-        segment: z.enum(["new", "active", "vip", "at_risk", "inactive"]).optional(),
+        segment: z
+          .enum(["new", "active", "vip", "at_risk", "inactive"])
+          .optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -69,7 +79,15 @@ export const customerRouter = createRouter({
         ...data,
         birthDate: birthDate || undefined,
       });
-      await auditAction("update", "client", salonId, ctx.user?.id, id, undefined, data);
+      await auditAction(
+        "update",
+        "client",
+        salonId,
+        ctx.user?.id,
+        id,
+        undefined,
+        data
+      );
       return result;
     }),
 
@@ -77,7 +95,13 @@ export const customerRouter = createRouter({
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
       await deleteClient(input.id, input.salonId);
-      await auditAction("delete", "client", input.salonId, ctx.user?.id, input.id);
+      await auditAction(
+        "delete",
+        "client",
+        input.salonId,
+        ctx.user?.id,
+        input.id
+      );
       return { success: true };
     }),
 });

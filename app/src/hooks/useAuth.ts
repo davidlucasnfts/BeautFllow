@@ -16,23 +16,21 @@ export function useAuth(options?: UseAuthOptions) {
   const utils = trpc.useUtils();
 
   // Tenta auth local primeiro
-  const {
-    data: localUser,
-    isLoading: localLoading,
-  } = trpc.localAuth.me.useQuery(undefined, {
-    staleTime: 1000 * 60 * 5,
-    retry: false,
-  });
+  const { data: localUser, isLoading: localLoading } =
+    trpc.localAuth.me.useQuery(undefined, {
+      staleTime: 1000 * 60 * 5,
+      retry: false,
+    });
 
   // Fallback para OAuth (legacy)
-  const {
-    data: oauthUser,
-    isLoading: oauthLoading,
-  } = trpc.auth.me.useQuery(undefined, {
-    staleTime: 1000 * 60 * 5,
-    retry: false,
-    enabled: !localUser && !localLoading,
-  });
+  const { data: oauthUser, isLoading: oauthLoading } = trpc.auth.me.useQuery(
+    undefined,
+    {
+      staleTime: 1000 * 60 * 5,
+      retry: false,
+      enabled: !localUser && !localLoading,
+    }
+  );
 
   const user = localUser ?? oauthUser ?? null;
   const isLoading = localLoading || oauthLoading;
@@ -79,6 +77,13 @@ export function useAuth(options?: UseAuthOptions) {
         utils.auth.me.invalidate();
       },
     }),
-    [user, isLoading, logoutLocal.isPending, logoutOAuth.isPending, logout, utils],
+    [
+      user,
+      isLoading,
+      logoutLocal.isPending,
+      logoutOAuth.isPending,
+      logout,
+      utils,
+    ]
   );
 }

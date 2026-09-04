@@ -24,7 +24,7 @@ export function useAppointmentForm() {
     field: K,
     value: AppointmentFormData[K]
   ) {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm(prev => ({ ...prev, [field]: value }));
   }
 
   function resetForm() {

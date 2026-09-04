@@ -1,4 +1,4 @@
-# BeautyFlow — Compliance LGPD
+# StudioFlow — Compliance LGPD
 
 > Documento de conformidade com a Lei Geral de Protecao de Dados (Lei 13.709/2018).
 
@@ -36,7 +36,7 @@ O titular dos dados pode solicitar:
 Titular solicita via e-mail ou formulario no app
     |
     v
-Salao recebe notificacao no BeautyFlow
+Salao recebe notificacao no StudioFlow
     |
     v
 Salao valida identidade do titular
@@ -71,10 +71,10 @@ Resposta ao titular em ate 15 dias uteis
 
 ## 7. Responsavel (DPO)
 
-> **Nota:** Em fase de MVP, o DPO e o proprietario do salao (usuario admin). Futuramente, designar DPO formal para BeautyFlow como controlador.
+> **Nota:** Em fase de MVP, o DPO e o proprietario do salao (usuario admin). Futuramente, designar DPO formal para StudioFlow como controlador.
 
 ## 8. Termos de Uso e Politica de Privacidade
 
-- Modulo `Consent` no BeautyFlow gerencia termos e assinaturas
+- Modulo `Consent` no StudioFlow gerencia termos e assinaturas
 - Novos termos exigem nova assinatura dos titulares
 - Historico de versoes preservado

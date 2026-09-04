@@ -4,15 +4,41 @@ import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, DollarSign, TrendingUp, TrendingDown, Wallet } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Plus,
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format } from "date-fns";
-
 
 export default function Financial() {
   const { salon } = useSalon();
@@ -58,7 +84,7 @@ export default function Financial() {
       setOpen(false);
       toast.success("Lançamento criado");
     },
-    onError: (e) => toast.error(e.message),
+    onError: e => toast.error(e.message),
   });
 
   function handleSubmit() {
@@ -66,7 +92,9 @@ export default function Financial() {
     createMutation.mutate({
       salonId: salon.id,
       clientId: Number(form.clientId),
-      professionalId: form.professionalId ? Number(form.professionalId) : undefined,
+      professionalId: form.professionalId
+        ? Number(form.professionalId)
+        : undefined,
       type: form.type,
       description: form.description,
       amount: form.amount,
@@ -82,13 +110,22 @@ export default function Financial() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Financeiro</h1>
-          <p className="text-muted-foreground">Faturamento, comissões e lançamentos</p>
+          <p className="text-muted-foreground">
+            Faturamento, comissões e lançamentos
+          </p>
         </div>
         <div className="flex items-center gap-2">
-          <Input type="month" value={month} onChange={(e) => setMonth(e.target.value)} className="w-40" />
+          <Input
+            type="month"
+            value={month}
+            onChange={e => setMonth(e.target.value)}
+            className="w-40"
+          />
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button><Plus className="mr-2 h-4 w-4" /> Lançamento</Button>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" /> Lançamento
+              </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
@@ -97,16 +134,34 @@ export default function Financial() {
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label>Cliente</Label>
-                  <Select value={form.clientId} onValueChange={(v) => setForm({ ...form, clientId: v })}>
-                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                    <SelectContent>{clients?.map((c) => <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>)}</SelectContent>
+                  <Select
+                    value={form.clientId}
+                    onValueChange={v => setForm({ ...form, clientId: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clients?.map(c => (
+                        <SelectItem key={c.id} value={String(c.id)}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label>Tipo</Label>
-                    <Select value={form.type} onValueChange={(v: typeof form.type) => setForm({ ...form, type: v })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    <Select
+                      value={form.type}
+                      onValueChange={(v: typeof form.type) =>
+                        setForm({ ...form, type: v })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="service">Serviço</SelectItem>
                         <SelectItem value="product">Produto</SelectItem>
@@ -118,39 +173,84 @@ export default function Financial() {
                   </div>
                   <div className="grid gap-2">
                     <Label>Data</Label>
-                    <Input type="date" value={form.recordDate} onChange={(e) => setForm({ ...form, recordDate: e.target.value })} />
+                    <Input
+                      type="date"
+                      value={form.recordDate}
+                      onChange={e =>
+                        setForm({ ...form, recordDate: e.target.value })
+                      }
+                    />
                   </div>
                 </div>
                 <div className="grid gap-2">
                   <Label>Descrição</Label>
-                  <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                  <Input
+                    value={form.description}
+                    onChange={e =>
+                      setForm({ ...form, description: e.target.value })
+                    }
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label>Valor (R$)</Label>
-                    <Input value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
+                    <Input
+                      value={form.amount}
+                      onChange={e =>
+                        setForm({ ...form, amount: e.target.value })
+                      }
+                    />
                   </div>
                   <div className="grid gap-2">
                     <Label>Comissão (R$)</Label>
-                    <Input value={form.commissionAmount} onChange={(e) => setForm({ ...form, commissionAmount: e.target.value })} />
+                    <Input
+                      value={form.commissionAmount}
+                      onChange={e =>
+                        setForm({ ...form, commissionAmount: e.target.value })
+                      }
+                    />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label>Profissional</Label>
-                    <Select value={form.professionalId} onValueChange={(v) => setForm({ ...form, professionalId: v })}>
-                      <SelectTrigger><SelectValue placeholder="Opcional" /></SelectTrigger>
-                      <SelectContent>{professionals?.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}</SelectContent>
+                    <Select
+                      value={form.professionalId}
+                      onValueChange={v =>
+                        setForm({ ...form, professionalId: v })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Opcional" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {professionals?.map(p => (
+                          <SelectItem key={p.id} value={String(p.id)}>
+                            {p.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                   </div>
                   <div className="grid gap-2">
                     <Label>Pagamento</Label>
-                    <Select value={form.paymentMethod} onValueChange={(v: typeof form.paymentMethod) => setForm({ ...form, paymentMethod: v })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    <Select
+                      value={form.paymentMethod}
+                      onValueChange={(v: typeof form.paymentMethod) =>
+                        setForm({ ...form, paymentMethod: v })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="pix">Pix</SelectItem>
-                        <SelectItem value="credit_card">Cartão Crédito</SelectItem>
-                        <SelectItem value="debit_card">Cartão Débito</SelectItem>
+                        <SelectItem value="credit_card">
+                          Cartão Crédito
+                        </SelectItem>
+                        <SelectItem value="debit_card">
+                          Cartão Débito
+                        </SelectItem>
                         <SelectItem value="cash">Dinheiro</SelectItem>
                       </SelectContent>
                     </Select>
@@ -158,8 +258,15 @@ export default function Financial() {
                 </div>
               </div>
               <DialogFooter>
-                <DialogClose asChild><Button variant="outline">Cancelar</Button></DialogClose>
-                <Button onClick={handleSubmit} disabled={createMutation.isPending}>Salvar</Button>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancelar</Button>
+                </DialogClose>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={createMutation.isPending}
+                >
+                  Salvar
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -169,13 +276,19 @@ export default function Financial() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Receita Líquida</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Receita Líquida
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
             {summary ? (
-              <div className="text-2xl font-bold">R$ {Number(summary.totalRevenue).toFixed(2)}</div>
-            ) : <Skeleton className="h-8 w-24" />}
+              <div className="text-2xl font-bold">
+                R$ {Number(summary.totalRevenue).toFixed(2)}
+              </div>
+            ) : (
+              <Skeleton className="h-8 w-24" />
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -185,19 +298,29 @@ export default function Financial() {
           </CardHeader>
           <CardContent>
             {summary ? (
-              <div className="text-2xl font-bold">R$ {Number(summary.totalRefunds).toFixed(2)}</div>
-            ) : <Skeleton className="h-8 w-24" />}
+              <div className="text-2xl font-bold">
+                R$ {Number(summary.totalRefunds).toFixed(2)}
+              </div>
+            ) : (
+              <Skeleton className="h-8 w-24" />
+            )}
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Comissões</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Comissões
+            </CardTitle>
             <Wallet className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
             {summary ? (
-              <div className="text-2xl font-bold">R$ {Number(summary.totalCommission).toFixed(2)}</div>
-            ) : <Skeleton className="h-8 w-24" />}
+              <div className="text-2xl font-bold">
+                R$ {Number(summary.totalCommission).toFixed(2)}
+              </div>
+            ) : (
+              <Skeleton className="h-8 w-24" />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -221,14 +344,27 @@ export default function Financial() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {records.map((r) => (
+                {records.map(r => (
                   <TableRow key={r.id}>
-                    <TableCell>{r.recordDate ? format(new Date(r.recordDate), "dd/MM/yyyy") : "-"}</TableCell>
-                    <TableCell className="font-medium">{r.description}</TableCell>
-                    <TableCell>{clients?.find((c) => c.id === r.clientId)?.name ?? "-"}</TableCell>
-                    <TableCell className="capitalize">{r.paymentMethod.replace("_", " ")}</TableCell>
-                    <TableCell className={`text-right font-medium ${r.type === "refund" ? "text-rose-500" : "text-emerald-600"}`}>
-                      {r.type === "refund" ? "-" : ""}R$ {Number(r.amount).toFixed(2)}
+                    <TableCell>
+                      {r.recordDate
+                        ? format(new Date(r.recordDate), "dd/MM/yyyy")
+                        : "-"}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {r.description}
+                    </TableCell>
+                    <TableCell>
+                      {clients?.find(c => c.id === r.clientId)?.name ?? "-"}
+                    </TableCell>
+                    <TableCell className="capitalize">
+                      {r.paymentMethod.replace("_", " ")}
+                    </TableCell>
+                    <TableCell
+                      className={`text-right font-medium ${r.type === "refund" ? "text-rose-500" : "text-emerald-600"}`}
+                    >
+                      {r.type === "refund" ? "-" : ""}R${" "}
+                      {Number(r.amount).toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))}

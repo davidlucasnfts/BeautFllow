@@ -1,4 +1,4 @@
-# BeautyFlow — Estrutura de Documentação
+# StudioFlow — Estrutura de Documentação
 
 > **Data:** 12/05/2026
 > **Regra:** Antes de criar/modificar qualquer arquivo de documentação, consultar este arquivo.

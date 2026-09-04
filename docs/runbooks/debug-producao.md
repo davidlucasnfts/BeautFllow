@@ -16,14 +16,14 @@ Supabase Dashboard > Database > Logs
 
 ```bash
 # Verificar se API responde
-curl https://beautyflow.vercel.app/api/trpc/ping
+curl https://studioflow.vercel.app/api/trpc/ping
 
 # Verificar headers de seguranca
-curl -I https://beautyflow.vercel.app
+curl -I https://studioflow.vercel.app
 
 # Testar endpoint especifico
 curl -H "Authorization: Bearer [token]" \
-  https://beautyflow.vercel.app/api/trpc/dashboard.getMetrics
+  https://studioflow.vercel.app/api/trpc/dashboard.getMetrics
 ```
 
 ## Problemas Comuns

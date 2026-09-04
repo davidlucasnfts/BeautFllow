@@ -55,7 +55,7 @@ export default function AppointmentFilters({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Todos profissionais</SelectItem>
-          {professionals?.map((p) => (
+          {professionals?.map(p => (
             <SelectItem key={p.id} value={String(p.id)}>
               <div className="flex items-center gap-2">
                 <span
@@ -75,7 +75,7 @@ export default function AppointmentFilters({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Todos serviços</SelectItem>
-          {services?.map((s) => (
+          {services?.map(s => (
             <SelectItem key={s.id} value={String(s.id)}>
               <div className="flex items-center gap-2">
                 <span
@@ -115,7 +115,7 @@ export default function AppointmentFilters({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setWeekOffset((o) => o - 1)}
+            onClick={() => setWeekOffset(o => o - 1)}
           >
             Anterior
           </Button>
@@ -125,7 +125,7 @@ export default function AppointmentFilters({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setWeekOffset((o) => o + 1)}
+            onClick={() => setWeekOffset(o => o + 1)}
           >
             Próxima
           </Button>
@@ -135,20 +135,20 @@ export default function AppointmentFilters({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setSelectedDate((d) => addDays(d, -1))}
+            onClick={() => setSelectedDate(d => addDays(d, -1))}
           >
             Anterior
           </Button>
           <Input
             type="date"
             value={format(selectedDate, "yyyy-MM-dd")}
-            onChange={(e) => setSelectedDate(() => new Date(e.target.value))}
+            onChange={e => setSelectedDate(() => new Date(e.target.value))}
             className="w-40 h-8 text-sm"
           />
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setSelectedDate((d) => addDays(d, 1))}
+            onClick={() => setSelectedDate(d => addDays(d, 1))}
           >
             Próxima
           </Button>

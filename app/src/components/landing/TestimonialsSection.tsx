@@ -50,12 +50,13 @@ export function TestimonialsSection() {
           Salões que já transformaram sua gestão
         </h2>
         <p className="text-muted-foreground max-w-xl mx-auto">
-          Mais de 200 salões no Brasil usam o BeautyFlow para crescer com organização.
+          Mais de 200 salões no Brasil usam o StudioFlow para crescer com
+          organização.
         </p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {testimonials.map((t) => (
+        {testimonials.map(t => (
           <div
             key={t.name}
             className="relative rounded-xl border border-border/50 bg-card p-6 shadow-sm hover:shadow-md transition-shadow"
@@ -65,7 +66,10 @@ export function TestimonialsSection() {
             {/* Stars */}
             <div className="flex gap-0.5 mb-4">
               {Array.from({ length: t.rating }).map((_, i) => (
-                <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                <Star
+                  key={i}
+                  className="h-4 w-4 fill-amber-400 text-amber-400"
+                />
               ))}
             </div>
 

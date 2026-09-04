@@ -52,7 +52,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | Regra de codificação nova | `AGENTS.md` | Arquivo qualquer |
 | Decisão arquitetural | `docs/adr/ADR-NNN-nome.md` | `AGENTS.md` sozinho |
 | Padrão para todos os projetos | `MestreProjects.md` | Dentro de projeto |
-| Mudança em segurança | `AGENTS.md` + `MestreBeaut.md` | Arquivo isolado |
+| Mudança em segurança | `AGENTS.md` + `docs/adr/ADR-005-seguranca-padrao.md` | Arquivo isolado |
 | Estrutura de documentação | `docs/documentacao-estrutura.md` | Outro lugar |
 | Guia completo do projeto | `MestreBeaut.md` | Outro lugar |
 
@@ -365,7 +365,7 @@ npm run db:migrate # Aplicar migrations (prod)
 
 ## ⚠️ Exceções ao Documento Mestre
 
-| Regra do Mestre | Decisão no BeautyFlow | Justificativa |
+| Regra do Mestre | Decisão no StudioFlow | Justificativa |
 |-----------------|----------------------|---------------|
 | Código em português | Código em inglês, comentários/docs em português | Padrão de mercado (React, tRPC, Drizzle são em inglês). Time é 1 pessoa + IA |
 | Clean Architecture completa | Estrutura plana (api/, db/, src/) | MVP funcional. Clean Architecture quando o time crescer |

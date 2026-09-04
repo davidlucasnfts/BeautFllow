@@ -2,17 +2,57 @@ import { CalendarDays, Users, TrendingUp, Clock } from "lucide-react";
 
 export function DashboardMockup() {
   const stats = [
-    { label: "Agendamentos", value: "24", icon: CalendarDays, color: "bg-rose-100 text-rose-600" },
-    { label: "Clientes", value: "312", icon: Users, color: "bg-violet-100 text-violet-600" },
-    { label: "Faturamento", value: "R$4.2k", icon: TrendingUp, color: "bg-emerald-100 text-emerald-600" },
-    { label: "No-Show", value: "3%", icon: Clock, color: "bg-amber-100 text-amber-600" },
+    {
+      label: "Agendamentos",
+      value: "24",
+      icon: CalendarDays,
+      color: "bg-rose-100 text-rose-600",
+    },
+    {
+      label: "Clientes",
+      value: "312",
+      icon: Users,
+      color: "bg-violet-100 text-violet-600",
+    },
+    {
+      label: "Faturamento",
+      value: "R$4.2k",
+      icon: TrendingUp,
+      color: "bg-emerald-100 text-emerald-600",
+    },
+    {
+      label: "No-Show",
+      value: "3%",
+      icon: Clock,
+      color: "bg-amber-100 text-amber-600",
+    },
   ];
 
   const appointments = [
-    { time: "09:00", client: "Ana Paula", service: "Coloração", status: "confirmed" },
-    { time: "10:30", client: "Carla M.", service: "Corte + Hidratação", status: "pending" },
-    { time: "14:00", client: "Fernanda", service: "Manicure", status: "confirmed" },
-    { time: "16:00", client: "Patrícia", service: "Depilação", status: "confirmed" },
+    {
+      time: "09:00",
+      client: "Ana Paula",
+      service: "Coloração",
+      status: "confirmed",
+    },
+    {
+      time: "10:30",
+      client: "Carla M.",
+      service: "Corte + Hidratação",
+      status: "pending",
+    },
+    {
+      time: "14:00",
+      client: "Fernanda",
+      service: "Manicure",
+      status: "confirmed",
+    },
+    {
+      time: "16:00",
+      client: "Patrícia",
+      service: "Depilação",
+      status: "confirmed",
+    },
   ];
 
   return (
@@ -28,7 +68,7 @@ export function DashboardMockup() {
           </div>
           <div className="flex-1 mx-4">
             <div className="h-6 max-w-md mx-auto rounded-md bg-muted/60 flex items-center px-3 text-[10px] text-muted-foreground">
-              app.beautyflow.com.br/dashboard
+              app.studioflow.com.br/dashboard
             </div>
           </div>
         </div>
@@ -37,8 +77,11 @@ export function DashboardMockup() {
         <div className="p-4 md:p-6 space-y-4">
           {/* Stats row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {stats.map((s) => (
-              <div key={s.label} className="rounded-lg border border-border/40 p-3 bg-background">
+            {stats.map(s => (
+              <div
+                key={s.label}
+                className="rounded-lg border border-border/40 p-3 bg-background"
+              >
                 <div className={`inline-flex p-1.5 rounded-md ${s.color} mb-2`}>
                   <s.icon className="h-3.5 w-3.5" />
                 </div>
@@ -55,14 +98,22 @@ export function DashboardMockup() {
               <div className="flex items-center justify-between mb-3">
                 <p className="text-xs font-semibold">Faturamento Semanal</p>
                 <div className="flex gap-1">
-                  {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d) => (
-                    <div key={d} className="text-[9px] text-muted-foreground w-6 text-center">{d}</div>
+                  {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(d => (
+                    <div
+                      key={d}
+                      className="text-[9px] text-muted-foreground w-6 text-center"
+                    >
+                      {d}
+                    </div>
                   ))}
                 </div>
               </div>
               <div className="flex items-end gap-2 h-20">
                 {[40, 65, 45, 80, 55, 90].map((h, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                  <div
+                    key={i}
+                    className="flex-1 flex flex-col items-center gap-1"
+                  >
                     <div
                       className="w-full rounded-t-sm bg-primary/80"
                       style={{ height: `${h}%` }}
@@ -76,7 +127,7 @@ export function DashboardMockup() {
             <div className="rounded-lg border border-border/40 p-3 bg-background">
               <p className="text-xs font-semibold mb-2">Hoje — 07 Mai</p>
               <div className="space-y-1.5">
-                {appointments.map((a) => (
+                {appointments.map(a => (
                   <div
                     key={a.time}
                     className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-[10px] ${
@@ -85,10 +136,14 @@ export function DashboardMockup() {
                         : "bg-amber-50 border border-amber-100"
                     }`}
                   >
-                    <span className="font-mono text-muted-foreground">{a.time}</span>
+                    <span className="font-mono text-muted-foreground">
+                      {a.time}
+                    </span>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{a.client}</p>
-                      <p className="text-muted-foreground truncate">{a.service}</p>
+                      <p className="text-muted-foreground truncate">
+                        {a.service}
+                      </p>
                     </div>
                   </div>
                 ))}

@@ -36,7 +36,7 @@ describe("rate-limit", () => {
     checkRateLimit(key, 1, 1); // 1 req, 1ms window
 
     // Esperar a janela expirar
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(() => {
         const result = checkRateLimit(key, 1, 1);
         expect(result.allowed).toBe(true);

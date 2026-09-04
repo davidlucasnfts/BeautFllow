@@ -1,4 +1,4 @@
-# Runbook: Processos Manuais — BeautyFlow
+# Runbook: Processos Manuais — StudioFlow
 
 > **Data:** 12/05/2026 | **Status:** Ativo
 >
@@ -32,13 +32,13 @@
 2. Clique em **Create Token**
 3. Preencha:
    - **Name:** `GitHub Actions Deploy`
-   - **Scope:** `Full Account` (ou projeto `beautyflow` se aparecer)
+   - **Scope:** `Full Account` (ou projeto `studioflow` se aparecer)
    - **Expiration:** `Never expires`
 4. Clique em **Create Token**
 5. **Copie o token** (só aparece uma vez!)
 
 **1.2 Adicionar no GitHub**
-1. Acesse: https://github.com/davidlucasnfis/beautyflow/settings/secrets/actions
+1. Acesse: https://github.com/davidlucasnfis/studioflow/settings/secrets/actions
 2. Clique em **New repository secret**
 3. Preencha:
    - **Name:** `VERCEL_TOKEN`
@@ -60,7 +60,7 @@
 
 **2.1 Acessar projeto na Vercel**
 1. Acesse: https://vercel.com/dashboard
-2. Clique no projeto **beautyflow**
+2. Clique no projeto **studioflow**
 3. Menu superior → **Settings** → **Environment Variables**
 
 **2.2 Adicionar variáveis obrigatórias**
@@ -69,8 +69,8 @@
 |----------|-------|----------|
 | `DATABASE_URL` | Connection string do Supabase | Production, Preview |
 | `APP_SECRET` | String aleatória de 32+ chars | Production, Preview |
-| `APP_ID` | `beautyflow` | Production, Preview |
-| `OWNER_UNION_ID` | `admin@beautyflow.com` | Production, Preview |
+| `APP_ID` | `studioflow` | Production, Preview |
+| `OWNER_UNION_ID` | `admin@studioflow.com` | Production, Preview |
 
 **2.3 Gerar APP_SECRET seguro**
 Abra o terminal/PowerShell e rode:
@@ -101,7 +101,7 @@ Copie o resultado e use como `APP_SECRET`.
 
 **3.1 Acessar Supabase**
 1. Acesse: https://app.supabase.com
-2. Clique no projeto **beautyflow**
+2. Clique no projeto **studioflow**
 3. Menu lateral → **SQL Editor**
 
 **3.2 Rodar migration específica**
@@ -128,7 +128,7 @@ Copie o resultado e use como `APP_SECRET`.
 ### Passo a passo
 
 **4.1 Acessar Supabase**
-1. https://app.supabase.com → projeto beautyflow
+1. https://app.supabase.com → projeto studioflow
 2. Menu lateral → **Table Editor**
 
 **4.2 Verificar tabela por tabela**
@@ -160,7 +160,7 @@ Copie o resultado e use como `APP_SECRET`.
 2. Copie o DSN (ex: `https://xxx@yyy.ingest.sentry.io/zzz`)
 
 **5.3 Adicionar na Vercel**
-1. Vercel Dashboard → projeto beautyflow → **Settings** → **Environment Variables**
+1. Vercel Dashboard → projeto studioflow → **Settings** → **Environment Variables**
 2. Adicione:
    - **Name:** `SENTRY_DSN` | **Value:** DSN copiado | **Environment:** Production
    - **Name:** `VITE_SENTRY_DSN` | **Value:** mesmo DSN | **Environment:** Production
@@ -180,7 +180,7 @@ Copie o resultado e use como `APP_SECRET`.
 ### Passo a passo
 
 **6.1 Acessar Supabase**
-1. https://app.supabase.com → projeto beautyflow
+1. https://app.supabase.com → projeto studioflow
 2. Menu lateral → **Project Settings** → **Database**
 
 **6.2 Trocar senha**
@@ -195,7 +195,7 @@ Copie o resultado e use como `APP_SECRET`.
 3. Substitua a senha antiga pela nova
 
 **6.4 Atualizar na Vercel**
-1. Vercel Dashboard → projeto beautyflow → **Settings** → **Environment Variables**
+1. Vercel Dashboard → projeto studioflow → **Settings** → **Environment Variables**
 2. Edite `DATABASE_URL` com a nova senha
 3. Clique em **Save**
 
@@ -222,7 +222,7 @@ Copie o resultado e use como `APP_SECRET`.
 app.use(cors({
   origin: env.isProduction
     ? [
-        "https://beautyflow.vercel.app",
+        "https://studioflow.vercel.app",
         "https://seudominio.com.br",  // ← adicionar aqui
       ]
     : ["http://localhost:3000", "http://localhost:5173"],

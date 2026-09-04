@@ -7,7 +7,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Scissors, CheckCircle2, XCircle, Clock, User, Phone, Mail } from "lucide-react";
+import {
+  Scissors,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  User,
+  Phone,
+  Mail,
+} from "lucide-react";
 import { STATUS_COLORS, STATUS_LABELS } from "./constants";
 import type {
   CalendarAppointment,
@@ -42,9 +50,7 @@ export default function EventCard({
 
   const cardStyle = serviceColor
     ? {
-        backgroundColor: isDay
-          ? `${serviceColor}18`
-          : `${serviceColor}15`,
+        backgroundColor: isDay ? `${serviceColor}18` : `${serviceColor}15`,
         borderLeft: isDay
           ? `4px solid ${serviceColor}`
           : `3px solid ${serviceColor}`,
@@ -54,24 +60,37 @@ export default function EventCard({
   return (
     <div
       className={`border rounded-md shadow-sm ${
-        isDay ? "p-2 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow" : "p-2 text-xs"
+        isDay
+          ? "p-2 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
+          : "p-2 text-xs"
       }`}
       style={cardStyle}
       draggable={!!onReschedule && isDay}
-      onDragStart={(e) => {
+      onDragStart={e => {
         if (onReschedule && isDay) {
           e.dataTransfer.setData("appointmentId", String(appt.id));
-          e.dataTransfer.setData("durationMinutes", String(service?.durationMinutes ?? 60));
+          e.dataTransfer.setData(
+            "durationMinutes",
+            String(service?.durationMinutes ?? 60)
+          );
           e.dataTransfer.effectAllowed = "move";
         }
       }}
     >
-      <div className={`flex ${isDay ? "items-start justify-between gap-2" : "items-center justify-between mb-1"}`}>
+      <div
+        className={`flex ${isDay ? "items-start justify-between gap-2" : "items-center justify-between mb-1"}`}
+      >
         <div className="min-w-0 flex-1">
           {/* Horário + Status */}
-          <div className={`flex items-center ${isDay ? "gap-1.5 mb-0.5" : "gap-1 mb-1"}`}>
-            {isDay && <Clock className="h-3 w-3 text-muted-foreground shrink-0" />}
-            <span className={`font-semibold ${isDay ? "text-xs" : "font-medium"}`}>
+          <div
+            className={`flex items-center ${isDay ? "gap-1.5 mb-0.5" : "gap-1 mb-1"}`}
+          >
+            {isDay && (
+              <Clock className="h-3 w-3 text-muted-foreground shrink-0" />
+            )}
+            <span
+              className={`font-semibold ${isDay ? "text-xs" : "font-medium"}`}
+            >
               {appt.startTime?.slice(0, 5)}
               {isDay && appt.endTime ? ` - ${appt.endTime.slice(0, 5)}` : ""}
             </span>
@@ -79,7 +98,9 @@ export default function EventCard({
               variant="secondary"
               className={
                 STATUS_COLORS[appt.status] +
-                (isDay ? " text-[10px] px-1 py-0 h-4" : " text-[10px] px-1 py-0")
+                (isDay
+                  ? " text-[10px] px-1 py-0 h-4"
+                  : " text-[10px] px-1 py-0")
               }
             >
               {STATUS_LABELS[appt.status]}
@@ -87,14 +108,22 @@ export default function EventCard({
           </div>
 
           {/* Nome do cliente */}
-          <p className={`font-medium truncate ${isDay ? "text-sm leading-tight" : ""}`}>
+          <p
+            className={`font-medium truncate ${isDay ? "text-sm leading-tight" : ""}`}
+          >
             {client?.name ?? "Cliente"}
           </p>
 
           {/* Serviço + Profissional */}
-          <div className={`flex items-center ${isDay ? "gap-3 mt-1" : "gap-1 text-muted-foreground mt-1"}`}>
-            <div className={`flex items-center gap-1 ${isDay ? "text-muted-foreground" : ""}`}>
-              <Scissors className={`shrink-0 ${isDay ? "h-3 w-3" : "h-3 w-3"}`} />
+          <div
+            className={`flex items-center ${isDay ? "gap-3 mt-1" : "gap-1 text-muted-foreground mt-1"}`}
+          >
+            <div
+              className={`flex items-center gap-1 ${isDay ? "text-muted-foreground" : ""}`}
+            >
+              <Scissors
+                className={`shrink-0 ${isDay ? "h-3 w-3" : "h-3 w-3"}`}
+              />
               <span className={`truncate ${isDay ? "text-xs" : ""}`}>
                 {service?.name ?? "Serviço"}
               </span>
@@ -103,8 +132,12 @@ export default function EventCard({
               <TooltipProvider delayDuration={200}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className={`flex items-center gap-1 ${isDay ? "text-muted-foreground" : ""} cursor-help`}>
-                      <User className={`shrink-0 ${isDay ? "h-3 w-3" : "h-3 w-3"}`} />
+                    <div
+                      className={`flex items-center gap-1 ${isDay ? "text-muted-foreground" : ""} cursor-help`}
+                    >
+                      <User
+                        className={`shrink-0 ${isDay ? "h-3 w-3" : "h-3 w-3"}`}
+                      />
                       <span className={`truncate ${isDay ? "text-xs" : ""}`}>
                         {professional.name}
                       </span>
@@ -126,7 +159,7 @@ export default function EventCard({
               size="icon"
               variant="ghost"
               className="h-6 w-6"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 onCheckIn(appt.id);
               }}
@@ -137,7 +170,7 @@ export default function EventCard({
               size="icon"
               variant="ghost"
               className="h-6 w-6"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 onCancel(appt.id);
               }}
@@ -158,7 +191,7 @@ function ProfessionalPreview({
 }) {
   const initials = professional.name
     .split(" ")
-    .map((n) => n[0])
+    .map(n => n[0])
     .slice(0, 2)
     .join("")
     .toUpperCase();
@@ -170,7 +203,9 @@ function ProfessionalPreview({
           <AvatarFallback
             className="text-xs font-medium"
             style={{
-              backgroundColor: professional.color ? `${professional.color}30` : undefined,
+              backgroundColor: professional.color
+                ? `${professional.color}30`
+                : undefined,
               color: professional.color ?? undefined,
             }}
           >

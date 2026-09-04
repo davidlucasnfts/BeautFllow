@@ -23,13 +23,13 @@ O CI/CD precisa de um token da Vercel para fazer deploy automático quando houve
 5. Clique em **Create Token**
 6. Preencha:
    - **Name:** `GitHub Actions Deploy`
-   - **Scope:** Selecione o projeto `beautyflow` (ou `Full Account` se não aparecer)
+   - **Scope:** Selecione o projeto `studioflow` (ou `Full Account` se não aparecer)
    - **Expiration:** `No expiration` (ou data futura)
 7. Clique em **Create Token**
 8. **Copie o token** (só aparece uma vez!)
 
 **1.2 Adicionar no GitHub**
-1. Acesse: https://github.com/DavidLucas\*/beautyflow/settings/secrets/actions
+1. Acesse: https://github.com/DavidLucas\*/studioflow/settings/secrets/actions
    - (substitua `DavidLucas*` pelo seu usuário/nome do repo)
 2. Clique em **New repository secret**
 3. Preencha:
@@ -51,7 +51,7 @@ O deploy na Vercel precisa saber a URL do banco, secrets do app, etc.
 
 **2.1 Acessar projeto na Vercel**
 1. Acesse: https://vercel.com/dashboard
-2. Clique no projeto **beautyflow**
+2. Clique no projeto **studioflow**
 3. Menu superior → **Settings** → **Environment Variables**
 
 **2.2 Adicionar variáveis**
@@ -60,8 +60,8 @@ O deploy na Vercel precisa saber a URL do banco, secrets do app, etc.
 |----------|-------|----------|
 | `DATABASE_URL` | `postgresql://postgres.ssoanpjztepusxcnffjh:...` | Production, Preview |
 | `APP_SECRET` | Gere uma string aleatória de 32+ caracteres | Production, Preview |
-| `APP_ID` | `beautyflow` | Production, Preview |
-| `OWNER_UNION_ID` | `admin@beautyflow.com` | Production, Preview |
+| `APP_ID` | `studioflow` | Production, Preview |
+| `OWNER_UNION_ID` | `admin@studioflow.com` | Production, Preview |
 
 **2.3 Gerar APP_SECRET seguro**
 - Abra o terminal/PowerShell e rode:
@@ -84,7 +84,7 @@ A migration 002 habilitou RLS, mas precisa confirmar que está ativo.
 
 **3.1 Acessar Supabase**
 1. Acesse: https://app.supabase.com
-2. Clique no projeto **beautyflow**
+2. Clique no projeto **studioflow**
 3. Menu lateral → **Table Editor**
 
 **3.2 Verificar RLS**

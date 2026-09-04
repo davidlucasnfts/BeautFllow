@@ -55,7 +55,10 @@ export async function addUserToSalon(
   return getDb()
     .insert(salonUsers)
     .values({ salonId, userId, role })
-    .onConflictDoUpdate({ target: salonUsers.userId, set: { role, isActive: true } });
+    .onConflictDoUpdate({
+      target: salonUsers.userId,
+      set: { role, isActive: true },
+    });
 }
 
 export async function updateSalon(id: number, data: Partial<InsertSalon>) {
@@ -82,10 +85,9 @@ export async function getClientsBySalon(salonId: number, limit = 100) {
 }
 
 export async function getClientById(id: number, salonId: number) {
-  return getDb()
-    .query.clients.findFirst({
-      where: and(eq(clients.id, id), eq(clients.salonId, salonId)),
-    });
+  return getDb().query.clients.findFirst({
+    where: and(eq(clients.id, id), eq(clients.salonId, salonId)),
+  });
 }
 
 export async function updateClient(
@@ -147,10 +149,9 @@ export async function getServicesBySalon(salonId: number) {
 }
 
 export async function getServiceById(id: number, salonId: number) {
-  return getDb()
-    .query.services.findFirst({
-      where: and(eq(services.id, id), eq(services.salonId, salonId)),
-    });
+  return getDb().query.services.findFirst({
+    where: and(eq(services.id, id), eq(services.salonId, salonId)),
+  });
 }
 
 export async function updateService(
@@ -185,15 +186,16 @@ export async function getProfessionalsBySalon(salonId: number) {
   return getDb()
     .select()
     .from(professionals)
-    .where(and(eq(professionals.salonId, salonId), eq(professionals.isActive, true)))
+    .where(
+      and(eq(professionals.salonId, salonId), eq(professionals.isActive, true))
+    )
     .orderBy(professionals.name);
 }
 
 export async function getProfessionalById(id: number, salonId: number) {
-  return getDb()
-    .query.professionals.findFirst({
-      where: and(eq(professionals.id, id), eq(professionals.salonId, salonId)),
-    });
+  return getDb().query.professionals.findFirst({
+    where: and(eq(professionals.id, id), eq(professionals.salonId, salonId)),
+  });
 }
 
 export async function updateProfessional(
@@ -223,8 +225,10 @@ export async function getAppointmentsBySalon(
   toDate?: string
 ) {
   const conditions = [eq(appointments.salonId, salonId)];
-  if (fromDate) conditions.push(sql`${appointments.appointmentDate} >= ${fromDate}`);
-  if (toDate) conditions.push(sql`${appointments.appointmentDate} <= ${toDate}`);
+  if (fromDate)
+    conditions.push(sql`${appointments.appointmentDate} >= ${fromDate}`);
+  if (toDate)
+    conditions.push(sql`${appointments.appointmentDate} <= ${toDate}`);
 
   return getDb()
     .select()
@@ -243,8 +247,10 @@ export async function getAppointmentsByProfessional(
     eq(appointments.salonId, salonId),
     eq(appointments.professionalId, professionalId),
   ];
-  if (fromDate) conditions.push(sql`${appointments.appointmentDate} >= ${fromDate}`);
-  if (toDate) conditions.push(sql`${appointments.appointmentDate} <= ${toDate}`);
+  if (fromDate)
+    conditions.push(sql`${appointments.appointmentDate} >= ${fromDate}`);
+  if (toDate)
+    conditions.push(sql`${appointments.appointmentDate} <= ${toDate}`);
 
   return getDb()
     .select()
@@ -254,10 +260,9 @@ export async function getAppointmentsByProfessional(
 }
 
 export async function getAppointmentById(id: number, salonId: number) {
-  return getDb()
-    .query.appointments.findFirst({
-      where: and(eq(appointments.id, id), eq(appointments.salonId, salonId)),
-    });
+  return getDb().query.appointments.findFirst({
+    where: and(eq(appointments.id, id), eq(appointments.salonId, salonId)),
+  });
 }
 
 export async function updateAppointment(
@@ -289,7 +294,8 @@ export async function getFinancialRecordsBySalon(
   toDate?: string
 ) {
   const conditions = [eq(financialRecords.salonId, salonId)];
-  if (fromDate) conditions.push(sql`${financialRecords.recordDate} >= ${fromDate}`);
+  if (fromDate)
+    conditions.push(sql`${financialRecords.recordDate} >= ${fromDate}`);
   if (toDate) conditions.push(sql`${financialRecords.recordDate} <= ${toDate}`);
 
   return getDb()
@@ -299,7 +305,10 @@ export async function getFinancialRecordsBySalon(
     .orderBy(desc(financialRecords.recordDate));
 }
 
-export async function getFinancialSummaryBySalon(salonId: number, month?: string) {
+export async function getFinancialSummaryBySalon(
+  salonId: number,
+  month?: string
+) {
   // month format: YYYY-MM
   let dateCondition = sql`1=1`;
   if (month) {
@@ -336,11 +345,19 @@ export async function createCommunication(data: InsertCommunication) {
   });
 }
 
-export async function getCommunicationsByClient(clientId: number, salonId: number) {
+export async function getCommunicationsByClient(
+  clientId: number,
+  salonId: number
+) {
   return getDb()
     .select()
     .from(communications)
-    .where(and(eq(communications.clientId, clientId), eq(communications.salonId, salonId)))
+    .where(
+      and(
+        eq(communications.clientId, clientId),
+        eq(communications.salonId, salonId)
+      )
+    )
     .orderBy(desc(communications.createdAt));
 }
 
@@ -366,15 +383,16 @@ export async function getConsentFormsBySalon(salonId: number) {
   return getDb()
     .select()
     .from(consentForms)
-    .where(and(eq(consentForms.salonId, salonId), eq(consentForms.isActive, true)))
+    .where(
+      and(eq(consentForms.salonId, salonId), eq(consentForms.isActive, true))
+    )
     .orderBy(consentForms.title);
 }
 
 export async function getConsentFormById(id: number, salonId: number) {
-  return getDb()
-    .query.consentForms.findFirst({
-      where: and(eq(consentForms.id, id), eq(consentForms.salonId, salonId)),
-    });
+  return getDb().query.consentForms.findFirst({
+    where: and(eq(consentForms.id, id), eq(consentForms.salonId, salonId)),
+  });
 }
 
 export async function createConsentSignature(data: InsertConsentSignature) {
@@ -385,11 +403,19 @@ export async function createConsentSignature(data: InsertConsentSignature) {
   });
 }
 
-export async function getConsentSignaturesByClient(clientId: number, salonId: number) {
+export async function getConsentSignaturesByClient(
+  clientId: number,
+  salonId: number
+) {
   return getDb()
     .select()
     .from(consentSignatures)
-    .where(and(eq(consentSignatures.clientId, clientId), eq(consentSignatures.salonId, salonId)))
+    .where(
+      and(
+        eq(consentSignatures.clientId, clientId),
+        eq(consentSignatures.salonId, salonId)
+      )
+    )
     .orderBy(desc(consentSignatures.signedAt));
 }
 
@@ -417,7 +443,11 @@ export async function getDashboardMetrics(salonId: number, month: string) {
 
   const today = new Date().toISOString().split("T")[0];
   const currentDate = new Date();
-  const prevMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+  const prevMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() - 1,
+    1
+  );
   const prevMonthStr = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
 
   const [
@@ -477,7 +507,9 @@ export async function getDashboardMetrics(salonId: number, month: string) {
     db
       .select({ count: sql<number>`COUNT(*)` })
       .from(clients)
-      .where(and(eq(clients.salonId, salonId), eq(clients.lgpdAnonymized, false))),
+      .where(
+        and(eq(clients.salonId, salonId), eq(clients.lgpdAnonymized, false))
+      ),
     // Novos clientes mes atual
     db
       .select({ count: sql<number>`COUNT(*)` })
@@ -514,7 +546,10 @@ export async function getDashboardMetrics(salonId: number, month: string) {
       .from(appointments)
       .leftJoin(clients, eq(appointments.clientId, clients.id))
       .leftJoin(services, eq(appointments.serviceId, services.id))
-      .leftJoin(professionals, eq(appointments.professionalId, professionals.id))
+      .leftJoin(
+        professionals,
+        eq(appointments.professionalId, professionals.id)
+      )
       .where(
         and(
           eq(appointments.salonId, salonId),
@@ -554,7 +589,9 @@ export async function getDashboardMetrics(salonId: number, month: string) {
       ),
     // Receita mes atual
     db
-      .select({ total: sql<number>`COALESCE(SUM(${financialRecords.amount}), 0)` })
+      .select({
+        total: sql<number>`COALESCE(SUM(${financialRecords.amount}), 0)`,
+      })
       .from(financialRecords)
       .where(
         and(
@@ -564,7 +601,9 @@ export async function getDashboardMetrics(salonId: number, month: string) {
       ),
     // Receita mes anterior
     db
-      .select({ total: sql<number>`COALESCE(SUM(${financialRecords.amount}), 0)` })
+      .select({
+        total: sql<number>`COALESCE(SUM(${financialRecords.amount}), 0)`,
+      })
       .from(financialRecords)
       .where(
         and(
@@ -574,13 +613,17 @@ export async function getDashboardMetrics(salonId: number, month: string) {
       ),
   ]);
 
-  const totalAppointments = (appointmentsMonth[0]?.scheduled || 0) + (appointmentsMonth[0]?.completed || 0);
+  const totalAppointments =
+    (appointmentsMonth[0]?.scheduled || 0) +
+    (appointmentsMonth[0]?.completed || 0);
   const noShows = appointmentsMonth[0]?.noShow || 0;
-  const nsRate = totalAppointments > 0 ? (noShows / totalAppointments) * 100 : 0;
+  const nsRate =
+    totalAppointments > 0 ? (noShows / totalAppointments) * 100 : 0;
 
   const revenue = monthlyRevenue[0]?.total || 0;
   const prevRevenue = prevMonthRevenue[0]?.total || 0;
-  const revenueGrowth = prevRevenue > 0 ? ((revenue - prevRevenue) / prevRevenue) * 100 : 0;
+  const revenueGrowth =
+    prevRevenue > 0 ? ((revenue - prevRevenue) / prevRevenue) * 100 : 0;
 
   return {
     appointmentsToday: appointmentsToday[0]?.count || 0,

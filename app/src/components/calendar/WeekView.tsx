@@ -1,7 +1,11 @@
 import { format, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import EventCard from "./EventCard";
-import type { CalendarAppointment, CalendarClient, CalendarService } from "./types";
+import type {
+  CalendarAppointment,
+  CalendarClient,
+  CalendarService,
+} from "./types";
 
 interface WeekViewProps {
   weekDays: Date[];
@@ -24,7 +28,7 @@ export default function WeekView({
 }: WeekViewProps) {
   return (
     <div className="grid grid-cols-7 gap-3">
-      {weekDays.map((day) => {
+      {weekDays.map(day => {
         const key = format(day, "yyyy-MM-dd");
         const dayAppts = appointmentsByDay[key] ?? [];
         const isToday = isSameDay(day, today);
@@ -48,12 +52,12 @@ export default function WeekView({
               </p>
             </div>
             <div className="space-y-2">
-              {dayAppts.map((appt) => (
+              {dayAppts.map(appt => (
                 <EventCard
                   key={appt.id}
                   appt={appt}
-                  client={clients.find((c) => c.id === appt.clientId)}
-                  service={services.find((s) => s.id === appt.serviceId)}
+                  client={clients.find(c => c.id === appt.clientId)}
+                  service={services.find(s => s.id === appt.serviceId)}
                   onCheckIn={onCheckIn}
                   onCancel={onCancel}
                   variant="week"

@@ -19,7 +19,7 @@ describe("security-utils", () => {
     });
 
     it("deve escapar múltiplos caracteres", () => {
-      const input = '<div class="test">\'content\'</div>';
+      const input = "<div class=\"test\">'content'</div>";
       const result = sanitizeInput(input);
       expect(result).toContain("&lt;div");
       expect(result).toContain("class=&quot;test&quot;");

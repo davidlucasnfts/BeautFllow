@@ -1,7 +1,7 @@
 -- ============================================================
 -- MIGRATION 001: Schema Inicial
 -- Data: 05/05/2026
--- Descricao: Tabelas base do BeautyFlow - users, salons,
+-- Descricao: Tabelas base do StudioFlow - users, salons,
 -- clients, services, professionals, appointments, financial,
 -- communications, consent forms, audit logs
 -- ============================================================

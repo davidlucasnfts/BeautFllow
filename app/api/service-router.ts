@@ -40,7 +40,15 @@ export const serviceRouter = createRouter({
         ...data,
         price: String(price),
       });
-      await auditAction("create", "service", salonId, ctx.user?.id, result?.id ?? undefined, undefined, { name: data.name });
+      await auditAction(
+        "create",
+        "service",
+        salonId,
+        ctx.user?.id,
+        result?.id ?? undefined,
+        undefined,
+        { name: data.name }
+      );
       return result;
     }),
 
@@ -66,7 +74,15 @@ export const serviceRouter = createRouter({
         ...data,
         ...(price !== undefined ? { price: String(price) } : {}),
       });
-      await auditAction("update", "service", salonId, ctx.user?.id, id, undefined, data);
+      await auditAction(
+        "update",
+        "service",
+        salonId,
+        ctx.user?.id,
+        id,
+        undefined,
+        data
+      );
       return result;
     }),
 
@@ -74,7 +90,13 @@ export const serviceRouter = createRouter({
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
       await deleteService(input.id, input.salonId);
-      await auditAction("delete", "service", input.salonId, ctx.user?.id, input.id);
+      await auditAction(
+        "delete",
+        "service",
+        input.salonId,
+        ctx.user?.id,
+        input.id
+      );
       return { success: true };
     }),
 });

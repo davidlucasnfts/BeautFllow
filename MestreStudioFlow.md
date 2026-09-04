@@ -1,8 +1,10 @@
-# MestreBeaut — Guia Completo BeautyFlow
+# MestreStudioFlow — Guia Completo StudioFlow
 
-> **Versão:** 1.0.0 | **Data:** 12/05/2026 | **Status:** Ativo
+> **Versão:** 1.1.0 | **Data:** 24/08/2026 | **Status:** Ativo
 >
-> Este documento consolida 100% do padrão mestre adaptado para o BeautyFlow. É o guia de referência único para todas as decisões técnicas e de negócio do projeto.
+> Este documento consolida 100% do padrão mestre adaptado para o StudioFlow. É o guia de referência único para todas as decisões técnicas e de negócio do projeto.
+>
+> **Última sincronização:** 24/08/2026 — renomeação de StudioFlow para StudioFlow e definição de 3 segmentos (salão de beleza, barbearia, clínica de estética).
 
 ---
 
@@ -10,7 +12,7 @@
 
 ### O que é
 
-O **BeautyFlow** é um SaaS multi-tenant de gestão para salões de beleza e centros estéticos. Este documento consolida:
+O **StudioFlow** é um SaaS multi-tenant de gestão para salões de beleza e centros estéticos. Este documento consolida:
 - **32 skills** — conhecimento especializado por domínio
 - **17 agentes** — personas especializadas para contextos específicos
 - **26 comandos slash** — automações executáveis
@@ -55,7 +57,7 @@ O **BeautyFlow** é um SaaS multi-tenant de gestão para salões de beleza e cen
 | 7 | Nunca logar dados sensíveis (senhas, tokens, cartões) | ALERTA | ✅ Não encontrado |
 | 8 | Nunca usar CORS wildcard `*` em produção | ALERTA | ✅ Origens whitelist |
 | 9 | Sempre validar inputs de API antes de processar | ALERTA | ✅ Zod em 10 routers |
-| 10 | Sempre usar TLS em toda comunicação, mesmo interna | ALERTA | ⚠️ Verificar sslmode no DATABASE_URL |
+| 10 | Sempre usar TLS em toda comunicação, mesmo interna | ALERTA | ✅ Configurar `sslmode=require` no `DATABASE_URL` da Vercel |
 
 ### 4.2 Regras de Segurança — Padrão Kimi
 
@@ -115,11 +117,11 @@ O **BeautyFlow** é um SaaS multi-tenant de gestão para salões de beleza e cen
 
 ### 5.1 Idioma
 
-- **Português** para nomes de negócio (tabelas, campos, variáveis de domínio) — *exceto no BeautyFlow onde usamos inglês por padrão de mercado*
+- **Português** para nomes de negócio (tabelas, campos, variáveis de domínio) — *exceto no StudioFlow onde usamos inglês por padrão de mercado*
 - **Inglês** para código técnico (funções, classes, métodos, bibliotecas)
 - **Commits** em português, imperativo: "Adiciona login com Google", "Corrige layout mobile"
 
-> **Exceção BeautyFlow:** Código em inglês, comentários/docs em português. Padrão de mercado (React, tRPC, Drizzle são em inglês). Time é 1 pessoa + IA, não há barreira de idioma no código.
+> **Exceção StudioFlow:** Código em inglês, comentários/docs em português. Padrão de mercado (React, tRPC, Drizzle são em inglês). Time é 1 pessoa + IA, não há barreira de idioma no código.
 
 ### 5.2 Nomenclatura
 
@@ -166,7 +168,7 @@ O **BeautyFlow** é um SaaS multi-tenant de gestão para salões de beleza e cen
 | **CQRS** | Leituras e escritas com requisitos muito diferentes | CRUD simples |
 | **Event Sourcing** | Auditoria completa obrigatória, reconciliação | Performance crítica de leitura |
 
-> **Decisão BeautyFlow:** Monolito modular. MVP funcional. Clean Architecture será adotada quando o time crescer ou quando modularizarmos em microsserviços.
+> **Decisão StudioFlow:** Monolito modular. MVP funcional. Clean Architecture será adotada quando o time crescer ou quando modularizarmos em microsserviços.
 
 ### 6.3 Camadas da Aplicação
 
@@ -221,7 +223,7 @@ Todo projeto deve ter um PRD com:
 5. **Métricas de sucesso** — como sabemos que funcionou?
 6. **Restrições** — tempo, orçamento, compliance
 
-> **Status BeautyFlow:** ❌ PRD não existe. Criar em `docs/requirements/PRD.md`.
+> **Status StudioFlow:** ✅ PRD criado em `docs/requirements/PRD.md`.
 
 ### 8.2 User Stories
 
@@ -231,7 +233,7 @@ Critérios de aceitação:
 - Dado [contexto], quando [ação], então [resultado esperado]
 - Mínimo 3 cenários: happy path, erro, edge case
 
-> **Status BeautyFlow:** ❌ User Stories não existem. Criar em `docs/requirements/`.
+> **Status StudioFlow:** ✅ User Stories criadas: `RF-001-auth.md`, `RF-002-clientes.md`, `RF-003-agendamentos.md`.
 
 ---
 
@@ -267,7 +269,7 @@ Todo projeto deve ter ADRs para decisões significativas:
 - Negativas
 ```
 
-> **Status BeautyFlow:** ✅ 5 ADRs criados (001-005).
+> **Status StudioFlow:** ✅ 5 ADRs criados (001-005).
 
 ### 9.2 Documentação de API
 
@@ -275,7 +277,7 @@ Todo projeto deve ter ADRs para decisões significativas:
 - REST OpenAPI: usar Swagger/OpenAPI 3.0
 - GraphQL: schema introspectível
 
-> **Status BeautyFlow:** ✅ tRPC type-safe.
+> **Status StudioFlow:** ✅ tRPC type-safe.
 
 ---
 
@@ -298,7 +300,7 @@ Todo projeto deve ter ADRs para decisões significativas:
 
 | Tipo | Cobertura | Ferramenta | Status |
 |------|-----------|------------|--------|
-| Unitários | 80% linhas | Vitest | ❌ 0% |
+| Unitários | 80% linhas | Vitest | ⚠️ 24 testes passando, threshold atual 40% |
 | Integração | 60% funções | Vitest + MSW | ❌ 0% |
 | E2E | Fluxos críticos | Playwright | ❌ 0% |
 
@@ -309,7 +311,7 @@ Todo projeto deve ter ADRs para decisões significativas:
 - **TypeScript strict** — zero `any`
 - **Husky + lint-staged** — pre-commit hooks
 
-> **Status ESLint:** ⚠️ Usa `recommended`, não `strict`.
+> **Status ESLint:** ✅ Modo `strict` ativo. Warnings restantes: arquivos de `coverage/` (devem ser ignorados) e fast refresh em providers (aceitável).
 
 ---
 
@@ -334,7 +336,7 @@ Todo projeto deve ter ADRs para decisões significativas:
 - **Supabase Dashboard** — queries lentas, uso de storage
 - **Sentry** — erro tracking (recomendado)
 
-> **Status Sentry:** ❌ Não configurado.
+> **Status Sentry:** ⚠️ Instalado (`@sentry/react` + `@sentry/node`). `SENTRY_DSN` / `VITE_SENTRY_DSN` ainda não configurados na Vercel.
 
 ---
 
@@ -407,7 +409,7 @@ jobs:
         run: npx vercel --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
 ```
 
-> **Status BeautyFlow:** ⚠️ Falta job `deploy` no CI.
+> **Status StudioFlow:** ✅ Job `deploy` para Vercel configurado no CI. Requer `VERCEL_TOKEN` no GitHub Secrets.
 
 ---
 
@@ -431,7 +433,7 @@ npm run test
 npm run build
 ```
 
-> **Status BeautyFlow:** ✅ Configurado.
+> **Status StudioFlow:** ✅ Configurado.
 
 ---
 
@@ -450,7 +452,7 @@ npm run build
 - [x] Criar `SESSION-CONTEXT.md` para estado atual
 - [x] Criar `MestreBeaut.md` (este arquivo)
 - [x] Criar primeira ADR (stack escolhida)
-- [ ] Habilitar RLS em todas as tabelas (aplicar migration no Supabase via `npm run db:migrate`)
+- [x] Habilitar RLS em todas as tabelas (migration `002-rls-policies.sql` aplicada no Supabase)
 - [x] Configurar headers de segurança
 - [x] Adicionar rate limiting
 
@@ -460,7 +462,7 @@ npm run build
 - [x] Ler `README.md`
 - [x] Configurar `.env` local
 - [x] Rodar `npm install` e `npm run dev`
-- [ ] Rodar `npm run test` (deve passar) — ❌ 0 testes
+- [x] Rodar `npm run test` (deve passar) — ✅ 24 testes passando
 - [x] Fazer primeiro commit em branch de teste
 
 ---

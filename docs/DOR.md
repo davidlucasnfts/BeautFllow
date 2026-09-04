@@ -1,4 +1,4 @@
-# BeautyFlow — Definition of Ready (DoR)
+# StudioFlow — Definition of Ready (DoR)
 
 > Checklist: uma tarefa so entra em desenvolvimento quando todos os itens abaixo estao marcados.
 

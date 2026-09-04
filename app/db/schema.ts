@@ -18,17 +18,87 @@ import {
 // Enums
 // ==========================================
 export const userRoleEnum = pgEnum("user_role", ["user", "admin"]);
-export const planEnum = pgEnum("plan", ["free", "essential", "pro", "business"]);
-export const salonUserRoleEnum = pgEnum("salon_user_role", ["owner", "admin", "professional", "receptionist"]);
-export const clientSegmentEnum = pgEnum("client_segment", ["new", "active", "vip", "at_risk", "inactive"]);
-export const appointmentStatusEnum = pgEnum("appointment_status", ["scheduled", "confirmed", "checked_in", "in_progress", "completed", "no_show", "cancelled"]);
-export const bookingSourceEnum = pgEnum("booking_source", ["online", "whatsapp", "phone", "walk_in", "staff"]);
-export const communicationChannelEnum = pgEnum("communication_channel", ["whatsapp", "sms", "email", "phone", "in_app"]);
-export const communicationDirectionEnum = pgEnum("communication_direction", ["outbound", "inbound"]);
-export const communicationTypeEnum = pgEnum("communication_type", ["confirmation", "reminder", "check_in", "post_care", "reactivation", "campaign", "manual"]);
-export const communicationStatusEnum = pgEnum("communication_status", ["pending", "sent", "delivered", "read", "failed"]);
-export const recordTypeEnum = pgEnum("record_type", ["service", "product", "package", "refund", "other"]);
-export const paymentMethodEnum = pgEnum("payment_method", ["pix", "credit_card", "debit_card", "cash", "other"]);
+export const planEnum = pgEnum("plan", [
+  "free",
+  "essential",
+  "pro",
+  "business",
+]);
+export const salonUserRoleEnum = pgEnum("salon_user_role", [
+  "owner",
+  "admin",
+  "professional",
+  "receptionist",
+]);
+export const clientSegmentEnum = pgEnum("client_segment", [
+  "new",
+  "active",
+  "vip",
+  "at_risk",
+  "inactive",
+]);
+export const appointmentStatusEnum = pgEnum("appointment_status", [
+  "scheduled",
+  "confirmed",
+  "checked_in",
+  "in_progress",
+  "completed",
+  "no_show",
+  "cancelled",
+]);
+export const bookingSourceEnum = pgEnum("booking_source", [
+  "online",
+  "whatsapp",
+  "phone",
+  "walk_in",
+  "staff",
+]);
+export const communicationChannelEnum = pgEnum("communication_channel", [
+  "whatsapp",
+  "sms",
+  "email",
+  "phone",
+  "in_app",
+]);
+export const communicationDirectionEnum = pgEnum("communication_direction", [
+  "outbound",
+  "inbound",
+]);
+export const communicationTypeEnum = pgEnum("communication_type", [
+  "confirmation",
+  "reminder",
+  "check_in",
+  "post_care",
+  "reactivation",
+  "campaign",
+  "manual",
+]);
+export const communicationStatusEnum = pgEnum("communication_status", [
+  "pending",
+  "sent",
+  "delivered",
+  "read",
+  "failed",
+]);
+export const recordTypeEnum = pgEnum("record_type", [
+  "service",
+  "product",
+  "package",
+  "refund",
+  "other",
+]);
+export const paymentMethodEnum = pgEnum("payment_method", [
+  "pix",
+  "credit_card",
+  "debit_card",
+  "cash",
+  "other",
+]);
+export const salonSegmentEnum = pgEnum("salon_segment", [
+  "beauty_salon",
+  "barbershop",
+  "aesthetic_clinic",
+]);
 
 // ==========================================
 // Core Users (OAuth-authenticated)
@@ -78,6 +148,7 @@ export const salons = pgTable("salons", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
+  segment: salonSegmentEnum("segment").default("beauty_salon").notNull(),
   phone: varchar("phone", { length: 50 }),
   email: varchar("email", { length: 320 }),
   address: text("address"),
@@ -110,7 +181,7 @@ export const salonUsers = pgTable(
     isActive: boolean("isActive").default(true).notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
-  (table) => ({
+  table => ({
     userSalonIdx: index("user_salon_idx").on(table.userId, table.salonId),
     salonIdx: index("salon_users_salon_idx").on(table.salonId),
   })
@@ -137,7 +208,9 @@ export const clients = pgTable(
     segment: clientSegmentEnum("segment").default("new").notNull(),
     lastVisitAt: timestamp("lastVisitAt"),
     totalVisits: integer("totalVisits").default(0).notNull(),
-    totalSpent: decimal("totalSpent", { precision: 12, scale: 2 }).default("0.00").notNull(),
+    totalSpent: decimal("totalSpent", { precision: 12, scale: 2 })
+      .default("0.00")
+      .notNull(),
     consentGiven: boolean("consentGiven").default(false).notNull(),
     consentGivenAt: timestamp("consentGivenAt"),
     lgpdAnonymized: boolean("lgpdAnonymized").default(false).notNull(),
@@ -147,7 +220,7 @@ export const clients = pgTable(
       .notNull()
       .$onUpdate(() => new Date()),
   },
-  (table) => ({
+  table => ({
     salonIdx: index("clients_salon_idx").on(table.salonId),
     phoneIdx: index("clients_phone_idx").on(table.phone),
     segmentIdx: index("clients_segment_idx").on(table.segment),
@@ -181,7 +254,7 @@ export const services = pgTable(
       .notNull()
       .$onUpdate(() => new Date()),
   },
-  (table) => ({
+  table => ({
     salonIdx: index("services_salon_idx").on(table.salonId),
   })
 );
@@ -202,7 +275,10 @@ export const professionals = pgTable(
     phone: varchar("phone", { length: 50 }),
     bio: text("bio"),
     color: varchar("color", { length: 7 }).default("#10b981"),
-    commissionRate: decimal("commissionRate", { precision: 5, scale: 2 }).default("0.00"),
+    commissionRate: decimal("commissionRate", {
+      precision: 5,
+      scale: 2,
+    }).default("0.00"),
     workingHours: text("workingHours"),
     isActive: boolean("isActive").default(true).notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -211,7 +287,7 @@ export const professionals = pgTable(
       .notNull()
       .$onUpdate(() => new Date()),
   },
-  (table) => ({
+  table => ({
     salonIdx: index("professionals_salon_idx").on(table.salonId),
   })
 );
@@ -246,7 +322,7 @@ export const appointments = pgTable(
       .notNull()
       .$onUpdate(() => new Date()),
   },
-  (table) => ({
+  table => ({
     salonIdx: index("appointments_salon_idx").on(table.salonId),
     dateIdx: index("appointments_date_idx").on(table.appointmentDate),
     clientIdx: index("appointments_client_idx").on(table.clientId),
@@ -268,7 +344,9 @@ export const communications = pgTable(
     appointmentId: bigint("appointmentId", { mode: "number" }),
     type: communicationTypeEnum("type").default("manual").notNull(),
     channel: communicationChannelEnum("channel").default("whatsapp").notNull(),
-    direction: communicationDirectionEnum("direction").default("outbound").notNull(),
+    direction: communicationDirectionEnum("direction")
+      .default("outbound")
+      .notNull(),
     content: text("content").notNull(),
     status: communicationStatusEnum("status").default("pending").notNull(),
     sentAt: timestamp("sentAt"),
@@ -278,7 +356,7 @@ export const communications = pgTable(
     errorMessage: text("errorMessage"),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
-  (table) => ({
+  table => ({
     salonIdx: index("communications_salon_idx").on(table.salonId),
     clientIdx: index("communications_client_idx").on(table.clientId),
   })
@@ -301,13 +379,16 @@ export const financialRecords = pgTable(
     type: recordTypeEnum("type").default("service").notNull(),
     description: varchar("description", { length: 255 }),
     amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
-    commissionAmount: decimal("commissionAmount", { precision: 10, scale: 2 }).default("0.00"),
+    commissionAmount: decimal("commissionAmount", {
+      precision: 10,
+      scale: 2,
+    }).default("0.00"),
     paymentMethod: paymentMethodEnum("paymentMethod").default("pix").notNull(),
     recordDate: date("recordDate").notNull(),
     notes: text("notes"),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
-  (table) => ({
+  table => ({
     salonIdx: index("financial_salon_idx").on(table.salonId),
     dateIdx: index("financial_date_idx").on(table.recordDate),
   })
@@ -334,7 +415,7 @@ export const consentForms = pgTable(
       .notNull()
       .$onUpdate(() => new Date()),
   },
-  (table) => ({
+  table => ({
     salonIdx: index("consent_forms_salon_idx").on(table.salonId),
   })
 );
@@ -358,7 +439,7 @@ export const consentSignatures = pgTable(
     userAgent: text("userAgent"),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
-  (table) => ({
+  table => ({
     clientIdx: index("consent_signatures_client_idx").on(table.clientId),
     formIdx: index("consent_signatures_form_idx").on(table.formId),
   })
@@ -384,7 +465,7 @@ export const auditLogs = pgTable(
     ipAddress: varchar("ipAddress", { length: 45 }),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
-  (table) => ({
+  table => ({
     salonIdx: index("audit_logs_salon_idx").on(table.salonId),
     createdAtIdx: index("audit_logs_created_at_idx").on(table.createdAt),
   })

@@ -29,13 +29,23 @@ export const consentRouter = createRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const result = await createConsentForm(input);
-      await auditAction("create", "consent_form", input.salonId, ctx.user?.id, result?.id ?? undefined, undefined, { title: input.title });
+      await auditAction(
+        "create",
+        "consent_form",
+        input.salonId,
+        ctx.user?.id,
+        result?.id ?? undefined,
+        undefined,
+        { title: input.title }
+      );
       return result;
     }),
 
   signaturesByClient: authedQuery
     .input(z.object({ clientId: z.number(), salonId: z.number() }))
-    .query(({ input }) => getConsentSignaturesByClient(input.clientId, input.salonId)),
+    .query(({ input }) =>
+      getConsentSignaturesByClient(input.clientId, input.salonId)
+    ),
 
   sign: authedQuery
     .input(
@@ -51,7 +61,15 @@ export const consentRouter = createRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const result = await createConsentSignature(input);
-      await auditAction("create", "consent_signature", input.salonId, ctx.user?.id, result?.id ?? undefined, undefined, { clientId: input.clientId, formId: input.formId });
+      await auditAction(
+        "create",
+        "consent_signature",
+        input.salonId,
+        ctx.user?.id,
+        result?.id ?? undefined,
+        undefined,
+        { clientId: input.clientId, formId: input.formId }
+      );
       return result;
     }),
 });

@@ -22,8 +22,20 @@ export function Logo({ className }: { className?: string }) {
         strokeLinejoin="round"
         className="text-secondary"
       />
-      <circle cx="7" cy="18" r="2" fill="currentColor" className="text-primary" />
-      <circle cx="17" cy="18" r="2" fill="currentColor" className="text-secondary" />
+      <circle
+        cx="7"
+        cy="18"
+        r="2"
+        fill="currentColor"
+        className="text-primary"
+      />
+      <circle
+        cx="17"
+        cy="18"
+        r="2"
+        fill="currentColor"
+        className="text-secondary"
+      />
     </svg>
   );
 }

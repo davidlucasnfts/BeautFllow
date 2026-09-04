@@ -1,4 +1,4 @@
-# BeautyFlow — Product Requirements Document (PRD)
+# StudioFlow — Product Requirements Document (PRD)
 
 > **Data:** 12/05/2026 | **Versão:** 1.0 | **Status:** MVP
 
@@ -20,7 +20,7 @@ Salões de beleza e centros estéticos no Brasil ainda gerenciam agendamentos em
 
 ### Solução
 
-BeautyFlow: SaaS multi-tenant de gestão completa para salões de beleza, com foco em agendamentos, CRM, financeiro e compliance LGPD.
+StudioFlow: SaaS multi-tenant de gestão completa para salões de beleza, com foco em agendamentos, CRM, financeiro e compliance LGPD.
 
 ---
 

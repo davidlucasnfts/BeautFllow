@@ -34,11 +34,19 @@ import {
   PanelLeft,
   Building2,
 } from "lucide-react";
-import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useLocation, useNavigate } from "react-router";
 import { AuthLayoutSkeleton } from "./AuthLayoutSkeleton";
 import { Button } from "./ui/button";
 import { trpc } from "@/providers/trpc";
+import CreateSalonForm from "./CreateSalonForm";
+import { getSegmentLabel, type SalonSegment } from "@contracts/segment-labels";
 
 function Logo({ className }: { className?: string }) {
   return (
@@ -64,22 +72,49 @@ function Logo({ className }: { className?: string }) {
         strokeLinejoin="round"
         className="text-secondary"
       />
-      <circle cx="7" cy="18" r="2" fill="currentColor" className="text-primary" />
-      <circle cx="17" cy="18" r="2" fill="currentColor" className="text-secondary" />
+      <circle
+        cx="7"
+        cy="18"
+        r="2"
+        fill="currentColor"
+        className="text-primary"
+      />
+      <circle
+        cx="17"
+        cy="18"
+        r="2"
+        fill="currentColor"
+        className="text-secondary"
+      />
     </svg>
   );
 }
 
-const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: Users, label: "Clientes", path: "/clients" },
-  { icon: CalendarDays, label: "Agendamentos", path: "/appointments" },
-  { icon: ScissorsIcon, label: "Serviços", path: "/services" },
-  { icon: UserCircle, label: "Profissionais", path: "/professionals" },
-  { icon: DollarSign, label: "Financeiro", path: "/financial" },
-  { icon: MessageSquare, label: "Comunicação", path: "/communications" },
-  { icon: FileCheck, label: "Termos & LGPD", path: "/consent" },
-];
+function getMenuItems(segment: SalonSegment) {
+  const labels = getSegmentLabel;
+  return [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: Users, label: labels(segment, "client"), path: "/clients" },
+    {
+      icon: CalendarDays,
+      label: labels(segment, "appointment"),
+      path: "/appointments",
+    },
+    {
+      icon: ScissorsIcon,
+      label: labels(segment, "service"),
+      path: "/services",
+    },
+    {
+      icon: UserCircle,
+      label: labels(segment, "professional"),
+      path: "/professionals",
+    },
+    { icon: DollarSign, label: "Financeiro", path: "/financial" },
+    { icon: MessageSquare, label: "Comunicação", path: "/communications" },
+    { icon: FileCheck, label: "Termos & LGPD", path: "/consent" },
+  ];
+}
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
 const DEFAULT_WIDTH = 280;
@@ -107,10 +142,10 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         <div className="flex flex-col items-center gap-8 p-8 max-w-md w-full">
           <div className="flex flex-col items-center gap-6">
             <h1 className="text-2xl font-semibold tracking-tight text-center">
-              BeautyFlow
+              StudioFlow
             </h1>
             <p className="text-sm text-muted-foreground text-center max-w-sm">
-              Acesse sua conta para gerenciar seu salão.
+              Acesse sua conta para gerenciar seu negócio.
             </p>
           </div>
           <Button
@@ -147,7 +182,10 @@ type AuthLayoutContentProps = {
   setSidebarWidth: (width: number) => void;
 };
 
-function AuthLayoutContent({ children, setSidebarWidth }: AuthLayoutContentProps) {
+function AuthLayoutContent({
+  children,
+  setSidebarWidth,
+}: AuthLayoutContentProps) {
   const { user, logout } = useAuth();
   const { salon, setSalon } = useSalon();
   const location = useLocation();
@@ -156,7 +194,9 @@ function AuthLayoutContent({ children, setSidebarWidth }: AuthLayoutContentProps
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const activeMenuItem = menuItems.find((item) => item.path === location.pathname);
+  const activeMenuItem = getMenuItems(salon?.segment ?? "beauty_salon").find(
+    item => item.path === location.pathname
+  );
   const isMobile = useIsMobile();
 
   const { data: salonsData } = trpc.salon.list.useQuery(undefined, {
@@ -170,6 +210,7 @@ function AuthLayoutContent({ children, setSidebarWidth }: AuthLayoutContentProps
         id: first.salon.id,
         name: first.salon.name,
         slug: first.salon.slug,
+        segment: first.salon.segment,
         role: first.role,
         plan: first.salon.plan,
       });
@@ -202,6 +243,10 @@ function AuthLayoutContent({ children, setSidebarWidth }: AuthLayoutContentProps
     };
   }, [isResizing, setSidebarWidth]);
 
+  if (salonsData && salonsData.length === 0) {
+    return <CreateSalonForm />;
+  }
+
   return (
     <>
       <div className="relative" ref={sidebarRef}>
@@ -219,7 +264,7 @@ function AuthLayoutContent({ children, setSidebarWidth }: AuthLayoutContentProps
                 <div className="flex items-center gap-2 min-w-0">
                   <Logo className="h-5 w-5" />
                   <span className="font-serif font-semibold tracking-tight truncate">
-                    BeautyFlow
+                    StudioFlow
                   </span>
                 </div>
               ) : null}
@@ -232,7 +277,9 @@ function AuthLayoutContent({ children, setSidebarWidth }: AuthLayoutContentProps
                 <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="text-xs font-medium truncate">{salon.name}</p>
-                  <p className="text-[10px] text-muted-foreground uppercase">{salon.plan}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">
+                    {salon.plan}
+                  </p>
                 </div>
               </div>
             </div>
@@ -240,7 +287,7 @@ function AuthLayoutContent({ children, setSidebarWidth }: AuthLayoutContentProps
 
           <SidebarContent className="gap-0">
             <SidebarMenu className="px-2 py-1">
-              {menuItems.map((item) => {
+              {getMenuItems(salon?.segment ?? "beauty_salon").map(item => {
                 const isActive = location.pathname === item.path;
                 return (
                   <SidebarMenuItem key={item.path}>

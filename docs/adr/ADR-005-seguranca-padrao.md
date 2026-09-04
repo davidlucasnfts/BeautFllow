@@ -1,4 +1,4 @@
-# ADR-005: Padrão de Segurança BeautyFlow
+# ADR-005: Padrão de Segurança StudioFlow
 
 **Data:** 2026-05-12
 **Status:** Aceita
@@ -6,7 +6,7 @@
 
 ## Contexto
 
-O BeautyFlow lida com dados pessoais de clientes (CPF, telefone, histórico de serviços) e dados financeiros. Precisamos de um padrão de segurança consistente e verificável.
+O StudioFlow lida com dados pessoais de clientes (CPF, telefone, histórico de serviços) e dados financeiros. Precisamos de um padrão de segurança consistente e verificável.
 
 ## Decisão
 

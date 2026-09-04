@@ -13,7 +13,10 @@ import { Session } from "@contracts/constants";
 
 const JWT_ALG = "HS256";
 
-async function signToken(payload: { userId: number; email: string }): Promise<string> {
+async function signToken(payload: {
+  userId: number;
+  email: string;
+}): Promise<string> {
   const secret = new TextEncoder().encode(env.appSecret);
   return new jose.SignJWT(payload as unknown as jose.JWTPayload)
     .setProtectedHeader({ alg: JWT_ALG })
@@ -22,10 +25,14 @@ async function signToken(payload: { userId: number; email: string }): Promise<st
     .sign(secret);
 }
 
-async function verifyToken(token: string): Promise<{ userId: number; email: string } | null> {
+async function verifyToken(
+  token: string
+): Promise<{ userId: number; email: string } | null> {
   try {
     const secret = new TextEncoder().encode(env.appSecret);
-    const { payload } = await jose.jwtVerify(token, secret, { algorithms: [JWT_ALG] });
+    const { payload } = await jose.jwtVerify(token, secret, {
+      algorithms: [JWT_ALG],
+    });
     return payload as unknown as { userId: number; email: string };
   } catch {
     return null;
@@ -138,10 +145,15 @@ export const localAuthRouter = createRouter({
       const token = await signToken({ userId: user.id, email: user.email });
 
       const cookieOpts = getSessionCookieOptions(ctx.req.headers);
-      setCookie(ctx as unknown as import("hono").Context, Session.cookieName, token, {
-        ...cookieOpts,
-        maxAge: 7 * 24 * 60 * 60, // 7 dias
-      });
+      setCookie(
+        ctx as unknown as import("hono").Context,
+        Session.cookieName,
+        token,
+        {
+          ...cookieOpts,
+          maxAge: 7 * 24 * 60 * 60, // 7 dias
+        }
+      );
 
       return {
         success: true,
@@ -181,10 +193,15 @@ export const localAuthRouter = createRouter({
 
   logout: publicQuery.mutation(async ({ ctx }) => {
     const cookieOpts = getSessionCookieOptions(ctx.req.headers);
-    setCookie(ctx as unknown as import("hono").Context, Session.cookieName, "", {
-      ...cookieOpts,
-      maxAge: 0,
-    });
+    setCookie(
+      ctx as unknown as import("hono").Context,
+      Session.cookieName,
+      "",
+      {
+        ...cookieOpts,
+        maxAge: 0,
+      }
+    );
     return { success: true };
   }),
 });

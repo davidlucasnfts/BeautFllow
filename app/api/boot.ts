@@ -22,26 +22,34 @@ if (env.isProduction && process.env.SENTRY_DSN) {
 const app = new Hono<{ Bindings: HttpBindings }>();
 
 // Headers de seguranca
-app.use(secureHeaders({
-  contentSecurityPolicy: {
-    defaultSrc: ["'self'"],
-    styleSrc: ["'self'", "'unsafe-inline'"],
-    scriptSrc: ["'self'"],
-    imgSrc: ["'self'", "data:", "https:"],
-    connectSrc: ["'self'"],
-  },
-  xFrameOptions: "DENY",
-  xContentTypeOptions: "nosniff",
-  referrerPolicy: "strict-origin-when-cross-origin",
-}));
+app.use(
+  secureHeaders({
+    contentSecurityPolicy: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+    },
+    xFrameOptions: "DENY",
+    xContentTypeOptions: "nosniff",
+    referrerPolicy: "strict-origin-when-cross-origin",
+  })
+);
 
 // CORS — permite apenas origens conhecidas
-app.use(cors({
-  origin: env.isProduction
-    ? ["https://beautyflow.vercel.app"]
-    : ["http://localhost:3000", "http://localhost:5173"],
-  credentials: true,
-}));
+const productionOrigin = env.corsOrigin
+  ? [env.corsOrigin]
+  : ["https://studioflow.vercel.app"];
+
+app.use(
+  cors({
+    origin: env.isProduction
+      ? productionOrigin
+      : ["http://localhost:3000", "http://localhost:5173"],
+    credentials: true,
+  })
+);
 
 app.use(bodyLimit({ maxSize: 50 * 1024 * 1024 }));
 
@@ -50,14 +58,15 @@ const ipLimiter = rateLimiter({
   windowMs: 60 * 1000, // 1 minuto
   limit: 100,
   standardHeaders: "draft-6",
-  keyGenerator: (c) => c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "unknown",
+  keyGenerator: c =>
+    c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "unknown",
 });
 
 const authLimiter = rateLimiter({
   windowMs: 60 * 1000,
   limit: 5,
   standardHeaders: "draft-6",
-  keyGenerator: (c) => {
+  keyGenerator: c => {
     const auth = c.req.header("authorization") || "";
     return auth.slice(0, 50) || c.req.header("x-forwarded-for") || "unknown";
   },
@@ -68,7 +77,7 @@ app.use("/api/trpc/localAuth.*", authLimiter);
 app.use("/api/trpc/auth.*", authLimiter);
 
 // Health check
-app.get("/health", async (c) => {
+app.get("/health", async c => {
   try {
     const db = getDb();
     await db.query.users.findFirst({ columns: { id: true } });
@@ -79,7 +88,7 @@ app.get("/health", async (c) => {
 });
 
 // tRPC handler
-app.use("/api/trpc/*", async (c) => {
+app.use("/api/trpc/*", async c => {
   return fetchRequestHandler({
     endpoint: "/api/trpc",
     req: c.req.raw,
@@ -88,7 +97,7 @@ app.use("/api/trpc/*", async (c) => {
   });
 });
 
-app.all("/api/*", (c) => c.json({ error: "Not Found" }, 404));
+app.all("/api/*", c => c.json({ error: "Not Found" }, 404));
 
 export default app;
 

@@ -29,11 +29,8 @@ export async function upsertUser(data: InsertUser) {
     updateSet.role = "admin";
   }
 
-  await getDb()
-    .insert(schema.users)
-    .values(values)
-    .onConflictDoUpdate({
-      target: schema.users.unionId,
-      set: updateSet,
-    });
+  await getDb().insert(schema.users).values(values).onConflictDoUpdate({
+    target: schema.users.unionId,
+    set: updateSet,
+  });
 }

@@ -11,6 +11,7 @@ function required(name: string): string {
 export const env = {
   appId: required("APP_ID"),
   appSecret: required("APP_SECRET"),
+  corsOrigin: process.env.CORS_ORIGIN ?? "",
   isProduction: process.env.NODE_ENV === "production",
   databaseUrl: required("DATABASE_URL"),
   ownerUnionId: process.env.OWNER_UNION_ID ?? "",

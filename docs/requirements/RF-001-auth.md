@@ -6,7 +6,7 @@
 
 ## User Story
 
-**Como** usuário do BeautyFlow,
+**Como** usuário do StudioFlow,
 **quero** fazer login com email/senha ou OAuth,
 **para que** eu acesse meu salão de forma segura.
 

@@ -2,9 +2,7 @@ import { getDb } from "../queries/connection";
 import { auditLogs } from "@db/schema";
 import type { InsertAuditLog } from "@db/schema";
 
-export async function logAudit(
-  data: Omit<InsertAuditLog, "id" | "createdAt">
-) {
+export async function logAudit(data: Omit<InsertAuditLog, "id" | "createdAt">) {
   try {
     await getDb().insert(auditLogs).values(data);
   } catch {

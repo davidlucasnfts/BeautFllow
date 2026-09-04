@@ -15,7 +15,7 @@ export default function Login() {
     onSuccess: () => {
       window.location.href = "/dashboard";
     },
-    onError: (err) => setError(err.message),
+    onError: err => setError(err.message),
   });
 
   const registerMutation = trpc.localAuth.register.useMutation({
@@ -24,7 +24,7 @@ export default function Login() {
       setError("");
       setPassword("");
     },
-    onError: (err) => setError(err.message),
+    onError: err => setError(err.message),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -60,7 +60,7 @@ export default function Login() {
                 <Input
                   id="name"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={e => setName(e.target.value)}
                   placeholder="Seu nome"
                 />
               </div>
@@ -72,7 +72,7 @@ export default function Login() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 placeholder="seu@email.com"
                 required
               />
@@ -84,22 +84,25 @@ export default function Login() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
               />
             </div>
 
-            {error && (
-              <p className="text-sm text-red-500">{error}</p>
-            )}
+            {error && <p className="text-sm text-red-500">{error}</p>}
 
-            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full"
+              size="lg"
+              disabled={isLoading}
+            >
               {isLoading
                 ? "Aguarde..."
                 : mode === "login"
-                ? "Entrar"
-                : "Criar conta"}
+                  ? "Entrar"
+                  : "Criar conta"}
             </Button>
           </form>
 

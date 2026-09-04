@@ -63,13 +63,13 @@ export default function AppointmentDialog({
             <Label>Cliente</Label>
             <Select
               value={form.clientId}
-              onValueChange={(v) => onFieldChange("clientId", v)}
+              onValueChange={v => onFieldChange("clientId", v)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
               <SelectContent>
-                {clients?.map((c) => (
+                {clients?.map(c => (
                   <SelectItem key={c.id} value={String(c.id)}>
                     {c.name}
                   </SelectItem>
@@ -83,13 +83,13 @@ export default function AppointmentDialog({
               <Label>Profissional</Label>
               <Select
                 value={form.professionalId}
-                onValueChange={(v) => onFieldChange("professionalId", v)}
+                onValueChange={v => onFieldChange("professionalId", v)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  {professionals?.map((p) => (
+                  {professionals?.map(p => (
                     <SelectItem key={p.id} value={String(p.id)}>
                       {p.name}
                     </SelectItem>
@@ -101,13 +101,13 @@ export default function AppointmentDialog({
               <Label>Serviço</Label>
               <Select
                 value={form.serviceId}
-                onValueChange={(v) => onFieldChange("serviceId", v)}
+                onValueChange={v => onFieldChange("serviceId", v)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  {services?.map((s) => (
+                  {services?.map(s => (
                     <SelectItem key={s.id} value={String(s.id)}>
                       {s.name} - R$ {s.price}
                     </SelectItem>
@@ -123,7 +123,7 @@ export default function AppointmentDialog({
               <Input
                 type="date"
                 value={form.appointmentDate}
-                onChange={(e) => onFieldChange("appointmentDate", e.target.value)}
+                onChange={e => onFieldChange("appointmentDate", e.target.value)}
               />
             </div>
             <div className="grid gap-2">
@@ -131,7 +131,7 @@ export default function AppointmentDialog({
               <Input
                 type="time"
                 value={form.startTime}
-                onChange={(e) => onFieldChange("startTime", e.target.value)}
+                onChange={e => onFieldChange("startTime", e.target.value)}
               />
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function AppointmentDialog({
             <Label>Observações</Label>
             <Input
               value={form.notes}
-              onChange={(e) => onFieldChange("notes", e.target.value)}
+              onChange={e => onFieldChange("notes", e.target.value)}
               placeholder="Opcional"
             />
           </div>

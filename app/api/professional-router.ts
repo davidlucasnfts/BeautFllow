@@ -37,7 +37,15 @@ export const professionalRouter = createRouter({
         ...data,
         commissionRate: String(commissionRate),
       });
-      await auditAction("create", "professional", salonId, ctx.user?.id, result?.id ?? undefined, undefined, { name: data.name });
+      await auditAction(
+        "create",
+        "professional",
+        salonId,
+        ctx.user?.id,
+        result?.id ?? undefined,
+        undefined,
+        { name: data.name }
+      );
       return result;
     }),
 
@@ -60,9 +68,19 @@ export const professionalRouter = createRouter({
       const { id, salonId, commissionRate, ...data } = input;
       const result = await updateProfessional(id, salonId, {
         ...data,
-        ...(commissionRate !== undefined ? { commissionRate: String(commissionRate) } : {}),
+        ...(commissionRate !== undefined
+          ? { commissionRate: String(commissionRate) }
+          : {}),
       });
-      await auditAction("update", "professional", salonId, ctx.user?.id, id, undefined, data);
+      await auditAction(
+        "update",
+        "professional",
+        salonId,
+        ctx.user?.id,
+        id,
+        undefined,
+        data
+      );
       return result;
     }),
 });

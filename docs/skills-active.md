@@ -1,4 +1,4 @@
-# Skills Ativas — BeautyFlow
+# Skills Ativas — StudioFlow
 
 > Arquivo de referência das skills em uso no projeto. Atualizado automaticamente quando uma skill é aplicada.
 

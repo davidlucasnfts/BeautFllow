@@ -1,11 +1,11 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
 import * as Sentry from "@sentry/react";
-import './index.css'
-import { TRPCProvider } from "@/providers/trpc"
-import { SalonProvider } from "@/providers/salon"
-import App from './App.tsx'
+import "./index.css";
+import { TRPCProvider } from "@/providers/trpc";
+import { SalonProvider } from "@/providers/salon";
+import App from "./App.tsx";
 
 // Sentry — error tracking (só em produção)
 if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
@@ -16,8 +16,8 @@ if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
   });
 }
 
-const rootElement = document.getElementById('root');
-if (!rootElement) throw new Error('Root element not found');
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Root element not found");
 createRoot(rootElement).render(
   <StrictMode>
     <BrowserRouter>
@@ -27,5 +27,5 @@ createRoot(rootElement).render(
         </SalonProvider>
       </TRPCProvider>
     </BrowserRouter>
-  </StrictMode>,
-)
+  </StrictMode>
+);

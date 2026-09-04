@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 12/05/2026
-> **Sessão atual:** Alinhamento com padrão mestre + MestreBeaut.md + Ações manuais concluídas
+> **Atualizado em:** 24/08/2026
+> **Sessão atual:** Renomeação para StudioFlow + segmentação por tenant (salão, barbearia, estética)
 
 ---
 
@@ -11,73 +11,68 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 ---
 
 ## Última funcionalidade trabalhada
-**Alinhamento Completo com Padrão Mestre + Ações Manuais** — 12/05
+**Decisão de estratégia de produto: 3 segmentos + renomeação do app** — 24/08
 
 ### O que mudou nesta sessão:
-1. **MestreBeaut.md criado** — guia completo adaptado do MestreProjects.md
-2. **Rate limiting** — 100 req/min por IP, 5 req/min em auth endpoints
-3. **Husky + hooks** — pre-commit (lint+check), pre-push (test+build)
-4. **Conexão DB inteligente** — recria quando DATABASE_URL muda
-5. **Appointments.tsx refatorado** — de 462 para 236 linhas (4 componentes)
-6. **PRD + 3 User Stories** — RF-001 (Auth), RF-002 (Clientes), RF-003 (Agendamentos)
-7. **CI/CD com deploy** — job deploy para Vercel no GitHub Actions
-8. **ESLint strict** — `tseslint.configs.strict` aplicado
-9. **Migrations organizadas** — padrão MandatoDigital (001-002 + schema_safe.sql)
-10. **RLS habilitado** — policies de isolamento por salão no Supabase
-11. **Testes unitários** — 24 testes em 3 arquivos
-12. **Sentry configurado** — @sentry/react + @sentry/node instalados
-13. **Ações manuais concluídas** — VERCEL_TOKEN, env vars, RLS
-14. **ROADMAP.md atualizado** — Fase 9 marcada como concluída
+1. **Renomeação concluída** — `BeautyFlow` → `StudioFlow` em código, documentação e metadados
+2. **Segmentação implementada** — campo `segment` em `salons` com 3 valores: `beauty_salon`, `barbershop`, `aesthetic_clinic`
+3. **Migration 003** — `supabase/migrations/003-salon-segment.sql` + `schema_safe.sql` atualizado
+4. **Backend segmentado** — `salon-router.ts` aceita segmento no create/update
+5. **Onboarding novo** — `CreateSalonForm.tsx` com seleção de segmento e serviços sugeridos
+6. **Labels dinâmicos** — Dashboard, Clientes, Serviços e Profissionais usam termos por segmento
+7. **Landing page segmentada** — `Home.tsx` com seletor de segmento e copy adaptada
+8. **Helpers de segmento** — criados em `app/contracts/segment-*.ts`
+9. **Paleta por segmento** — landing page, CTA e onboarding usam cores do segmento
+10. **Landing page 100% segmentada** — seções "Como funciona" e "Prova social" adaptam copy por segmento
+11. **Ajustes de consistência** — `package-lock.json` renomeado, textos fixos com "salão" generalizados para "negócio"
+12. **Cores dinâmicas na landing page** — variáveis CSS `--primary`, `--secondary`, `--accent` mudam por segmento
+13. **Validação técnica** — `npm run quality` e `npm run build` passando
 
 ### Arquivos criados:
-- `MestreBeaut.md` — guia completo do projeto
-- `docs/documentacao-estrutura.md` — estrutura de documentação
-- `docs/adr/ADR-005-seguranca-padrao.md` — ADR de segurança
-- `docs/requirements/PRD.md` — Product Requirements Document
-- `docs/requirements/RF-001-auth.md` — User Story: Autenticação
-- `docs/requirements/RF-002-clientes.md` — User Story: CRM Clientes
-- `docs/requirements/RF-003-agendamentos.md` — User Story: Agendamentos
-- `docs/runbooks/processos-manuais.md` — 7 processos manuais documentados
-- `supabase/migrations/001-schema-inicial.sql` — migration base
-- `supabase/migrations/002-rls-policies.sql` — migration RLS
-- `supabase/schema_safe.sql` — schema consolidado idempotente
-- `src/components/appointments/AppointmentFilters.tsx` — filtros do calendário
-- `src/components/appointments/AppointmentDialog.tsx` — modal de novo agendamento
-- `src/components/appointments/useAppointmentForm.ts` — hook do formulário
-- `api/lib/__tests__/rate-limit.test.ts` — testes de rate limiting
-- `api/lib/__tests__/security-utils.test.ts` — testes de segurança
-- `src/lib/__tests__/utils.test.ts` — testes de utilitários
+- `MestreStudioFlow.md` — renomeado a partir de `MestreBeaut.md`
+- `app/contracts/segment-labels.ts` — labels por segmento
+- `app/contracts/segment-palettes.ts` — paletas por segmento
+- `app/contracts/segment-services.ts` — templates de serviços por segmento
+- `app/contracts/segment-messages.ts` — templates de mensagens por segmento
+- `app/src/components/CreateSalonForm.tsx` — onboarding com seleção de segmento
+- `supabase/migrations/003-salon-segment.sql` — migration de segmento
 
 ### Arquivos modificados:
-- `AGENTS.md` — regras completas + self-healing + UX/UI
-- `MEMORY.md` — histórico de entregas atualizado
-- `ROADMAP.md` — Fase 9 concluída, registros atualizados
+- Toda documentação e código — `BeautyFlow` → `StudioFlow`
+- `app/db/schema.ts` — adicionado `salonSegmentEnum` e coluna `segment` em `salons`
+- `app/api/salon-router.ts` — segmento no create/update
+- `app/src/providers/salon.tsx` — `SalonContextType` com `segment`
+- `app/src/components/AuthLayout.tsx` — onboarding quando sem salão, menu dinâmico
+- `app/src/pages/Dashboard.tsx` — labels dinâmicos
+- `app/src/pages/Services.tsx` — labels dinâmicos
+- `app/src/pages/Clients.tsx` — labels dinâmicos
+- `app/src/pages/Professionals.tsx` — labels dinâmicos
+- `app/src/pages/Home.tsx` — seletor de segmento na landing page
+- `app/src/components/landing/CTASection.tsx` — copy por segmento
+- `app/index.html` — metadados atualizados
+- `supabase/schema_safe.sql` — migration 003 incluída
+- `MEMORY.md` — histórico atualizado
 - `SESSION-CONTEXT.md` — estado atual (este arquivo)
-- `app/api/boot.ts` — rate limiting + Sentry
-- `app/api/queries/connection.ts` — recriação de conexão
-- `app/src/pages/Appointments.tsx` — refatorado (< 400 linhas)
-- `app/src/main.tsx` — Sentry frontend
-- `.github/workflows/ci.yml` — job deploy Vercel
-- `app/eslint.config.js` — modo strict
-- `app/vitest.config.ts` — threshold 40%
-- `app/.env.example` — PostgreSQL + Sentry
 
 ---
 
 ## Funcionalidade entregue nesta sessão
-**Alinhamento Completo com Padrão Mestre + MestreBeaut.md + Ações Manuais** — 12/05
+**Decisão estratégica de produto + plano de renomeação/segmentação** — 24/08
 
 ---
 
 ## Próximo passo definido
-**Aguardando definição do David** — opções para próxima sessão:
+**Ações manuais pendentes para finalizar renomeação e segmentação:**
 
-1. **Relatórios PDF/CSV** — Faturamento por período, ocupação dos profissionais, serviços mais vendidos
-2. **Agenda online pública** — Cliente agenda sem ligar para o salão
-3. **Campanhas automáticas de reativação** — WhatsApp/SMS para clientes inativos
-4. **Micro-interações UX** — Toasts, loaders, animações, feedback visual
-5. **Testes adicionais** — Aumentar cobertura de testes
-6. **Exportação de dados** — CSV/Excel de clientes, agendamentos, financeiro
+1. Verificar disponibilidade do domínio `studioflow.com.br` / `studioflow.com`.
+2. Rodar migration `003-salon-segment.sql` no Supabase.
+3. Configurar `CORS_ORIGIN` na Vercel com a URL de produção real.
+4. Deploy.
+
+Após isso, próximas funcionalidades:
+- Landing pages específicas por segmento (`/salao-de-beleza`, `/barbearia`, `/estetica`)
+- Paleta de cores aplicada por segmento no onboarding
+- Templates de comunicação usados nas mensagens automáticas
 
 ---
 
@@ -93,7 +88,7 @@ app/
   api/           → Backend tRPC/Hono (routers, middleware, context, lib/audit.ts)
   db/            → Schema Drizzle (schema.ts, relations.ts)
 docs/            → ADRs + requirements + runbooks + DOR/DOD/LGPD
-supabase/        → schema_safe.sql + migrations/ (001-002)
+supabase/        → schema_safe.sql + migrations/ (001-003)
 .github/         → Workflows CI/CD
 ```
 
@@ -105,8 +100,11 @@ supabase/        → schema_safe.sql + migrations/ (001-002)
 - [x] Configurar env vars na Vercel (DATABASE_URL, APP_ID, APP_SECRET, NODE_ENV, OWNER_UNION_ID)
 - [x] Criar testes (24 testes, 3 arquivos, threshold 40%)
 - [x] Sentry configurado (@sentry/react + @sentry/node)
-- [ ] Adicionar SENTRY_DSN no Vercel (opcional — só se quiser usar)
-- [ ] Escolher próxima funcionalidade do backlog
+- [x] Escolher novo nome do app: **StudioFlow**
+- [ ] **Verificar disponibilidade de domínio** para `studioflow.com.br` / `studioflow.com`
+- [ ] **Rodar migration 003-salon-segment.sql no Supabase**
+- [ ] Adicionar `CORS_ORIGIN` na Vercel com a URL de produção real (ex: `https://studioflow.vercel.app`)
+- [ ] Adicionar `SENTRY_DSN` e `VITE_SENTRY_DSN` na Vercel (opcional — só se quiser usar)
 
 ---
 

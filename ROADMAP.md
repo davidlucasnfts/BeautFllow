@@ -1,4 +1,4 @@
-# BeautyFlow — Roadmap
+# StudioFlow — Roadmap
 
 > **Arquivo de referência.** Para contexto rápido, leia MEMORY.md primeiro.
 
@@ -31,7 +31,7 @@
 ### 07/05/2026 — Alinhamento Documento Mestre
 - [doc] Estrutura `docs/` criada (adr, runbooks, DOR, DOD, LGPD)
 - [doc] 3 ADRs criados, CI/CD pipeline GitHub Actions
-- [dev] package.json: beautyflow v0.1.0, scripts quality/lint:fix/format:check
+- [dev] package.json: studioflow v0.1.0, scripts quality/lint:fix/format:check
 - [dev] .editorconfig, .prettierignore, vitest.config.ts (coverage 80%)
 - [sec] api/boot.ts: secureHeaders, CORS restrito, /health
 - [sec] Dockerfile: stage test, usuário não-root, sem .env

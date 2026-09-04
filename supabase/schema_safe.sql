@@ -1,4 +1,4 @@
--- BeautyFlow — Schema Safe (PostgreSQL)
+-- StudioFlow — Schema Safe (PostgreSQL)
 -- Data: 12/05/2026
 -- Gerado automaticamente juntando as migrations
 -- Este arquivo é IDEMPOTENTE (pode rodar quantas vezes quiser)
@@ -8,7 +8,7 @@
 -- === 001-schema-inicial.sql ===
 -- MIGRATION 001: Schema Inicial
 -- Data: 05/05/2026
--- Descricao: Tabelas base do BeautyFlow
+-- Descricao: Tabelas base do StudioFlow
 
 -- Enums
 CREATE TYPE IF NOT EXISTS user_role AS ENUM ('user', 'admin');
@@ -319,3 +319,22 @@ BEGIN
   END IF;
 END
 $$;
+
+-- ============================================================
+-- MIGRATION 003: Segmento do Salão
+-- Data: 24/08/2026
+-- Descricao: Adiciona segmento do negocio (salao, barbearia,
+-- clinica de estetica) na tabela salons
+-- ============================================================
+
+-- Criar enum de segmento
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'salon_segment') THEN
+    CREATE TYPE salon_segment AS ENUM ('beauty_salon', 'barbershop', 'aesthetic_clinic');
+  END IF;
+END
+$$;
+
+-- Adicionar coluna segment em salons
+ALTER TABLE salons ADD COLUMN IF NOT EXISTS segment salon_segment NOT NULL DEFAULT 'beauty_salon';
