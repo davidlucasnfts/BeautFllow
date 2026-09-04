@@ -101,9 +101,16 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [x] Criar testes (24 testes, 3 arquivos, threshold 40%)
 - [x] Sentry configurado (@sentry/react + @sentry/node)
 - [x] Escolher novo nome do app: **StudioFlow**
-- [ ] **Verificar disponibilidade de domínio** para `studioflow.com.br` / `studioflow.com`
-- [ ] **Rodar migration 003-salon-segment.sql no Supabase**
-- [ ] Adicionar `CORS_ORIGIN` na Vercel com a URL de produção real (ex: `https://studioflow.vercel.app`)
+- [x] Verificar disponibilidade de domínio `studioflow.com.br` — **disponível**
+- [x] Rodar migration 003-salon-segment.sql no Supabase
+- [x] Criar novo projeto Vercel `studioflow` com env vars (incl. CORS_ORIGIN=https://studioflow.vercel.app)
+- [x] Commit + push de todo o código local (estava só no PC desde agosto)
+- [x] Corrigir erro de build Vercel (entrypoint serverless pré-compilado: `server/vercel.ts` → `api/index.js`)
+- [ ] **Atualizar redirect URL no painel OAuth Kimi para `https://studioflow.vercel.app/login`**
+- [ ] **Testar `https://studioflow.vercel.app` após o deploy automático do push**
+- [ ] **Decidir o que fazer com o projeto Vercel antigo (beaut-flow)** — desconectar Git ou deletar após confirmar que o novo funciona
+- [ ] Renomear repositório GitHub `BeautFllow` → `studioflow` (opcional)
+- [ ] Comprar domínio `studioflow.com.br` e configurar na Vercel (quando preparar para vender)
 - [ ] Adicionar `SENTRY_DSN` e `VITE_SENTRY_DSN` na Vercel (opcional — só se quiser usar)
 
 ---
