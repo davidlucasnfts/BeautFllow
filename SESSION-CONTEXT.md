@@ -20,11 +20,24 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 4. **Regra global nova** — MestreProjects.md seção 9: sempre testar local antes de produção (referenciada no AGENTS.md)
 5. **AGENTS.md sincronizado** — estrutura de diretórios e regras técnicas agora refletem `server/` (backend migrou de `api/` nesta sessão)
 6. Deploy de produção `studioflow-navy.vercel.app` funcional (3 deploys Ready)
+7. **OAuth Kimi removido do app** — router `auth-router.ts`, queries OAuth mortas (`queries/users.ts`), fallback no `useAuth.ts`, plugin `kimi-plugin-inspect-react`, env vars `APP_ID`/`OWNER_UNION_ID`/`VITE_APP_ID`/`KIMI_*`. Cookie de sessão renomeado `kimi_sid` → `studioflow_sid`. App 100% independente de plataforma (regra do AGENTS.md)
 
 ### Arquivos modificados nesta sessão:
 - `app/server/local-auth-router.ts` — correção do cookie (login/logout)
+- `app/server/auth-router.ts` — **deletado** (OAuth legado)
+- `app/server/queries/users.ts` — **deletado** (só usado pelo OAuth)
+- `app/server/router.ts` — registro do `authRouter` removido
+- `app/server/boot.ts` — rate limit de `/api/trpc/auth.*` removido
+- `app/server/lib/env.ts` — `appId` e `ownerUnionId` removidos
+- `app/src/hooks/useAuth.ts` — fallback OAuth removido
+- `app/contracts/constants.ts` — `oauthCallback` removido; cookie renomeado
+- `app/vite.config.ts` — plugin `kimi-plugin-inspect-react` removido
+- `app/package.json` — dependência `kimi-plugin-inspect-react` removida
+- `app/vitest.config.ts` — `contracts/**` incluído nos testes
+- `app/.env.example` — vars OAuth removidas
 - `app/public/favicon.svg` — criado
 - `app/index.html` — link do favicon
+- `app/api/index.js` — bundle regenerado (sem OAuth)
 - `AGENTS.md` — regra de fluxo local → produção + sincronização `server/`
 - `MestreProjects.md` — regra global de fluxo local → produção (fora do repo)
 
@@ -80,7 +93,8 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [x] Corrigir erro de build Vercel (backend migrado para `server/`, entrypoint `api/index.js` bundle esbuild, versionado no Git)
 - [x] Reativar projeto Supabase (estava pausado) + rodar migration 003
 - [x] Corrigir fluxo de login/logout local (cookie em `ctx.resHeaders`)
-- [ ] **Atualizar redirect URL no painel OAuth Kimi para `https://studioflow-navy.vercel.app/login`** — sem isso o login OAuth falha em produção
+- [x] **Remover OAuth Kimi do app** (aprovado por David) — elimina a pendência da redirect URL no painel Kimi
+- [ ] **Remover env vars `APP_ID` e `OWNER_UNION_ID` do projeto Vercel `studioflow`** (Settings → Environment Variables) — não são mais lidas pelo código. `APP_SECRET` e `DATABASE_URL` **permanecem**
 - [ ] **Testar cadastro/login em `https://studioflow-navy.vercel.app`** após o push destas correções
 - [ ] **Decidir o que fazer com o projeto Vercel antigo (`beaut-flow`)** — desconectar Git ou deletar (conflita no mesmo repo, deploya a cada push)
 - [ ] Renomear repositório GitHub `BeautFllow` → `studioflow` (opcional)

@@ -15,25 +15,10 @@ export function useAuth(options?: UseAuthOptions) {
   const navigate = useNavigate();
   const utils = trpc.useUtils();
 
-  // Tenta auth local primeiro
-  const { data: localUser, isLoading: localLoading } =
-    trpc.localAuth.me.useQuery(undefined, {
-      staleTime: 1000 * 60 * 5,
-      retry: false,
-    });
-
-  // Fallback para OAuth (legacy)
-  const { data: oauthUser, isLoading: oauthLoading } = trpc.auth.me.useQuery(
-    undefined,
-    {
-      staleTime: 1000 * 60 * 5,
-      retry: false,
-      enabled: !localUser && !localLoading,
-    }
-  );
-
-  const user = localUser ?? oauthUser ?? null;
-  const isLoading = localLoading || oauthLoading;
+  const { data: user, isLoading } = trpc.localAuth.me.useQuery(undefined, {
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  });
 
   const logoutLocal = trpc.localAuth.logout.useMutation({
     onSuccess: async () => {
@@ -42,20 +27,9 @@ export function useAuth(options?: UseAuthOptions) {
     },
   });
 
-  const logoutOAuth = trpc.auth.logout.useMutation({
-    onSuccess: async () => {
-      await utils.invalidate();
-      navigate(redirectPath);
-    },
-  });
-
   const logout = useCallback(() => {
-    if (localUser) {
-      logoutLocal.mutate();
-    } else {
-      logoutOAuth.mutate();
-    }
-  }, [localUser, logoutLocal, logoutOAuth]);
+    logoutLocal.mutate();
+  }, [logoutLocal]);
 
   useEffect(() => {
     if (redirectOnUnauthenticated && !isLoading && !user) {
@@ -68,22 +42,14 @@ export function useAuth(options?: UseAuthOptions) {
 
   return useMemo(
     () => ({
-      user,
+      user: user ?? null,
       isAuthenticated: !!user,
-      isLoading: isLoading || logoutLocal.isPending || logoutOAuth.isPending,
+      isLoading: isLoading || logoutLocal.isPending,
       logout,
       refresh: () => {
         utils.localAuth.me.invalidate();
-        utils.auth.me.invalidate();
       },
     }),
-    [
-      user,
-      isLoading,
-      logoutLocal.isPending,
-      logoutOAuth.isPending,
-      logout,
-      utils,
-    ]
+    [user, isLoading, logoutLocal.isPending, logout, utils]
   );
 }

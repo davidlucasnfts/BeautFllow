@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import { Session, ErrorMessages, Paths } from "../constants";
 
 describe("constants", () => {
-  it("Session.cookieName deve ser kimi_sid", () => {
-    expect(Session.cookieName).toBe("kimi_sid");
+  it("Session.cookieName deve ser studioflow_sid", () => {
+    expect(Session.cookieName).toBe("studioflow_sid");
   });
 
   it("Session.maxAgeMs deve ser 1 ano em ms", () => {
@@ -20,9 +20,5 @@ describe("constants", () => {
 
   it("Paths.login deve ser /login", () => {
     expect(Paths.login).toBe("/login");
-  });
-
-  it("Paths.oauthCallback deve ser /api/oauth/callback", () => {
-    expect(Paths.oauthCallback).toBe("/api/oauth/callback");
   });
 });

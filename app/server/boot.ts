@@ -74,7 +74,6 @@ const authLimiter = rateLimiter({
 
 app.use("/api/trpc/*", ipLimiter);
 app.use("/api/trpc/localAuth.*", authLimiter);
-app.use("/api/trpc/auth.*", authLimiter);
 
 // Health check
 app.get("/health", async c => {

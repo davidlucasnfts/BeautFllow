@@ -245,8 +245,7 @@ app/
 │   ├── vercel.ts           # Handler serverless para Vercel
 │   ├── lib/audit.ts        # Helper de audit log
 │   ├── lib/env.ts          # Variáveis de ambiente
-│   ├── auth-router.ts      # Auth OAuth (me, logout)
-│   ├── local-auth-router.ts # Auth local (register, login, logout)
+│   ├── local-auth-router.ts # Auth (register, login, me, logout) — único auth do app
 │   ├── salon-router.ts     # CRUD salões
 │   ├── client-router.ts    # CRUD clientes
 │   ├── service-router.ts   # CRUD serviços
@@ -258,9 +257,7 @@ app/
 │   ├── dashboard-router.ts
 │   ├── queries/
 │   │   ├── connection.ts   # Drizzle DB connection
-│   │   ├── users.ts
 │   │   └── salon.ts        # Queries do negócio
-│   ├── kimi/               # OAuth SDK (NÃO MODIFICAR)
 │   └── lib/                # Framework internals (NÃO MODIFICAR)
 ├── db/
 │   ├── schema.ts           # Tabelas Drizzle (fonte da verdade)
@@ -330,10 +327,10 @@ npm run db:migrate # Aplicar migrations (prod)
 **Backend:**
 1. Sempre usar `authedQuery` para endpoints com login
 2. Sempre filtrar por `salonId` — nunca retornar dados de múltiplos tenants
-3. Nunca modificar `server/lib/` (framework internals) ou `server/kimi/` (OAuth SDK)
+3. Nunca modificar `server/lib/` (framework internals)
 4. Novas tabelas em `db/schema.ts`, gerar migration em `supabase/migrations/`
 5. Novos routers em `server/*-router.ts`, registrar em `server/router.ts`
-6. Usar `server/queries/salon.ts` para queries reutilizáveis
+6. Usar `server/queries/` para queries reutilizáveis
 7. Operações críticas (create/update/delete) devem gerar audit log via `server/lib/audit.ts`
 8. Rate limiting ativo: 100 req/min por IP, 5 req/min em auth endpoints
 9. Sempre validar inputs com Zod antes de processar

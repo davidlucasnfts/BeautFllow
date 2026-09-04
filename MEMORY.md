@@ -52,6 +52,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Migração do backend `api/` → `server/` (build Vercel, histórico Git preservado) | 04/09 |
 | Correção do login/logout local (cookie escrito em `ctx.resHeaders`) | 04/09 |
 | Favicon StudioFlow (`public/favicon.svg`) | 04/09 |
+| Remoção do OAuth Kimi — app 100% independente (router, plugin, env vars) | 04/09 |
 
 ---
 
@@ -158,6 +159,15 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 - **Correção:** cookie serializado com `cookie.serialize` e escrito em `ctx.resHeaders` (mesmo padrão do `auth-router.ts` OAuth)
 - Validado de ponta a ponta via API: register → login → me → logout → me (null)
 - Regra nova no AGENTS.md (Backend #11) para não repetir
+
+### Remoção do OAuth Kimi (app 100% independente)
+- `server/auth-router.ts` e `server/queries/users.ts` deletados (código morto do template)
+- Fallback OAuth removido do `useAuth.ts` — auth local é o único auth
+- Plugin `kimi-plugin-inspect-react` removido do Vite e das dependências
+- Env vars `APP_ID`, `OWNER_UNION_ID`, `VITE_APP_ID`, `KIMI_*` removidas do `env.ts` e `.env.example` (`APP_SECRET` fica — assina o JWT do auth local)
+- Cookie de sessão renomeado `kimi_sid` → `studioflow_sid`
+- `vitest.config.ts` corrigido para incluir `contracts/**` (teste de constants rodava fora do include)
+- Elimina a pendência da redirect URL no painel Kimi
 
 ### Outros
 - Favicon criado (`app/public/favicon.svg` + link no `index.html`)
