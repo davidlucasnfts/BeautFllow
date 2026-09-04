@@ -12,6 +12,7 @@ import {
   time,
   integer,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 // ==========================================
@@ -184,6 +185,7 @@ export const salonUsers = pgTable(
   table => ({
     userSalonIdx: index("user_salon_idx").on(table.userId, table.salonId),
     salonIdx: index("salon_users_salon_idx").on(table.salonId),
+    userIdUnique: uniqueIndex("salon_users_user_id_key").on(table.userId),
   })
 );
 

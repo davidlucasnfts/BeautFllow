@@ -338,3 +338,13 @@ $$;
 
 -- Adicionar coluna segment em salons
 ALTER TABLE salons ADD COLUMN IF NOT EXISTS segment salon_segment NOT NULL DEFAULT 'beauty_salon';
+
+
+-- ============================================================
+-- MIGRATION 004: Constraint unica em salon_users.userId
+-- Data: 04/09/2026
+-- Descricao: Necessaria para o ON CONFLICT ("userId") do
+--            addUserToSalon (onboarding, papel owner)
+-- ============================================================
+
+CREATE UNIQUE INDEX IF NOT EXISTS salon_users_user_id_key ON salon_users ("userId");
