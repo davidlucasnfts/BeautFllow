@@ -9,9 +9,8 @@ export default defineConfig([
   globalIgnores([
     "dist",
     "coverage",
-    "api/lib/**",
-    "api/kimi/**",
     "api/index.js",
+    "server/lib/**",
     "src/components/ui/**",
   ]),
   {
