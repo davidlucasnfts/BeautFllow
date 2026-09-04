@@ -1,0 +1,2 @@
+# Bundle compilado: sem diff no histórico (sempre regenerado via build:api)
+app/api/index.js -diff merge=binary
