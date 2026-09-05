@@ -37,6 +37,7 @@ import {
   dateBRToISO,
   isoToDateBR,
 } from "@/lib/input-masks";
+import ClientPreview from "@/components/clients/ClientPreview";
 
 const segmentColors: Record<string, string> = {
   new: "bg-blue-100 text-blue-700",
@@ -63,6 +64,7 @@ export default function Clients() {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -101,6 +103,7 @@ export default function Clients() {
   const deleteMutation = trpc.customer.delete.useMutation({
     onSuccess: () => {
       utils.customer.list.invalidate();
+      setSelectedId(null);
       toast.success(`${segmentLabel("client")} apagado dos registros`);
     },
     onError: e => toast.error(e.message),
@@ -113,6 +116,8 @@ export default function Clients() {
           c.phone.includes(search)
       )
     : clients;
+
+  const selected = filtered?.find(c => c.id === selectedId) ?? null;
 
   function resetForm() {
     setForm({
@@ -261,7 +266,13 @@ export default function Clients() {
       ) : filtered && filtered.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map(client => (
-            <Card key={client.id} className="relative group h-full">
+            <Card
+              key={client.id}
+              className="relative group h-full cursor-pointer"
+              onClick={() =>
+                setSelectedId(client.id === selectedId ? null : client.id)
+              }
+            >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -283,7 +294,10 @@ export default function Clients() {
                   <div className="flex flex-col gap-1 shrink-0">
                     <button
                       type="button"
-                      onClick={() => handleEdit(client)}
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleEdit(client);
+                      }}
                       className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-blue-50 text-blue-600 hover:bg-blue-100"
                     >
                       <Edit3 className="w-3 h-3" />
@@ -291,13 +305,15 @@ export default function Clients() {
                     </button>
                     <button
                       type="button"
-                      onClick={() =>
-                        salon &&
-                        deleteMutation.mutate({
-                          id: client.id,
-                          salonId: salon.id,
-                        })
-                      }
+                      onClick={e => {
+                        e.stopPropagation();
+                        if (salon) {
+                          deleteMutation.mutate({
+                            id: client.id,
+                            salonId: salon.id,
+                          });
+                        }
+                      }}
                       className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-red-50 text-red-600 hover:bg-red-100"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -333,6 +349,24 @@ export default function Clients() {
           <p>Nenhum cliente encontrado.</p>
           <p className="text-sm">Cadastre seu primeiro cliente para começar.</p>
         </div>
+      )}
+
+      {selected && (
+        <ClientPreview
+          client={selected}
+          segmentBadgeClass={segmentColors[selected.segment]}
+          segmentLabelText={segmentLabels[selected.segment]}
+          onEdit={() => handleEdit(selected)}
+          onDelete={() => {
+            if (salon) {
+              deleteMutation.mutate({
+                id: selected.id,
+                salonId: salon.id,
+              });
+            }
+          }}
+          onClose={() => setSelectedId(null)}
+        />
       )}
     </div>
   );

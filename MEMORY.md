@@ -53,6 +53,10 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Correção do login/logout local (cookie escrito em `ctx.resHeaders`) | 04/09 |
 | Favicon StudioFlow (`public/favicon.svg`) | 04/09 |
 | Remoção do OAuth Kimi — app 100% independente (router, plugin, env vars) | 04/09 |
+| Padrões do MandatoDigital copiados para o AGENTS.md (checklist pré-commit, páginas de teste, preview, mobile-first) | 05/09 |
+| Cards com alturas iguais (h-full) + scroll em todos os dialogs | 05/09 |
+| Botões de ação com texto + ícone nas cores do design system (Clientes, Serviços, Profissionais) | 05/09 |
+| Ficha do cliente ao clicar no card — detalhes + botão WhatsApp + ações (padrão preview) | 05/09 |
 
 ---
 
