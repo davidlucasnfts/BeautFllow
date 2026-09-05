@@ -192,8 +192,8 @@ export default function Dashboard() {
           <AlertCircle className="h-5 w-5 shrink-0" />
           <div className="flex-1">
             <p className="text-sm font-medium">
-              Taxa de no-show em {metrics.noShowRate}% — acima do ideal (15%).
-              Considere ativar lembretes automáticos.
+              {metrics.noShowRate}% dos clientes faltaram nos últimos dias — o ideal é
+              ficar abaixo de 15%. Considere ativar lembretes automáticos.
             </p>
           </div>
         </div>
@@ -202,14 +202,14 @@ export default function Dashboard() {
       {/* KPIs */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KpiCard
-          title="Agendamentos Hoje"
+          title="Atendimentos hoje"
           value={metrics?.appointmentsToday ?? 0}
           icon={CalendarDays}
           isLoading={isLoading}
           sparklineData={sparkAppointments}
         />
         <KpiCard
-          title={`${segmentLabel("client")}s Totais`}
+          title={`Total de ${segmentLabel("client").toLowerCase()}s`}
           value={metrics?.clientsTotal ?? 0}
           icon={Users}
           trend={
@@ -225,7 +225,7 @@ export default function Dashboard() {
           sparklineData={sparkClients}
         />
         <KpiCard
-          title="Receita do Mês"
+          title="Ganhos do mês"
           value={
             metrics
               ? `R$ ${metrics.monthlyRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
@@ -241,21 +241,21 @@ export default function Dashboard() {
           }
           trendValue={
             metrics
-              ? `${metrics.revenueGrowth > 0 ? "+" : ""}${metrics.revenueGrowth}% vs mês anterior`
+              ? `${metrics.revenueGrowth > 0 ? "+" : ""}${metrics.revenueGrowth}% comparado ao mês passado`
               : undefined
           }
           isLoading={isLoading}
           sparklineData={sparkRevenue}
         />
         <KpiCard
-          title="Taxa No-Show"
+          title="Clientes que faltaram"
           value={`${metrics?.noShowRate ?? 0}%`}
           icon={AlertCircle}
           trend={metrics && metrics.noShowRate > 15 ? "down" : "up"}
           trendValue={
             metrics && metrics.noShowRate > 15
               ? "Acima do ideal"
-              : "Dentro da meta"
+              : "Dentro do esperado"
           }
           isLoading={isLoading}
         />
@@ -266,7 +266,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base font-serif">
-              Status dos Agendamentos (Mês)
+              Agendamentos do mês
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -319,7 +319,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base font-serif">
-              Próximos Agendamentos
+              Próximos atendimentos
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">

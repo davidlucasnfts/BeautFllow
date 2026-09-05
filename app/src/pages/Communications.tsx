@@ -105,9 +105,9 @@ export default function Communications() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Comunicação</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Mensagens</h1>
           <p className="text-muted-foreground">
-            Central de mensagens e histórico omnichannel
+            Todas as mensagens enviadas para seus clientes
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>

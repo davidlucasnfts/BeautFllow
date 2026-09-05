@@ -111,7 +111,7 @@ export default function Financial() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Financeiro</h1>
           <p className="text-muted-foreground">
-            Faturamento, comissões e lançamentos
+            Seus ganhos, comissões e gastos
           </p>
         </div>
         <div className="flex items-center gap-2">

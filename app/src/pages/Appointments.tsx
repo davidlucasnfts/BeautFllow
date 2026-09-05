@@ -161,7 +161,7 @@ export default function Appointments() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Agendamentos</h1>
           <p className="text-muted-foreground">
-            Calendário e gestão de horários
+            Sua agenda de atendimentos
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">

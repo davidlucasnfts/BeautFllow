@@ -39,7 +39,7 @@ export default function CreateSalonForm() {
     setError("");
 
     if (!name.trim() || !slug.trim()) {
-      setError("Preencha nome e identificador do seu negócio.");
+      setError("Preencha o nome e o endereço do seu negócio.");
       return;
     }
 
@@ -112,7 +112,7 @@ export default function CreateSalonForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="slug">Identificador único (URL)</Label>
+              <Label htmlFor="slug">Seu endereço no StudioFlow</Label>
               <Input
                 id="slug"
                 value={slug}
@@ -121,7 +121,7 @@ export default function CreateSalonForm() {
                 required
               />
               <p className="text-xs text-muted-foreground">
-                Será usado na URL pública do seu agendamento.
+                É assim que seus clientes vão te encontrar aqui.
               </p>
             </div>
 

@@ -93,7 +93,7 @@ function Logo({ className }: { className?: string }) {
 function getMenuItems(segment: SalonSegment) {
   const labels = getSegmentLabel;
   return [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: LayoutDashboard, label: "Início", path: "/dashboard" },
     { icon: Users, label: labels(segment, "client"), path: "/clients" },
     {
       icon: CalendarDays,
@@ -111,8 +111,8 @@ function getMenuItems(segment: SalonSegment) {
       path: "/professionals",
     },
     { icon: DollarSign, label: "Financeiro", path: "/financial" },
-    { icon: MessageSquare, label: "Comunicação", path: "/communications" },
-    { icon: FileCheck, label: "Termos & LGPD", path: "/consent" },
+    { icon: MessageSquare, label: "Mensagens", path: "/communications" },
+    { icon: FileCheck, label: "Termos e Autorizações", path: "/consent" },
   ];
 }
 

@@ -53,9 +53,11 @@ export default function Consent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Termos & LGPD</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Termos e Autorizações
+          </h1>
           <p className="text-muted-foreground">
-            Consentimentos digitais, auditoria e compliance
+            Autorizações que seus clientes assinam no celular
           </p>
         </div>
         <Dialog open={openForm} onOpenChange={setOpenForm}>
