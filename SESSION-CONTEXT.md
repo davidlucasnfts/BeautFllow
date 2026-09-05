@@ -43,6 +43,12 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 
 ---
 
+## Consolidação dos arquivos mestre — 05/09
+
+A pasta `PROJETOS IA` tinha 3 fontes de regras globais: `MestreProjects.md`, a pasta fatiada `MestreProjects/` (13 arquivos) e `MASTER_NOVO_PROJETO.md` (template). Consolidado tudo no `MestreProjects.md` (v2.0.0, seções 15 e 16 novas + tabela de 20 erros no Self-Healing). Originais arquivados em `PROJETOS IA/_arquivamento-2026-09/` — David pode apagar a pasta quando conferir.
+
+---
+
 ## Funcionalidade entregue nesta sessão
 **Correção do auth local (login/logout) + favicon + regra de fluxo local → produção** — 04/09
 
