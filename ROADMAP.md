@@ -2,11 +2,29 @@
 
 > **Arquivo de referência.** Para contexto rápido, leia MEMORY.md primeiro.
 
-Última atualização: 12/05/2026
+Última atualização: 04/09/2026
 
 ---
 
 ## Registro de Alterações
+
+### 24/08/2026 — Renomeação e Segmentação (estratégia de produto)
+- [feat] Renomeação concluída: BeautyFlow → StudioFlow (código, docs, metadados)
+- [feat] Segmentação por tenant: salão de beleza, barbearia, clínica de estética
+- [feat] Migration 003 (coluna segment em salons) + onboarding com seleção de segmento
+- [feat] Labels dinâmicos por segmento (Dashboard, Clientes, Serviços, Profissionais)
+- [feat] Landing page segmentada (seletor, copy, paleta de cores por segmento)
+- [ok] Variáveis CSS dinâmicas por segmento na landing page
+
+### 04/09/2026 — Hardening do Deploy e do Auth
+- [fix] Backend migrado de `api/` para `server/` — build Vercel não quebra mais (tsc node16)
+- [fix] Entrypoint serverless: `api/index.js` é bundle esbuild de `server/vercel.ts`, versionado no Git
+- [fix] Correção do login/logout local (cookie escrito em `ctx.resHeaders`, não em ctx Hono)
+- [ref] Remoção do OAuth Kimi — app 100% independente de plataforma (auth local único)
+- [fix] Migration 004: constraint unique em salon_users("userId") — corrige criação de negócio no onboarding
+- [feat] Favicon StudioFlow
+- [dev] Novo projeto Vercel `studioflow` — produção em studioflow-navy.vercel.app
+- [doc] Regra global: sempre testar local antes de produção (MestreProjects.md seção 9)
 
 ### 05/05/2026 — Setup Inicial
 - [dev] Projeto migrado do Kimi Web para Kimi Code
@@ -107,7 +125,7 @@
 | RF-007 | Comunicação Omnichannel | Must | ✅ |
 | RF-008 | Termos e Consentimentos LGPD | Must | ✅ |
 | RF-009 | Landing Page | Must | ✅ |
-| RF-010 | Auth OAuth 2.0 + JWT | Must | ✅ |
+| RF-010 | Auth (email/senha) + JWT — 100% independente | Must | ✅ |
 | RF-011 | Multi-tenancy por salão | Must | ✅ |
 | RF-012 | Calendário Profissional | Should | ✅ |
 | RF-013 | Landing Page que Vende | Should | ✅ |
