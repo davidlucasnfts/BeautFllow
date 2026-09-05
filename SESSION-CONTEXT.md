@@ -11,9 +11,17 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 ---
 
 ## Última funcionalidade trabalhada
-**Correção do fluxo de auth local + favicon + regra global de fluxo local → produção** — 04/09
+**Cópia de padrões do MandatoDigital para o AGENTS.md + auditoria de design do projeto** — 05/09
 
-### O que mudou nesta sessão:
+### O que mudou nesta sessão (05/09):
+1. **AGENTS.md ganhou 8 padrões copiados do MandatoDigital** (commit f6c56b0): checklist pré-commit obrigatório, padrão de páginas de teste (V2/V3), padrão de preview/detalhes (ficha do item selecionado), abas/filtros, cards h-full + grids simétricos, mobile-first responsivo obrigatório, regra de senha PostgreSQL sem caracteres especiais
+2. **Auditoria de design executada** — achados pendentes de aplicação:
+   - `Clients.tsx`, `Services.tsx`, `Professionals.tsx` usam botões de ícone sozinhos (ghost, Edit3/Trash2 sem texto) — violam a regra "sempre texto + ícone" do próprio design system
+   - Cards dos grids sem `h-full` (alturas podem diferir)
+   - Dialogs sem `w-full max-h-[80vh] overflow-y-auto`
+   - Nenhuma página tem preview/ficha expandida — melhoria #2 priorizada (ficha do cliente + WhatsApp) deve seguir o novo padrão de preview
+
+### Sessão anterior (04/09):
 1. **Bug crítico corrigido** — login/logout local davam 500 `c.header is not a function` (ctx tRPC passado para `setCookie` do Hono). Agora o cookie é serializado com `cookie.serialize` e escrito em `ctx.resHeaders` (mesmo padrão do `auth-router.ts`)
 2. **Fluxo validado de ponta a ponta** — register → login → me → logout → me (null), tudo via API no servidor local
 3. **Favicon criado** — `app/public/favicon.svg` + link no `index.html` (eliminava o 404 do console)
