@@ -55,7 +55,7 @@ export default function AppointmentDialog({
           <Plus className="mr-2 h-4 w-4" /> Novo
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Novo Agendamento</DialogTitle>
         </DialogHeader>

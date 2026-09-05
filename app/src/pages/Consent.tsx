@@ -66,7 +66,7 @@ export default function Consent() {
               <Plus className="mr-2 h-4 w-4" /> Novo Termo
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Novo Termo de Autorização</DialogTitle>
             </DialogHeader>
@@ -164,7 +164,7 @@ export default function Consent() {
         ) : forms && forms.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2">
             {forms.map(f => (
-              <Card key={f.id}>
+              <Card key={f.id} className="h-full">
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-3">
                     <div className="h-9 w-9 rounded-md bg-amber-100 flex items-center justify-center">

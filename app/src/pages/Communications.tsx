@@ -131,7 +131,7 @@ export default function Communications() {
               <Send className="mr-2 h-4 w-4" /> Enviar Mensagem
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Nova Mensagem</DialogTitle>
             </DialogHeader>

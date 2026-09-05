@@ -179,7 +179,7 @@ export default function Clients() {
               <Plus className="mr-2 h-4 w-4" /> Novo {segmentLabel("client")}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editing
@@ -261,7 +261,7 @@ export default function Clients() {
       ) : filtered && filtered.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map(client => (
-            <Card key={client.id} className="relative group">
+            <Card key={client.id} className="relative group h-full">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
