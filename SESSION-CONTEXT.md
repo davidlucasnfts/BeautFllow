@@ -106,6 +106,7 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [ ] Renomear repositório GitHub `BeautFllow` → `studioflow` (opcional)
 - [ ] Comprar domínio `studioflow.com.br` e configurar na Vercel (quando preparar para vender)
 - [ ] Adicionar `SENTRY_DSN` e `VITE_SENTRY_DSN` na Vercel (opcional — só se quiser usar)
+- [ ] Rodar migration 005-rls-salons.sql no Supabase (SQL Editor) — fecha lacuna: tabela `salons` estava sem RLS. App não é afetado (backend acessa como owner), mas testar o fluxo local depois
 - [ ] Apagar usuário de teste `teste.kimi.2026@gmail.com` na tabela `local_users` do Supabase (opcional)
 
 ---
