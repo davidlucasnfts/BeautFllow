@@ -2,7 +2,25 @@
 
 > **Arquivo de referência.** Para contexto rápido, leia MEMORY.md primeiro.
 
-Última atualização: 04/09/2026
+Última atualização: 05/09/2026
+
+---
+
+## Plano de Progresso
+
+> Modelo obrigatório definido em `MestreProjects.md` (seção 9).
+
+| Fase | Nome | Status | Observação |
+|------|------|--------|------------|
+| 0 | Setup | ✅ | Repo, Vercel, Supabase, CI/CD, docs (05/05) |
+| 1 | MVP funcional | ✅ | Dashboard, clientes, agenda, serviços, profissionais, financeiro, mensagens, termos (07/05–24/08) |
+| 2 | Testes e estabilização | [~] | Feito: cadastro/login/onboarding, menu mobile, linguagem de balcão (106 textos), fix do auth, OAuth Kimi removido. **Falta no smoke test:** cadastrar cliente/serviço/profissional, agendamento completo, financeiro |
+| 3 | Produção | [~] | Produção no ar (`studioflow-navy.vercel.app`). **Falta:** push das correções, testar cadastro/login em produção, remover env vars `APP_ID`/`OWNER_UNION_ID` da Vercel, decidir destino do projeto antigo `beaut-flow` |
+| 4 | Pronto para vender | ⏳ | Falta: landing pages por segmento (`/salao-de-beleza`, `/barbearia`, `/estetica`), preços definidos, domínio `studioflow.com.br` (comprar) |
+| 5 | Primeiros clientes | ⏳ | — |
+| 6 | Crescimento | ⏳ | — |
+
+**Próxima ação:** completar o smoke test da Fase 2 local → push → validar Fase 3 em produção.
 
 ---
 
