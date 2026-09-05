@@ -105,6 +105,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - **Sempre avisar David no final da resposta** com destaque em negrito e emoji ⚠️
 - Nunca assumir que ele "já sabe" — ele não escreve código e não acompanha infraestrutura
 - Itens pendentes devem ser claros: **o quê**, **onde fazer**, **como fazer**
+- **Quando David confirmar que executou a ação, marcar como `[x]` imediatamente** na mesma resposta — nunca deixar para depois
 
 ---
 
