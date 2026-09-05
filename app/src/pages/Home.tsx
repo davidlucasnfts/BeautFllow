@@ -24,17 +24,17 @@ import {
 } from "@contracts/segment-palettes";
 
 const stats = [
-  { value: "35%", label: "Redução de No-Show" },
-  { value: "5min", label: "Ativação do Sistema" },
-  { value: "LGPD", label: "Compliance Nativo" },
-  { value: "100%", label: "Omnichannel" },
+  { value: "35%", label: "Menos clientes faltando" },
+  { value: "5min", label: "Pronto para usar em" },
+  { value: "LGPD", label: "Dados protegidos por lei" },
+  { value: "100%", label: "WhatsApp, SMS e e-mail" },
 ];
 
 const features = [
   {
     icon: CalendarDays,
     title: "Agendamento Inteligente",
-    desc: "Calendário multi-profissional, agendamento online público, confirmações automáticas e lista de espera.",
+    desc: "Vários profissionais na mesma agenda, clientes marcam sozinhos pelo link, confirmações automáticas e lista de espera.",
   },
   {
     icon: Users,
@@ -54,12 +54,12 @@ const features = [
   {
     icon: TrendingUp,
     title: "Financeiro & Comissões",
-    desc: "Lançamentos por serviço/produto, controle de comissões por profissional, dashboard de faturamento e relatórios.",
+    desc: "Anote ganhos por serviço/produto, controle comissões de cada profissional e veja quanto entrou no mês.",
   },
   {
     icon: Sparkles,
     title: "Experiência do Cliente",
-    desc: "QR code de check-in, pré-checklist automática, pós-cuidados personalizados e avaliação NPS.",
+    desc: "Cliente confirma chegada pelo QR code, recebe os cuidados antes e depois do serviço e ainda avalia você.",
   },
 ];
 
@@ -72,7 +72,7 @@ const plans = [
       "1 profissional",
       "30 agendamentos/mês",
       "Confirmação por e-mail",
-      "CRM básico",
+      "Cadastro de clientes",
     ],
     cta: "Começar",
     highlight: false,
@@ -84,8 +84,8 @@ const plans = [
     features: [
       "Até 3 profissionais",
       "Agendamento ilimitado",
-      "WhatsApp API (500 msg)",
-      "CRM completo",
+      "WhatsApp (500 mensagens)",
+      "Cadastro completo de clientes",
       "Financeiro simples",
     ],
     cta: "Assinar",
@@ -98,7 +98,7 @@ const plans = [
     features: [
       "Até 8 profissionais",
       "Termos digitais",
-      "Automações de retenção",
+      "Mensagens automáticas para clientes voltarem",
       "Comissões avançadas",
       "2000 msg/mês",
     ],
@@ -120,7 +120,7 @@ const segmentHeroCopy: Record<
   beauty_salon: {
     title: "salões de beleza",
     subtitle:
-      "Do primeiro contato ao pós-venda. Agenda inteligente, cadastro de clientes, lembretes automáticos e fidelização — tudo em um só lugar.",
+      "Do primeiro contato ao pós-venda. Agenda inteligente, cadastro de clientes, lembretes automáticos e clientes voltando sempre — tudo em um só lugar.",
   },
   barbershop: {
     title: "barbearias",

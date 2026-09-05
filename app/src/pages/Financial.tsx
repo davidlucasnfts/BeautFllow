@@ -82,7 +82,7 @@ export default function Financial() {
       utils.financial.list.invalidate();
       utils.financial.summary.invalidate();
       setOpen(false);
-      toast.success("Lançamento criado");
+      toast.success("Registro criado");
     },
     onError: e => toast.error(e.message),
   });
@@ -124,12 +124,12 @@ export default function Financial() {
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Plus className="mr-2 h-4 w-4" /> Lançamento
+                <Plus className="mr-2 h-4 w-4" /> Novo registro
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle>Novo Lançamento</DialogTitle>
+                <DialogTitle>Novo registro</DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
@@ -277,7 +277,7 @@ export default function Financial() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Receita Líquida
+              Ganho líquido
             </CardTitle>
             <TrendingUp className="h-4 w-4 text-emerald-500" />
           </CardHeader>
@@ -327,7 +327,7 @@ export default function Financial() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Lançamentos do Mês</CardTitle>
+          <CardTitle className="text-base">Registros do mês</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -339,7 +339,7 @@ export default function Financial() {
                   <TableHead>Data</TableHead>
                   <TableHead>Descrição</TableHead>
                   <TableHead>Cliente</TableHead>
-                  <TableHead>Método</TableHead>
+                  <TableHead>Pagamento</TableHead>
                   <TableHead className="text-right">Valor</TableHead>
                 </TableRow>
               </TableHeader>
@@ -373,7 +373,7 @@ export default function Financial() {
           ) : (
             <div className="text-center py-12 text-muted-foreground">
               <DollarSign className="h-10 w-10 mx-auto mb-3 opacity-20" />
-              <p>Nenhum lançamento neste mês.</p>
+              <p>Nenhum registro neste mês.</p>
             </div>
           )}
         </CardContent>

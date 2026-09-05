@@ -180,7 +180,7 @@ export default function Professionals() {
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label>Biografia / Especialidades</Label>
+                <Label>Especialidades</Label>
                 <Input
                   value={form.bio}
                   onChange={e => setForm({ ...form, bio: e.target.value })}
@@ -231,7 +231,7 @@ export default function Professionals() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-1">
                     <Button
                       size="icon"
                       variant="ghost"

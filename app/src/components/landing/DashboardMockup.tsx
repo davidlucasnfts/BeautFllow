@@ -15,13 +15,13 @@ export function DashboardMockup() {
       color: "bg-violet-100 text-violet-600",
     },
     {
-      label: "Faturamento",
+      label: "Ganhos",
       value: "R$4.2k",
       icon: TrendingUp,
       color: "bg-emerald-100 text-emerald-600",
     },
     {
-      label: "No-Show",
+      label: "Faltas",
       value: "3%",
       icon: Clock,
       color: "bg-amber-100 text-amber-600",
@@ -96,7 +96,7 @@ export function DashboardMockup() {
             {/* Chart area */}
             <div className="md:col-span-2 rounded-lg border border-border/40 p-4 bg-background">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-semibold">Faturamento Semanal</p>
+                <p className="text-xs font-semibold">Ganhos da semana</p>
                 <div className="flex gap-1">
                   {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(d => (
                     <div

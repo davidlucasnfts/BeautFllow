@@ -130,7 +130,7 @@ export default function Services() {
             {segmentLabel("service")}s
           </h1>
           <p className="text-muted-foreground">
-            Catálogo de {segmentLabel("service").toLowerCase()}s e preços
+            Seus {segmentLabel("service").toLowerCase()}s e preços
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -229,7 +229,7 @@ export default function Services() {
                   }
                 />
                 <Label htmlFor="requiresConsent" className="cursor-pointer">
-                  Exige termo de consentimento
+                  Exige termo de autorização
                 </Label>
               </div>
               <div className="grid gap-2">
@@ -299,7 +299,7 @@ export default function Services() {
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-1">
                     <Button
                       size="icon"
                       variant="ghost"
@@ -336,7 +336,7 @@ export default function Services() {
                 {s.requiresConsent && (
                   <div className="flex items-center gap-2 text-amber-600 text-xs">
                     <ShieldCheck className="h-3.5 w-3.5" />
-                    <span>Requer consentimento assinado</span>
+                    <span>Precisa de autorização assinada</span>
                   </div>
                 )}
               </CardContent>

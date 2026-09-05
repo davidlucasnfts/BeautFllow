@@ -45,11 +45,26 @@ const channelIcons: Record<string, typeof MessageSquare> = {
 const typeLabels: Record<string, string> = {
   confirmation: "Confirmação",
   reminder: "Lembrete",
-  check_in: "Check-in",
+  check_in: "Chegada",
   post_care: "Pós-cuidado",
-  reactivation: "Reativação",
+  reactivation: "Trazer de volta",
   campaign: "Campanha",
-  manual: "Manual",
+  manual: "Escrita por você",
+};
+
+const statusLabels: Record<string, string> = {
+  pending: "Na fila",
+  sent: "Enviada",
+  delivered: "Chegou",
+  read: "Lida",
+  failed: "Não chegou",
+};
+
+const channelLabels: Record<string, string> = {
+  whatsapp: "WhatsApp",
+  sms: "SMS",
+  email: "E-mail",
+  in_app: "No aplicativo",
 };
 
 const statusColors: Record<string, string> = {
@@ -141,7 +156,7 @@ export default function Communications() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label>Canal</Label>
+                  <Label>Onde enviar</Label>
                   <Select
                     value={form.channel}
                     onValueChange={(v: typeof form.channel) =>
@@ -173,8 +188,8 @@ export default function Communications() {
                       <SelectItem value="confirmation">Confirmação</SelectItem>
                       <SelectItem value="reminder">Lembrete</SelectItem>
                       <SelectItem value="post_care">Pós-cuidado</SelectItem>
-                      <SelectItem value="reactivation">Reativação</SelectItem>
-                      <SelectItem value="manual">Manual</SelectItem>
+                      <SelectItem value="reactivation">Trazer de volta</SelectItem>
+                      <SelectItem value="manual">Escrita por você</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -208,8 +223,8 @@ export default function Communications() {
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MessageSquare className="h-4 w-4" />
             <span>
-              Templates automáticos: confirmação, lembrete, check-in,
-              pós-cuidado
+              Mensagens automáticas prontas: confirmação, lembrete, aviso de
+              chegada e cuidados depois do serviço
             </span>
           </div>
         </Card>
@@ -226,7 +241,7 @@ export default function Communications() {
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <CheckCircle2 className="h-4 w-4 text-emerald-500" />
             <span>
-              WhatsApp Business API integrado com rastreamento de entrega
+              Mensagens pelo WhatsApp com aviso quando chegam
             </span>
           </div>
         </Card>
@@ -259,7 +274,7 @@ export default function Communications() {
                           variant="secondary"
                           className={statusColors[c.status] + " text-[10px]"}
                         >
-                          {c.status}
+                          {statusLabels[c.status] ?? c.status}
                         </Badge>
                       </div>
                       <span className="text-xs text-muted-foreground">
@@ -278,7 +293,7 @@ export default function Communications() {
                         {typeLabels[c.type] ?? c.type}
                       </span>
                       <span>•</span>
-                      <span className="capitalize">{c.channel}</span>
+                      <span>{channelLabels[c.channel] ?? c.channel}</span>
                       <span>•</span>
                       <span>
                         {c.direction === "outbound" ? "Enviada" : "Recebida"}
@@ -293,7 +308,7 @@ export default function Communications() {
       ) : (
         <div className="text-center py-20 text-muted-foreground">
           <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-20" />
-          <p>Nenhuma comunicação registrada.</p>
+          <p>Nenhuma mensagem enviada ainda.</p>
         </div>
       )}
     </div>

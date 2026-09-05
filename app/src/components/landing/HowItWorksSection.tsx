@@ -21,7 +21,7 @@ function getSteps(segment: SalonSegment): Step[] {
       details: [
         "Sem cartão de crédito",
         "Importação de clientes via CSV",
-        "Configuração guiada passo a passo",
+        "A gente te guia no passo a passo",
       ],
     },
     {
@@ -31,7 +31,7 @@ function getSteps(segment: SalonSegment): Step[] {
         "Use o calendário inteligente, envie lembretes automáticos e reduza faltas.",
       icon: Sparkles,
       details: [
-        "Calendário multi-profissional",
+        "Vários profissionais na mesma agenda",
         "Lembretes WhatsApp/e-mail",
         "Lista de espera inteligente",
       ],
@@ -40,12 +40,12 @@ function getSteps(segment: SalonSegment): Step[] {
       number: "03",
       title: "Acompanhe e cresça",
       description:
-        "Monitore faturamento, comissões, retenção de clientes e tome decisões com dados.",
+        "Acompanhe quanto entrou, comissões e quais clientes voltaram.",
       icon: TrendingUp,
       details: [
-        "Dashboard em tempo real",
-        "Relatórios de faturamento",
-        "Indicadores de retenção",
+        "Resumo do dia em tempo real",
+        "Quanto entrou no mês",
+        "Clientes que voltaram",
       ],
     },
   ];

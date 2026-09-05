@@ -163,7 +163,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-serif font-bold tracking-tight">
-          Dashboard
+          Resumo
         </h1>
         <p className="text-muted-foreground">
           Visão geral do desempenho{" "}
@@ -180,8 +180,11 @@ export default function Dashboard() {
           <div className="flex-1">
             <p className="text-sm font-medium">
               {metrics.pendingConsents} {segmentLabel("client").toLowerCase()}
-              {metrics.pendingConsents > 1 ? "s" : ""} pendente
-              {metrics.pendingConsents > 1 ? "s" : ""} de consentimento LGPD
+              {metrics.pendingConsents > 1 ? "s" : ""}{" "}
+              {metrics.pendingConsents > 1
+                ? "não assinaram"
+                : "não assinou"}{" "}
+              a autorização de uso dos dados (LGPD)
             </p>
           </div>
         </div>
@@ -304,7 +307,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <AlertCircle className="h-4 w-4 text-amber-500" />
-                    <span className="text-sm">No-Show</span>
+                    <span className="text-sm">Faltou</span>
                   </div>
                   <span className="font-medium">
                     {metrics?.appointmentsMonth?.noShow ?? 0}
@@ -403,7 +406,7 @@ export default function Dashboard() {
                         : activity.status === "cancelled"
                           ? "Agendamento cancelado"
                           : activity.status === "no_show"
-                            ? "No-show"
+                            ? "Cliente faltou"
                             : "Novo agendamento"}{" "}
                       — {activity.clientName}
                     </p>

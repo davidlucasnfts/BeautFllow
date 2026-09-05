@@ -7,7 +7,7 @@ import { getSegmentPalette } from "@contracts/segment-palettes";
 const benefits = [
   "Teste grátis por 14 dias",
   "Sem cartão de crédito",
-  "Setup em menos de 5 minutos",
+  "Deixar pronto em menos de 5 minutos",
   "Suporte humano no WhatsApp",
 ];
 

@@ -11,10 +11,10 @@ export const STATUS_COLORS: Record<string, string> = {
 export const STATUS_LABELS: Record<string, string> = {
   scheduled: "Agendado",
   confirmed: "Confirmado",
-  checked_in: "Check-in",
-  in_progress: "Em Andamento",
+  checked_in: "Chegou",
+  in_progress: "Em atendimento",
   completed: "Completo",
-  no_show: "No-Show",
+  no_show: "Faltou",
   cancelled: "Cancelado",
 };
 

@@ -23,7 +23,7 @@ import { Logo } from "@/components/landing/Logo";
 const painPoints = [
   {
     icon: Clock,
-    title: "No-Show de 30%",
+    title: "3 de cada 10 clientes faltam",
     desc: "Clientes não comparecem e a agenda fica com buracos que poderiam ser preenchidos.",
   },
   {
@@ -33,7 +33,7 @@ const painPoints = [
   },
   {
     icon: TrendingUp,
-    title: "Sem visão financeira",
+    title: "Sem noção do dinheiro",
     desc: "Não sabe quanto faturou no mês, quais serviços dão mais lucro ou comissões a pagar.",
   },
 ];
@@ -42,7 +42,7 @@ const features = [
   {
     icon: CalendarDays,
     title: "Agendamento Inteligente",
-    desc: "Calendário multi-profissional com visualização semanal/diária. Agendamento online público, confirmações automáticas e lista de espera.",
+    desc: "Vários profissionais na mesma agenda, com visualização semanal/diária. Clientes marcam sozinhos pelo link, com confirmações automáticas e lista de espera.",
     color: "bg-blue-50 text-blue-600",
   },
   {
@@ -66,12 +66,12 @@ const features = [
   {
     icon: TrendingUp,
     title: "Financeiro & Comissões",
-    desc: "Controle de receitas, despesas, comissões por profissional e relatórios de faturamento.",
+    desc: "Controle de receitas, despesas, comissões de cada profissional e veja quanto entrou.",
     color: "bg-rose-50 text-rose-600",
   },
   {
     icon: Sparkles,
-    title: "Gestão de Serviços",
+    title: "Seus serviços",
     desc: "Cadastro de serviços com duração, preço e profissionais habilitados. Controle de estoque.",
     color: "bg-cyan-50 text-cyan-600",
   },
@@ -86,7 +86,7 @@ const plans = [
       "1 profissional",
       "30 agendamentos/mês",
       "Confirmação por e-mail",
-      "CRM básico",
+      "Cadastro de clientes",
     ],
     cta: "Começar",
     highlight: false,
@@ -98,8 +98,8 @@ const plans = [
     features: [
       "Até 3 profissionais",
       "Agendamento ilimitado",
-      "WhatsApp API (500 msg)",
-      "CRM completo",
+      "WhatsApp (500 mensagens)",
+      "Cadastro completo de clientes",
       "Financeiro simples",
     ],
     cta: "Mais Popular",
@@ -112,7 +112,7 @@ const plans = [
     features: [
       "Até 8 profissionais",
       "Termos digitais LGPD",
-      "Automações de retenção",
+      "Mensagens automáticas para clientes voltarem",
       "Comissões avançadas",
       "2000 mensagens/mês",
     ],
@@ -124,23 +124,23 @@ const plans = [
 const timeline = [
   {
     phase: "Semana 1",
-    title: "Setup & Cadastro",
+    title: "Cadastro",
     desc: "Cadastro do salão, profissionais, serviços e horários de funcionamento.",
   },
   {
     phase: "Semana 2",
-    title: "Importação & Treino",
-    desc: "Importação de clientes, treinamento da equipe e configuração de notificações.",
+    title: "Clientes e treino",
+    desc: "Traga seus clientes, treine a equipe e ajuste os avisos.",
   },
   {
     phase: "Semana 3",
-    title: "Go-Live",
-    desc: "Início dos agendamentos reais no sistema com acompanhamento diário.",
+    title: "Uso de verdade",
+    desc: "Agendamentos de verdade no sistema, com acompanhamento todos os dias.",
   },
   {
     phase: "Semana 4",
-    title: "Otimização",
-    desc: "Ajustes finos, relatórios iniciais e ativação das automações de retenção.",
+    title: "Ajustes finais",
+    desc: "Ajustes no que precisar, primeiros resultados e as mensagens automáticas de volta do cliente.",
   },
 ];
 
@@ -169,10 +169,10 @@ export default function Proposal() {
             <Logo className="h-8 w-8" />
             <div>
               <h1 className="text-xl font-serif font-bold tracking-tight">
-                BeautyFlow
+                StudioFlow
               </h1>
               <p className="text-xs text-muted-foreground">
-                Gestão Inteligente para Salões
+                Gestão simples para salões
               </p>
             </div>
           </div>
@@ -205,8 +205,9 @@ export default function Proposal() {
             Transforme a gestão do seu salão
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Proposta comercial para implementação do <strong>BeautyFlow</strong>{" "}
-            — plataforma completa de agendamento, CRM, financeiro e comunicação.
+            Proposta comercial para implementação do <strong>StudioFlow</strong>{" "}
+            — agendamento, cadastro de clientes, dinheiro e mensagens em um só
+            lugar.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link to="/login">
@@ -244,19 +245,18 @@ export default function Proposal() {
 
         {/* A Solução */}
         <section className="bg-primary/5 rounded-2xl p-8">
-          <h3 className="text-2xl font-bold mb-4">A Solução: BeautyFlow</h3>
+          <h3 className="text-2xl font-bold mb-4">A Solução: StudioFlow</h3>
           <p className="text-muted-foreground mb-6 max-w-3xl">
-            Plataforma 100% web e responsiva que centraliza todos os processos
-            do seu salão em um único lugar. Reduza no-shows, organize a agenda,
-            fidelize clientes e tenha controle total do financeiro — sem
-            planilhas, sem papel, sem estresse.
+            Tudo que rola no seu salão em um único lugar, direto no celular ou
+            computador. Reduza as faltas, organize a agenda, fidelize clientes
+            e saiba quanto entrou — sem planilhas, sem papel, sem estresse.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             {[
-              { value: "35%", label: "Redução de No-Show" },
-              { value: "5min", label: "Ativação do Sistema" },
-              { value: "LGPD", label: "Compliance Nativo" },
-              { value: "100%", label: "Omnichannel" },
+              { value: "35%", label: "Menos faltas" },
+              { value: "5min", label: "Pronto em" },
+              { value: "LGPD", label: "Dados protegidos por lei" },
+              { value: "100%", label: "WhatsApp, SMS e e-mail" },
             ].map(s => (
               <div key={s.label} className="bg-white rounded-xl p-4">
                 <p className="text-2xl font-bold text-primary">{s.value}</p>
@@ -289,21 +289,21 @@ export default function Proposal() {
           <h3 className="text-2xl font-bold mb-6">Módulos do Sistema</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { name: "Dashboard", desc: "KPIs e indicadores" },
+              { name: "Resumo do dia", desc: "Seus números" },
               { name: "Agenda", desc: "Calendário interativo" },
               { name: "Clientes", desc: "Ficha completa" },
               { name: "Serviços", desc: "Catálogo e preços" },
               { name: "Profissionais", desc: "Comissões e agenda" },
               { name: "Financeiro", desc: "Receitas e despesas" },
-              { name: "Comunicação", desc: "WhatsApp e e-mail" },
-              { name: "Consentimentos", desc: "Termos digitais" },
+              { name: "Mensagens", desc: "WhatsApp e e-mail" },
+              { name: "Autorizações", desc: "Termos digitais" },
             ].map(m => (
               <Card
                 key={m.name}
                 className="p-4 text-center hover:shadow-md transition-shadow"
               >
                 <div className="h-20 bg-slate-100 rounded-lg mb-3 flex items-center justify-center text-xs text-slate-400">
-                  Preview
+                  Exemplo
                 </div>
                 <p className="font-medium text-sm">{m.name}</p>
                 <p className="text-xs text-muted-foreground">{m.desc}</p>
@@ -311,7 +311,7 @@ export default function Proposal() {
             ))}
           </div>
           <p className="text-xs text-muted-foreground text-center mt-3">
-            * Os previews acima são representações. Na demonstração ao vivo você
+            * As imagens acima são exemplos. Na demonstração ao vivo você
             navegará em todas as telas reais.
           </p>
         </section>
@@ -372,7 +372,7 @@ export default function Proposal() {
         {/* Cronograma */}
         <section>
           <h3 className="text-2xl font-bold mb-6">
-            Cronograma de Implementação
+            Como vamos fazer, semana a semana
           </h3>
           <div className="space-y-4">
             {timeline.map((t, i) => (
@@ -418,7 +418,7 @@ export default function Proposal() {
           <div className="flex flex-col md:flex-row gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              <span>contato@beautyflow.com.br</span>
+              <span>contato@studioflow.com.br</span>
             </div>
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
@@ -426,7 +426,7 @@ export default function Proposal() {
             </div>
             <div className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />
-              <span>beautyflow.com.br</span>
+              <span>studioflow.com.br</span>
             </div>
           </div>
         </section>
@@ -456,11 +456,11 @@ export default function Proposal() {
           <div className="flex items-center gap-2">
             <Logo className="h-5 w-5" />
             <span className="font-serif font-bold text-foreground">
-              BeautyFlow
+              StudioFlow
             </span>
           </div>
-          <p>Documento confidencial — uso comercial restrito</p>
-          <p>&copy; {new Date().getFullYear()} BeautyFlow</p>
+          <p>Proposta feita para o seu negócio</p>
+          <p>&copy; {new Date().getFullYear()} StudioFlow</p>
         </div>
       </footer>
     </div>

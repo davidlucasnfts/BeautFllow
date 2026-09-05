@@ -17,9 +17,9 @@ const testimonials: Testimonial[] = [
     role: "Proprietária",
     salon: "Studio Mariana",
     avatar: "MC",
-    text: "Em 2 semanas reduzi meus faltosos de 18% para 4%. Os lembretes automáticos são um game changer.",
+    text: "Em 2 semanas reduzi meus faltosos de 18% para 4%. Os lembretes automáticos mudaram tudo pra mim.",
     rating: 5,
-    metric: "-78% no-show",
+    metric: "-78% de faltas",
   },
   {
     name: "João Pedro",
@@ -37,7 +37,7 @@ const testimonials: Testimonial[] = [
     avatar: "LA",
     text: "A ficha digital com fotos antes/depois e o termo de autorização me deram uma credibilidade enorme com as clientes.",
     rating: 5,
-    metric: "100% dentro da LGPD",
+    metric: "100% dentro da lei",
   },
 ];
 

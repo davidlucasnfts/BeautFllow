@@ -48,6 +48,13 @@ import { trpc } from "@/providers/trpc";
 import CreateSalonForm from "./CreateSalonForm";
 import { getSegmentLabel, type SalonSegment } from "@contracts/segment-labels";
 
+const planLabels: Record<string, string> = {
+  free: "Grátis",
+  essential: "Essencial",
+  pro: "Pro",
+  business: "Business",
+};
+
 function Logo({ className }: { className?: string }) {
   return (
     <svg
@@ -278,7 +285,7 @@ function AuthLayoutContent({
                 <div className="min-w-0 flex-1">
                   <p className="text-xs font-medium truncate">{salon.name}</p>
                   <p className="text-[10px] text-muted-foreground uppercase">
-                    {salon.plan}
+                    {planLabels[salon.plan] ?? salon.plan}
                   </p>
                 </div>
               </div>

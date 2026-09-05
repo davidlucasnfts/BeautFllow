@@ -43,7 +43,7 @@ const segmentLabels: Record<string, string> = {
   new: "Novo",
   active: "Ativo",
   vip: "VIP",
-  at_risk: "Em Risco",
+  at_risk: "Sumindo",
   inactive: "Inativo",
 };
 
@@ -96,7 +96,7 @@ export default function Clients() {
   const deleteMutation = trpc.customer.delete.useMutation({
     onSuccess: () => {
       utils.customer.list.invalidate();
-      toast.success(`${segmentLabel("client")} removido (LGPD)`);
+      toast.success(`${segmentLabel("client")} apagado dos registros`);
     },
     onError: e => toast.error(e.message),
   });
@@ -163,7 +163,7 @@ export default function Clients() {
             {segmentLabel("client")}s
           </h1>
           <p className="text-muted-foreground">
-            CRM completo com histórico e segmentação
+            Toda a ficha dos seus clientes: contatos, visitas e histórico
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -290,7 +290,7 @@ export default function Clients() {
                       </Badge>
                     </div>
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-1">
                     <Button
                       size="icon"
                       variant="ghost"
@@ -336,7 +336,7 @@ export default function Clients() {
                 {client.consentGiven && (
                   <div className="flex items-center gap-2 text-emerald-600 text-xs">
                     <ShieldCheck className="h-3.5 w-3.5" />
-                    <span>LGPD consentido</span>
+                    <span>Autorizou o uso dos dados</span>
                   </div>
                 )}
               </CardContent>

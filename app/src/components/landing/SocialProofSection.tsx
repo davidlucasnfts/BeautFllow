@@ -4,19 +4,19 @@ import { getSegmentLabel, type SalonSegment } from "@contracts/segment-labels";
 const badges = [
   {
     icon: ShieldCheck,
-    label: "LGPD Compliant",
-    desc: "Consentimento digital nativo",
+    label: "Dados protegidos (LGPD)",
+    desc: "Autorização assinada pelo celular",
   },
   { icon: Lock, label: "SSL 256-bit", desc: "Criptografia de ponta a ponta" },
   {
     icon: Server,
     label: "Hospedado no Brasil",
-    desc: "Servidores com baixa latência",
+    desc: "Servidores rápidos no Brasil",
   },
   {
     icon: Award,
     label: "ISO 27001",
-    desc: "Gestão de segurança da informação",
+    desc: "Segurança de dados certificada",
   },
 ];
 

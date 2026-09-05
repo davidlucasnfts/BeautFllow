@@ -77,7 +77,7 @@ export default function Appointments() {
   const updateMutation = trpc.appointment.update.useMutation({
     onSuccess: () => {
       utils.appointment.list.invalidate();
-      toast.success("Status atualizado");
+      toast.success("Situação atualizada");
     },
     onError: e => toast.error(e.message),
   });

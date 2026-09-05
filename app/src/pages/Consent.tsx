@@ -68,7 +68,7 @@ export default function Consent() {
           </DialogTrigger>
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Novo Termo de Consentimento</DialogTitle>
+              <DialogTitle>Novo Termo de Autorização</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
@@ -129,8 +129,8 @@ export default function Consent() {
                 Termos Digitais
               </p>
               <p className="text-xs text-amber-700 mt-1">
-                Assinatura digital com IP, user-agent e timestamp. Legalmente
-                válido para procedimentos estéticos.
+                Assinatura pelo celular com data, hora e registro do aparelho.
+                Vale por lei para procedimentos estéticos.
               </p>
             </div>
           </div>
@@ -140,11 +140,11 @@ export default function Consent() {
             <Download className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-blue-800">
-                Exportação de Dados
+                Cópia dos dados
               </p>
               <p className="text-xs text-blue-700 mt-1">
-                Cliente pode solicitar exportação completa de seus dados em
-                formato legível.
+                Cliente pode pedir uma cópia de tudo que guardamos, fácil de
+                ler.
               </p>
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function Consent() {
 
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">
-          Termos de Consentimento Ativos
+          Termos de Autorização em uso
         </h2>
         {isLoading ? (
           <div className="grid gap-4 md:grid-cols-2">
@@ -191,7 +191,7 @@ export default function Consent() {
             <ShieldCheck className="h-10 w-10 mx-auto mb-3 opacity-20" />
             <p>Nenhum termo cadastrado.</p>
             <p className="text-sm">
-              Crie termos de consentimento para procedimentos que exigem
+              Crie termos de autorização para procedimentos que exigem
               autorização.
             </p>
           </div>
@@ -199,24 +199,24 @@ export default function Consent() {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold">Checklist LGPD</h2>
+        <h2 className="text-lg font-semibold">Cuidados com os dados (LGPD)</h2>
         <div className="grid gap-3">
           {[
             {
-              label: "Coleta mínima de dados (nome, telefone, e-mail opcional)",
+              label: "Guardamos só o necessário (nome, telefone, e-mail opcional)",
               done: true,
             },
             {
-              label: "Consentimento explícito no primeiro cadastro",
+              label: "Autorização clara no primeiro cadastro",
               done: true,
             },
-            { label: "Direito à exclusão com anonimização", done: true },
-            { label: "Auditoria de acessos (audit_logs)", done: true },
-            { label: "Termos de consentimento digital assinados", done: true },
-            { label: "Criptografia em trânsito e repouso", done: true },
+            { label: "Cliente pode pedir para apagar os dados dela", done: true },
+            { label: "Registro de quem entrou e o que fez", done: true },
+            { label: "Termos de autorização assinados no celular", done: true },
+            { label: "Dados protegidos o tempo todo", done: true },
             {
               label:
-                "RBAC por negócio (owner, admin, profissional, recepcionista)",
+                "Cada pessoa vê só o seu (dona, admin, profissional, recepção)",
               done: true,
             },
           ].map((item, i) => (
