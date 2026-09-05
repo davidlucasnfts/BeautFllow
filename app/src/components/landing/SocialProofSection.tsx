@@ -32,10 +32,10 @@ const logos = [
 ];
 
 export function SocialProofSection({ segment }: { segment: SalonSegment }) {
-  const segmentNamePlural =
-    segment === "barbershop"
-      ? "barbearias"
-      : `${getSegmentLabel(segment, "segmentName").toLowerCase()}s`;
+  const segmentNamePlural = getSegmentLabel(
+    segment,
+    "segmentNamePlural"
+  ).toLowerCase();
   return (
     <section className="px-6 py-16 border-y border-border/40 bg-background">
       <div className="max-w-7xl mx-auto">

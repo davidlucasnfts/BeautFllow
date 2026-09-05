@@ -16,7 +16,7 @@ function getSteps(segment: SalonSegment): Step[] {
     {
       number: "01",
       title: "Cadastre em 5 minutos",
-      description: `Crie sua conta, configure sua ${label("segmentName").toLowerCase()} e adicione seus ${label("professional").toLowerCase()}s e ${label("service").toLowerCase()}s.`,
+      description: `Crie sua conta, configure ${label("segmentPossessive")} ${label("segmentName").toLowerCase()} e adicione seus ${label("professional").toLowerCase()}s e ${label("service").toLowerCase()}s.`,
       icon: CalendarPlus,
       details: [
         "Sem cartão de crédito",

@@ -4,6 +4,9 @@ export const segmentLabels: Record<
   SalonSegment,
   {
     segmentName: string;
+    segmentNamePlural: string;
+    segmentArticle: string;
+    segmentPossessive: string;
     professional: string;
     client: string;
     service: string;
@@ -14,6 +17,9 @@ export const segmentLabels: Record<
 > = {
   beauty_salon: {
     segmentName: "Salão de Beleza",
+    segmentNamePlural: "Salões de Beleza",
+    segmentArticle: "do",
+    segmentPossessive: "seu",
     professional: "Profissional",
     client: "Cliente",
     service: "Serviço",
@@ -23,6 +29,9 @@ export const segmentLabels: Record<
   },
   barbershop: {
     segmentName: "Barbearia",
+    segmentNamePlural: "Barbearias",
+    segmentArticle: "da",
+    segmentPossessive: "sua",
     professional: "Barbeiro",
     client: "Cliente",
     service: "Serviço",
@@ -32,6 +41,9 @@ export const segmentLabels: Record<
   },
   aesthetic_clinic: {
     segmentName: "Clínica de Estética",
+    segmentNamePlural: "Clínicas de Estética",
+    segmentArticle: "da",
+    segmentPossessive: "sua",
     professional: "Terapeuta",
     client: "Paciente",
     service: "Procedimento",

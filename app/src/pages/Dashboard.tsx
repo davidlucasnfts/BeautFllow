@@ -166,7 +166,8 @@ export default function Dashboard() {
           Dashboard
         </h1>
         <p className="text-muted-foreground">
-          Visão geral do desempenho do{" "}
+          Visão geral do desempenho{" "}
+          {segmentLabel("segmentArticle")}{" "}
           {segmentLabel("segmentName").toLowerCase()} em{" "}
           {format(new Date(), "MMMM yyyy", { locale: ptBR })}
         </p>
