@@ -102,6 +102,10 @@ describe("máscara de dinheiro", () => {
     expect(maskMoneyBR("")).toBe("");
     expect(moneyBRToDot("")).toBe("");
   });
+  it("respeita o limite de dígitos", () => {
+    expect(maskMoneyBR("60444444", 7)).toBe("60.444,44");
+    expect(maskMoneyBR("99999999", 7)).toBe("99.999,99");
+  });
 });
 
 describe("maskSlug", () => {

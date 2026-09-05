@@ -68,9 +68,11 @@ export function isoToDateBR(value: string): string {
 /**
  * Máscara de dinheiro BR: digita-se só os números e o valor vai
  * entrando dos centavos para o real. Ex: "2500" → "25,00".
+ * `maxDigits` limita a quantidade de dígitos (default 10 = R$ 99 milhões;
+ * use 7 em preços de serviço = R$ 99.999,99).
  */
-export function maskMoneyBR(value: string): string {
-  const d = onlyDigits(value).slice(0, 10);
+export function maskMoneyBR(value: string, maxDigits = 10): string {
+  const d = onlyDigits(value).slice(0, maxDigits);
   if (!d) return "";
   return (Number(d) / 100).toLocaleString("pt-BR", {
     minimumFractionDigits: 2,

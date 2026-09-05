@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import { CalendarDays, CalendarRange } from "lucide-react";
 import { format, addDays, startOfWeek, endOfWeek } from "date-fns";
+import { isoToDateBR, dateBRToISO, maskDateBR } from "@/lib/input-masks";
 import type { ViewMode } from "@/components/calendar/types";
 import type { Professional, Service } from "@db/schema";
 
@@ -140,9 +141,13 @@ export default function AppointmentFilters({
             Anterior
           </Button>
           <Input
-            type="date"
-            value={format(selectedDate, "yyyy-MM-dd")}
-            onChange={e => setSelectedDate(() => new Date(e.target.value))}
+            value={isoToDateBR(format(selectedDate, "yyyy-MM-dd"))}
+            onChange={e => {
+              const iso = dateBRToISO(maskDateBR(e.target.value));
+              if (iso) setSelectedDate(() => new Date(iso + "T00:00:00"));
+            }}
+            placeholder="dd/mm/aaaa"
+            inputMode="numeric"
             className="w-40 h-8 text-sm"
           />
           <Button

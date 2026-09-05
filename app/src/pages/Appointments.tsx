@@ -109,6 +109,10 @@ export default function Appointments() {
 
   function handleCreate() {
     if (!salon) return;
+    if (!form.appointmentDate) {
+      toast.error("Informe uma data válida no formato dd/mm/aaaa.");
+      return;
+    }
     const service = services?.find(s => s.id === Number(form.serviceId));
     const endTime = service
       ? calculateEndTime(form.startTime, service.durationMinutes)

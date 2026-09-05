@@ -39,7 +39,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { maskMoneyBR, moneyBRToDot } from "@/lib/input-masks";
+import { maskMoneyBR, moneyBRToDot, isoToDateBR, dateBRToISO, maskDateBR } from "@/lib/input-masks";
 
 export default function Financial() {
   const { salon } = useSalon();
@@ -90,6 +90,10 @@ export default function Financial() {
 
   function handleSubmit() {
     if (!salon) return;
+    if (!form.recordDate) {
+      toast.error("Informe uma data válida no formato dd/mm/aaaa.");
+      return;
+    }
     createMutation.mutate({
       salonId: salon.id,
       clientId: Number(form.clientId),
@@ -177,11 +181,17 @@ export default function Financial() {
                   <div className="grid gap-2">
                     <Label>Data</Label>
                     <Input
-                      type="date"
-                      value={form.recordDate}
+                      value={isoToDateBR(form.recordDate)}
                       onChange={e =>
-                        setForm({ ...form, recordDate: e.target.value })
+                        setForm({
+                          ...form,
+                          recordDate: dateBRToISO(
+                            maskDateBR(e.target.value)
+                          ),
+                        })
                       }
+                      placeholder="dd/mm/aaaa"
+                      inputMode="numeric"
                     />
                   </div>
                 </div>

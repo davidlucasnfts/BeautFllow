@@ -345,10 +345,11 @@ npm run db:migrate # Aplicar migrations (prod)
 5. Novas páginas em `src/pages/`, registrar em `src/App.tsx`
 6. **Todo campo de formulário usa a lib `@/lib/input-masks`** (padrão Brasil) — 05/09/2026:
    - Telefone → `maskPhoneBR` ((99) 99999-9999, inputMode="numeric")
-   - Data de nascimento → `maskDateBR` (dd/mm/aaaa) + `isValidDateBR` na validação; converter com `dateBRToISO`/`isoToDateBR`
-   - Dinheiro → `maskMoneyBR` na tela + `moneyBRToDot`/`moneyDotToBR` na conversão banco
+   - **Toda data de formulário → `maskDateBR` (dd/mm/aaaa) — NUNCA `type="date"`** (o input nativo aceita ano com 6 dígitos, ex: 275760). Validar com `isValidDateBR` no envio; converter com `dateBRToISO`/`isoToDateBR`
+   - Dinheiro → `maskMoneyBR` na tela (limite de dígitos por campo: 7 em preço de serviço) + `moneyBRToDot`/`moneyDotToBR` na conversão banco
    - Nome de pessoa → `onlyText` (só letras); nome de negócio → `onlyText(v, { allowDigits: true })`
    - Slug/URL → `maskSlug`
+   - Campos numéricos (duração, comissão) → `onlyDigits` com limite de dígitos (`slice(0, N)`) — NUNCA `type="number"` solto sem máximo
    - Campos de texto livre (observações, mensagens, descrições) ficam sem máscara
 
 **Database (Drizzle ORM):**

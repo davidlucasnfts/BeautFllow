@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import { getSegmentLabel } from "@contracts/segment-labels";
 import {
   onlyText,
+  onlyDigits,
   maskMoneyBR,
   moneyBRToDot,
   moneyDotToBR,
@@ -121,6 +122,10 @@ export default function Services() {
 
   function handleSubmit() {
     if (!salon) return;
+    if (!form.durationMinutes || form.durationMinutes < 1) {
+      toast.error("Informe a duração do serviço em minutos (ex: 60).");
+      return;
+    }
     const payload = { ...form, price: moneyBRToDot(form.price) };
     if (editing) {
       updateMutation.mutate({ id: editing, salonId: salon.id, ...payload });
@@ -186,15 +191,17 @@ export default function Services() {
                 <div className="grid gap-2">
                   <Label>Duração (min) *</Label>
                   <Input
-                    type="number"
-                    min="1"
-                    value={form.durationMinutes}
+                    value={form.durationMinutes || ""}
                     onChange={e =>
                       setForm({
                         ...form,
-                        durationMinutes: Number(e.target.value),
+                        durationMinutes: Number(
+                          onlyDigits(e.target.value).slice(0, 3)
+                        ),
                       })
                     }
+                    placeholder="Ex: 60"
+                    inputMode="numeric"
                   />
                 </div>
               </div>
@@ -204,7 +211,7 @@ export default function Services() {
                   <Input
                     value={form.price}
                     onChange={e =>
-                      setForm({ ...form, price: maskMoneyBR(e.target.value) })
+                      setForm({ ...form, price: maskMoneyBR(e.target.value, 7) })
                     }
                     placeholder="0,00"
                     inputMode="numeric"

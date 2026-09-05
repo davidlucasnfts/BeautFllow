@@ -148,6 +148,19 @@ O **StudioFlow** é um SaaS multi-tenant de gestão para salões de beleza e cen
 - **Commits agrupados** — uma única chamada de commit com todas as mudanças
 - **Sem prints desnecessários** — resultado direto, sem mostrar código que já foi visto
 
+### 5.4 Padrão Brasil de Entrada (Formulários)
+
+> Regra obrigatória para todo formulário — 05/09/2026. Lib: `app/src/lib/input-masks.ts` (com testes).
+
+- **Telefone** → `maskPhoneBR`: `(99) 99999-9999`, só dígitos, inputMode="numeric"
+- **Data** → `maskDateBR`: `dd/mm/aaaa` — **nunca `type="date"`** (o input nativo aceita ano com 6 dígitos, ex: 275760). Validar com `isValidDateBR`; converter com `dateBRToISO`/`isoToDateBR`
+- **Dinheiro** → `maskMoneyBR`: digita só os números, formata sozinho (`2500` → `25,00`; `123456` → `1.234,56`). Limite de dígitos por campo (7 em preço de serviço). Converter com `moneyBRToDot`/`moneyDotToBR`
+- **Nome de pessoa** → `onlyText`: só letras (com acento), espaço e apóstrofo
+- **Nome de negócio** → `onlyText(v, { allowDigits: true })`: também aceita número e "&" (ex: "Barbearia 2 Irmãos")
+- **Slug/URL** → `maskSlug`: minúsculo, sem acento, hífen automático
+- **Campos numéricos** (duração, comissão) → `onlyDigits` com limite de dígitos — nunca `type="number"` solto sem máximo
+- **Texto livre** (observações, mensagens, descrições) → sem máscara
+
 ---
 
 ## 6. Arquitetura — Princípios e Padrões
