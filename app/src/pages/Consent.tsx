@@ -112,11 +112,11 @@ export default function Consent() {
             <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-emerald-800">
-                LGPD Compliance
+                Proteção de dados (LGPD)
               </p>
               <p className="text-xs text-emerald-700 mt-1">
-                Coleta mínima, consentimento explícito, direito à exclusão e
-                auditoria completa.
+                Coleta só o necessário, autorização clara do cliente, e tudo
+                fica registrado com data e hora.
               </p>
             </div>
           </div>

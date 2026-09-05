@@ -38,18 +38,18 @@ const features = [
   },
   {
     icon: Users,
-    title: "CRM de Clientes",
-    desc: "Ficha técnica digital, timeline de interações, fotos antes/depois, segmentação automática e retenção.",
+    title: "Cadastro de Clientes",
+    desc: "Ficha de cada cliente com histórico, fotos antes/depois e aniversário — para atender ela como ninguém.",
   },
   {
     icon: MessageSquare,
-    title: "Comunicação Omnichannel",
-    desc: "WhatsApp Business API integrado, templates automáticos, lembretes inteligentes e campanhas de reativação.",
+    title: "Mensagens Automáticas",
+    desc: "Lembretes de horário pelo WhatsApp e mensagens prontas para trazer clientes de volta.",
   },
   {
     icon: ShieldCheck,
-    title: "Termos Digitais & LGPD",
-    desc: "Termos de consentimento com assinatura digital, auditoria completa, anonimização e direito à exclusão.",
+    title: "Termos e Autorizações",
+    desc: "Seus clientes assinam pelo celular e você fica protegido, com tudo guardado conforme a LGPD.",
   },
   {
     icon: TrendingUp,
@@ -120,7 +120,7 @@ const segmentHeroCopy: Record<
   beauty_salon: {
     title: "salões de beleza",
     subtitle:
-      "Do primeiro contato ao pós-venda. Agendamento inteligente, CRM de clientes, comunicação omnichannel e fidelização — tudo em uma única plataforma.",
+      "Do primeiro contato ao pós-venda. Agenda inteligente, cadastro de clientes, lembretes automáticos e fidelização — tudo em um só lugar.",
   },
   barbershop: {
     title: "barbearias",
@@ -130,7 +130,7 @@ const segmentHeroCopy: Record<
   aesthetic_clinic: {
     title: "estéticas",
     subtitle:
-      "Gerencie serviços, histórico de clientes, consentimentos LGPD, comissões e campanhas de reativação — tudo em uma única plataforma.",
+      "Gerencie serviços, histórico de clientes, autorizações assinadas no celular, comissões e mensagens para trazer clientes de volta — tudo em um só lugar.",
   },
 };
 

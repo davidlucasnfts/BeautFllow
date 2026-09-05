@@ -428,33 +428,33 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Dicas de Retenção */}
+      {/* Dicas para clientes voltarem */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base font-serif">
-            Dicas de Retenção
+            Dicas para seus clientes voltarem
           </CardTitle>
         </CardHeader>
         <CardContent className="grid md:grid-cols-3 gap-4 text-sm text-muted-foreground">
           <div className="flex gap-3">
             <TrendingUp className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p>
-              Clientes que não retornam em 45 dias têm 60% de chance de churn.
-              Envie uma mensagem personalizada de reativação.
+              Cliente que não volta em 45 dias provavelmente não volta mais.
+              Mande uma mensagem carinhosa convidando ela de volta.
             </p>
           </div>
           <div className="flex gap-3">
             <DollarSign className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p>
-              Pacotes de 5 sessões aumentam o LTV em 40% em média. Ofereça
-              desconto progressivo para pacotes.
+              Quem fecha pacote de 5 sessões gasta 40% mais com você. Faça um
+              preço melhor para quem compra o pacote fechado.
             </p>
           </div>
           <div className="flex gap-3">
             <Users className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p>
-              Clientes VIP (top 20% em gasto) respondem 3x melhor a campanhas
-              exclusivas do que promoções genéricas.
+              Seus clientes que mais gastam gostam de se sentir especiais. Faça
+              ofertas só para eles, em vez de promoção para todo mundo.
             </p>
           </div>
         </CardContent>

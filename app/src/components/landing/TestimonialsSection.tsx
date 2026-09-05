@@ -35,9 +35,9 @@ const testimonials: Testimonial[] = [
     role: "Esteticista",
     salon: "Spa Luiza",
     avatar: "LA",
-    text: "A ficha digital com fotos antes/depois e consentimento LGPD me deu uma credibilidade enorme com as clientes.",
+    text: "A ficha digital com fotos antes/depois e o termo de autorização me deram uma credibilidade enorme com as clientes.",
     rating: 5,
-    metric: "100% compliance LGPD",
+    metric: "100% dentro da LGPD",
   },
 ];
 

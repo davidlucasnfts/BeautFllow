@@ -47,20 +47,20 @@ const features = [
   },
   {
     icon: Users,
-    title: "CRM de Clientes",
-    desc: "Ficha técnica digital completa com histórico de serviços, aniversário, alergias e preferências.",
+    title: "Cadastro de Clientes",
+    desc: "Ficha completa de cada cliente: histórico de serviços, aniversário, alergias e preferências.",
     color: "bg-purple-50 text-purple-600",
   },
   {
     icon: MessageSquare,
-    title: "Comunicação Automática",
-    desc: "Lembretes de agendamento via WhatsApp e e-mail. Templates personalizados e campanhas de reativação.",
+    title: "Mensagens Automáticas",
+    desc: "Lembretes de horário pelo WhatsApp e e-mail, com mensagens prontas para trazer clientes de volta.",
     color: "bg-green-50 text-green-600",
   },
   {
     icon: ShieldCheck,
-    title: "Termos Digitais & LGPD",
-    desc: "Termos de consentimento com assinatura digital, auditoria completa e conformidade com a LGPD.",
+    title: "Termos e Autorizações",
+    desc: "Seus clientes assinam pelo celular e você fica protegido, com tudo guardado conforme a LGPD.",
     color: "bg-amber-50 text-amber-600",
   },
   {

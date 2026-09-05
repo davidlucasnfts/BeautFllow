@@ -217,8 +217,8 @@ export default function Communications() {
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <AlertTriangle className="h-4 w-4 text-amber-500" />
             <span>
-              Clientes em risco de churn recebem mensagem de reativação
-              automaticamente
+              Clientes que estão sumidos recebem mensagem automática para
+              voltar
             </span>
           </div>
         </Card>
