@@ -13,9 +13,13 @@ import {
   ShieldAlert,
   ArrowUpRight,
   ArrowDownRight,
+  Link2,
+  Copy,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getSegmentLabel } from "@contracts/segment-labels";
@@ -172,6 +176,34 @@ export default function Dashboard() {
           {format(new Date(), "MMMM yyyy", { locale: ptBR })}
         </p>
       </div>
+
+      {/* Link público de agendamento */}
+      {salon && (
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-lg border border-blue-200 bg-blue-50">
+          <Link2 className="h-5 w-5 shrink-0 text-blue-600" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-blue-900">
+              Seu link de agendamento online
+            </p>
+            <p className="text-xs text-blue-700 break-all">
+              {window.location.origin}/agendar/{salon.slug}
+            </p>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="bg-white"
+            onClick={() => {
+              navigator.clipboard.writeText(
+                `${window.location.origin}/agendar/${salon.slug}`
+              );
+              toast.success("Link copiado! Envie para seus clientes.");
+            }}
+          >
+            <Copy className="mr-2 h-3.5 w-3.5" /> Copiar link
+          </Button>
+        </div>
+      )}
 
       {/* Alertas */}
       {metrics && metrics.pendingConsents > 0 && (

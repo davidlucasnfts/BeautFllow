@@ -1,0 +1,294 @@
+import { useState } from "react";
+import { useParams } from "react-router";
+import { trpc } from "@/providers/trpc";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CalendarCheck, Clock, MapPin, Phone } from "lucide-react";
+import { toast } from "sonner";
+import { getSegmentPalette } from "@contracts/segment-palettes";
+import type { SalonSegment } from "@contracts/segment-labels";
+import {
+  onlyText,
+  maskPhoneBR,
+  maskDateBR,
+  isValidDateBR,
+  dateBRToISO,
+  moneyDotToBR,
+} from "@/lib/input-masks";
+
+type BookResult = {
+  salonName: string;
+  serviceName: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  clientName: string;
+};
+
+export default function PublicBooking() {
+  const { slug } = useParams<{ slug: string }>();
+  const [serviceId, setServiceId] = useState("");
+  const [professionalId, setProfessionalId] = useState("");
+  const [date, setDate] = useState("");
+  const [startTime, setStartTime] = useState("09:00");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [notes, setNotes] = useState("");
+  const [result, setResult] = useState<BookResult | null>(null);
+
+  const { data, isLoading, error } = trpc.public.bookingPage.useQuery(
+    { slug: slug ?? "" },
+    { enabled: !!slug }
+  );
+
+  const bookMutation = trpc.public.book.useMutation({
+    onSuccess: res => {
+      setResult(res);
+      window.scrollTo({ top: 0 });
+    },
+    onError: e => toast.error(e.message),
+  });
+
+  const palette = getSegmentPalette(
+    (data?.salon.segment ?? "beauty_salon") as SalonSegment
+  );
+
+  function handleSubmit() {
+    if (!data) return;
+    const isoDate = dateBRToISO(maskDateBR(date));
+    if (!serviceId) {
+      toast.error("Escolha um serviço.");
+      return;
+    }
+    if (!isValidDateBR(maskDateBR(date))) {
+      toast.error("Informe uma data válida no formato dd/mm/aaaa.");
+      return;
+    }
+    if (name.trim().length < 2) {
+      toast.error("Informe seu nome.");
+      return;
+    }
+    if (!/^\(\d{2}\) \d{4,5}-\d{4}$/.test(phone)) {
+      toast.error("Informe um telefone válido com DDD.");
+      return;
+    }
+    bookMutation.mutate({
+      slug: data.salon.slug,
+      name: name.trim(),
+      phone,
+      serviceId: Number(serviceId),
+      professionalId: professionalId ? Number(professionalId) : undefined,
+      date: isoDate,
+      startTime,
+      notes: notes.trim() || undefined,
+    });
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <p className="text-slate-500">Carregando...</p>
+      </div>
+    );
+  }
+
+  if (!data || error) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="text-center space-y-2">
+          <p className="text-lg font-semibold text-slate-800">
+            Endereço não encontrado
+          </p>
+          <p className="text-slate-500 text-sm">
+            Confira o link que você recebeu e tente novamente.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (result) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border p-8 text-center space-y-4">
+          <div
+            className="mx-auto h-14 w-14 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: palette.primary + "22" }}
+          >
+            <CalendarCheck
+              className="h-7 w-7"
+              style={{ color: palette.primary }}
+            />
+          </div>
+          <h1 className="text-xl font-bold text-slate-800">
+            Agendamento enviado!
+          </h1>
+          <p className="text-slate-500 text-sm">
+            <strong>{result.salonName}</strong> vai confirmar seu horário pelo
+            WhatsApp.
+          </p>
+          <div className="rounded-lg bg-slate-50 p-4 text-sm text-left space-y-2">
+            <p>
+              <strong>Serviço:</strong> {result.serviceName}
+            </p>
+            <p>
+              <strong>Data:</strong> {result.date.split("-").reverse().join("/")}
+            </p>
+            <p>
+              <strong>Horário:</strong> {result.startTime} às {result.endTime}
+            </p>
+            <p>
+              <strong>Nome:</strong> {result.clientName}
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => setResult(null)}
+          >
+            Fazer outro agendamento
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 py-8 px-4">
+      <div className="mx-auto max-w-md space-y-6">
+        <header className="text-center space-y-2">
+          <h1
+            className="text-2xl font-bold tracking-tight"
+            style={{ color: palette.primary }}
+          >
+            {data.salon.name}
+          </h1>
+          {(data.salon.address || data.salon.city) && (
+            <p className="text-sm text-slate-500 flex items-center justify-center gap-1">
+              <MapPin className="h-3.5 w-3.5" />
+              {[data.salon.address, data.salon.city, data.salon.state]
+                .filter(Boolean)
+                .join(", ")}
+            </p>
+          )}
+          {data.salon.phone && (
+            <p className="text-sm text-slate-500 flex items-center justify-center gap-1">
+              <Phone className="h-3.5 w-3.5" /> {data.salon.phone}
+            </p>
+          )}
+          <p className="text-slate-600">Agende seu horário abaixo</p>
+        </header>
+
+        <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-5">
+          <div className="grid gap-2">
+            <Label>Serviço *</Label>
+            <Select value={serviceId} onValueChange={setServiceId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                {data.services.map(s => (
+                  <SelectItem key={s.id} value={String(s.id)}>
+                    {s.name} — R$ {moneyDotToBR(String(s.price))}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {data.professionals.length > 0 && (
+            <div className="grid gap-2">
+              <Label>Profissional (opcional)</Label>
+              <Select value={professionalId} onValueChange={setProfessionalId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sem preferência" />
+                </SelectTrigger>
+                <SelectContent>
+                  {data.professionals.map(p => (
+                    <SelectItem key={p.id} value={String(p.id)}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label>Data *</Label>
+              <Input
+                value={date}
+                onChange={e => setDate(maskDateBR(e.target.value))}
+                placeholder="dd/mm/aaaa"
+                inputMode="numeric"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Horário *</Label>
+              <Input
+                type="time"
+                value={startTime}
+                onChange={e => setStartTime(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-2">
+            <Label>Seu nome *</Label>
+            <Input
+              value={name}
+              onChange={e => setName(onlyText(e.target.value))}
+              placeholder="Nome completo"
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label>Seu WhatsApp *</Label>
+            <Input
+              value={phone}
+              onChange={e => setPhone(maskPhoneBR(e.target.value))}
+              placeholder="(11) 99999-9999"
+              inputMode="numeric"
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label>Observações</Label>
+            <Input
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              placeholder="Opcional"
+            />
+          </div>
+
+          <Button
+            className="w-full text-white"
+            style={{ backgroundColor: palette.primary }}
+            onClick={handleSubmit}
+            disabled={bookMutation.isPending}
+          >
+            {bookMutation.isPending ? "Enviando..." : "Agendar"}
+          </Button>
+
+          <p className="text-xs text-slate-400 text-center flex items-center justify-center gap-1">
+            <Clock className="h-3 w-3" />
+            O salão confirma seu horário pelo WhatsApp
+          </p>
+        </div>
+
+        <footer className="text-center text-xs text-slate-400">
+          Agendamento online por StudioFlow
+        </footer>
+      </div>
+    </div>
+  );
+}

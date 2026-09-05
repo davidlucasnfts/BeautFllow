@@ -648,3 +648,50 @@ export async function getDashboardMetrics(salonId: number, month: string) {
     revenueGrowth: Math.round(revenueGrowth * 10) / 10,
   };
 }
+
+// ==========================================
+// Agendamento Público (link /agendar/:slug — sem login)
+// ==========================================
+
+export async function getSalonBySlug(slug: string) {
+  return getDb().query.salons.findFirst({
+    where: and(eq(salons.slug, slug), eq(salons.isActive, true)),
+  });
+}
+
+export async function getPublicServices(salonId: number) {
+  return getDb()
+    .select({
+      id: services.id,
+      name: services.name,
+      price: services.price,
+      durationMinutes: services.durationMinutes,
+      category: services.category,
+    })
+    .from(services)
+    .where(and(eq(services.salonId, salonId), eq(services.isActive, true)))
+    .orderBy(services.name);
+}
+
+export async function getPublicProfessionals(salonId: number) {
+  return getDb()
+    .select({ id: professionals.id, name: professionals.name })
+    .from(professionals)
+    .where(
+      and(
+        eq(professionals.salonId, salonId),
+        eq(professionals.isActive, true)
+      )
+    )
+    .orderBy(professionals.name);
+}
+
+export async function getClientByPhone(salonId: number, phone: string) {
+  return getDb().query.clients.findFirst({
+    where: and(
+      eq(clients.salonId, salonId),
+      eq(clients.phone, phone),
+      eq(clients.lgpdAnonymized, false)
+    ),
+  });
+}
