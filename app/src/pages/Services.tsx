@@ -323,26 +323,26 @@ export default function Services() {
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-1">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8"
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <button
+                      type="button"
                       onClick={() => handleEdit(s)}
+                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-blue-50 text-blue-600 hover:bg-blue-100"
                     >
-                      <Edit3 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8 text-destructive"
+                      <Edit3 className="w-3 h-3" />
+                      Editar
+                    </button>
+                    <button
+                      type="button"
                       onClick={() =>
                         salon &&
                         deleteMutation.mutate({ id: s.id, salonId: salon.id })
                       }
+                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-red-50 text-red-600 hover:bg-red-100"
                     >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                      <Trash2 className="w-3 h-3" />
+                      Excluir
+                    </button>
                   </div>
                 </div>
               </CardHeader>

@@ -247,15 +247,15 @@ export default function Professionals() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-1">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8"
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <button
+                      type="button"
                       onClick={() => handleEdit(p)}
+                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-blue-50 text-blue-600 hover:bg-blue-100"
                     >
-                      <Edit3 className="h-4 w-4" />
-                    </Button>
+                      <Edit3 className="w-3 h-3" />
+                      Editar
+                    </button>
                   </div>
                 </div>
               </CardHeader>
