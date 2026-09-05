@@ -30,13 +30,41 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 ### Banco de dados
 - **Schema:** usar migrations em `supabase/migrations/NNN-descricao.sql`. Nunca editar `schema_safe.sql` manualmente — ele é gerado juntando as migrations.
 - Comentar **data + descrição** no topo de cada migration
+- **SENHA do PostgreSQL: nunca usar caracteres especiais que quebram a URL** (`!`, `@`, `#`, `$`, `%`, `&`, etc.)
+  - Se a senha já existir com caracteres especiais, codificar com `encodeURIComponent()` antes de montar a `DATABASE_URL`
+  - Exemplo de senha segura: `Studio2026SeguroXYZ` (apenas letras e números)
 
 ### Economia de Tokens
 - **Leitura única** — ler arquivo 1x, fazer todas as mudanças na memória, escrever 1x
 - **StrReplaceFile preferido** — só substituir o trecho que muda, não reescrever arquivo inteiro
 - **Commits agrupados** — uma única chamada de commit com todas as mudanças
-- **Push somente no final da sessão** — quando o usuário pedir para encerrar. Durante a sessão, commit local apenas
+- **Push somente no final da sessão** — quando o usuário pedir para encerrar/subir para produção. Durante a sessão, commit local apenas
 - **Sem prints desnecessários** — resultado direto, sem mostrar código que já foi visto
+
+### Checklist Pré-Commit Obrigatório (executar ANTES de todo commit)
+
+> **Regra de Ouro:** nunca commitar sem passar por este checklist.
+
+```
+□ 1. ROTAS DE TESTE — grep -n "teste-\|PageV[0-9]\|V[0-9]" src/App.tsx
+   → Se encontrar rotas de teste, REMOVER antes do commit
+□ 2. LINKS DE TESTE — grep -in "teste\|V[0-9]" src/components/AuthLayout.tsx
+   → Se encontrar links de teste no menu, REMOVER antes do commit
+□ 3. ARQUIVOS ORFÃOS — arquivos .tsx sem rota/import = código morto. Remover ou justificar
+□ 4. TYPE CHECK — npm run check deve passar. Zero tolerância para erros de TypeScript
+□ 5. DOCUMENTAÇÃO — MEMORY.md e SESSION-CONTEXT.md refletem tudo que foi entregue?
+□ 6. SELF-HEALING — novo erro/pegadinha aprendida? Adicionar na tabela de erros
+```
+
+### 🔄 Padrão de Refatoração — Páginas de Teste
+
+> Ao refatorar página existente (layout, design system, melhoria visual), NUNCA sobrescrever a página principal direto.
+
+1. Criar `{Nome}V2.tsx` (ou V3) em `src/pages/`, copiando a lógica original com as melhorias
+2. Adicionar rota `/teste-x` em `App.tsx` + link temporário no menu (`AuthLayout.tsx`)
+3. David testa local e aprova
+4. Só então aplicar na página principal e **remover rota e link de teste** (checklist pré-commit itens 1 e 2)
+5. Verificar "Páginas de Teste" no SESSION-CONTEXT.md ao iniciar sessão — oferecer reativar se a sessão anterior ficou pendente
 
 ### Sincronização de Arquivos de Projeto
 - **Sempre atualizar MEMORY.md e ROADMAP.md** quando uma funcionalidade for adicionada, removida ou concluída
@@ -217,6 +245,42 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - Confirmar/Salvar: `bg-blue-600 hover:bg-blue-700`
 - Excluir: `bg-red-600 hover:bg-red-700`
 - Aprovar: `bg-green-600 hover:bg-green-700`
+- Tamanho: `w-full max-w-lg max-h-[80vh] overflow-y-auto` (largura total no mobile, limitada no desktop)
+
+### Cards — Grid e Consistência
+- **SEMPRE `h-full`** em cards do mesmo grid — alturas iguais, sem um card maior que o outro
+- **Grids simétricos** (2, 3, 4 colunas) — evitar 1+2, 2+1, a menos que o conteúdo justifique
+- **Estrutura consistente** entre cards do mesmo grid — se um tem header+content, todos têm
+- **Zero espaço vazio sem função** — todo espaço deve ter propósito
+- Texto longo SEM espaços (URLs, telefones formatados): usar `break-all`, nunca `break-words`
+
+### Padrão de Preview/Detalhes (item selecionado)
+> Todos os previews/fichas de itens selecionados seguem o mesmo padrão visual
+
+- **Header:** círculo colorido `w-14 h-14` com ícone `w-6 h-6` (cor da entidade) + título `text-lg font-bold text-slate-800` + badges abaixo do título (`flex-wrap gap-2`)
+- **Ações:** coluna à direita, botões empilhados verticalmente (`flex-col gap-2`), todos sólidos, sempre texto + ícone
+- **Grid de detalhes:** `grid grid-cols-2 lg:grid-cols-3 gap-4`
+- **Labels:** `text-[10px] font-semibold text-slate-400 uppercase` | **Valores:** `text-sm font-medium text-slate-800`
+- **Botão Fechar:** centralizado, `bg-slate-100 text-slate-600` + ícone `ChevronDown`
+- ❌ Anti-padrões: ícone pequeno sem círculo, ações misturando sólido+outline, grid assimétrico, labels em `slate-500` (é 400)
+
+### Abas/Filtros
+- **"Todos"** → mostra tudo (incluindo pendentes)
+- **"Pendentes"** → só itens com status pendente
+- Badge com contador quando houver pendentes
+
+### Mobile-First — Obrigatório
+> Ao criar/modificar qualquer página, dialog, tabela, grid ou lista, SEMPRE aplicar classes responsivas. Nunca esperar o usuário pedir.
+
+- **Touch targets:** mínimo 44px de altura
+- **Inputs:** mínimo 16px de fonte | **Texto corrido:** mínimo 14px
+- **Padrões responsivos mínimos:**
+  - Stats: `grid grid-cols-2 lg:grid-cols-4`
+  - Grids de cards: `grid sm:grid-cols-2 lg:grid-cols-3`
+  - Header de página: `flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3`
+  - Títulos: `text-xl sm:text-2xl` | Subtítulos: `text-xs sm:text-sm`
+  - Espaçamento: `space-y-4 lg:space-y-6` em sections, `p-4 lg:p-6` em cards
+  - Botões lado a lado: `flex-wrap` quando necessário
 
 ### Cores do Projeto (Tailwind)
 | Uso | Cor |
