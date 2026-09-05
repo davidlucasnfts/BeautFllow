@@ -8,7 +8,7 @@
 
 | Categoria | Dados | Finalidade |
 |-----------|-------|------------|
-| Identificacao | Nome, e-mail, telefone, CPF | Cadastro de clientes do salao |
+| Identificacao | Nome, telefone | Cadastro de clientes do salao |
 | Contato | Endereco, WhatsApp | Comunicacao e agendamentos |
 | Saude | Alergias, condicoes esteticas | Prestacao segura de servicos |
 | Financeiro | Historico de pagamentos | Faturamento e relatorios |

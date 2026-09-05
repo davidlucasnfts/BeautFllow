@@ -203,7 +203,7 @@ export default function Consent() {
         <div className="grid gap-3">
           {[
             {
-              label: "Guardamos só o necessário (nome, telefone, e-mail opcional)",
+              label: "Guardamos só o necessário (nome e telefone)",
               done: true,
             },
             {

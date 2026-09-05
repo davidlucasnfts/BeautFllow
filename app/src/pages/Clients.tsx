@@ -20,7 +20,6 @@ import {
   Search,
   Plus,
   Phone,
-  Mail,
   Calendar,
   User,
   Users,
@@ -59,9 +58,7 @@ export default function Clients() {
   const [form, setForm] = useState({
     name: "",
     phone: "",
-    email: "",
     birthDate: "",
-    cpf: "",
     notes: "",
     tags: "",
   });
@@ -113,9 +110,7 @@ export default function Clients() {
     setForm({
       name: "",
       phone: "",
-      email: "",
       birthDate: "",
-      cpf: "",
       notes: "",
       tags: "",
     });
@@ -126,11 +121,9 @@ export default function Clients() {
     setForm({
       name: client.name,
       phone: client.phone,
-      email: client.email ?? "",
       birthDate: client.birthDate
         ? new Date(client.birthDate).toISOString().split("T")[0]
         : "",
-      cpf: client.cpf ?? "",
       notes: client.notes ?? "",
       tags: client.tags ?? "",
     });
@@ -144,13 +137,11 @@ export default function Clients() {
         id: editing,
         salonId: salon.id,
         ...form,
-        email: form.email || undefined,
       });
     } else {
       createMutation.mutate({
         salonId: salon.id,
         ...form,
-        email: form.email || undefined,
       });
     }
   }
@@ -193,41 +184,23 @@ export default function Clients() {
                   onChange={e => setForm({ ...form, name: e.target.value })}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Telefone *</Label>
-                  <Input
-                    value={form.phone}
-                    onChange={e => setForm({ ...form, phone: e.target.value })}
-                    placeholder="(11) 99999-9999"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>E-mail</Label>
-                  <Input
-                    value={form.email}
-                    onChange={e => setForm({ ...form, email: e.target.value })}
-                  />
-                </div>
+              <div className="grid gap-2">
+                <Label>Telefone (WhatsApp) *</Label>
+                <Input
+                  value={form.phone}
+                  onChange={e => setForm({ ...form, phone: e.target.value })}
+                  placeholder="(11) 99999-9999"
+                />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Data Nascimento</Label>
-                  <Input
-                    type="date"
-                    value={form.birthDate}
-                    onChange={e =>
-                      setForm({ ...form, birthDate: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>CPF</Label>
-                  <Input
-                    value={form.cpf}
-                    onChange={e => setForm({ ...form, cpf: e.target.value })}
-                  />
-                </div>
+              <div className="grid gap-2">
+                <Label>Data Nascimento</Label>
+                <Input
+                  type="date"
+                  value={form.birthDate}
+                  onChange={e =>
+                    setForm({ ...form, birthDate: e.target.value })
+                  }
+                />
               </div>
               <div className="grid gap-2">
                 <Label>Observações / Alergias</Label>
@@ -321,12 +294,6 @@ export default function Clients() {
                   <Phone className="h-3.5 w-3.5" />
                   <span>{client.phone}</span>
                 </div>
-                {client.email && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Mail className="h-3.5 w-3.5" />
-                    <span>{client.email}</span>
-                  </div>
-                )}
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="h-3.5 w-3.5" />
                   <span>

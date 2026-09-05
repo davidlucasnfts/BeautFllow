@@ -109,9 +109,7 @@ export async function deleteClient(id: number, salonId: number) {
     .set({
       lgpdAnonymized: true,
       name: "Anônimo",
-      email: null,
       phone: "",
-      cpf: null,
       notes: null,
     })
     .where(and(eq(clients.id, id), eq(clients.salonId, salonId)));

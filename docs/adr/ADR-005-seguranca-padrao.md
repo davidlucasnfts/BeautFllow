@@ -6,7 +6,7 @@
 
 ## Contexto
 
-O StudioFlow lida com dados pessoais de clientes (CPF, telefone, histórico de serviços) e dados financeiros. Precisamos de um padrão de segurança consistente e verificável.
+O StudioFlow lida com dados pessoais de clientes (nome, telefone, histórico de serviços) e dados financeiros. Precisamos de um padrão de segurança consistente e verificável.
 
 ## Decisão
 

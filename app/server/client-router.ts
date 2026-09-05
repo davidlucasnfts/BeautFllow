@@ -28,10 +28,8 @@ export const customerRouter = createRouter({
       z.object({
         salonId: z.number(),
         name: z.string().min(1).max(255),
-        email: z.string().email().optional().or(z.literal("")),
         phone: z.string().min(1).max(50),
         birthDate: z.string().optional(),
-        cpf: z.string().optional(),
         notes: z.string().optional(),
         tags: z.string().optional(),
       })
@@ -62,10 +60,8 @@ export const customerRouter = createRouter({
         id: z.number(),
         salonId: z.number(),
         name: z.string().min(1).max(255).optional(),
-        email: z.string().email().optional().or(z.literal("")),
         phone: z.string().min(1).max(50).optional(),
         birthDate: z.string().optional(),
-        cpf: z.string().optional(),
         notes: z.string().optional(),
         tags: z.string().optional(),
         segment: z

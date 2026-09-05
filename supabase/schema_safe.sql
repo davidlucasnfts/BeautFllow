@@ -84,10 +84,8 @@ CREATE TABLE IF NOT EXISTS clients (
   id SERIAL PRIMARY KEY,
   "salonId" BIGINT NOT NULL,
   name VARCHAR(255) NOT NULL,
-  email VARCHAR(320),
   phone VARCHAR(50) NOT NULL,
   "birthDate" DATE,
-  cpf VARCHAR(14),
   notes TEXT,
   tags TEXT,
   segment client_segment DEFAULT 'new' NOT NULL,
@@ -368,3 +366,16 @@ BEGIN
   END IF;
 END
 $$;
+
+
+-- ============================================================
+-- MIGRATION 006: Remove CPF e e-mail do cadastro de clientes
+-- Data: 05/09/2026
+-- Descricao: CPF é dado sensível (LGPD) sem finalidade no
+--            sistema e e-mail não é usado no contato (canal
+--            principal é WhatsApp no telefone). Remove as
+--            colunas cpf e email da tabela clients.
+-- ============================================================
+
+ALTER TABLE clients DROP COLUMN IF EXISTS cpf;
+ALTER TABLE clients DROP COLUMN IF EXISTS email;

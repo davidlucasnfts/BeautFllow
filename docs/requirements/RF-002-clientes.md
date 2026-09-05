@@ -34,9 +34,12 @@
 ## Regras de Negócio
 
 1. Telefone é obrigatório e único por salão
-2. CPF opcional, mas validado se informado
-3. Segmentação automática: new → active → vip → at_risk → inactive
-4. Consentimento LGPD obrigatório para marketing
+2. Segmentação automática: new → active → vip → at_risk → inactive
+3. Consentimento LGPD obrigatório para marketing
+
+> **Nota (05/09/2026):** CPF e e-mail foram removidos do cadastro de cliente (migration 006).
+> CPF é dado sensível sem finalidade no sistema e e-mail não é usado no contato
+> (canal principal é WhatsApp no telefone cadastrado).
 
 ---
 

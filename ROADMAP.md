@@ -49,6 +49,11 @@
 - [sec] Migration 005: RLS na tabela `salons` (lacuna da 002) — policy `tenant_isolation_salons`
 - [sec] Auditoria de conformidade com o MestreProjects.md — app aprovado nos itens verificados
 
+### 05/09/2026 — Cadastro de Cliente Sem CPF/E-mail (LGPD)
+- [sec] Migration 006: remove colunas `cpf` e `email` da tabela `clients` — CPF é dado sensível sem finalidade; contato é WhatsApp no telefone
+- [ref] Formulário de cliente simplificado: Nome, Telefone (WhatsApp), Nascimento, Observações
+- [doc] LGPD.md, ADR-005, RF-002 e tela de Consent atualizados
+
 ### 05/05/2026 — Setup Inicial
 - [dev] Projeto migrado do Kimi Web para Kimi Code
 - [dev] Dependências instaladas (658 pacotes), type-check validado
