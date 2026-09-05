@@ -14,7 +14,7 @@
 |------|------|--------|------------|
 | 0 | Setup | ✅ | Repo, Vercel, Supabase, CI/CD, docs (05/05) |
 | 1 | MVP funcional | ✅ | Dashboard, clientes, agenda, serviços, profissionais, financeiro, mensagens, termos (07/05–24/08) |
-| 2 | Testes e estabilização | [~] | Feito: cadastro/login/onboarding, menu mobile, linguagem de balcão (106 textos), fix do auth, OAuth Kimi removido. **Falta no smoke test:** cadastrar cliente/serviço/profissional, agendamento completo, financeiro |
+| 2 | Testes e estabilização | [~] | Feito: cadastro/login/onboarding, menu mobile, linguagem de balcão (106 textos), fix do auth, OAuth Kimi removido, migration 005 (RLS em salons). **Falta no smoke test:** cadastrar cliente/serviço/profissional, agendamento completo, financeiro |
 | 3 | Produção | [~] | Produção no ar (`studioflow-navy.vercel.app`). **Falta:** push das correções, testar cadastro/login em produção, remover env vars `APP_ID`/`OWNER_UNION_ID` da Vercel, decidir destino do projeto antigo `beaut-flow` |
 | 4 | Pronto para vender | ⏳ | Falta: landing pages por segmento (`/salao-de-beleza`, `/barbearia`, `/estetica`), preços definidos, domínio `studioflow.com.br` (comprar) |
 | 5 | Primeiros clientes | ⏳ | — |
@@ -43,6 +43,11 @@
 - [feat] Favicon StudioFlow
 - [dev] Novo projeto Vercel `studioflow` — produção em studioflow-navy.vercel.app
 - [doc] Regra global: sempre testar local antes de produção (MestreProjects.md seção 9)
+
+### 05/09/2026 — Consolidação e Segurança do Banco
+- [doc] Arquivos mestre globais consolidados: pasta fatiada `MestreProjects/` + `MASTER_NOVO_PROJETO.md` absorvidos no `MestreProjects.md` v2.0.0 (seções 15-16, 20 erros no self-healing)
+- [sec] Migration 005: RLS na tabela `salons` (lacuna da 002) — policy `tenant_isolation_salons`
+- [sec] Auditoria de conformidade com o MestreProjects.md — app aprovado nos itens verificados
 
 ### 05/05/2026 — Setup Inicial
 - [dev] Projeto migrado do Kimi Web para Kimi Code
