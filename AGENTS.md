@@ -343,6 +343,13 @@ npm run db:migrate # Aplicar migrations (prod)
 3. Invalidar queries após mutations: `utils.customer.list.invalidate()`
 4. Usar componentes shadcn/ui de `@/components/ui/*`
 5. Novas páginas em `src/pages/`, registrar em `src/App.tsx`
+6. **Todo campo de formulário usa a lib `@/lib/input-masks`** (padrão Brasil) — 05/09/2026:
+   - Telefone → `maskPhoneBR` ((99) 99999-9999, inputMode="numeric")
+   - Data de nascimento → `maskDateBR` (dd/mm/aaaa) + `isValidDateBR` na validação; converter com `dateBRToISO`/`isoToDateBR`
+   - Dinheiro → `maskMoneyBR` na tela + `moneyBRToDot`/`moneyDotToBR` na conversão banco
+   - Nome de pessoa → `onlyText` (só letras); nome de negócio → `onlyText(v, { allowDigits: true })`
+   - Slug/URL → `maskSlug`
+   - Campos de texto livre (observações, mensagens, descrições) ficam sem máscara
 
 **Database (Drizzle ORM):**
 1. Nunca usar raw SQL — sempre Drizzle query API
