@@ -130,7 +130,7 @@ export default function Services() {
             {segmentLabel("service")}s
           </h1>
           <p className="text-muted-foreground">
-            Catálogo de procedimentos e preços
+            Catálogo de {segmentLabel("service").toLowerCase()}s e preços
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>

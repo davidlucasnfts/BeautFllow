@@ -23,9 +23,9 @@ const ctaCopy: Record<SalonSegment, { title: string; subtitle: string }> = {
       "Junte-se a dezenas de barbearias que já controlam agenda, clientes e comissões com o StudioFlow.",
   },
   aesthetic_clinic: {
-    title: "Pronto para organizar sua clínica?",
+    title: "Pronto para organizar sua estética?",
     subtitle:
-      "Junte-se a clínicas de estética que já gerenciam procedimentos, pacientes e LGPD com o StudioFlow.",
+      "Junte-se a estéticas que já gerenciam serviços, clientes e LGPD com o StudioFlow.",
   },
 };
 

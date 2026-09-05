@@ -128,9 +128,9 @@ const segmentHeroCopy: Record<
       "Organize cortes, barbas e combos. Controle de agenda, clientes, comissões dos barbeiros e comunicação automática — tudo em uma única plataforma.",
   },
   aesthetic_clinic: {
-    title: "clínicas de estética",
+    title: "estéticas",
     subtitle:
-      "Gerencie procedimentos, histórico de pacientes, consentimentos LGPD, comissões e campanhas de reativação — tudo em uma única plataforma.",
+      "Gerencie serviços, histórico de clientes, consentimentos LGPD, comissões e campanhas de reativação — tudo em uma única plataforma.",
   },
 };
 

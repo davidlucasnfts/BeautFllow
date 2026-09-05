@@ -40,16 +40,16 @@ export const segmentLabels: Record<
     welcomeMessage: "Bem-vindo à sua barbearia",
   },
   aesthetic_clinic: {
-    segmentName: "Clínica de Estética",
-    segmentNamePlural: "Clínicas de Estética",
+    segmentName: "Estética",
+    segmentNamePlural: "Estéticas",
     segmentArticle: "da",
     segmentPossessive: "sua",
-    professional: "Terapeuta",
-    client: "Paciente",
-    service: "Procedimento",
+    professional: "Esteticista",
+    client: "Cliente",
+    service: "Serviço",
     appointment: "Agendamento",
-    dashboardTitle: "Minha Clínica",
-    welcomeMessage: "Bem-vindo à sua clínica de estética",
+    dashboardTitle: "Minha Estética",
+    welcomeMessage: "Bem-vindo à sua estética",
   },
 };
 
