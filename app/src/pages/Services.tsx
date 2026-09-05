@@ -27,6 +27,12 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { getSegmentLabel } from "@contracts/segment-labels";
+import {
+  onlyText,
+  maskMoneyBR,
+  moneyBRToDot,
+  moneyDotToBR,
+} from "@/lib/input-masks";
 
 export default function Services() {
   const { salon } = useSalon();
@@ -104,7 +110,7 @@ export default function Services() {
       description: s.description ?? "",
       category: s.category ?? "",
       durationMinutes: s.durationMinutes,
-      price: String(s.price),
+      price: moneyDotToBR(String(s.price)),
       color: s.color ?? "#6366f1",
       requiresConsent: s.requiresConsent,
       preCareInstructions: s.preCareInstructions ?? "",
@@ -115,10 +121,11 @@ export default function Services() {
 
   function handleSubmit() {
     if (!salon) return;
+    const payload = { ...form, price: moneyBRToDot(form.price) };
     if (editing) {
-      updateMutation.mutate({ id: editing, salonId: salon.id, ...form });
+      updateMutation.mutate({ id: editing, salonId: salon.id, ...payload });
     } else {
-      createMutation.mutate({ salonId: salon.id, ...form });
+      createMutation.mutate({ salonId: salon.id, ...payload });
     }
   }
 
@@ -157,7 +164,9 @@ export default function Services() {
                 <Label>Nome *</Label>
                 <Input
                   value={form.name}
-                  onChange={e => setForm({ ...form, name: e.target.value })}
+                  onChange={e =>
+                    setForm({ ...form, name: onlyText(e.target.value) })
+                  }
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -166,7 +175,10 @@ export default function Services() {
                   <Input
                     value={form.category}
                     onChange={e =>
-                      setForm({ ...form, category: e.target.value })
+                      setForm({
+                        ...form,
+                        category: onlyText(e.target.value),
+                      })
                     }
                     placeholder="Ex: Estética"
                   />
@@ -175,6 +187,7 @@ export default function Services() {
                   <Label>Duração (min) *</Label>
                   <Input
                     type="number"
+                    min="1"
                     value={form.durationMinutes}
                     onChange={e =>
                       setForm({
@@ -190,7 +203,11 @@ export default function Services() {
                   <Label>Preço (R$) *</Label>
                   <Input
                     value={form.price}
-                    onChange={e => setForm({ ...form, price: e.target.value })}
+                    onChange={e =>
+                      setForm({ ...form, price: maskMoneyBR(e.target.value) })
+                    }
+                    placeholder="0,00"
+                    inputMode="numeric"
                   />
                 </div>
                 <div className="grid gap-2">

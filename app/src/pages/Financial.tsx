@@ -39,6 +39,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { maskMoneyBR, moneyBRToDot } from "@/lib/input-masks";
 
 export default function Financial() {
   const { salon } = useSalon();
@@ -97,8 +98,10 @@ export default function Financial() {
         : undefined,
       type: form.type,
       description: form.description,
-      amount: form.amount,
-      commissionAmount: form.commissionAmount || undefined,
+      amount: moneyBRToDot(form.amount),
+      commissionAmount: form.commissionAmount
+        ? moneyBRToDot(form.commissionAmount)
+        : undefined,
       paymentMethod: form.paymentMethod,
       recordDate: form.recordDate,
       notes: form.notes || undefined,
@@ -197,8 +200,10 @@ export default function Financial() {
                     <Input
                       value={form.amount}
                       onChange={e =>
-                        setForm({ ...form, amount: e.target.value })
+                        setForm({ ...form, amount: maskMoneyBR(e.target.value) })
                       }
+                      placeholder="0,00"
+                      inputMode="numeric"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -206,8 +211,13 @@ export default function Financial() {
                     <Input
                       value={form.commissionAmount}
                       onChange={e =>
-                        setForm({ ...form, commissionAmount: e.target.value })
+                        setForm({
+                          ...form,
+                          commissionAmount: maskMoneyBR(e.target.value),
+                        })
                       }
+                      placeholder="0,00"
+                      inputMode="numeric"
                     />
                   </div>
                 </div>

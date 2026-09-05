@@ -13,6 +13,7 @@ import {
 import { segmentLabels, type SalonSegment } from "@contracts/segment-labels";
 import { getSegmentServices } from "@contracts/segment-services";
 import { getSegmentPalette } from "@contracts/segment-palettes";
+import { onlyText, maskSlug } from "@/lib/input-masks";
 
 const segments: SalonSegment[] = [
   "beauty_salon",
@@ -105,7 +106,9 @@ export default function CreateSalonForm() {
               <Input
                 id="name"
                 value={name}
-                onChange={e => setName(e.target.value)}
+                onChange={e =>
+                  setName(onlyText(e.target.value, { allowDigits: true }))
+                }
                 placeholder="Ex: Studio Cabelo & Cia"
                 required
               />
@@ -116,7 +119,7 @@ export default function CreateSalonForm() {
               <Input
                 id="slug"
                 value={slug}
-                onChange={e => setSlug(e.target.value)}
+                onChange={e => setSlug(maskSlug(e.target.value))}
                 placeholder="Ex: studio-cabelo"
                 required
               />

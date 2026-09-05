@@ -18,6 +18,11 @@ import { Label } from "@/components/ui/label";
 import { Plus, UserCircle, Phone, Mail, Percent, Edit3 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import {
+  onlyText,
+  onlyDigits,
+  maskPhoneBR,
+} from "@/lib/input-masks";
 
 export default function Professionals() {
   const { salon } = useSalon();
@@ -133,7 +138,9 @@ export default function Professionals() {
                 <Label>Nome *</Label>
                 <Input
                   value={form.name}
-                  onChange={e => setForm({ ...form, name: e.target.value })}
+                  onChange={e =>
+                    setForm({ ...form, name: onlyText(e.target.value) })
+                  }
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -148,7 +155,11 @@ export default function Professionals() {
                   <Label>Telefone</Label>
                   <Input
                     value={form.phone}
-                    onChange={e => setForm({ ...form, phone: e.target.value })}
+                    onChange={e =>
+                      setForm({ ...form, phone: maskPhoneBR(e.target.value) })
+                    }
+                    placeholder="(11) 99999-9999"
+                    inputMode="numeric"
                   />
                 </div>
               </div>
@@ -158,8 +169,13 @@ export default function Professionals() {
                   <Input
                     value={form.commissionRate}
                     onChange={e =>
-                      setForm({ ...form, commissionRate: e.target.value })
+                      setForm({
+                        ...form,
+                        commissionRate: onlyDigits(e.target.value).slice(0, 3),
+                      })
                     }
+                    inputMode="numeric"
+                    placeholder="0"
                   />
                 </div>
                 <div className="grid gap-2">

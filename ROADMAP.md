@@ -54,6 +54,12 @@
 - [ref] Formulário de cliente simplificado: Nome, Telefone (WhatsApp), Nascimento, Observações
 - [doc] LGPD.md, ADR-005, RF-002 e tela de Consent atualizados
 
+### 05/09/2026 — Padrão Brasil nos Formulários
+- [feat] Lib `input-masks.ts`: telefone (99) 99999-9999, data dd/mm/aaaa, dinheiro 1.234,56, texto só letras, slug
+- [ref] Máscaras aplicadas em Clientes, Profissionais, Serviços, Financeiro, Onboarding e Cadastro
+- [feat] Validação de data de nascimento (impede ano inválido ex: 275760)
+- [dev] 24 testes novos da lib de máscaras (53 total)
+
 ### 05/05/2026 — Setup Inicial
 - [dev] Projeto migrado do Kimi Web para Kimi Code
 - [dev] Dependências instaladas (658 pacotes), type-check validado

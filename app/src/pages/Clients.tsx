@@ -29,6 +29,14 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import {
+  onlyText,
+  maskPhoneBR,
+  maskDateBR,
+  isValidDateBR,
+  dateBRToISO,
+  isoToDateBR,
+} from "@/lib/input-masks";
 
 const segmentColors: Record<string, string> = {
   new: "bg-blue-100 text-blue-700",
@@ -121,9 +129,7 @@ export default function Clients() {
     setForm({
       name: client.name,
       phone: client.phone,
-      birthDate: client.birthDate
-        ? new Date(client.birthDate).toISOString().split("T")[0]
-        : "",
+      birthDate: client.birthDate ? isoToDateBR(client.birthDate) : "",
       notes: client.notes ?? "",
       tags: client.tags ?? "",
     });
@@ -132,16 +138,21 @@ export default function Clients() {
 
   function handleSubmit() {
     if (!salon) return;
+    if (form.birthDate && !isValidDateBR(form.birthDate)) {
+      toast.error("Data de nascimento inválida. Use o formato dd/mm/aaaa.");
+      return;
+    }
+    const payload = { ...form, birthDate: dateBRToISO(form.birthDate) };
     if (editing) {
       updateMutation.mutate({
         id: editing,
         salonId: salon.id,
-        ...form,
+        ...payload,
       });
     } else {
       createMutation.mutate({
         salonId: salon.id,
-        ...form,
+        ...payload,
       });
     }
   }
@@ -181,25 +192,31 @@ export default function Clients() {
                 <Label>Nome *</Label>
                 <Input
                   value={form.name}
-                  onChange={e => setForm({ ...form, name: e.target.value })}
+                  onChange={e =>
+                    setForm({ ...form, name: onlyText(e.target.value) })
+                  }
                 />
               </div>
               <div className="grid gap-2">
                 <Label>Telefone (WhatsApp) *</Label>
                 <Input
                   value={form.phone}
-                  onChange={e => setForm({ ...form, phone: e.target.value })}
+                  onChange={e =>
+                    setForm({ ...form, phone: maskPhoneBR(e.target.value) })
+                  }
                   placeholder="(11) 99999-9999"
+                  inputMode="numeric"
                 />
               </div>
               <div className="grid gap-2">
                 <Label>Data Nascimento</Label>
                 <Input
-                  type="date"
                   value={form.birthDate}
                   onChange={e =>
-                    setForm({ ...form, birthDate: e.target.value })
+                    setForm({ ...form, birthDate: maskDateBR(e.target.value) })
                   }
+                  placeholder="dd/mm/aaaa"
+                  inputMode="numeric"
                 />
               </div>
               <div className="grid gap-2">

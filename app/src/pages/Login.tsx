@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { trpc } from "@/providers/trpc";
+import { onlyText } from "@/lib/input-masks";
 export default function Login() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
@@ -60,7 +61,7 @@ export default function Login() {
                 <Input
                   id="name"
                   value={name}
-                  onChange={e => setName(e.target.value)}
+                  onChange={e => setName(onlyText(e.target.value))}
                   placeholder="Seu nome"
                 />
               </div>
