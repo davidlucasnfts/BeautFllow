@@ -236,6 +236,14 @@ export default function Clients() {
                   onChange={e => setForm({ ...form, notes: e.target.value })}
                 />
               </div>
+              <div className="grid gap-2">
+                <Label>Tags</Label>
+                <Input
+                  value={form.tags}
+                  onChange={e => setForm({ ...form, tags: e.target.value })}
+                  placeholder="Ex: loiro, corte curto"
+                />
+              </div>
             </div>
             <DialogFooter>
               <DialogClose asChild>

@@ -448,6 +448,10 @@ npm run db:migrate # Aplicar migrations (prod)
 - **LGPD:** Compliance em `docs/LGPD.md`
 - **CI/CD:** Pipeline em `.github/workflows/ci.yml`
 - **Cobertura de testes:** Meta 80% (configurado no vitest.config.ts)
+- **Infra/custos por fase:** `docs/runbooks/estrategia-infra-escala.md` — consultar antes de mexer em infra/upgrade
+- **Regras de negócio (RN-NNN):** `docs/requirements/regras-de-negocio.md` — consultar antes de criar/editar funcionalidade (RN-002: violação multi-tenant = 404, nunca 403)
+- **QA visual:** `docs/qa-visual-checklist.md` — rodar em 375px/1440px antes de entregar tela nova (está no DoD)
+- **Precificação (proposta):** `docs/requirements/proposta-planos-precificacao.md` — valores pendentes de decisão do David
 
 ---
 

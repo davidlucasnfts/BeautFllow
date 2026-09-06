@@ -10,6 +10,17 @@ export type ClientForDetails = {
   totalSpent: string;
 };
 
+function ageFromISO(iso: string): number | null {
+  const birth = new Date(iso);
+  if (isNaN(birth.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - birth.getFullYear();
+  const monthDiff = now.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate()))
+    age--;
+  return age >= 0 ? age : null;
+}
+
 function Detail({ label, value }: { label: string; value: string }) {
   return (
     <div>
@@ -26,12 +37,16 @@ export default function ClientCardDetails({
 }: {
   client: ClientForDetails;
 }) {
+  const age = client.birthDate ? ageFromISO(client.birthDate) : null;
   return (
     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-      <Detail label="Telefone" value={client.phone} />
       <Detail
         label="Nascimento"
-        value={client.birthDate ? isoToDateBR(client.birthDate) : "—"}
+        value={
+          client.birthDate
+            ? `${isoToDateBR(client.birthDate)}${age !== null ? ` · ${age} anos` : ""}`
+            : "—"
+        }
       />
       <Detail label="Visitas" value={String(client.totalVisits)} />
       <Detail label="Total gasto" value={`R$ ${client.totalSpent}`} />
