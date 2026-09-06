@@ -148,11 +148,12 @@ export default function AppointmentDialog({
               >
                 <SelectTrigger>
                   <SelectValue
+                    className="truncate"
                     placeholder={
                       !form.appointmentDate
-                        ? "Informe a data primeiro"
+                        ? "Escolha a data"
                         : availableSlots && availableSlots.length === 0
-                          ? "Sem horários nessa data"
+                          ? "Sem horários"
                           : "Selecione"
                     }
                   />

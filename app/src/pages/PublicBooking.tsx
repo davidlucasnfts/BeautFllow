@@ -291,13 +291,14 @@ export default function PublicBooking() {
               >
                 <SelectTrigger>
                   <SelectValue
+                    className="truncate"
                     placeholder={
                       !serviceId
-                        ? "Escolha o serviço primeiro"
+                        ? "Escolha o serviço"
                         : !isoDate
-                          ? "Informe a data primeiro"
+                          ? "Informe a data"
                           : availableSlots.length === 0
-                            ? "Sem horários nessa data"
+                            ? "Sem horários"
                             : "Selecione"
                     }
                   />

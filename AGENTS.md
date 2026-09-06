@@ -123,6 +123,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 004 | Salvar no `MestreProjects.md` em vez de `AGENTS.md` | 11/05/2026 | Só salvar no global quando David disser "para todos os projetos" |
 | 005 | Criar schema_safe.sql manual em vez de migrations | 12/05/2026 | Usar `supabase/migrations/NNN-descricao.sql`, gerar schema_safe.sql juntando |
 | 006 | Excluir registro sem confirmação (clique sem querer apagou cliente) | 06/09/2026 | **SEMPRE** AlertDialog de confirmação antes de qualquer delete, mostrando o nome do item. Nunca chamar mutation de delete direto no clique do botão |
+| 007 | Placeholder longo quebrou a caixa do Select em 2 linhas | 06/09/2026 | **SEMPRE** placeholder curto + `truncate` no `SelectValue`. Reler regras de front end do AGENTS.md ANTES de criar campo novo |
 
 ### Checklist Obrigatório (executar antes de QUALQUER ação)
 
@@ -422,6 +423,9 @@ npm run db:migrate # Aplicar migrations (prod)
    - Nome de pessoa → `onlyText` (só letras); nome de negócio → `onlyText(v, { allowDigits: true })`
    - Slug/URL → `maskSlug`
    - Campos numéricos (duração, comissão) → `onlyDigits` com limite de dígitos (`slice(0, N)`) — NUNCA `type="number"` solto sem máximo
+7. **Texto nunca quebra a caixa** (selects, botões, badges) — 06/09/2026:
+   - Placeholders de `Select`: sempre curtos ("Escolha o serviço", "Sem horários") **e** com `className="truncate"` no `SelectValue`
+   - Antes de criar campo novo, reler esta seção e a de Design UX/UI — regra vale para qualquer componente novo
    - Campos de texto livre (observações, mensagens, descrições) ficam sem máscara
 
 **Database (Drizzle ORM):**
