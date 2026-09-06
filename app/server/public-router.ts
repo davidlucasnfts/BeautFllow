@@ -6,6 +6,7 @@ import {
   getPublicServices,
   getPublicProfessionals,
   getClientByPhone,
+  getAppointmentsBySalon,
   createClient,
   createAppointment,
 } from "./queries/salon";
@@ -64,7 +65,11 @@ export const publicRouter = createRouter({
         serviceId: z.number().int().positive(),
         professionalId: z.number().int().positive().optional(),
         date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-        startTime: z.string().regex(/^\d{2}:\d{2}$/),
+        startTime: z
+          .string()
+          .regex(/^([01]\d|2[0-3]):[0-5]\d$/, {
+            message: "Horário inválido.",
+          }),
         notes: z.string().max(500).optional(),
       })
     )
@@ -94,6 +99,41 @@ export const publicRouter = createRouter({
             message: "Profissional não encontrado.",
           });
         }
+      }
+
+      // Não permite agendar no passado (comparando em horário de Brasília)
+      const nowBR = new Date(
+        new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
+      );
+      const requestedStart = new Date(`${input.date}T${input.startTime}:00`);
+      if (requestedStart < nowBR) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Esse horário já passou. Escolha uma data futura.",
+        });
+      }
+
+      // Conflito de horário: bloqueia sobreposição no mesmo profissional
+      // (ou entre agendamentos sem profissional definido)
+      const newEnd = addMinutes(input.startTime, service.durationMinutes);
+      const dayAppointments = await getAppointmentsBySalon(
+        salon.id,
+        input.date,
+        input.date
+      );
+      const conflict = dayAppointments.find(a => {
+        if (a.status === "cancelled" || a.status === "no_show") return false;
+        const sameProfessional = input.professionalId
+          ? a.professionalId === input.professionalId
+          : a.professionalId === null;
+        if (!sameProfessional || !a.endTime) return false;
+        return a.startTime < newEnd && a.endTime > input.startTime;
+      });
+      if (conflict) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Esse horário já está ocupado. Escolha outro horário.",
+        });
       }
 
       // Cliente já existe (pelo telefone)? Reutiliza. Se não, cria.
