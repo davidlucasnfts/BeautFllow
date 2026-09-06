@@ -20,7 +20,6 @@ import {
   Search,
   Plus,
   Phone,
-  Calendar,
   User,
   Users,
   Trash2,
@@ -319,17 +318,6 @@ export default function Clients() {
                       <Edit3 className="w-3 h-3" />
                       Editar
                     </button>
-                    <button
-                      type="button"
-                      onClick={e => {
-                        e.stopPropagation();
-                        setDeleteTarget({ id: client.id, name: client.name });
-                      }}
-                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-red-600 text-white hover:bg-red-700"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                      Excluir
-                    </button>
                   </div>
                 </div>
               </CardHeader>
@@ -337,12 +325,6 @@ export default function Clients() {
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Phone className="h-3.5 w-3.5" />
                   <span>{client.phone}</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Calendar className="h-3.5 w-3.5" />
-                  <span>
-                    {client.totalVisits} visitas | R$ {client.totalSpent}
-                  </span>
                 </div>
                 {client.consentGiven && (
                   <div className="flex items-center gap-2 text-emerald-600 text-xs">
@@ -352,8 +334,24 @@ export default function Clients() {
                 )}
               </CardContent>
               {selectedId === client.id && (
-                <CardContent className="border-t border-slate-100 pt-4">
+                <CardContent className="border-t border-slate-100 pt-4 space-y-4">
                   <ClientCardDetails client={client} />
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={e => {
+                        e.stopPropagation();
+                        setDeleteTarget({
+                          id: client.id,
+                          name: client.name,
+                        });
+                      }}
+                      className="flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-md bg-red-50 text-red-600 hover:bg-red-100"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      Excluir {segmentLabel("client")}
+                    </button>
+                  </div>
                 </CardContent>
               )}
               <div className="flex justify-center pb-2">
