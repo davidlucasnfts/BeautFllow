@@ -20,7 +20,6 @@ import {
   Search,
   Plus,
   Phone,
-  User,
   Users,
   Trash2,
   Edit3,
@@ -40,6 +39,7 @@ import {
   isoToDateBR,
 } from "@/lib/input-masks";
 import ClientCardDetails from "@/components/clients/ClientCardDetails";
+import { getSegmentPalette } from "@contracts/segment-palettes";
 
 const segmentColors: Record<string, string> = {
   new: "bg-blue-100 text-blue-700",
@@ -63,6 +63,7 @@ export default function Clients() {
     salon
       ? getSegmentLabel(salon.segment, key)
       : getSegmentLabel("beauty_salon", key);
+  const palette = getSegmentPalette(salon?.segment ?? "beauty_salon");
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<number | null>(null);
@@ -289,8 +290,14 @@ export default function Clients() {
               <CardHeader className="p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-2">
-                    <div className="h-9 w-9 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
-                      <User className="h-4 w-4 text-rose-500" />
+                    <div
+                      className="h-9 w-9 rounded-full flex items-center justify-center shrink-0 text-sm font-bold"
+                      style={{
+                        backgroundColor: `${palette.primary}2E`,
+                        color: palette.primary,
+                      }}
+                    >
+                      {client.name.trim().charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <CardTitle className="text-base">{client.name}</CardTitle>

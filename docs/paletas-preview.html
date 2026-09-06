@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StudioFlow — Prévia de Paletas por Segmento</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+    padding: 32px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  .sub { color: #64748b; font-size: 14px; margin-bottom: 28px; }
+  h2 {
+    font-size: 18px;
+    margin: 32px 0 4px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .seg-desc { color: #64748b; font-size: 13px; margin-bottom: 16px; }
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .option {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .option.current { border-color: #2563eb; border-width: 2px; }
+  .opt-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+  }
+  .opt-tag.current { background: #dbeafe; color: #1d4ed8; }
+  .opt-tag.new { background: #f1f5f9; color: #64748b; }
+  .opt-name { font-weight: 700; font-size: 14px; margin-bottom: 12px; }
+  .demo {
+    background: #fafafa;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-outline {
+    background: transparent;
+    border: 1.5px solid #cbd5e1;
+    color: #475569;
+    font-weight: 500;
+  }
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .badge {
+    font-size: 10px; font-weight: 600;
+    padding: 3px 10px; border-radius: 999px;
+  }
+  .ring-demo { padding: 6px 10px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 12px; background: #fff; }
+  .swatches { display: flex; gap: 8px; }
+  .sw { flex: 1; }
+  .sw-color {
+    height: 26px; border-radius: 6px;
+    border: 1px solid rgba(0,0,0,.08);
+    margin-bottom: 3px;
+  }
+  .sw-label { font-size: 10px; color: #64748b; text-align: center; }
+  .foot { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 13px; }
+</style>
+</head>
+<body>
+  <h1>StudioFlow — Paletas por Segmento</h1>
+  <p class="sub">Prévia das opções de cor para cada tipo de estabelecimento. A borda azul marca a paleta atual. Escolha uma opção por segmento e me avise (ex: "Salão B, Barbearia A, Estética C").</p>
+
+  <!-- ===================== SALÃO ===================== -->
+  <h2>Salão de Beleza</h2>
+  <p class="seg-desc">Clássico do segmento: tons de rosa com toque dourado.</p>
+  <div class="options">
+
+    <div class="option current">
+      <span class="opt-tag current">Atual</span>
+      <p class="opt-name">A — Rosa Clássico</p>
+      <div class="demo">
+        <div class="row" style="margin-bottom:10px">
+          <div class="avatar" style="background:#E8A0BF4D;color:#C77D9F">D</div>
+          <div>
+            <div style="font-weight:700;font-size:14px">debora</div>
+            <span class="badge" style="background:#E8A0BF4D;color:#C77D9F">Novo</span>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" style="background:#E8A0BF;color:#3D1F2B">+ Novo Cliente</button>
+          <button class="btn btn-outline">Cancelar</button>
+          <div class="ring-demo" style="box-shadow:0 0 0 3px #E8A0BF66">focado</div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw"><div class="sw-color" style="background:#E8A0BF"></div><div class="sw-label">primária</div></div>
+        <div class="sw"><div class="sw-color" style="background:#F472B6"></div><div class="sw-label">destaque</div></div>
+        <div class="sw"><div class="sw-color" style="background:#D4AF37"></div><div class="sw-label">dourado</div></div>
+      </div>
+    </div>
+
+    <div class="option">
+      <span class="opt-tag new">Opção</span>
+      <p class="opt-name">B — Rosa Choque</p>
+      <div class="demo">
+        <div class="row" style="margin-bottom:10px">
+          <div class="avatar" style="background:#EC489926;color:#EC4899">D</div>
+          <div>
+            <div style="font-weight:700;font-size:14px">debora</div>
+            <span class="badge" style="background:#EC489926;color:#BE185D">Novo</span>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" style="background:#EC4899;color:#fff">+ Novo Cliente</button>
+          <button class="btn btn-outline">Cancelar</button>
+          <div class="ring-demo" style="box-shadow:0 0 0 3px #EC489966">focado</div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw"><div class="sw-color" style="background:#EC4899"></div><div class="sw-label">primária</div></div>
+        <div class="sw"><div class="sw-color" style="background:#BE185D"></div><div class="sw-label">destaque</div></div>
+        <div class="sw"><div class="sw-color" style="background:#D4AF37"></div><div class="sw-label">dourado</div></div>
+      </div>
+    </div>
+
+    <div class="option">
+      <span class="opt-tag new">Opção</span>
+      <p class="opt-name">C — Rose Gold</p>
+      <div class="demo">
+        <div class="row" style="margin-bottom:10px">
+          <div class="avatar" style="background:#B76E7926;color:#B76E79">D</div>
+          <div>
+            <div style="font-weight:700;font-size:14px">debora</div>
+            <span class="badge" style="background:#B76E7926;color:#B76E79">Novo</span>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" style="background:#B76E79;color:#fff">+ Novo Cliente</button>
+          <button class="btn btn-outline">Cancelar</button>
+          <div class="ring-demo" style="box-shadow:0 0 0 3px #B76E7966">focado</div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw"><div class="sw-color" style="background:#B76E79"></div><div class="sw-label">primária</div></div>
+        <div class="sw"><div class="sw-color" style="background:#E8B4B8"></div><div class="sw-label">destaque</div></div>
+        <div class="sw"><div class="sw-color" style="background:#D4AF37"></div><div class="sw-label">dourado</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== BARBEARIA ===================== -->
+  <h2>Barbearia</h2>
+  <p class="seg-desc">Força e masculinidade: preto/grafite, com dourado ou prata.</p>
+  <div class="options">
+
+    <div class="option current">
+      <span class="opt-tag current">Atual</span>
+      <p class="opt-name">A — Preto + Dourado</p>
+      <div class="demo">
+        <div class="row" style="margin-bottom:10px">
+          <div class="avatar" style="background:#1F1F1F1A;color:#1F1F1F">D</div>
+          <div>
+            <div style="font-weight:700;font-size:14px">debora</div>
+            <span class="badge" style="background:#C9A22726;color:#8A6D1A">Novo</span>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" style="background:#1F1F1F;color:#fff">+ Novo Cliente</button>
+          <button class="btn btn-outline">Cancelar</button>
+          <div class="ring-demo" style="box-shadow:0 0 0 3px #1F1F1F55">focado</div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw"><div class="sw-color" style="background:#1F1F1F"></div><div class="sw-label">primária</div></div>
+        <div class="sw"><div class="sw-color" style="background:#C9A227"></div><div class="sw-label">dourado</div></div>
+        <div class="sw"><div class="sw-color" style="background:#A16207"></div><div class="sw-label">âmbar</div></div>
+      </div>
+    </div>
+
+    <div class="option">
+      <span class="opt-tag new">Opção</span>
+      <p class="opt-name">B — Grafite + Prata</p>
+      <div class="demo">
+        <div class="row" style="margin-bottom:10px">
+          <div class="avatar" style="background:#3741511A;color:#374151">D</div>
+          <div>
+            <div style="font-weight:700;font-size:14px">debora</div>
+            <span class="badge" style="background:#9CA3AF26;color:#4B5563">Novo</span>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" style="background:#374151;color:#fff">+ Novo Cliente</button>
+          <button class="btn btn-outline">Cancelar</button>
+          <div class="ring-demo" style="box-shadow:0 0 0 3px #37415155">focado</div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw"><div class="sw-color" style="background:#374151"></div><div class="sw-label">primária</div></div>
+        <div class="sw"><div class="sw-color" style="background:#9CA3AF"></div><div class="sw-label">prata</div></div>
+        <div class="sw"><div class="sw-color" style="background:#111827"></div><div class="sw-label">preto</div></div>
+      </div>
+    </div>
+
+    <div class="option">
+      <span class="opt-tag new">Opção</span>
+      <p class="opt-name">C — Preto Fosco + Dourado Forte</p>
+      <div class="demo">
+        <div class="row" style="margin-bottom:10px">
+          <div class="avatar" style="background:#0A0A0A1A;color:#0A0A0A">D</div>
+          <div>
+            <div style="font-weight:700;font-size:14px">debora</div>
+            <span class="badge" style="background:#D4AF3726;color:#8A6D1A">Novo</span>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" style="background:#0A0A0A;color:#D4AF37">+ Novo Cliente</button>
+          <button class="btn btn-outline">Cancelar</button>
+          <div class="ring-demo" style="box-shadow:0 0 0 3px #D4AF3766">focado</div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw"><div class="sw-color" style="background:#0A0A0A"></div><div class="sw-label">primária</div></div>
+        <div class="sw"><div class="sw-color" style="background:#D4AF37"></div><div class="sw-label">dourado</div></div>
+        <div class="sw"><div class="sw-color" style="background:#B8860B"></div><div class="sw-label">bronze</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ESTÉTICA ===================== -->
+  <h2>Clínica de Estética</h2>
+  <p class="seg-desc">O verde atual foge do padrão do segmento. O mercado de estética usa lilás/roxo (sofisticação clínica) combinado com dourado (luxo). Três opções abaixo.</p>
+  <div class="options">
+
+    <div class="option">
+      <span class="opt-tag new">Opção</span>
+      <p class="opt-name">A — Lilás Suave + Dourado</p>
+      <div class="demo">
+        <div class="row" style="margin-bottom:10px">
+          <div class="avatar" style="background:#A78BFA26;color:#7C5CD6">D</div>
+          <div>
+            <div style="font-weight:700;font-size:14px">debora</div>
+            <span class="badge" style="background:#A78BFA26;color:#7C5CD6">Novo</span>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" style="background:#A78BFA;color:#fff">+ Novo Cliente</button>
+          <button class="btn btn-outline">Cancelar</button>
+          <div class="ring-demo" style="box-shadow:0 0 0 3px #A78BFA66">focado</div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw"><div class="sw-color" style="background:#A78BFA"></div><div class="sw-label">primária</div></div>
+        <div class="sw"><div class="sw-color" style="background:#C4B5FD"></div><div class="sw-label">lavanda</div></div>
+        <div class="sw"><div class="sw-color" style="background:#D4AF37"></div><div class="sw-label">dourado</div></div>
+      </div>
+    </div>
+
+    <div class="option">
+      <span class="opt-tag new">Opção</span>
+      <p class="opt-name">B — Lavanda Profunda + Dourado</p>
+      <div class="demo">
+        <div class="row" style="margin-bottom:10px">
+          <div class="avatar" style="background:#7C3AED26;color:#7C3AED">D</div>
+          <div>
+            <div style="font-weight:700;font-size:14px">debora</div>
+            <span class="badge" style="background:#7C3AED26;color:#7C3AED">Novo</span>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" style="background:#7C3AED;color:#fff">+ Novo Cliente</button>
+          <button class="btn btn-outline">Cancelar</button>
+          <div class="ring-demo" style="box-shadow:0 0 0 3px #7C3AED66">focado</div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw"><div class="sw-color" style="background:#7C3AED"></div><div class="sw-label">primária</div></div>
+        <div class="sw"><div class="sw-color" style="background:#A78BFA"></div><div class="sw-label">lilás</div></div>
+        <div class="sw"><div class="sw-color" style="background:#D4AF37"></div><div class="sw-label">dourado</div></div>
+      </div>
+    </div>
+
+    <div class="option current">
+      <span class="opt-tag current">Sugestão destaque</span>
+      <p class="opt-name">C — Lilás + Dourado de Luxo</p>
+      <div class="demo">
+        <div class="row" style="margin-bottom:10px">
+          <div class="avatar" style="background:#8B5CF626;color:#8B5CF6">D</div>
+          <div>
+            <div style="font-weight:700;font-size:14px">debora</div>
+            <span class="badge" style="background:#D4AF3726;color:#8A6D1A">Novo</span>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" style="background:#8B5CF6;color:#fff">+ Novo Cliente</button>
+          <button class="btn" style="background:linear-gradient(135deg,#D4AF37,#B8860B);color:#fff">Ação dourada</button>
+          <button class="btn btn-outline">Cancelar</button>
+          <div class="ring-demo" style="box-shadow:0 0 0 3px #8B5CF666">focado</div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="sw"><div class="sw-color" style="background:#8B5CF6"></div><div class="sw-label">primária</div></div>
+        <div class="sw"><div class="sw-color" style="background:#D4AF37"></div><div class="sw-label">dourado</div></div>
+        <div class="sw"><div class="sw-color" style="background:#6D28D9"></div><div class="sw-label">profundo</div></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">As demos mostram: avatar com inicial (fundo suave + cor do tema), badge, botão primário, botão de ação dourada (onde aplicável), botão outline e estado de foco. Depois da sua escolha, aplico as paletas em todo o painel por segmento.</p>
+</body>
+</html>
