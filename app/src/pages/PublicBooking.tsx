@@ -68,11 +68,10 @@ export default function PublicBooking() {
   );
 
   const service = data?.services.find(s => s.id === Number(serviceId));
-  const allSlots = generateTimeSlots(
-    slotsData?.dayStart,
-    slotsData?.dayEnd,
-    slotsData?.slotMinutes
-  );
+  // sem serviço + data válida, a grade fica vazia (campo travado com orientação)
+  const allSlots = slotsData
+    ? generateTimeSlots(slotsData.dayStart, slotsData.dayEnd, slotsData.slotMinutes)
+    : [];
   const availableSlots = filterAvailableSlots(
     allSlots,
     slotsData?.busyIntervals ?? [],

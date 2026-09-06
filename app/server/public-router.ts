@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { createRouter, publicQuery } from "./middleware";
-import { Schedule } from "@contracts/constants";
+import { parseScheduleSettings } from "@contracts/constants";
 import {
   getSalonBySlug,
   getPublicServices,
@@ -92,6 +92,7 @@ export const publicRouter = createRouter({
         });
       }
 
+      const schedule = parseScheduleSettings(salon.settings);
       const dayAppointments = await getAppointmentsBySalon(
         salon.id,
         input.date,
@@ -107,13 +108,15 @@ export const publicRouter = createRouter({
         })
         .flatMap(a => {
           if (!a.endTime) return [];
-          return [{ start: floorToSlot(a.startTime), end: a.endTime }];
+          return [
+            { start: floorToSlot(a.startTime, schedule.slotMinutes), end: a.endTime },
+          ];
         });
 
       return {
-        slotMinutes: Schedule.slotMinutes,
-        dayStart: Schedule.dayStart,
-        dayEnd: Schedule.dayEnd,
+        slotMinutes: schedule.slotMinutes,
+        dayStart: schedule.dayStart,
+        dayEnd: schedule.dayEnd,
         busyIntervals,
       };
     }),

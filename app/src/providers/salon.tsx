@@ -1,6 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, type ReactNode } from "react";
 import type { SalonSegment } from "@contracts/segment-labels";
+import {
+  type ScheduleSettings,
+  defaultScheduleSettings,
+} from "@contracts/constants";
 
 export type SalonRole = "owner" | "admin" | "professional" | "receptionist";
 
@@ -11,6 +15,7 @@ export type SalonContextType = {
   segment: SalonSegment;
   role: SalonRole;
   plan: string;
+  schedule: ScheduleSettings;
 };
 
 export const SalonContext = createContext<{
@@ -24,7 +29,14 @@ export function SalonProvider({ children }: { children: ReactNode }) {
   const [salon, setSalonState] = useState<SalonContextType | null>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        // garante schedule (salvos antes da configuração de horários não tinham)
+        return {
+          ...parsed,
+          schedule: { ...defaultScheduleSettings, ...(parsed.schedule ?? {}) },
+        };
+      }
     } catch {
       return null;
     }

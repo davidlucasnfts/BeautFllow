@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createRouter, authedQuery } from "./middleware";
+import { parseScheduleSettings } from "@contracts/constants";
 import {
   createSalon,
   getSalonsByUser,
@@ -41,8 +42,27 @@ export const salonRouter = createRouter({
     }),
 
   list: authedQuery.query(async ({ ctx }) => {
-    return getSalonsByUser(ctx.user.id);
+    const rows = await getSalonsByUser(ctx.user.id);
+    return rows.map(({ salon, role }) => ({
+      ...salon,
+      role,
+      schedule: parseScheduleSettings(salon.settings),
+    }));
   }),
+
+  updateSettings: authedQuery
+    .input(
+      z.object({
+        id: z.number(),
+        dayStart: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
+        dayEnd: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
+        slotMinutes: z.number().int().min(15).max(120),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { id, ...schedule } = input;
+      return updateSalon(id, { settings: JSON.stringify(schedule) });
+    }),
 
   update: authedQuery
     .input(

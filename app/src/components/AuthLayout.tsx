@@ -33,6 +33,7 @@ import {
   LogOut,
   PanelLeft,
   Building2,
+  Settings,
 } from "lucide-react";
 import {
   type CSSProperties,
@@ -120,6 +121,7 @@ function getMenuItems(segment: SalonSegment) {
     { icon: DollarSign, label: "Financeiro", path: "/financial" },
     { icon: MessageSquare, label: "Mensagens", path: "/communications" },
     { icon: FileCheck, label: "Termos e Autorizações", path: "/consent" },
+    { icon: Settings, label: "Configurações", path: "/settings" },
   ];
 }
 
@@ -214,12 +216,13 @@ function AuthLayoutContent({
     if (salonsData && salonsData.length > 0 && !salon) {
       const first = salonsData[0];
       setSalon({
-        id: first.salon.id,
-        name: first.salon.name,
-        slug: first.salon.slug,
-        segment: first.salon.segment,
+        id: first.id,
+        name: first.name,
+        slug: first.slug,
+        segment: first.segment,
         role: first.role,
-        plan: first.salon.plan,
+        plan: first.plan,
+        schedule: first.schedule,
       });
     }
   }, [salonsData, salon, setSalon]);

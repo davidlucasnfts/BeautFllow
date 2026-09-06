@@ -90,7 +90,11 @@ export default function Appointments() {
     )
     .map(a => ({ start: a.startTime, end: a.endTime as string }));
   const availableSlots = filterAvailableSlots(
-    generateTimeSlots(),
+    generateTimeSlots(
+      salon?.schedule.dayStart,
+      salon?.schedule.dayEnd,
+      salon?.schedule.slotMinutes
+    ),
     busyIntervals,
     formService?.durationMinutes ?? 30
   );

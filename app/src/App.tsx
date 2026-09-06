@@ -10,6 +10,7 @@ import Professionals from "./pages/Professionals";
 import Financial from "./pages/Financial";
 import Communications from "./pages/Communications";
 import Consent from "./pages/Consent";
+import Settings from "./pages/Settings";
 import Proposal from "./pages/Proposal";
 import PublicBooking from "./pages/PublicBooking";
 import AuthLayout from "./components/AuthLayout";
@@ -82,6 +83,14 @@ export default function App() {
         element={
           <AuthLayout>
             <Consent />
+          </AuthLayout>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <AuthLayout>
+            <Settings />
           </AuthLayout>
         }
       />

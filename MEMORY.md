@@ -61,6 +61,9 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Card do cliente: expansão inline, setinha centralizada, WhatsApp na lateral, botões preenchidos | 06/09 |
 | Grade de horários padrão 30 em 30 min (07h–21h) — config central em `contracts/constants.ts` | 06/09 |
 | Agendamento online e interno: só mostra horários livres (ocupados somem); horários passados escondidos | 06/09 |
+| Fix: campo de horário não fica mais travado no agendamento online (grade só aparece com serviço + data) | 06/09 |
+| Configuração de horário por estabelecimento: aba Configurações (abre/fecha, intervalo 30/60) salva em `salons.settings` | 06/09 |
+| Card do cliente compacto: Excluir só aparece dentro do card aberto (menos chance de apagar sem querer) | 06/09 |
 
 ---
 

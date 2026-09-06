@@ -111,6 +111,7 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [ ] **Remover env vars `APP_ID` e `OWNER_UNION_ID` do projeto Vercel `studioflow`** (Settings → Environment Variables) — não são mais lidas pelo código. `APP_SECRET` e `DATABASE_URL` **permanecem**
 - [ ] **Testar cadastro/login em `https://studioflow-navy.vercel.app`** após o push destas correções
 - [x] **Deletar o projeto Vercel antigo (`beaut-flow`)** — deletado por David no painel Vercel em 06/09
+- [ ] **Foto do estabelecimento no perfil** (coluna `logoUrl` já existe no banco) — falta criar bucket no Supabase Storage e implementar o upload na aba Configurações
 - [ ] Renomear repositório GitHub `BeautFllow` → `studioflow` (opcional)
 - [ ] Comprar domínio `studioflow.com.br` e configurar na Vercel (quando preparar para vender)
 - [ ] Adicionar `SENTRY_DSN` e `VITE_SENTRY_DSN` na Vercel (opcional — só se quiser usar)
