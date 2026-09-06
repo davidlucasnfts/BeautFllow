@@ -57,6 +57,10 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Cards com alturas iguais (h-full) + scroll em todos os dialogs | 05/09 |
 | Botões de ação com texto + ícone nas cores do design system (Clientes, Serviços, Profissionais) | 05/09 |
 | Ficha do cliente ao clicar no card — detalhes + botão WhatsApp + ações (padrão preview) | 05/09 |
+| Confirmação obrigatória antes de excluir (AlertDialog com nome do item) — regra #006 no AGENTS.md | 06/09 |
+| Card do cliente: expansão inline, setinha centralizada, WhatsApp na lateral, botões preenchidos | 06/09 |
+| Grade de horários padrão 30 em 30 min (07h–21h) — config central em `contracts/constants.ts` | 06/09 |
+| Agendamento online e interno: só mostra horários livres (ocupados somem); horários passados escondidos | 06/09 |
 
 ---
 

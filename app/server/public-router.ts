@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { createRouter, publicQuery } from "./middleware";
+import { Schedule } from "@contracts/constants";
 import {
   getSalonBySlug,
   getPublicServices,
@@ -17,6 +18,15 @@ function addMinutes(hhmm: string, minutes: number): string {
   const total = (h * 60 + m + minutes) % (24 * 60);
   return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(
     total % 60
+  ).padStart(2, "0")}`;
+}
+
+function floorToSlot(hhmm: string, stepMinutes: number = 30): string {
+  const [h, m] = hhmm.split(":").map(Number);
+  const total = h * 60 + m;
+  const floored = total - (total % stepMinutes);
+  return `${String(Math.floor(floored / 60)).padStart(2, "0")}:${String(
+    floored % 60
   ).padStart(2, "0")}`;
 }
 
@@ -52,6 +62,59 @@ export const publicRouter = createRouter({
         },
         services,
         professionals,
+      };
+    }),
+
+  // Horários livres de um dia (grade de 30 em 30 min, menos os ocupados)
+  availableSlots: publicQuery
+    .input(
+      z.object({
+        slug: z.string().min(2).max(100),
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        serviceId: z.number().int().positive(),
+        professionalId: z.number().int().positive().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      const salon = await getSalonBySlug(input.slug);
+      if (!salon) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Endereço não encontrado.",
+        });
+      }
+      const services = await getPublicServices(salon.id);
+      const service = services.find(s => s.id === input.serviceId);
+      if (!service) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Serviço não encontrado.",
+        });
+      }
+
+      const dayAppointments = await getAppointmentsBySalon(
+        salon.id,
+        input.date,
+        input.date
+      );
+      const busyIntervals = dayAppointments
+        .filter(a => {
+          if (a.status === "cancelled" || a.status === "no_show" || !a.endTime)
+            return false;
+          return input.professionalId
+            ? a.professionalId === input.professionalId
+            : a.professionalId === null;
+        })
+        .flatMap(a => {
+          if (!a.endTime) return [];
+          return [{ start: floorToSlot(a.startTime), end: a.endTime }];
+        });
+
+      return {
+        slotMinutes: Schedule.slotMinutes,
+        dayStart: Schedule.dayStart,
+        dayEnd: Schedule.dayEnd,
+        busyIntervals,
       };
     }),
 
