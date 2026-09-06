@@ -329,11 +329,11 @@ export default function Services() {
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-col gap-1 shrink-0 w-[80px]">
+                  <div className="flex flex-col gap-1.5 shrink-0 w-[92px]">
                     <button
                       type="button"
                       onClick={() => handleEdit(s)}
-                      className="flex items-center justify-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold rounded-md shadow-sm bg-blue-600 text-white hover:bg-blue-700"
+                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-blue-600 text-white hover:bg-blue-700"
                     >
                       <Edit3 className="w-3 h-3" />
                       Editar
@@ -341,7 +341,7 @@ export default function Services() {
                     <button
                       type="button"
                       onClick={() => setDeleteTarget({ id: s.id, name: s.name })}
-                      className="flex items-center justify-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold rounded-md shadow-sm bg-red-600 text-white hover:bg-red-700"
+                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-red-600 text-white hover:bg-red-700"
                     >
                       <Trash2 className="w-3 h-3" />
                       Excluir

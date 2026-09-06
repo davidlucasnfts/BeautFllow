@@ -278,31 +278,44 @@ export default function Clients() {
                 setSelectedId(client.id === selectedId ? null : client.id)
               }
             >
-              <CardHeader className="px-4 pt-3 pb-2">
+              <CardHeader className="p-4">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="h-9 w-9 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
+                  <div className="flex items-start gap-2.5">
+                    <div className="h-9 w-9 rounded-full bg-rose-100 flex items-center justify-center shrink-0 mt-0.5">
                       <User className="h-4 w-4 text-rose-500" />
                     </div>
                     <div>
-                      <CardTitle className="text-sm">{client.name}</CardTitle>
-                      <Badge
-                        variant="secondary"
-                        className={
-                          segmentColors[client.segment] + " mt-0.5 text-[10px]"
-                        }
-                      >
-                        {segmentLabels[client.segment]}
-                      </Badge>
+                      <CardTitle className="text-base">{client.name}</CardTitle>
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        <Badge
+                          variant="secondary"
+                          className={segmentColors[client.segment] + " text-[10px]"}
+                        >
+                          {segmentLabels[client.segment]}
+                        </Badge>
+                        {client.consentGiven && (
+                          <Badge
+                            variant="secondary"
+                            className="bg-emerald-100 text-emerald-700 text-[10px]"
+                          >
+                            <ShieldCheck className="w-3 h-3 mr-0.5" />
+                            Dados autorizados
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-1.5 text-xs text-muted-foreground">
+                        <Phone className="h-3 w-3" />
+                        <span>{client.phone}</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-1 shrink-0 w-[80px]">
+                  <div className="flex flex-col gap-1.5 shrink-0 w-[92px]">
                     <a
                       href={`https://wa.me/55${client.phone.replace(/\D/g, "")}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={e => e.stopPropagation()}
-                      className="flex items-center justify-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold rounded-md shadow-sm bg-green-600 text-white hover:bg-green-700"
+                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-green-600 text-white hover:bg-green-700"
                     >
                       <MessageCircle className="w-3 h-3" />
                       WhatsApp
@@ -313,7 +326,7 @@ export default function Clients() {
                         e.stopPropagation();
                         handleEdit(client);
                       }}
-                      className="flex items-center justify-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold rounded-md shadow-sm bg-blue-600 text-white hover:bg-blue-700"
+                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-blue-600 text-white hover:bg-blue-700"
                     >
                       <Edit3 className="w-3 h-3" />
                       Editar
@@ -321,20 +334,8 @@ export default function Clients() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="px-4 pb-1.5 pt-0 space-y-1 text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Phone className="h-3.5 w-3.5" />
-                  <span>{client.phone}</span>
-                </div>
-                {client.consentGiven && (
-                  <div className="flex items-center gap-2 text-emerald-600 text-xs">
-                    <ShieldCheck className="h-3.5 w-3.5" />
-                    <span>Autorizou o uso dos dados</span>
-                  </div>
-                )}
-              </CardContent>
               {selectedId === client.id && (
-                <CardContent className="border-t border-slate-100 pt-4 space-y-4">
+                <CardContent className="px-4 pb-2 pt-0 space-y-4">
                   <ClientCardDetails client={client} />
                   <div className="flex justify-end">
                     <button
@@ -354,7 +355,7 @@ export default function Clients() {
                   </div>
                 </CardContent>
               )}
-              <div className="flex justify-center pb-1.5">
+              <div className="flex justify-center pb-2">
                 <ChevronDown
                   className={`w-4 h-4 text-slate-400 transition-transform ${
                     selectedId === client.id ? "rotate-180" : ""
