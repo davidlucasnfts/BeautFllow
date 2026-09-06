@@ -110,7 +110,7 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [x] **Remover OAuth Kimi do app** (aprovado por David) — elimina a pendência da redirect URL no painel Kimi
 - [ ] **Remover env vars `APP_ID` e `OWNER_UNION_ID` do projeto Vercel `studioflow`** (Settings → Environment Variables) — não são mais lidas pelo código. `APP_SECRET` e `DATABASE_URL` **permanecem**
 - [ ] **Testar cadastro/login em `https://studioflow-navy.vercel.app`** após o push destas correções
-- [ ] **Decidir o que fazer com o projeto Vercel antigo (`beaut-flow`)** — desconectar Git ou deletar (conflita no mesmo repo, deploya a cada push)
+- [ ] **Deletar o projeto Vercel antigo (`beaut-flow`)** — David decidiu deletar (05/09). Não há CLI Vercel nem token local; fazer pelo painel: https://vercel.com → projeto `beaut-flow` → **Settings → General → Delete Project**
 - [ ] Renomear repositório GitHub `BeautFllow` → `studioflow` (opcional)
 - [ ] Comprar domínio `studioflow.com.br` e configurar na Vercel (quando preparar para vender)
 - [ ] Adicionar `SENTRY_DSN` e `VITE_SENTRY_DSN` na Vercel (opcional — só se quiser usar)
