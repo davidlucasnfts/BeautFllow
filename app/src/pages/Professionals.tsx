@@ -227,7 +227,7 @@ export default function Professionals() {
       ) : professionals && professionals.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {professionals.map(p => (
-            <Card key={p.id} className="group h-full gap-2 py-3">
+            <Card key={p.id} className="group h-full gap-1.5 py-2.5">
               <CardHeader className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">

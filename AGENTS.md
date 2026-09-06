@@ -124,7 +124,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 005 | Criar schema_safe.sql manual em vez de migrations | 12/05/2026 | Usar `supabase/migrations/NNN-descricao.sql`, gerar schema_safe.sql juntando |
 | 006 | Excluir registro sem confirmação (clique sem querer apagou cliente) | 06/09/2026 | **SEMPRE** AlertDialog de confirmação antes de qualquer delete, mostrando o nome do item. Nunca chamar mutation de delete direto no clique do botão |
 | 007 | Placeholder longo quebrou a caixa do Select em 2 linhas | 06/09/2026 | **SEMPRE** placeholder curto + `truncate` no `SelectValue`. Reler regras de front end do AGENTS.md ANTES de criar campo novo |
-| 008 | Espaço vazio grande no card de listagem | 06/09/2026 | O Card shadcn base vem com `py-6 gap-6` — em cards de listagem SEMPRE sobrescrever com `gap-2 py-3` no Card (tailwind-merge derruba o default) + header `p-4`. Ajustar só o CardHeader NÃO resolve |
+| 008 | Espaço vazio grande no card de listagem | 06/09/2026 | O Card shadcn base vem com `py-6 gap-6` — em cards de listagem SEMPRE sobrescrever com `gap-1.5 py-2.5` no Card (tailwind-merge derruba o default) + header `p-4`. Ajustar só o CardHeader NÃO resolve |
 
 ### Checklist Obrigatório (executar antes de QUALQUER ação)
 
@@ -262,7 +262,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - **Grids simétricos** (2, 3, 4 colunas) — evitar 1+2, 2+1, a menos que o conteúdo justifique
 - **Estrutura consistente** entre cards do mesmo grid — se um tem header+content, todos têm
 - **Zero espaço vazio sem função** — todo espaço deve ter propósito
-- **Padding de listagem:** o Card base do shadcn vem com `py-6 gap-6` — em cards de listagem (grid de itens) SEMPRE sobrescrever com `className="... gap-2 py-3"` e header `p-4`. Ajustar só o CardHeader NÃO resolve (o padding do Card continua)
+- **Padding de listagem:** o Card base do shadcn vem com `py-6 gap-6` — em cards de listagem (grid de itens) SEMPRE sobrescrever com `className="... gap-1.5 py-2.5"` e header `p-4`. Ajustar só o CardHeader NÃO resolve (o padding do Card continua)
 - Texto longo SEM espaços (URLs, telefones formatados): usar `break-all`, nunca `break-words`
 
 ### Padrão de Preview/Detalhes (item selecionado)

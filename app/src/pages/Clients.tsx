@@ -273,20 +273,20 @@ export default function Clients() {
           {filtered.map(client => (
             <Card
               key={client.id}
-              className="relative group h-full cursor-pointer gap-2 py-3"
+              className="relative group h-full cursor-pointer gap-1.5 py-2.5"
               onClick={() =>
                 setSelectedId(client.id === selectedId ? null : client.id)
               }
             >
               <CardHeader className="p-4">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-2.5">
-                    <div className="h-9 w-9 rounded-full bg-rose-100 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="flex items-start gap-2">
+                    <div className="h-9 w-9 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
                       <User className="h-4 w-4 text-rose-500" />
                     </div>
                     <div>
                       <CardTitle className="text-base">{client.name}</CardTitle>
-                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                      <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                         <Badge
                           variant="secondary"
                           className={segmentColors[client.segment] + " text-[10px]"}
@@ -303,7 +303,7 @@ export default function Clients() {
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-1.5 mt-1.5 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
                         <Phone className="h-3 w-3" />
                         <span>{client.phone}</span>
                       </div>
@@ -355,9 +355,9 @@ export default function Clients() {
                   </div>
                 </CardContent>
               )}
-              <div className="flex justify-center pb-2">
+              <div className="flex justify-center pb-1.5">
                 <ChevronDown
-                  className={`w-4 h-4 text-slate-400 transition-transform ${
+                  className={`w-3.5 h-3.5 text-slate-400 transition-transform ${
                     selectedId === client.id ? "rotate-180" : ""
                   }`}
                 />
