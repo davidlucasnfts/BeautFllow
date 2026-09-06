@@ -1,3 +1,5 @@
+import { themes } from "./segment-palettes";
+
 export const Session = {
   cookieName: "studioflow_sid",
   maxAgeMs: 365 * 24 * 60 * 60 * 1000,
@@ -36,6 +38,20 @@ export const defaultScheduleSettings: ScheduleSettings = {
 };
 
 const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/** Lê o JSON de settings e devolve o id do tema salvo, se existir no catálogo */
+export function parseThemeSettings(
+  raw: string | null | undefined
+): string | null {
+  try {
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (!parsed || typeof parsed !== "object") return null;
+    const theme = (parsed as { theme?: unknown }).theme;
+    return typeof theme === "string" && theme in themes ? theme : null;
+  } catch {
+    return null;
+  }
+}
 
 /** Lê o JSON salvo no banco e devolve a configuração válida (ou o padrão) */
 export function parseScheduleSettings(

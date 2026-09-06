@@ -12,6 +12,13 @@ export type SegmentPalette = {
   accentHsl: string;
 };
 
+export type SegmentTheme = {
+  id: string;
+  segment: SalonSegment;
+  name: string;
+  palette: SegmentPalette;
+};
+
 function hexToHsl(hex: string): string {
   const normalized = hex.replace("#", "");
   const r = parseInt(normalized.substring(0, 2), 16) / 255;
@@ -33,47 +40,154 @@ function hexToHsl(hex: string): string {
   return `${Math.round(h)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
 }
 
-export const segmentPalettes: Record<SalonSegment, SegmentPalette> = {
-  beauty_salon: {
-    primary: "#E8A0BF",
-    secondary: "#D4AF37",
-    accent: "#F472B6",
-    background: "#FAFAFA",
-    text: "#1E293B",
-    primaryHsl: hexToHsl("#E8A0BF"),
-    secondaryHsl: hexToHsl("#D4AF37"),
-    accentHsl: hexToHsl("#F472B6"),
+function buildPalette(
+  primary: string,
+  secondary: string,
+  accent: string,
+  background: string,
+  text: string
+): SegmentPalette {
+  return {
+    primary,
+    secondary,
+    accent,
+    background,
+    text,
+    primaryHsl: hexToHsl(primary),
+    secondaryHsl: hexToHsl(secondary),
+    accentHsl: hexToHsl(accent),
+  };
+}
+
+/** Catálogo de temas: 3 opções por segmento (o primeiro é o padrão) */
+export const themes: Record<string, SegmentTheme> = {
+  "rosa-classico": {
+    id: "rosa-classico",
+    segment: "beauty_salon",
+    name: "Rosa Clássico",
+    palette: buildPalette(
+      "#E8A0BF",
+      "#D4AF37",
+      "#F472B6",
+      "#FAFAFA",
+      "#1E293B"
+    ),
   },
-  barbershop: {
-    primary: "#1F1F1F",
-    secondary: "#C9A227",
-    accent: "#A16207",
-    background: "#F5F5F4",
-    text: "#1C1917",
-    primaryHsl: hexToHsl("#1F1F1F"),
-    secondaryHsl: hexToHsl("#C9A227"),
-    accentHsl: hexToHsl("#A16207"),
+  "rosa-choque": {
+    id: "rosa-choque",
+    segment: "beauty_salon",
+    name: "Rosa Choque",
+    palette: buildPalette(
+      "#EC4899",
+      "#D4AF37",
+      "#BE185D",
+      "#FAFAFA",
+      "#1E293B"
+    ),
   },
-  aesthetic_clinic: {
-    primary: "#10B981",
-    secondary: "#34D399",
-    accent: "#059669",
-    background: "#F8FAFC",
-    text: "#0F172A",
-    primaryHsl: hexToHsl("#10B981"),
-    secondaryHsl: hexToHsl("#34D399"),
-    accentHsl: hexToHsl("#059669"),
+  "rose-gold": {
+    id: "rose-gold",
+    segment: "beauty_salon",
+    name: "Rose Gold",
+    palette: buildPalette(
+      "#B76E79",
+      "#D4AF37",
+      "#E8B4B8",
+      "#FAFAFA",
+      "#1E293B"
+    ),
+  },
+  "preto-dourado": {
+    id: "preto-dourado",
+    segment: "barbershop",
+    name: "Preto + Dourado",
+    palette: buildPalette(
+      "#1F1F1F",
+      "#C9A227",
+      "#A16207",
+      "#F5F5F4",
+      "#1C1917"
+    ),
+  },
+  "grafite-prata": {
+    id: "grafite-prata",
+    segment: "barbershop",
+    name: "Grafite + Prata",
+    palette: buildPalette(
+      "#374151",
+      "#9CA3AF",
+      "#111827",
+      "#F5F5F4",
+      "#1C1917"
+    ),
+  },
+  "preto-fosco-dourado": {
+    id: "preto-fosco-dourado",
+    segment: "barbershop",
+    name: "Preto Fosco + Dourado Forte",
+    palette: buildPalette(
+      "#0A0A0A",
+      "#D4AF37",
+      "#B8860B",
+      "#F5F5F4",
+      "#1C1917"
+    ),
+  },
+  "lilas-suave": {
+    id: "lilas-suave",
+    segment: "aesthetic_clinic",
+    name: "Lilás Suave",
+    palette: buildPalette(
+      "#A78BFA",
+      "#D4AF37",
+      "#C4B5FD",
+      "#F8FAFC",
+      "#0F172A"
+    ),
+  },
+  "lavanda-profunda": {
+    id: "lavanda-profunda",
+    segment: "aesthetic_clinic",
+    name: "Lavanda Profunda",
+    palette: buildPalette(
+      "#7C3AED",
+      "#D4AF37",
+      "#A78BFA",
+      "#F8FAFC",
+      "#0F172A"
+    ),
+  },
+  "lilas-luxo": {
+    id: "lilas-luxo",
+    segment: "aesthetic_clinic",
+    name: "Lilás Luxo",
+    palette: buildPalette(
+      "#8B5CF6",
+      "#D4AF37",
+      "#6D28D9",
+      "#F8FAFC",
+      "#0F172A"
+    ),
   },
 };
 
-export function getSegmentPalette(segment: SalonSegment): SegmentPalette {
-  return segmentPalettes[segment];
+export function getTheme(id: string): SegmentTheme | undefined {
+  return themes[id];
 }
 
-export function getSegmentCssVars(
-  segment: SalonSegment
-): Record<string, string> {
-  const palette = getSegmentPalette(segment);
+export function themesForSegment(segment: SalonSegment): SegmentTheme[] {
+  return Object.values(themes).filter(t => t.segment === segment);
+}
+
+/** Tema padrão do segmento (primeira opção do catálogo) */
+export function defaultThemeForSegment(segment: SalonSegment): SegmentTheme {
+  return themesForSegment(segment)[0];
+}
+
+/** Variáveis CSS (--primary etc.) de um tema, com fallback para o padrão */
+export function getThemeCssVars(themeId: string): Record<string, string> {
+  const theme = themes[themeId] ?? defaultThemeForSegment("beauty_salon");
+  const { segment, palette } = theme;
   return {
     "--primary": palette.primaryHsl,
     "--primary-foreground":
@@ -86,4 +200,25 @@ export function getSegmentCssVars(
       segment === "beauty_salon" ? "340 30% 15%" : "0 0% 100%",
     "--ring": palette.primaryHsl,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Aliases legados: mantidos para não quebrar call sites existentes.
+// Usam sempre o tema padrão do segmento.
+// ---------------------------------------------------------------------------
+
+export const segmentPalettes: Record<SalonSegment, SegmentPalette> = {
+  beauty_salon: defaultThemeForSegment("beauty_salon").palette,
+  barbershop: defaultThemeForSegment("barbershop").palette,
+  aesthetic_clinic: defaultThemeForSegment("aesthetic_clinic").palette,
+};
+
+export function getSegmentPalette(segment: SalonSegment): SegmentPalette {
+  return defaultThemeForSegment(segment).palette;
+}
+
+export function getSegmentCssVars(
+  segment: SalonSegment
+): Record<string, string> {
+  return getThemeCssVars(defaultThemeForSegment(segment).id);
 }

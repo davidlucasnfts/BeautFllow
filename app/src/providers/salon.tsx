@@ -16,6 +16,7 @@ export type SalonContextType = {
   role: SalonRole;
   plan: string;
   schedule: ScheduleSettings;
+  theme?: string | null;
 };
 
 export const SalonContext = createContext<{

@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { createRouter, publicQuery } from "./middleware";
-import { parseScheduleSettings } from "@contracts/constants";
+import { parseScheduleSettings, parseThemeSettings } from "@contracts/constants";
+import { defaultThemeForSegment } from "@contracts/segment-palettes";
 import {
   getSalonBySlug,
   getPublicServices,
@@ -59,6 +60,9 @@ export const publicRouter = createRouter({
           city: salon.city,
           state: salon.state,
           phone: salon.phone,
+          theme:
+            parseThemeSettings(salon.settings) ??
+            defaultThemeForSegment(salon.segment).id,
         },
         services,
         professionals,

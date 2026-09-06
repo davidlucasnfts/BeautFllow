@@ -1,9 +1,11 @@
 import { z } from "zod";
 import { createRouter, authedQuery } from "./middleware";
-import { parseScheduleSettings } from "@contracts/constants";
+import { parseScheduleSettings, parseThemeSettings } from "@contracts/constants";
+import { defaultThemeForSegment } from "@contracts/segment-palettes";
 import {
   createSalon,
   getSalonsByUser,
+  getSalonById,
   addUserToSalon,
   updateSalon,
 } from "./queries/salon";
@@ -47,6 +49,9 @@ export const salonRouter = createRouter({
       ...salon,
       role,
       schedule: parseScheduleSettings(salon.settings),
+      theme:
+        parseThemeSettings(salon.settings) ??
+        defaultThemeForSegment(salon.segment).id,
     }));
   }),
 
@@ -57,11 +62,27 @@ export const salonRouter = createRouter({
         dayStart: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
         dayEnd: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
         slotMinutes: z.number().int().min(15).max(120),
+        theme: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {
-      const { id, ...schedule } = input;
-      return updateSalon(id, { settings: JSON.stringify(schedule) });
+      const { id, theme, ...schedule } = input;
+      // merge: preserva chaves desconhecidas já salvas em settings
+      const current = await getSalonById(id);
+      let existing: Record<string, unknown> = {};
+      try {
+        const parsed = current?.settings ? JSON.parse(current.settings) : null;
+        if (parsed && typeof parsed === "object") existing = parsed;
+      } catch {
+        existing = {};
+      }
+      return updateSalon(id, {
+        settings: JSON.stringify({
+          ...existing,
+          ...schedule,
+          ...(theme ? { theme } : {}),
+        }),
+      });
     }),
 
   update: authedQuery

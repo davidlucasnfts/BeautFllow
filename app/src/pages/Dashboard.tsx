@@ -11,112 +11,15 @@ import {
   XCircle,
   Clock,
   ShieldAlert,
-  ArrowUpRight,
-  ArrowDownRight,
-  Link2,
-  Copy,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getSegmentLabel } from "@contracts/segment-labels";
-
-function Sparkline({
-  data,
-  color = "currentColor",
-}: {
-  data: number[];
-  color?: string;
-}) {
-  if (data.length === 0) return null;
-  const max = Math.max(...data, 1);
-  const min = Math.min(...data, 0);
-  const range = max - min || 1;
-  const width = 120;
-  const height = 40;
-  const points = data
-    .map((v, i) => {
-      const x = (i / (data.length - 1 || 1)) * width;
-      const y = height - ((v - min) / range) * height;
-      return `${x},${y}`;
-    })
-    .join(" ");
-
-  return (
-    <svg width={width} height={height} className="opacity-60">
-      <polyline
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        points={points}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function KpiCard({
-  title,
-  value,
-  icon: Icon,
-  trend,
-  trendValue,
-  isLoading,
-  sparklineData,
-}: {
-  title: string;
-  value: string | number;
-  icon: React.ElementType;
-  trend?: "up" | "down" | "neutral";
-  trendValue?: string;
-  isLoading: boolean;
-  sparklineData?: number[];
-}) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {title}
-        </CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <Skeleton className="h-8 w-20" />
-        ) : (
-          <div className="flex items-end justify-between">
-            <div>
-              <div className="text-2xl font-bold">{value}</div>
-              {trend && trendValue && (
-                <div
-                  className={`flex items-center gap-1 text-xs mt-1 ${
-                    trend === "up"
-                      ? "text-emerald-600"
-                      : trend === "down"
-                        ? "text-rose-600"
-                        : "text-muted-foreground"
-                  }`}
-                >
-                  {trend === "up" ? (
-                    <ArrowUpRight className="h-3 w-3" />
-                  ) : trend === "down" ? (
-                    <ArrowDownRight className="h-3 w-3" />
-                  ) : null}
-                  <span>{trendValue}</span>
-                </div>
-              )}
-            </div>
-            {sparklineData && <Sparkline data={sparklineData} />}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
+import { BirthdayWidget } from "@/components/home/BirthdayWidget";
+import { KpiCard } from "@/components/home/KpiCard";
+import { PublicLinkBanner } from "@/components/home/PublicLinkBanner";
 
 export default function Dashboard() {
   const { salon } = useSalon();
@@ -178,32 +81,7 @@ export default function Dashboard() {
       </div>
 
       {/* Link público de agendamento */}
-      {salon && (
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-lg border border-blue-200 bg-blue-50">
-          <Link2 className="h-5 w-5 shrink-0 text-blue-600" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-blue-900">
-              Seu link de agendamento online
-            </p>
-            <p className="text-xs text-blue-700 break-all">
-              {window.location.origin}/agendar/{salon.slug}
-            </p>
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            className="bg-white"
-            onClick={() => {
-              navigator.clipboard.writeText(
-                `${window.location.origin}/agendar/${salon.slug}`
-              );
-              toast.success("Link copiado! Envie para seus clientes.");
-            }}
-          >
-            <Copy className="mr-2 h-3.5 w-3.5" /> Copiar link
-          </Button>
-        </div>
-      )}
+      {salon && <PublicLinkBanner slug={salon.slug} />}
 
       {/* Alertas */}
       {metrics && metrics.pendingConsents > 0 && (
@@ -463,14 +341,17 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Dicas para clientes voltarem */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base font-serif">
-            Dicas para seus clientes voltarem
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid md:grid-cols-3 gap-4 text-sm text-muted-foreground">
+      {/* Aniversariantes + Dicas para clientes voltarem */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <BirthdayWidget />
+
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-base font-serif">
+              Dicas para seus clientes voltarem
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 text-sm text-muted-foreground">
           <div className="flex gap-3">
             <TrendingUp className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p>
@@ -493,7 +374,8 @@ export default function Dashboard() {
             </p>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }

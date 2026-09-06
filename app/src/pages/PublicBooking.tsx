@@ -13,7 +13,11 @@ import {
 } from "@/components/ui/select";
 import { CalendarCheck, Clock, MapPin, Phone } from "lucide-react";
 import { toast } from "sonner";
-import { getSegmentPalette } from "@contracts/segment-palettes";
+import {
+  getTheme,
+  getSegmentPalette,
+  defaultThemeForSegment,
+} from "@contracts/segment-palettes";
 import type { SalonSegment } from "@contracts/segment-labels";
 import {
   onlyText,
@@ -103,9 +107,11 @@ export default function PublicBooking() {
     onError: e => toast.error(e.message),
   });
 
-  const palette = getSegmentPalette(
-    (data?.salon.segment ?? "beauty_salon") as SalonSegment
-  );
+  const segment = (data?.salon.segment ?? "beauty_salon") as SalonSegment;
+  // tema escolhido pelo dono no painel; cai no padrão do segmento se ausente
+  const palette =
+    getTheme(data?.salon.theme ?? defaultThemeForSegment(segment).id)
+      ?.palette ?? getSegmentPalette(segment);
 
   function handleSubmit() {
     if (!data) return;

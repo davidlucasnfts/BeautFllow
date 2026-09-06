@@ -48,6 +48,10 @@ import { Button } from "./ui/button";
 import { trpc } from "@/providers/trpc";
 import CreateSalonForm from "./CreateSalonForm";
 import { getSegmentLabel, type SalonSegment } from "@contracts/segment-labels";
+import {
+  getThemeCssVars,
+  defaultThemeForSegment,
+} from "@contracts/segment-palettes";
 
 const planLabels: Record<string, string> = {
   free: "Grátis",
@@ -136,6 +140,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
   });
   const { isLoading, user } = useAuth();
+  const { salon } = useSalon();
 
   useEffect(() => {
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
@@ -171,10 +176,15 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     );
   }
 
+  const themeId = salon
+    ? (salon.theme ?? defaultThemeForSegment(salon.segment).id)
+    : null;
+
   return (
     <SidebarProvider
       style={
         {
+          ...(themeId ? getThemeCssVars(themeId) : {}),
           "--sidebar-width": `${sidebarWidth}px`,
         } as CSSProperties
       }
@@ -223,6 +233,7 @@ function AuthLayoutContent({
         role: first.role,
         plan: first.plan,
         schedule: first.schedule,
+        theme: first.theme,
       });
     }
   }, [salonsData, salon, setSalon]);
