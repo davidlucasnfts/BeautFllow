@@ -23,6 +23,10 @@ import {
   dateBRToISO,
   moneyDotToBR,
 } from "@/lib/input-masks";
+import {
+  generateTimeSlots,
+  filterAvailableSlots,
+} from "@/lib/time-slots";
 
 type BookResult = {
   salonName: string;
@@ -49,6 +53,49 @@ export default function PublicBooking() {
     { enabled: !!slug }
   );
 
+  // Horários livres do dia escolhido (grade de 30 em 30 min)
+  const isoDate = isValidDateBR(maskDateBR(date))
+    ? dateBRToISO(maskDateBR(date))
+    : "";
+  const { data: slotsData } = trpc.public.availableSlots.useQuery(
+    {
+      slug: slug ?? "",
+      date: isoDate,
+      serviceId: Number(serviceId),
+      professionalId: professionalId ? Number(professionalId) : undefined,
+    },
+    { enabled: !!slug && !!serviceId && !!isoDate }
+  );
+
+  const service = data?.services.find(s => s.id === Number(serviceId));
+  const allSlots = generateTimeSlots(
+    slotsData?.dayStart,
+    slotsData?.dayEnd,
+    slotsData?.slotMinutes
+  );
+  const availableSlots = filterAvailableSlots(
+    allSlots,
+    slotsData?.busyIntervals ?? [],
+    service?.durationMinutes ?? 30
+  ).filter(slot => {
+    // se a data for hoje, esconde horários que já passaram
+    const nowBR = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
+    );
+    const todayBR = dateBRToISO(
+      nowBR.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    );
+    if (isoDate !== todayBR) return true;
+    return new Date(`${isoDate}T${slot}:00`) >= nowBR;
+  });
+
+  // se o horário escolhido deixar de existir, o Select mostra vazio
+  // (value derivado — sem setState em effect)
+
   const bookMutation = trpc.public.book.useMutation({
     onSuccess: res => {
       setResult(res);
@@ -70,6 +117,10 @@ export default function PublicBooking() {
     }
     if (!isValidDateBR(maskDateBR(date))) {
       toast.error("Informe uma data válida no formato dd/mm/aaaa.");
+      return;
+    }
+    if (!startTime) {
+      toast.error("Escolha um horário disponível.");
       return;
     }
     if (name.trim().length < 2) {
@@ -234,11 +285,32 @@ export default function PublicBooking() {
             </div>
             <div className="grid gap-2">
               <Label>Horário *</Label>
-              <Input
-                type="time"
-                value={startTime}
-                onChange={e => setStartTime(e.target.value)}
-              />
+              <Select
+                value={availableSlots.includes(startTime) ? startTime : ""}
+                onValueChange={setStartTime}
+                disabled={!serviceId || !isoDate}
+              >
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={
+                      !serviceId
+                        ? "Escolha o serviço primeiro"
+                        : !isoDate
+                          ? "Informe a data primeiro"
+                          : availableSlots.length === 0
+                            ? "Sem horários nessa data"
+                            : "Selecione"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableSlots.map(slot => (
+                    <SelectItem key={slot} value={slot}>
+                      {slot}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

@@ -122,6 +122,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 003 | Duplicar informação de segurança | 10/05/2026 | Expandir arquivo existente, nunca criar duplicata |
 | 004 | Salvar no `MestreProjects.md` em vez de `AGENTS.md` | 11/05/2026 | Só salvar no global quando David disser "para todos os projetos" |
 | 005 | Criar schema_safe.sql manual em vez de migrations | 12/05/2026 | Usar `supabase/migrations/NNN-descricao.sql`, gerar schema_safe.sql juntando |
+| 006 | Excluir registro sem confirmação (clique sem querer apagou cliente) | 06/09/2026 | **SEMPRE** AlertDialog de confirmação antes de qualquer delete, mostrando o nome do item. Nunca chamar mutation de delete direto no clique do botão |
 
 ### Checklist Obrigatório (executar antes de QUALQUER ação)
 
@@ -247,6 +248,12 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - Excluir: `bg-red-600 hover:bg-red-700`
 - Aprovar: `bg-green-600 hover:bg-green-700`
 - Tamanho: `w-full max-w-lg max-h-[80vh] overflow-y-auto` (largura total no mobile, limitada no desktop)
+
+### Exclusão — Confirmação Obrigatória
+- **SEMPRE** abrir `AlertDialog` de confirmação antes de qualquer delete — nunca chamar a mutation direto no clique
+- O texto deve citar o **nome do item** (ex: "Excluir 'Maria Silva'? Essa ação não pode ser desfeita.")
+- Botões: Cancelar (outline) + Confirmar exclução (`bg-red-600 hover:bg-red-700`)
+- Vale para TODAS as telas: clientes, serviços, profissionais, agendamentos, financeiro, etc.
 
 ### Cards — Grid e Consistência
 - **SEMPRE `h-full`** em cards do mesmo grid — alturas iguais, sem um card maior que o outro

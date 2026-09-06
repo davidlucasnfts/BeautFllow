@@ -9,6 +9,10 @@ import DayView from "@/components/calendar/DayView";
 import AppointmentFilters from "@/components/appointments/AppointmentFilters";
 import AppointmentDialog from "@/components/appointments/AppointmentDialog";
 import { useAppointmentForm } from "@/components/appointments/useAppointmentForm";
+import {
+  generateTimeSlots,
+  filterAvailableSlots,
+} from "@/lib/time-slots";
 import type {
   ViewMode,
   CalendarAppointment,
@@ -62,6 +66,33 @@ export default function Appointments() {
   const { data: services } = trpc.service.list.useQuery(
     { salonId: salon?.id ?? 0 },
     { enabled: !!salon }
+  );
+
+  // Agenda do dia escolhido no formulário (para esconder horários ocupados)
+  const { data: formDayAppointments } = trpc.appointment.list.useQuery(
+    {
+      salonId: salon?.id ?? 0,
+      fromDate: form.appointmentDate,
+      toDate: form.appointmentDate,
+    },
+    { enabled: !!salon && open && !!form.appointmentDate }
+  );
+
+  const formService = services?.find(s => s.id === Number(form.serviceId));
+  const busyIntervals = (formDayAppointments ?? [])
+    .filter(
+      a => a.status !== "cancelled" && a.status !== "no_show" && a.endTime
+    )
+    .filter(
+      a =>
+        !form.professionalId ||
+        a.professionalId === Number(form.professionalId)
+    )
+    .map(a => ({ start: a.startTime, end: a.endTime as string }));
+  const availableSlots = filterAvailableSlots(
+    generateTimeSlots(),
+    busyIntervals,
+    formService?.durationMinutes ?? 30
   );
 
   const createMutation = trpc.appointment.create.useMutation({
@@ -193,6 +224,7 @@ export default function Appointments() {
             clients={clients}
             professionals={professionals}
             services={services}
+            availableSlots={availableSlots}
           />
         </div>
       </div>

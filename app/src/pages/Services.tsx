@@ -34,6 +34,7 @@ import {
   moneyBRToDot,
   moneyDotToBR,
 } from "@/lib/input-masks";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 
 export default function Services() {
   const { salon } = useSalon();
@@ -43,6 +44,10 @@ export default function Services() {
       : getSegmentLabel("beauty_salon", key);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -85,6 +90,7 @@ export default function Services() {
   const deleteMutation = trpc.service.delete.useMutation({
     onSuccess: () => {
       utils.service.list.invalidate();
+      setDeleteTarget(null);
       toast.success(`${segmentLabel("service")} removido`);
     },
     onError: e => toast.error(e.message),
@@ -323,22 +329,19 @@ export default function Services() {
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-col gap-1 shrink-0">
+                  <div className="flex flex-col gap-1.5 shrink-0 w-[92px]">
                     <button
                       type="button"
                       onClick={() => handleEdit(s)}
-                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-blue-50 text-blue-600 hover:bg-blue-100"
+                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-blue-600 text-white hover:bg-blue-700"
                     >
                       <Edit3 className="w-3 h-3" />
                       Editar
                     </button>
                     <button
                       type="button"
-                      onClick={() =>
-                        salon &&
-                        deleteMutation.mutate({ id: s.id, salonId: salon.id })
-                      }
-                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-red-50 text-red-600 hover:bg-red-100"
+                      onClick={() => setDeleteTarget({ id: s.id, name: s.name })}
+                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-red-600 text-white hover:bg-red-700"
                     >
                       <Trash2 className="w-3 h-3" />
                       Excluir
@@ -373,6 +376,21 @@ export default function Services() {
           <p>Nenhum serviço cadastrado.</p>
         </div>
       )}
+
+      <ConfirmDeleteDialog
+        open={!!deleteTarget}
+        onOpenChange={open => !open && setDeleteTarget(null)}
+        itemType={segmentLabel("service")}
+        itemName={deleteTarget?.name ?? ""}
+        onConfirm={() => {
+          if (salon && deleteTarget) {
+            deleteMutation.mutate({
+              id: deleteTarget.id,
+              salonId: salon.id,
+            });
+          }
+        }}
+      />
     </div>
   );
 }

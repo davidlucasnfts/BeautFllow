@@ -27,9 +27,11 @@ import {
   Edit3,
   ShieldCheck,
   ChevronDown,
+  MessageCircle,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import {
   onlyText,
   maskPhoneBR,
@@ -66,6 +68,10 @@ export default function Clients() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -105,6 +111,7 @@ export default function Clients() {
     onSuccess: () => {
       utils.customer.list.invalidate();
       setSelectedId(null);
+      setDeleteTarget(null);
       toast.success(`${segmentLabel("client")} apagado dos registros`);
     },
     onError: e => toast.error(e.message),
@@ -290,14 +297,24 @@ export default function Clients() {
                       </Badge>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-1 shrink-0">
+                  <div className="flex flex-col gap-1.5 shrink-0 w-[92px]">
+                    <a
+                      href={`https://wa.me/55${client.phone.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={e => e.stopPropagation()}
+                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-green-600 text-white hover:bg-green-700"
+                    >
+                      <MessageCircle className="w-3 h-3" />
+                      WhatsApp
+                    </a>
                     <button
                       type="button"
                       onClick={e => {
                         e.stopPropagation();
                         handleEdit(client);
                       }}
-                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-blue-50 text-blue-600 hover:bg-blue-100"
+                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-blue-600 text-white hover:bg-blue-700"
                     >
                       <Edit3 className="w-3 h-3" />
                       Editar
@@ -306,23 +323,13 @@ export default function Clients() {
                       type="button"
                       onClick={e => {
                         e.stopPropagation();
-                        if (salon) {
-                          deleteMutation.mutate({
-                            id: client.id,
-                            salonId: salon.id,
-                          });
-                        }
+                        setDeleteTarget({ id: client.id, name: client.name });
                       }}
-                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-red-50 text-red-600 hover:bg-red-100"
+                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-red-600 text-white hover:bg-red-700"
                     >
                       <Trash2 className="w-3 h-3" />
                       Excluir
                     </button>
-                    <ChevronDown
-                      className={`w-3.5 h-3.5 self-center text-slate-400 transition-transform ${
-                        selectedId === client.id ? "rotate-180" : ""
-                      }`}
-                    />
                   </div>
                 </div>
               </CardHeader>
@@ -349,6 +356,13 @@ export default function Clients() {
                   <ClientCardDetails client={client} />
                 </CardContent>
               )}
+              <div className="flex justify-center pb-2">
+                <ChevronDown
+                  className={`w-4 h-4 text-slate-400 transition-transform ${
+                    selectedId === client.id ? "rotate-180" : ""
+                  }`}
+                />
+              </div>
             </Card>
           ))}
         </div>
@@ -359,6 +373,21 @@ export default function Clients() {
           <p className="text-sm">Cadastre seu primeiro cliente para começar.</p>
         </div>
       )}
+
+      <ConfirmDeleteDialog
+        open={!!deleteTarget}
+        onOpenChange={open => !open && setDeleteTarget(null)}
+        itemType={segmentLabel("client")}
+        itemName={deleteTarget?.name ?? ""}
+        onConfirm={() => {
+          if (salon && deleteTarget) {
+            deleteMutation.mutate({
+              id: deleteTarget.id,
+              salonId: salon.id,
+            });
+          }
+        }}
+      />
     </div>
   );
 }

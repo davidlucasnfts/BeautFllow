@@ -35,6 +35,7 @@ interface AppointmentDialogProps {
   clients?: Client[];
   professionals?: Professional[];
   services?: Service[];
+  availableSlots?: string[];
 }
 
 export default function AppointmentDialog({
@@ -47,6 +48,7 @@ export default function AppointmentDialog({
   clients,
   professionals,
   services,
+  availableSlots,
 }: AppointmentDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -135,11 +137,34 @@ export default function AppointmentDialog({
             </div>
             <div className="grid gap-2">
               <Label>Horário</Label>
-              <Input
-                type="time"
-                value={form.startTime}
-                onChange={e => onFieldChange("startTime", e.target.value)}
-              />
+              <Select
+                value={
+                  availableSlots?.includes(form.startTime)
+                    ? form.startTime
+                    : ""
+                }
+                onValueChange={v => onFieldChange("startTime", v)}
+                disabled={!form.appointmentDate}
+              >
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={
+                      !form.appointmentDate
+                        ? "Informe a data primeiro"
+                        : availableSlots && availableSlots.length === 0
+                          ? "Sem horários nessa data"
+                          : "Selecione"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {(availableSlots ?? []).map(slot => (
+                    <SelectItem key={slot} value={slot}>
+                      {slot}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
