@@ -18,6 +18,8 @@
 - [ ] AGENTS.md atualizado se regras mudaram
 - [ ] Sem erros no console do navegador
 - [ ] Responsivo em mobile (minimo 375px)
+- [ ] Checklist de QA visual executado em 375px e 1440px (`docs/qa-visual-checklist.md`)
+- [ ] Regras de negocio (RN) aplicaveis documentadas (`docs/requirements/regras-de-negocio.md`)
 
 ---
 

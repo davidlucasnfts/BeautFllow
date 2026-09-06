@@ -16,7 +16,11 @@
 | `MestreProjects.md` | Padrões para TODOS os projetos | Kimi | Apenas quando David pedir "para todos" |
 | `docs/adr/ADR-NNN-*.md` | Decisões arquiteturais | Kimi | Decisão significativa |
 | `docs/runbooks/*.md` | Procedimentos operacionais | Kimi | Novo procedimento |
+| `docs/runbooks/estrategia-infra-escala.md` | Custos, gatilhos de upgrade e backup | Kimi | Mudança de fase/infra |
 | `docs/requirements/RF-NNN.md` | Requisitos funcionais | Kimi | Novo requisito |
+| `docs/requirements/regras-de-negocio.md` | Regras de negócio (RN-NNN) | Kimi | Nova regra de negócio |
+| `docs/requirements/proposta-planos-precificacao.md` | Proposta de planos/preços (status: proposta) | Kimi | Decisão de precificação |
+| `docs/qa-visual-checklist.md` | Checklist de QA visual (375px/1440px) | Kimi | Novo padrão de verificação |
 | `docs/DOR.md` | Definition of Ready | Kimi | Mudança no processo |
 | `docs/DOD.md` | Definition of Done | Kimi | Mudança no processo |
 | `docs/LGPD.md` | Compliance LGPD | Kimi | Mudança legal |
