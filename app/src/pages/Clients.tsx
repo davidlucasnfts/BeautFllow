@@ -273,7 +273,7 @@ export default function Clients() {
           {filtered.map(client => (
             <Card
               key={client.id}
-              className="relative group h-full cursor-pointer"
+              className="relative group h-full cursor-pointer gap-2 py-3"
               onClick={() =>
                 setSelectedId(client.id === selectedId ? null : client.id)
               }

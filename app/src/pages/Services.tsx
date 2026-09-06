@@ -307,8 +307,8 @@ export default function Services() {
       ) : services && services.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {services.map(s => (
-            <Card key={s.id} className="group h-full">
-              <CardHeader className="pb-3">
+            <Card key={s.id} className="group h-full gap-2 py-3">
+              <CardHeader className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div
