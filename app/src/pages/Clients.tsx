@@ -26,6 +26,7 @@ import {
   Trash2,
   Edit3,
   ShieldCheck,
+  ChevronDown,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
@@ -37,7 +38,7 @@ import {
   dateBRToISO,
   isoToDateBR,
 } from "@/lib/input-masks";
-import ClientPreview from "@/components/clients/ClientPreview";
+import ClientCardDetails from "@/components/clients/ClientCardDetails";
 
 const segmentColors: Record<string, string> = {
   new: "bg-blue-100 text-blue-700",
@@ -116,8 +117,6 @@ export default function Clients() {
           c.phone.includes(search)
       )
     : clients;
-
-  const selected = filtered?.find(c => c.id === selectedId) ?? null;
 
   function resetForm() {
     setForm({
@@ -319,6 +318,11 @@ export default function Clients() {
                       <Trash2 className="w-3 h-3" />
                       Excluir
                     </button>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 self-center text-slate-400 transition-transform ${
+                        selectedId === client.id ? "rotate-180" : ""
+                      }`}
+                    />
                   </div>
                 </div>
               </CardHeader>
@@ -340,6 +344,11 @@ export default function Clients() {
                   </div>
                 )}
               </CardContent>
+              {selectedId === client.id && (
+                <CardContent className="border-t border-slate-100 pt-4">
+                  <ClientCardDetails client={client} />
+                </CardContent>
+              )}
             </Card>
           ))}
         </div>
@@ -349,24 +358,6 @@ export default function Clients() {
           <p>Nenhum cliente encontrado.</p>
           <p className="text-sm">Cadastre seu primeiro cliente para começar.</p>
         </div>
-      )}
-
-      {selected && (
-        <ClientPreview
-          client={selected}
-          segmentBadgeClass={segmentColors[selected.segment]}
-          segmentLabelText={segmentLabels[selected.segment]}
-          onEdit={() => handleEdit(selected)}
-          onDelete={() => {
-            if (salon) {
-              deleteMutation.mutate({
-                id: selected.id,
-                salonId: salon.id,
-              });
-            }
-          }}
-          onClose={() => setSelectedId(null)}
-        />
       )}
     </div>
   );
