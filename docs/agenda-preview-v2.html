@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StudioFlow — Prévia: Agenda no Celular (Opções E–H)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+    padding: 32px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  .sub { color: #64748b; font-size: 14px; margin-bottom: 8px; }
+  .context {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+  h2 {
+    font-size: 18px;
+    margin: 32px 0 4px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .opt-desc { color: #64748b; font-size: 13px; margin-bottom: 16px; }
+  .option { margin-bottom: 40px; }
+  .opt-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+    background: #ede9fe;
+    color: #6d28d9;
+  }
+  .opt-tag.rec { background: #8b5cf6; color: #fff; }
+  .opt-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .opt-pros { font-size: 12px; color: #64748b; margin-bottom: 14px; line-height: 1.5; }
+  .rec-note {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6d28d9;
+    background: #f5f3ff;
+    border: 1px solid #c4b5fd;
+    border-radius: 8px;
+    padding: 4px 10px;
+    margin-left: 8px;
+  }
+
+  /* ---- "telefone" ---- */
+  .phone-wrap { display: flex; justify-content: center; }
+  .phone {
+    width: 360px;
+    background: #fff;
+    border: 8px solid #1e293b;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, .18);
+  }
+  .p-header {
+    background: #8b5cf6;
+    color: #fff;
+    padding: 12px 14px;
+  }
+  .p-header .p-title { font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+  .p-body { background: #fff; min-height: 380px; position: relative; padding-bottom: 64px; }
+  .fab {
+    position: absolute;
+    left: 14px; right: 14px; bottom: 14px;
+    background: #8b5cf6;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .fab::before { content: "+"; margin-right: 6px; font-weight: 700; }
+
+  /* ---- pills de profissional (E, H) ---- */
+  .pills { display: flex; gap: 6px; padding: 12px 12px 4px; flex-wrap: wrap; }
+  .pill {
+    border-radius: 999px; padding: 6px 12px;
+    font-size: 11px; font-weight: 600;
+    border: 1.5px solid #e2e8f0; color: #475569; background: #fff;
+  }
+  .pill.on { background: #8b5cf6; border-color: #8b5cf6; color: #fff; }
+
+  /* ---- E: semana compacta do profissional ---- */
+  .e-grid { display: flex; border-bottom: 1px solid #f1f5f9; }
+  .e-day { flex: 1; border-left: 1px solid #f1f5f9; padding: 4px 3px 8px; min-height: 250px; }
+  .e-day:first-child { border-left: none; }
+  .e-day-h { text-align: center; margin-bottom: 5px; }
+  .e-day-h .dow { font-size: 8px; color: #94a3b8; text-transform: uppercase; }
+  .e-day-h .num { font-size: 12px; font-weight: 700; }
+  .e-day-h.today { background: #f5f3ff; border-radius: 8px; padding: 3px 0; }
+  .e-day-h.today .num { color: #8b5cf6; }
+  .e-chip {
+    background: #ede9fe; color: #5b21b6;
+    border-radius: 6px; padding: 4px 4px;
+    font-size: 8.5px; line-height: 1.3;
+    margin-bottom: 4px; border-left: 3px solid #8b5cf6;
+    word-break: break-word;
+  }
+  .e-chip .t { font-weight: 700; display: block; }
+  .e-empty { font-size: 9px; color: #cbd5e1; text-align: center; padding-top: 6px; }
+
+  /* ---- F: fila do dia ---- */
+  .f-strip { display: flex; border-bottom: 1px solid #f1f5f9; }
+  .f-d {
+    flex: 1; text-align: center; padding: 8px 0 6px;
+    font-size: 9px; color: #64748b; line-height: 1.4;
+  }
+  .f-d .n { display: block; font-size: 13px; font-weight: 700; color: #1e293b; }
+  .f-d.today { background: #8b5cf6; color: #ede9fe; border-radius: 0 0 10px 10px; }
+  .f-d.today .n { color: #fff; }
+  .f-sub { font-size: 11px; color: #64748b; padding: 10px 14px 2px; }
+  .f-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-bottom: 1px solid #f8fafc;
+  }
+  .f-time { width: 46px; flex-shrink: 0; text-align: center; }
+  .f-time .h { font-size: 14px; font-weight: 700; color: #8b5cf6; display: block; }
+  .f-time .m { font-size: 9px; color: #94a3b8; }
+  .f-card { flex: 1; min-width: 0; }
+  .f-card .who { font-size: 12px; font-weight: 700; }
+  .f-card .what { font-size: 10px; color: #64748b; }
+  .f-st { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 999px; flex-shrink: 0; }
+  .f-st.ok { background: #d1fae5; color: #065f46; }
+  .f-st.wait { background: #fef3c7; color: #92400e; }
+  .f-wa {
+    width: 32px; height: 32px; flex-shrink: 0;
+    border-radius: 50%; background: #22c55e;
+    color: #fff; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ---- G: próximos compromissos ---- */
+  .g-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #8b5cf6; padding: 12px 14px 4px; }
+  .g-card {
+    margin: 4px 14px 10px;
+    background: #f5f3ff; border-radius: 10px; padding: 10px 12px;
+  }
+  .g-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px dashed #ddd6fe; }
+  .g-row:last-child { border-bottom: none; }
+  .g-time { font-size: 12px; font-weight: 700; color: #6d28d9; width: 44px; flex-shrink: 0; }
+  .g-info { flex: 1; min-width: 0; }
+  .g-info .who { font-size: 12px; font-weight: 700; }
+  .g-info .what { font-size: 10px; color: #64748b; }
+  .g-pro { font-size: 9px; font-weight: 600; color: #8b5cf6; background: #ede9fe; border-radius: 999px; padding: 2px 8px; flex-shrink: 0; }
+
+  /* ---- H: 3 dias com grade + profissional + linha de agora ---- */
+  .h-nav { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; }
+  .h-nav .arrow { color: #8b5cf6; font-size: 18px; font-weight: 700; }
+  .h-nav .range { font-size: 12px; font-weight: 700; }
+  .h-grid { display: flex; }
+  .h-hours { width: 40px; flex-shrink: 0; padding-top: 30px; }
+  .h-hours div { height: 40px; font-size: 9px; color: #94a3b8; text-align: right; padding-right: 5px; transform: translateY(-5px); }
+  .h-days { display: flex; flex: 1; }
+  .h-day { flex: 1; border-left: 1px solid #f1f5f9; position: relative; }
+  .h-day-h { text-align: center; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+  .h-day-h .dow { font-size: 9px; color: #94a3b8; text-transform: uppercase; }
+  .h-day-h .num { font-size: 14px; font-weight: 700; }
+  .h-day-h.today .num { color: #8b5cf6; }
+  .h-slot-lines div { height: 40px; border-bottom: 1px solid #f8fafc; }
+  .h-ev {
+    position: absolute; left: 3px; right: 3px;
+    border-radius: 6px; padding: 3px 5px;
+    font-size: 9px; color: #fff; line-height: 1.25; overflow: hidden;
+  }
+  .h1 { background: #8b5cf6; }
+  .h2 { background: #a78bfa; }
+  .h3 { background: #6d28d9; }
+  .h-now {
+    position: absolute; left: 40px; right: 0; top: 190px;
+    border-top: 2px solid #ef4444; z-index: 2; pointer-events: none;
+  }
+  .h-now::before {
+    content: ""; width: 8px; height: 8px; border-radius: 50%;
+    background: #ef4444; position: absolute; left: -4px; top: -5px;
+  }
+  .h-now .lbl {
+    position: absolute; right: 4px; top: -14px;
+    font-size: 8px; font-weight: 700; color: #ef4444;
+  }
+  .swipe-hint { text-align: center; font-size: 10px; color: #94a3b8; padding: 6px 0 2px; }
+
+  /* ---- tabela comparativa ---- */
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; font-size: 12px; margin-top: 8px; }
+  th, td { padding: 9px 11px; text-align: left; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  th { background: #f8fafc; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: #64748b; }
+  tr:last-child td { border-bottom: none; }
+  tr.rec td { background: #f5f3ff; }
+  .stars { color: #8b5cf6; font-weight: 700; }
+  .eff-low { color: #059669; font-weight: 600; }
+  .eff-med { color: #d97706; font-weight: 600; }
+  .reply {
+    margin-top: 28px; background: #ede9fe; border: 1px solid #c4b5fd;
+    border-radius: 12px; padding: 16px; font-size: 14px; color: #5b21b6; line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<h1>Agenda no celular — opções E, F, G e H</h1>
+<p class="sub">Segunda rodada de prévia · foco em negócios com 1–2 funcionários · StudioFlow</p>
+<div class="context">
+  <strong>Recapitulando:</strong> nas opções A–D (ver <em>agenda-preview.html</em>), a ideia geral agradou.
+  O pedido agora é mesclar esses conceitos para atender bem o caso mais comum do StudioFlow:
+  <strong>pequenos negócios com 1–2 funcionários</strong>, onde o dono quer enxergar tudo de relance
+  e marcar/atualizar com poucos toques, direto do balcão. As 4 opções abaixo combinam as ideias
+  anteriores de propósito — nenhuma começa do zero.
+</div>
+
+<!-- ===================== OPÇÃO E ===================== -->
+<div class="option">
+  <span class="opt-tag rec">Opção E</span>
+  <span class="rec-note">⭐ recomendado</span>
+  <p class="opt-name">Semana do profissional (mescla C + D)</p>
+  <p class="opt-pros">
+    As pills de profissional do D em cima; a semana inteira do C embaixo — só compromissos como chips,
+    sem grade vazia. Com 1–2 pessoas, o dono escolhe "Ana" e vê a semana inteira dela de uma vez.
+    A coluna de hoje fica destacada em lilás.
+  </p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="p-header"><div class="p-title"><span>Agenda</span><span style="font-weight:400;font-size:11px;">semana</span></div></div>
+      <div class="p-body">
+        <div class="pills">
+          <span class="pill on">Ana</span>
+          <span class="pill">Bruno</span>
+        </div>
+        <div class="e-grid">
+          <div class="e-day">
+            <div class="e-day-h"><div class="dow">Seg</div><div class="num">8</div></div>
+            <div class="e-chip"><span class="t">09:00</span>Escova · Renata</div>
+          </div>
+          <div class="e-day">
+            <div class="e-day-h"><div class="dow">Ter</div><div class="num">9</div></div>
+            <div class="e-chip"><span class="t">14:00</span>Corte · Diego</div>
+            <div class="e-chip"><span class="t">16:30</span>Coloração · Paula</div>
+          </div>
+          <div class="e-day">
+            <div class="e-day-h"><div class="dow">Qua</div><div class="num">10</div></div>
+            <div class="e-empty">—</div>
+          </div>
+          <div class="e-day">
+            <div class="e-day-h"><div class="dow">Qui</div><div class="num">11</div></div>
+            <div class="e-chip"><span class="t">10:00</span>Massagem · Ana C.</div>
+          </div>
+          <div class="e-day">
+            <div class="e-day-h today"><div class="dow">Sex</div><div class="num">12</div></div>
+            <div class="e-chip"><span class="t">09:00</span>Escova · Renata</div>
+            <div class="e-chip"><span class="t">11:00</span>Barba · Tiago</div>
+            <div class="e-chip"><span class="t">15:00</span>Corte · Diego</div>
+          </div>
+          <div class="e-day">
+            <div class="e-day-h"><div class="dow">Sáb</div><div class="num">13</div></div>
+            <div class="e-chip"><span class="t">08:30</span>Massagem · Ana C.</div>
+            <div class="e-chip"><span class="t">13:00</span>Escova · Julia</div>
+          </div>
+          <div class="e-day">
+            <div class="e-day-h"><div class="dow">Dom</div><div class="num">14</div></div>
+            <div class="e-empty">—</div>
+          </div>
+        </div>
+        <div class="swipe-hint">toque num dia para ver a linha do tempo</div>
+        <div class="fab">Novo agendamento</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== OPÇÃO F ===================== -->
+<div class="option">
+  <span class="opt-tag rec">Opção F</span>
+  <span class="rec-note">⭐ recomendado</span>
+  <p class="opt-name">Fila do dia (mescla A + ações rápidas)</p>
+  <p class="opt-pros">
+    A visão de "fila de atendimento" de quem trabalha sozinho: uma faixa fina com os 7 dias do mês
+    para trocar de dia com 1 toque, e a lista de hoje em ordem de horário — hora grande, cliente,
+    serviço, status e um botão de WhatsApp na linha para confirmar o horário em 1 toque.
+  </p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="p-header"><div class="p-title"><span>Agenda</span><span style="font-weight:400;font-size:11px;">hoje</span></div></div>
+      <div class="p-body">
+        <div class="f-strip">
+          <div class="f-d">seg<span class="n">8</span></div>
+          <div class="f-d">ter<span class="n">9</span></div>
+          <div class="f-d">qua<span class="n">10</span></div>
+          <div class="f-d">qui<span class="n">11</span></div>
+          <div class="f-d today">sex<span class="n">12</span></div>
+          <div class="f-d">sáb<span class="n">13</span></div>
+          <div class="f-d">dom<span class="n">14</span></div>
+        </div>
+        <div class="f-sub">Sexta-feira, 12 de setembro · 4 atendimentos</div>
+        <div class="f-item">
+          <div class="f-time"><span class="h">09:00</span><span class="m">45 min</span></div>
+          <div class="f-card"><div class="who">Carlos Silva</div><div class="what">Corte masculino · Ana</div></div>
+          <span class="f-st ok">confirmado</span>
+          <div class="f-wa">✆</div>
+        </div>
+        <div class="f-item">
+          <div class="f-time"><span class="h">11:00</span><span class="m">40 min</span></div>
+          <div class="f-card"><div class="who">Fernanda Lima</div><div class="what">Escova modelada · Ana</div></div>
+          <span class="f-st wait">pendente</span>
+          <div class="f-wa">✆</div>
+        </div>
+        <div class="f-item">
+          <div class="f-time"><span class="h">15:30</span><span class="m">1h</span></div>
+          <div class="f-card"><div class="who">Bruno Souza</div><div class="what">Corte + barba · Bruno</div></div>
+          <span class="f-st ok">confirmado</span>
+          <div class="f-wa">✆</div>
+        </div>
+        <div class="f-item">
+          <div class="f-time"><span class="h">17:00</span><span class="m">1h</span></div>
+          <div class="f-card"><div class="who">Patrícia Melo</div><div class="what">Massagem relaxante · Bruno</div></div>
+          <span class="f-st wait">pendente</span>
+          <div class="f-wa">✆</div>
+        </div>
+        <div class="fab">Novo agendamento</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== OPÇÃO G ===================== -->
+<div class="option">
+  <span class="opt-tag">Opção G</span>
+  <p class="opt-name">Próximos compromissos (mescla B + cards)</p>
+  <p class="opt-pros">
+    Sem grade de horários: cards empilhados por dia (HOJE / AMANHÃ / depois), cada linha com
+    hora — cliente — serviço — profissional. Pouca informação por vez, foco total no que vem agora.
+    Funciona como a "caixa de entrada" da agenda: abriu, viu o próximo, pronto.
+  </p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="p-header"><div class="p-title"><span>Agenda</span><span style="font-weight:400;font-size:11px;">próximos</span></div></div>
+      <div class="p-body">
+        <div class="g-label">Hoje · sexta 12</div>
+        <div class="g-card">
+          <div class="g-row">
+            <div class="g-time">09:00</div>
+            <div class="g-info"><div class="who">Carlos Silva</div><div class="what">Corte masculino</div></div>
+            <span class="g-pro">Ana</span>
+          </div>
+          <div class="g-row">
+            <div class="g-time">11:00</div>
+            <div class="g-info"><div class="who">Fernanda Lima</div><div class="what">Escova modelada</div></div>
+            <span class="g-pro">Ana</span>
+          </div>
+          <div class="g-row">
+            <div class="g-time">15:30</div>
+            <div class="g-info"><div class="who">Bruno Souza</div><div class="what">Corte + barba</div></div>
+            <span class="g-pro">Bruno</span>
+          </div>
+        </div>
+        <div class="g-label">Amanhã · sábado 13</div>
+        <div class="g-card">
+          <div class="g-row">
+            <div class="g-time">08:30</div>
+            <div class="g-info"><div class="who">Ana Costa</div><div class="what">Massagem relaxante</div></div>
+            <span class="g-pro">Bruno</span>
+          </div>
+          <div class="g-row">
+            <div class="g-time">13:00</div>
+            <div class="g-info"><div class="who">Julia Ramos</div><div class="what">Escova modelada</div></div>
+            <span class="g-pro">Ana</span>
+          </div>
+        </div>
+        <div class="g-label">Segunda 15</div>
+        <div class="g-card">
+          <div class="g-row">
+            <div class="g-time">10:00</div>
+            <div class="g-info"><div class="who">Paula Ribeiro</div><div class="what">Coloração</div></div>
+            <span class="g-pro">Ana</span>
+          </div>
+        </div>
+        <div class="fab">Novo agendamento</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== OPÇÃO H ===================== -->
+<div class="option">
+  <span class="opt-tag">Opção H</span>
+  <p class="opt-name">Semana com deslize por profissional (mescla B + E)</p>
+  <p class="opt-pros">
+    A grade de horários da opção B (3 colunas com deslize) com as pills de profissional por cima.
+    Com 1–2 pessoas, cada agenda fica limpa e dá até para manter a linha vermelha de "agora"
+    no dia atual. É a opção mais completa — e a que mais se parece com a agenda de hoje.
+  </p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="p-header"><div class="p-title"><span>Agenda</span><span style="font-weight:400;font-size:11px;">semana</span></div></div>
+      <div class="p-body">
+        <div class="pills">
+          <span class="pill on">Ana</span>
+          <span class="pill">Bruno</span>
+        </div>
+        <div class="h-nav">
+          <span class="arrow">‹</span>
+          <span class="range">12 – 14 de setembro</span>
+          <span class="arrow">›</span>
+        </div>
+        <div class="h-grid">
+          <div class="h-hours">
+            <div>07</div><div>08</div><div>09</div><div>10</div>
+            <div>11</div><div>12</div><div>13</div><div>14</div>
+          </div>
+          <div class="h-days">
+            <div class="h-day">
+              <div class="h-day-h today"><div class="dow">Sex</div><div class="num">12</div></div>
+              <div class="h-slot-lines"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+              <div class="h-ev h1" style="top:80px;height:37px;">09:00 Escova · Renata</div>
+              <div class="h-ev h2" style="top:160px;height:37px;">11:00 Barba · Tiago</div>
+              <div class="h-now"><span class="lbl">agora</span></div>
+            </div>
+            <div class="h-day">
+              <div class="h-day-h"><div class="dow">Sáb</div><div class="num">13</div></div>
+              <div class="h-slot-lines"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+              <div class="h-ev h3" style="top:60px;height:37px;">08:30 Massagem · Ana C.</div>
+              <div class="h-ev h1" style="top:200px;height:37px;">13:00 Escova · Julia</div>
+            </div>
+            <div class="h-day">
+              <div class="h-day-h"><div class="dow">Dom</div><div class="num">14</div></div>
+              <div class="h-slot-lines"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+              <div class="h-ev h2" style="top:120px;height:37px;">10:00 Corte · Diego</div>
+            </div>
+          </div>
+        </div>
+        <div class="swipe-hint">‹ deslize para ver outros dias ›</div>
+        <div class="fab">Novo agendamento</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== COMPARATIVO ===================== -->
+<h2>Comparativo completo (A–H)</h2>
+<p class="opt-desc">
+  Resumo das 8 opções. Esforço considera o que já existe no código: <strong>DayView</strong>
+  (linha do tempo do dia) e <strong>WeekView</strong> (grade semanal) — reaproveitar é barato.
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>Opção</th>
+      <th>Vê a semana inteira?</th>
+      <th>Boa pra 1–2 funcionários?</th>
+      <th>Rapidez pra marcar</th>
+      <th>Espaço na tela</th>
+      <th>Esforço</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>A</strong> — Dia atual</td>
+      <td>Não (dia a dia)</td>
+      <td>Boa</td>
+      <td>Rápida</td>
+      <td>Muito confortável</td>
+      <td class="eff-low">Baixo — DayView existe</td>
+    </tr>
+    <tr>
+      <td><strong>B</strong> — 3 dias</td>
+      <td>Parcial (3 em 3)</td>
+      <td>Boa</td>
+      <td>Média</td>
+      <td>Confortável</td>
+      <td class="eff-med">Médio — novo modo</td>
+    </tr>
+    <tr>
+      <td><strong>C</strong> — Semana compacta</td>
+      <td><span class="stars">★★★★★</span> sim</td>
+      <td>Boa</td>
+      <td>Rápida</td>
+      <td>Economiza muito</td>
+      <td class="eff-med">Médio — novo componente</td>
+    </tr>
+    <tr>
+      <td><strong>D</strong> — Por profissional</td>
+      <td>Não (dia por vez)</td>
+      <td><span class="stars">★★★★★</span> ótima</td>
+      <td>Rápida</td>
+      <td>Muito confortável</td>
+      <td class="eff-low">Baixo–médio — filtra lista</td>
+    </tr>
+    <tr class="rec">
+      <td><strong>E</strong> — Semana do profissional ⭐</td>
+      <td><span class="stars">★★★★★</span> sim, de cada pessoa</td>
+      <td><span class="stars">★★★★★</span> ideal (1–2 pills)</td>
+      <td>Rápida (1 toque p/ trocar)</td>
+      <td>Economiza muito</td>
+      <td class="eff-med">Médio — mescla C + filtro de D</td>
+    </tr>
+    <tr class="rec">
+      <td><strong>F</strong> — Fila do dia ⭐</td>
+      <td>Não (foco no dia)</td>
+      <td><span class="stars">★★★★★</span> ideal (quem atende sozinho)</td>
+      <td><span class="stars">★★★★★</span> a mais rápida (WhatsApp na linha)</td>
+      <td>Muito confortável</td>
+      <td class="eff-low">Baixo–médio — reusa DayView em lista</td>
+    </tr>
+    <tr>
+      <td><strong>G</strong> — Próximos compromissos</td>
+      <td>Parcial (próximos dias)</td>
+      <td>Boa</td>
+      <td>Rápida</td>
+      <td>Muito confortável</td>
+      <td class="eff-low">Baixo — lista simples</td>
+    </tr>
+    <tr>
+      <td><strong>H</strong> — Deslize por profissional</td>
+      <td>Parcial (3 dias por vez)</td>
+      <td><span class="stars">★★★★</span> muito boa</td>
+      <td>Média</td>
+      <td>Confortável</td>
+      <td class="eff-med">Médio–alto — mescla B + pills + agora</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="reply">
+  <strong>Minha recomendação para negócios com 1–2 funcionários:</strong><br />
+  ⭐ <strong>Agenda E</strong> — a semana inteira de cada profissional de relance, sem grade vazia;
+  com 1–2 pills o filtro é instantâneo.<br />
+  ⭐ <strong>Agenda F</strong> — a "fila de atendimento" do dia: dia marcado na faixa, hora grande,
+  WhatsApp na linha para confirmar em 1 toque — perfeita pra quem atende sozinho no balcão.<br /><br />
+  <strong>Como responder:</strong> me diga <strong>"Agenda E"</strong>, <strong>"Agenda F"</strong>,
+  <strong>"Agenda G"</strong>, <strong>"Agenda H"</strong> — ou combine
+  (ex: "Agenda E no mobile e a semanal atual no desktop"). Também vale escolher uma das A–D da prévia anterior.
+  Assim que escolher, implemento no app.
+</div>
+
+</body>
+</html>
