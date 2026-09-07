@@ -39,7 +39,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { maskMoneyBR, moneyBRToDot, isoToDateBR, dateBRToISO, maskDateBR } from "@/lib/input-masks";
+import { maskMoneyBR, moneyBRToDot } from "@/lib/input-masks";
+import DatePicker from "@/components/DatePicker";
 
 export default function Financial() {
   const { salon } = useSalon();
@@ -91,7 +92,7 @@ export default function Financial() {
   function handleSubmit() {
     if (!salon) return;
     if (!form.recordDate) {
-      toast.error("Informe uma data válida no formato dd/mm/aaaa.");
+      toast.error("Escolha uma data para o registro.");
       return;
     }
     createMutation.mutate({
@@ -180,18 +181,10 @@ export default function Financial() {
                   </div>
                   <div className="grid gap-2">
                     <Label>Data</Label>
-                    <Input
-                      value={isoToDateBR(form.recordDate)}
-                      onChange={e =>
-                        setForm({
-                          ...form,
-                          recordDate: dateBRToISO(
-                            maskDateBR(e.target.value)
-                          ),
-                        })
-                      }
-                      placeholder="dd/mm/aaaa"
-                      inputMode="numeric"
+                    <DatePicker
+                      value={form.recordDate}
+                      onChange={iso => setForm({ ...form, recordDate: iso })}
+                      placeholder="Selecione"
                     />
                   </div>
                 </div>
@@ -210,7 +203,10 @@ export default function Financial() {
                     <Input
                       value={form.amount}
                       onChange={e =>
-                        setForm({ ...form, amount: maskMoneyBR(e.target.value) })
+                        setForm({
+                          ...form,
+                          amount: maskMoneyBR(e.target.value),
+                        })
                       }
                       placeholder="0,00"
                       inputMode="numeric"
@@ -296,9 +292,7 @@ export default function Financial() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Ganho líquido
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Ganho líquido</CardTitle>
             <TrendingUp className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>

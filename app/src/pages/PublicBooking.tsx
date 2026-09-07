@@ -22,15 +22,11 @@ import type { SalonSegment } from "@contracts/segment-labels";
 import {
   onlyText,
   maskPhoneBR,
-  maskDateBR,
-  isValidDateBR,
   dateBRToISO,
   moneyDotToBR,
 } from "@/lib/input-masks";
-import {
-  generateTimeSlots,
-  filterAvailableSlots,
-} from "@/lib/time-slots";
+import DatePicker from "@/components/DatePicker";
+import { generateTimeSlots, filterAvailableSlots } from "@/lib/time-slots";
 
 type BookResult = {
   salonName: string;
@@ -58,9 +54,8 @@ export default function PublicBooking() {
   );
 
   // Horários livres do dia escolhido (grade de 30 em 30 min)
-  const isoDate = isValidDateBR(maskDateBR(date))
-    ? dateBRToISO(maskDateBR(date))
-    : "";
+  // `date` já é ISO — vem direto do DatePicker
+  const isoDate = date;
   const { data: slotsData } = trpc.public.availableSlots.useQuery(
     {
       slug: slug ?? "",
@@ -74,7 +69,11 @@ export default function PublicBooking() {
   const service = data?.services.find(s => s.id === Number(serviceId));
   // sem serviço + data válida, a grade fica vazia (campo travado com orientação)
   const allSlots = slotsData
-    ? generateTimeSlots(slotsData.dayStart, slotsData.dayEnd, slotsData.slotMinutes)
+    ? generateTimeSlots(
+        slotsData.dayStart,
+        slotsData.dayEnd,
+        slotsData.slotMinutes
+      )
     : [];
   const availableSlots = filterAvailableSlots(
     allSlots,
@@ -115,13 +114,12 @@ export default function PublicBooking() {
 
   function handleSubmit() {
     if (!data) return;
-    const isoDate = dateBRToISO(maskDateBR(date));
     if (!serviceId) {
       toast.error("Escolha um serviço.");
       return;
     }
-    if (!isValidDateBR(maskDateBR(date))) {
-      toast.error("Informe uma data válida no formato dd/mm/aaaa.");
+    if (!date) {
+      toast.error("Escolha uma data.");
       return;
     }
     if (!startTime) {
@@ -196,7 +194,8 @@ export default function PublicBooking() {
               <strong>Serviço:</strong> {result.serviceName}
             </p>
             <p>
-              <strong>Data:</strong> {result.date.split("-").reverse().join("/")}
+              <strong>Data:</strong>{" "}
+              {result.date.split("-").reverse().join("/")}
             </p>
             <p>
               <strong>Horário:</strong> {result.startTime} às {result.endTime}
@@ -281,11 +280,10 @@ export default function PublicBooking() {
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>Data *</Label>
-              <Input
+              <DatePicker
                 value={date}
-                onChange={e => setDate(maskDateBR(e.target.value))}
-                placeholder="dd/mm/aaaa"
-                inputMode="numeric"
+                onChange={setDate}
+                placeholder="Escolha a data"
               />
             </div>
             <div className="grid gap-2">
@@ -358,8 +356,8 @@ export default function PublicBooking() {
           </Button>
 
           <p className="text-xs text-slate-400 text-center flex items-center justify-center gap-1">
-            <Clock className="h-3 w-3" />
-            O salão confirma seu horário pelo WhatsApp
+            <Clock className="h-3 w-3" />O salão confirma seu horário pelo
+            WhatsApp
           </p>
         </div>
 

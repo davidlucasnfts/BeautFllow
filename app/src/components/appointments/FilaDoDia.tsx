@@ -165,7 +165,7 @@ export default function FilaDoDia({
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={e => e.stopPropagation()}
-                        className="flex items-center gap-1 rounded-md bg-green-50 px-2 py-1 text-[11px] font-semibold text-green-600 transition-colors hover:bg-green-100"
+                        className="flex items-center gap-1 rounded-md bg-green-600 px-1.5 py-0.5 text-[10px] font-semibold text-white transition-colors hover:bg-green-700"
                       >
                         <MessageCircle className="h-3 w-3" />
                         WhatsApp

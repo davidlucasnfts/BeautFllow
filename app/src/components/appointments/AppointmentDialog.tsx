@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
-import { isoToDateBR, dateBRToISO, maskDateBR } from "@/lib/input-masks";
+import DatePicker from "@/components/DatePicker";
 import type { AppointmentFormData } from "./useAppointmentForm";
 import type { Client, Professional, Service } from "@db/schema";
 
@@ -123,25 +123,17 @@ export default function AppointmentDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>Data</Label>
-              <Input
-                value={isoToDateBR(form.appointmentDate)}
-                onChange={e =>
-                  onFieldChange(
-                    "appointmentDate",
-                    dateBRToISO(maskDateBR(e.target.value))
-                  )
-                }
-                placeholder="dd/mm/aaaa"
-                inputMode="numeric"
+              <DatePicker
+                value={form.appointmentDate}
+                onChange={iso => onFieldChange("appointmentDate", iso)}
+                placeholder="Escolha a data"
               />
             </div>
             <div className="grid gap-2">
               <Label>Horário</Label>
               <Select
                 value={
-                  availableSlots?.includes(form.startTime)
-                    ? form.startTime
-                    : ""
+                  availableSlots?.includes(form.startTime) ? form.startTime : ""
                 }
                 onValueChange={v => onFieldChange("startTime", v)}
                 disabled={!form.appointmentDate}

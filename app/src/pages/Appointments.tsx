@@ -211,7 +211,7 @@ export default function Appointments() {
   function handleCreate() {
     if (!salon) return;
     if (!form.appointmentDate) {
-      toast.error("Informe uma data válida no formato dd/mm/aaaa.");
+      toast.error("Escolha uma data para o agendamento.");
       return;
     }
     const service = services?.find(s => s.id === Number(form.serviceId));

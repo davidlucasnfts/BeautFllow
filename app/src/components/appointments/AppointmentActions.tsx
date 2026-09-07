@@ -42,13 +42,13 @@ export default function AppointmentActions({
   const canConclude = ACTIVE_STATUSES.includes(appt.status);
 
   return (
-    <div className={`flex flex-col gap-1 items-end ${className}`}>
+    <div className={`flex flex-row flex-wrap gap-1.5 justify-end ${className}`}>
       {canConfirm && (
         <Button
           type="button"
           size="sm"
           onClick={stop(() => onConfirm(appt.id))}
-          className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-600 hover:bg-blue-100"
+          className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-600 text-white hover:bg-blue-700"
         >
           <Check className="h-3 w-3" />
           Confirmar
@@ -59,7 +59,7 @@ export default function AppointmentActions({
           type="button"
           size="sm"
           onClick={stop(() => onCheckIn(appt.id))}
-          className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-green-50 text-green-600 hover:bg-green-100"
+          className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-green-600 text-white hover:bg-green-700"
         >
           <CheckCircle2 className="h-3 w-3" />
           Chegada
@@ -81,7 +81,7 @@ export default function AppointmentActions({
           type="button"
           size="sm"
           onClick={stop(() => onCancel(appt.id))}
-          className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100"
+          className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-600 text-white hover:bg-red-700"
         >
           <XCircle className="h-3 w-3" />
           Cancelar

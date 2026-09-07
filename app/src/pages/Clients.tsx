@@ -30,14 +30,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
-import {
-  onlyText,
-  maskPhoneBR,
-  maskDateBR,
-  isValidDateBR,
-  dateBRToISO,
-  isoToDateBR,
-} from "@/lib/input-masks";
+import { onlyText, maskPhoneBR } from "@/lib/input-masks";
+import DatePicker from "@/components/DatePicker";
 import ClientCardDetails from "@/components/clients/ClientCardDetails";
 import { getSegmentPalette } from "@contracts/segment-palettes";
 
@@ -140,7 +134,7 @@ export default function Clients() {
     setForm({
       name: client.name,
       phone: client.phone,
-      birthDate: client.birthDate ? isoToDateBR(client.birthDate) : "",
+      birthDate: client.birthDate ?? "",
       notes: client.notes ?? "",
       tags: client.tags ?? "",
     });
@@ -149,11 +143,7 @@ export default function Clients() {
 
   function handleSubmit() {
     if (!salon) return;
-    if (form.birthDate && !isValidDateBR(form.birthDate)) {
-      toast.error("Data de nascimento inválida. Use o formato dd/mm/aaaa.");
-      return;
-    }
-    const payload = { ...form, birthDate: dateBRToISO(form.birthDate) };
+    const payload = { ...form };
     if (editing) {
       updateMutation.mutate({
         id: editing,
@@ -221,13 +211,10 @@ export default function Clients() {
               </div>
               <div className="grid gap-2">
                 <Label>Data Nascimento</Label>
-                <Input
+                <DatePicker
                   value={form.birthDate}
-                  onChange={e =>
-                    setForm({ ...form, birthDate: maskDateBR(e.target.value) })
-                  }
-                  placeholder="dd/mm/aaaa"
-                  inputMode="numeric"
+                  onChange={iso => setForm({ ...form, birthDate: iso })}
+                  placeholder="Selecione"
                 />
               </div>
               <div className="grid gap-2">
@@ -304,7 +291,9 @@ export default function Clients() {
                       <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                         <Badge
                           variant="secondary"
-                          className={segmentColors[client.segment] + " text-[10px]"}
+                          className={
+                            segmentColors[client.segment] + " text-[10px]"
+                          }
                         >
                           {segmentLabels[client.segment]}
                         </Badge>

@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -7,9 +6,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarDays, CalendarRange, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  CalendarDays,
+  CalendarRange,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { format, addDays, startOfWeek, endOfWeek } from "date-fns";
-import { isoToDateBR, dateBRToISO, maskDateBR } from "@/lib/input-masks";
+import DatePicker from "@/components/DatePicker";
 import type { ViewMode } from "@/components/calendar/types";
 import type { Professional, Service } from "@db/schema";
 
@@ -143,16 +147,15 @@ export default function AppointmentFilters({
             <ChevronLeft className="h-3.5 w-3.5" />
             Anterior
           </Button>
-          <Input
-            value={isoToDateBR(format(selectedDate, "yyyy-MM-dd"))}
-            onChange={e => {
-              const iso = dateBRToISO(maskDateBR(e.target.value));
-              if (iso) setSelectedDate(() => new Date(iso + "T00:00:00"));
-            }}
-            placeholder="dd/mm/aaaa"
-            inputMode="numeric"
-            className="w-40 h-8 text-sm"
-          />
+          <div className="w-44">
+            <DatePicker
+              value={format(selectedDate, "yyyy-MM-dd")}
+              onChange={iso =>
+                setSelectedDate(() => new Date(`${iso}T00:00:00`))
+              }
+              placeholder="Escolha o dia"
+            />
+          </div>
           <Button
             variant="outline"
             size="sm"
