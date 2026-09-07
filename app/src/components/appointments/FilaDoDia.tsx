@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   format,
   eachDayOfInterval,
@@ -40,6 +40,7 @@ export default function FilaDoDia({
   onCancel,
 }: FilaDoDiaProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const selectedDayRef = useRef<HTMLButtonElement>(null);
 
   const monthDays = useMemo(
     () =>
@@ -51,6 +52,15 @@ export default function FilaDoDia({
   );
 
   const dayKey = format(selectedDay, "yyyy-MM-dd");
+
+  // Entrando na aba (ou trocando de mês), a faixa rola até o dia selecionado —
+  // por padrão o dia atual, já visível sem precisar deslizar
+  useEffect(() => {
+    selectedDayRef.current?.scrollIntoView({
+      inline: "center",
+      block: "nearest",
+    });
+  }, [dayKey]);
   const dayAppointments = useMemo(
     () =>
       appointments
@@ -68,6 +78,7 @@ export default function FilaDoDia({
           return (
             <button
               key={format(day, "yyyy-MM-dd")}
+              ref={selected ? selectedDayRef : undefined}
               type="button"
               onClick={() => onSelectDay(day)}
               className={`flex shrink-0 flex-col items-center rounded-lg px-3 py-1.5 transition-colors ${
@@ -133,24 +144,26 @@ export default function FilaDoDia({
                       {service?.name ?? "Serviço"}
                     </p>
                   </div>
-                  <Badge
-                    variant="secondary"
-                    className={`${STATUS_COLORS[appt.status] ?? ""} text-[10px] shrink-0`}
-                  >
-                    {STATUS_LABELS[appt.status] ?? appt.status}
-                  </Badge>
-                  {client?.phone && (
-                    <a
-                      href={`https://wa.me/55${client.phone.replace(/\D/g, "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={e => e.stopPropagation()}
-                      title="Chamar no WhatsApp"
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-green-50 text-green-600 transition-colors hover:bg-green-100"
+                  <div className="flex shrink-0 flex-col items-end gap-1">
+                    <Badge
+                      variant="secondary"
+                      className={`${STATUS_COLORS[appt.status] ?? ""} text-[10px]`}
                     >
-                      <MessageCircle className="h-4 w-4" />
-                    </a>
-                  )}
+                      {STATUS_LABELS[appt.status] ?? appt.status}
+                    </Badge>
+                    {client?.phone && (
+                      <a
+                        href={`https://wa.me/55${client.phone.replace(/\D/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={e => e.stopPropagation()}
+                        className="flex items-center gap-1 rounded-md bg-green-50 px-2 py-1 text-[11px] font-semibold text-green-600 transition-colors hover:bg-green-100"
+                      >
+                        <MessageCircle className="h-3 w-3" />
+                        WhatsApp
+                      </a>
+                    )}
+                  </div>
                 </div>
 
                 {/* Ações do compromisso (toque na linha expande) */}
