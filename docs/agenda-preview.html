@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StudioFlow — Prévia: Agenda no Celular</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+    padding: 32px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  .sub { color: #64748b; font-size: 14px; margin-bottom: 8px; }
+  .context {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+  h2 {
+    font-size: 18px;
+    margin: 32px 0 4px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .opt-desc { color: #64748b; font-size: 13px; margin-bottom: 16px; }
+  .option { margin-bottom: 40px; }
+  .opt-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+    background: #ede9fe;
+    color: #6d28d9;
+  }
+  .opt-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .opt-pros { font-size: 12px; color: #64748b; margin-bottom: 14px; line-height: 1.5; }
+
+  /* ---- "telefone" ---- */
+  .phone-wrap { display: flex; justify-content: center; }
+  .phone {
+    width: 360px;
+    background: #fff;
+    border: 8px solid #1e293b;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, .18);
+  }
+  .p-header {
+    background: #8b5cf6;
+    color: #fff;
+    padding: 12px 14px;
+  }
+  .p-header .p-title { font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+  .p-body { background: #fff; min-height: 380px; position: relative; padding-bottom: 64px; }
+  .fab {
+    position: absolute;
+    left: 14px; right: 14px; bottom: 14px;
+    background: #8b5cf6;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .fab::before { content: "+"; margin-right: 6px; font-weight: 700; }
+
+  /* ---- A: linha do tempo do dia ---- */
+  .a-date { padding: 14px; border-bottom: 1px solid #f1f5f9; }
+  .a-date .dow { font-size: 11px; color: #8b5cf6; font-weight: 700; text-transform: uppercase; }
+  .a-date .big { font-size: 20px; font-weight: 700; }
+  .timeline { position: relative; padding: 8px 0 16px; }
+  .tl-row { display: flex; height: 52px; }
+  .tl-hour {
+    width: 52px; flex-shrink: 0;
+    font-size: 10px; color: #94a3b8; text-align: right;
+    padding-right: 8px; transform: translateY(-6px);
+  }
+  .tl-line { flex: 1; border-top: 1px solid #f1f5f9; position: relative; }
+  .tl-event {
+    position: absolute; left: 60px; right: 10px;
+    border-radius: 8px; padding: 6px 10px;
+    font-size: 11px; color: #fff; overflow: hidden;
+  }
+  .tl-event .t { font-weight: 700; font-size: 10px; opacity: .9; }
+  .e1 { background: #8b5cf6; }
+  .e2 { background: #a78bfa; }
+  .e3 { background: #6d28d9; }
+  .e4 { background: #c4b5fd; color: #4c1d95; }
+  .e4 .t { opacity: .8; }
+  .now-dot {
+    position: absolute; left: 52px; right: 0; top: 218px;
+    border-top: 2px solid #ef4444;
+  }
+  .now-dot::before {
+    content: ""; width: 8px; height: 8px; border-radius: 50%;
+    background: #ef4444; position: absolute; left: -4px; top: -5px;
+  }
+
+  /* ---- B: 3 dias ---- */
+  .b-nav { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+  .b-nav .arrow { color: #8b5cf6; font-size: 18px; font-weight: 700; }
+  .b-nav .range { font-size: 12px; font-weight: 700; }
+  .b-grid { display: flex; }
+  .b-hours { width: 40px; flex-shrink: 0; padding-top: 30px; }
+  .b-hours div { height: 40px; font-size: 9px; color: #94a3b8; text-align: right; padding-right: 5px; transform: translateY(-5px); }
+  .b-days { display: flex; flex: 1; }
+  .b-day { flex: 1; border-left: 1px solid #f1f5f9; }
+  .b-day-h { text-align: center; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+  .b-day-h .dow { font-size: 9px; color: #94a3b8; text-transform: uppercase; }
+  .b-day-h .num { font-size: 14px; font-weight: 700; }
+  .b-day-h.today .num { color: #8b5cf6; }
+  .b-slots { position: relative; }
+  .b-slot-lines div { height: 40px; border-bottom: 1px solid #f8fafc; }
+  .b-ev {
+    position: absolute; left: 3px; right: 3px;
+    border-radius: 6px; padding: 3px 5px;
+    font-size: 9px; color: #fff; line-height: 1.25; overflow: hidden;
+  }
+  .swipe-hint { text-align: center; font-size: 10px; color: #94a3b8; padding: 6px 0 2px; }
+
+  /* ---- C: semana compacta ---- */
+  .c-grid { display: flex; border-bottom: 1px solid #f1f5f9; }
+  .c-day { flex: 1; border-left: 1px solid #f1f5f9; padding: 4px 3px 8px; min-height: 240px; }
+  .c-day:first-child { border-left: none; }
+  .c-day-h { text-align: center; margin-bottom: 5px; }
+  .c-day-h .dow { font-size: 8px; color: #94a3b8; text-transform: uppercase; }
+  .c-day-h .num { font-size: 12px; font-weight: 700; }
+  .c-day-h.today .num { color: #8b5cf6; }
+  .c-chip {
+    background: #ede9fe; color: #5b21b6;
+    border-radius: 6px; padding: 4px 4px;
+    font-size: 8.5px; line-height: 1.3;
+    margin-bottom: 4px; border-left: 3px solid #8b5cf6;
+    word-break: break-word;
+  }
+  .c-chip .t { font-weight: 700; display: block; }
+  .c-empty { font-size: 9px; color: #cbd5e1; text-align: center; padding-top: 6px; }
+
+  /* ---- D: por profissional ---- */
+  .d-pills { display: flex; gap: 6px; padding: 12px 12px 4px; flex-wrap: wrap; }
+  .d-pill {
+    border-radius: 999px; padding: 6px 12px;
+    font-size: 11px; font-weight: 600;
+    border: 1.5px solid #e2e8f0; color: #475569; background: #fff;
+  }
+  .d-pill.on { background: #8b5cf6; border-color: #8b5cf6; color: #fff; }
+  .d-sub { font-size: 11px; color: #64748b; padding: 8px 14px 2px; }
+  .d-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 14px; border-bottom: 1px solid #f8fafc;
+  }
+  .d-time { font-size: 11px; font-weight: 700; color: #8b5cf6; width: 44px; flex-shrink: 0; }
+  .d-card { flex: 1; background: #f5f3ff; border-radius: 8px; padding: 7px 10px; font-size: 11px; }
+  .d-card .who { font-weight: 700; }
+  .d-card .what { color: #64748b; font-size: 10px; }
+  .d-status { font-size: 9px; font-weight: 700; color: #059669; }
+
+  /* ---- tabela comparativa ---- */
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; font-size: 13px; margin-top: 8px; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f1f5f9; }
+  th { background: #f8fafc; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #64748b; }
+  tr:last-child td { border-bottom: none; }
+  .stars { color: #8b5cf6; font-weight: 700; }
+  .eff-low { color: #059669; font-weight: 600; }
+  .eff-med { color: #d97706; font-weight: 600; }
+  .reply {
+    margin-top: 28px; background: #ede9fe; border: 1px solid #c4b5fd;
+    border-radius: 12px; padding: 16px; font-size: 14px; color: #5b21b6; line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<h1>Agenda no celular — 4 opções de layout</h1>
+<p class="sub">Prévia para escolha de redesign · StudioFlow</p>
+<div class="context">
+  <strong>Por que esta decisão:</strong> hoje a agenda semanal (WeekView) mostra 7 colunas fixas.
+  Em telas de ~390px de largura cada coluna fica com ~50px — os compromissos ficam apertados e
+  ilegíveis. As 4 opções abaixo foram desenhadas pensando no uso no balcão, com o celular na mão.
+  Todas são mockups estáticos: o desenho final no app seguirá a opção escolhida.
+</div>
+
+<!-- ===================== OPÇÃO A ===================== -->
+<div class="option">
+  <span class="opt-tag">Opção A</span>
+  <p class="opt-name">Dia atual (estilo Google Agenda)</p>
+  <p class="opt-pros">
+    O celular mostra um dia de cada vez, em linha do tempo vertical com os horários de
+    funcionamento. É o padrão que a maioria das pessoas já conhece do Google Agenda.
+    No app, o modo "Dia" (DayView) já existe — faltaria polir o visual no celular.
+  </p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="p-header"><div class="p-title"><span>Agenda</span><span style="font-weight:400;font-size:11px;">hoje</span></div></div>
+      <div class="p-body">
+        <div class="a-date">
+          <div class="dow">Sexta-feira</div>
+          <div class="big">12 de setembro</div>
+        </div>
+        <div class="timeline">
+          <div class="now-dot"></div>
+          <div class="tl-row"><div class="tl-hour">07:00</div><div class="tl-line"></div></div>
+          <div class="tl-row"><div class="tl-hour">08:00</div><div class="tl-line"></div></div>
+          <div class="tl-row"><div class="tl-hour">09:00</div><div class="tl-line">
+            <div class="tl-event e1" style="top:0;height:44px;"><div class="t">09:00 – 09:45</div>Corte masculino · Carlos</div>
+          </div></div>
+          <div class="tl-row"><div class="tl-hour">10:00</div><div class="tl-line"></div></div>
+          <div class="tl-row"><div class="tl-hour">11:00</div><div class="tl-line">
+            <div class="tl-event e2" style="top:0;height:44px;"><div class="t">11:00 – 11:40</div>Escova modelada · Fernanda</div>
+          </div></div>
+          <div class="tl-row"><div class="tl-hour">12:00</div><div class="tl-line">
+            <div class="tl-event e4" style="top:0;height:28px;"><div class="t">12:00 – 12:30</div>Barba · Diego</div>
+          </div></div>
+          <div class="tl-row"><div class="tl-hour">13:00</div><div class="tl-line"></div></div>
+          <div class="tl-row"><div class="tl-hour">14:00</div><div class="tl-line"></div></div>
+        </div>
+        <div class="fab">Novo agendamento</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== OPÇÃO B ===================== -->
+<div class="option">
+  <span class="opt-tag">Opção B</span>
+  <p class="opt-name">3 dias visíveis com deslize</p>
+  <p class="opt-pros">
+    Mostra três dias lado a lado (ex: hoje, amanhã e depois) com grade de horários.
+    Dá para deslizar o dedo para ver os dias seguintes — equilíbrio entre contexto e legibilidade.
+    As colunas ficam com ~100px cada, bem mais respiro que as 7 colunas atuais.
+  </p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="p-header"><div class="p-title"><span>Agenda</span><span style="font-weight:400;font-size:11px;">semana</span></div></div>
+      <div class="p-body">
+        <div class="b-nav">
+          <span class="arrow">‹</span>
+          <span class="range">12 – 14 de setembro</span>
+          <span class="arrow">›</span>
+        </div>
+        <div class="b-grid">
+          <div class="b-hours">
+            <div>07</div><div>08</div><div>09</div><div>10</div>
+            <div>11</div><div>12</div><div>13</div><div>14</div>
+          </div>
+          <div class="b-days">
+            <div class="b-day">
+              <div class="b-day-h today"><div class="dow">Sex</div><div class="num">12</div></div>
+              <div class="b-slots">
+                <div class="b-slot-lines"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                <div class="b-ev e1" style="top:80px;height:37px;">09:00 Corte · Carlos</div>
+                <div class="b-ev e2" style="top:160px;height:37px;">11:00 Escova · Fernanda</div>
+              </div>
+            </div>
+            <div class="b-day">
+              <div class="b-day-h"><div class="dow">Sáb</div><div class="num">13</div></div>
+              <div class="b-slots">
+                <div class="b-slot-lines"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                <div class="b-ev e3" style="top:40px;height:37px;">08:00 Massagem · Ana</div>
+                <div class="b-ev e1" style="top:200px;height:37px;">12:00 Corte · Bruno</div>
+              </div>
+            </div>
+            <div class="b-day">
+              <div class="b-day-h"><div class="dow">Dom</div><div class="num">14</div></div>
+              <div class="b-slots">
+                <div class="b-slot-lines"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                <div class="b-ev e2" style="top:120px;height:37px;">10:00 Escova · Julia</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="swipe-hint">‹ deslize para ver outros dias ›</div>
+        <div class="fab">Novo agendamento</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== OPÇÃO C ===================== -->
+<div class="option">
+  <span class="opt-tag">Opção C</span>
+  <p class="opt-name">Semana compacta (só compromissos)</p>
+  <p class="opt-pros">
+    As 7 colunas continuam, mas sem grade de horários vazia: cada dia mostra só os
+    compromissos como chips empilhados, com o horário dentro do chip. Visualmente limpo,
+    vê a semana inteira de uma vez. Tocar num chip abre o detalhe; tocar no dia abre o modo dia.
+  </p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="p-header"><div class="p-title"><span>Agenda</span><span style="font-weight:400;font-size:11px;">semana</span></div></div>
+      <div class="p-body">
+        <div class="c-grid">
+          <div class="c-day">
+            <div class="c-day-h"><div class="dow">Seg</div><div class="num">8</div></div>
+            <div class="c-chip"><span class="t">09:00</span>Corte · Carlos</div>
+            <div class="c-chip"><span class="t">14:00</span>Coloração · Paula</div>
+          </div>
+          <div class="c-day">
+            <div class="c-day-h"><div class="dow">Ter</div><div class="num">9</div></div>
+            <div class="c-chip"><span class="t">10:00</span>Massagem · Ana</div>
+          </div>
+          <div class="c-day">
+            <div class="c-day-h"><div class="dow">Qua</div><div class="num">10</div></div>
+            <div class="c-empty">—</div>
+          </div>
+          <div class="c-day">
+            <div class="c-day-h"><div class="dow">Qui</div><div class="num">11</div></div>
+            <div class="c-chip"><span class="t">08:30</span>Barba · Diego</div>
+            <div class="c-chip"><span class="t">16:00</span>Escova · Julia</div>
+          </div>
+          <div class="c-day">
+            <div class="c-day-h today"><div class="dow">Sex</div><div class="num">12</div></div>
+            <div class="c-chip"><span class="t">09:00</span>Corte · Carlos</div>
+            <div class="c-chip"><span class="t">11:00</span>Escova · Fernanda</div>
+            <div class="c-chip"><span class="t">12:00</span>Barba · Diego</div>
+          </div>
+          <div class="c-day">
+            <div class="c-day-h"><div class="dow">Sáb</div><div class="num">13</div></div>
+            <div class="c-chip"><span class="t">08:00</span>Massagem · Ana</div>
+            <div class="c-chip"><span class="t">12:00</span>Corte · Bruno</div>
+          </div>
+          <div class="c-day">
+            <div class="c-day-h"><div class="dow">Dom</div><div class="num">14</div></div>
+            <div class="c-chip"><span class="t">10:00</span>Escova · Julia</div>
+          </div>
+        </div>
+        <div class="swipe-hint">toque num dia para ver a linha do tempo</div>
+        <div class="fab">Novo agendamento</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== OPÇÃO D ===================== -->
+<div class="option">
+  <span class="opt-tag">Opção D</span>
+  <p class="opt-name">Lista por profissional</p>
+  <p class="opt-pros">
+    Em cima, pílulas com o nome de cada profissional; embaixo, a agenda do dia daquele
+    profissional em lista vertical (hora + cliente + serviço). Ideal para salões onde cada
+    profissional tem agenda própria — o dono filtra "agenda da Rafa" e vê tudo dela.
+  </p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="p-header"><div class="p-title"><span>Agenda</span><span style="font-weight:400;font-size:11px;">sexta, 12/09</span></div></div>
+      <div class="p-body">
+        <div class="d-pills">
+          <span class="d-pill on">Rafa</span>
+          <span class="d-pill">Maria</span>
+          <span class="d-pill">João</span>
+          <span class="d-pill">Todos</span>
+        </div>
+        <div class="d-sub">Agenda de Rafa — sexta-feira</div>
+        <div class="d-item">
+          <div class="d-time">09:00</div>
+          <div class="d-card"><div class="who">Carlos Silva</div><div class="what">Corte masculino · 45 min</div><div class="d-status">confirmado</div></div>
+        </div>
+        <div class="d-item">
+          <div class="d-time">11:00</div>
+          <div class="d-card"><div class="who">Fernanda Lima</div><div class="what">Escova modelada · 40 min</div><div class="d-status">confirmado</div></div>
+        </div>
+        <div class="d-item">
+          <div class="d-time">15:30</div>
+          <div class="d-card"><div class="who">Bruno Souza</div><div class="what">Corte + barba · 1h</div><div class="d-status">Na fila</div></div>
+        </div>
+        <div class="fab">Novo agendamento</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== COMPARATIVO ===================== -->
+<h2>Comparativo rápido</h2>
+<p class="opt-desc">Resumo para apoiar a escolha.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Opção</th>
+      <th>Ver a semana inteira</th>
+      <th>Uso no celular</th>
+      <th>Espaço na tela</th>
+      <th>Esforço de implementação</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>A</strong> — Dia atual</td>
+      <td>Não (dia a dia)</td>
+      <td><span class="stars">★★★★★</span> imita o Google Agenda</td>
+      <td>Muito confortável</td>
+      <td class="eff-low">Baixo — DayView já existe</td>
+    </tr>
+    <tr>
+      <td><strong>B</strong> — 3 dias</td>
+      <td>Parcial (3 em 3 dias)</td>
+      <td><span class="stars">★★★★</span> bom, exige gesto de deslize</td>
+      <td>Confortável</td>
+      <td class="eff-med">Médio — novo modo de visualização</td>
+    </tr>
+    <tr>
+      <td><strong>C</strong> — Semana compacta</td>
+      <td><span class="stars">★★★★★</span> sim, de uma vez</td>
+      <td><span class="stars">★★★★</span> simples, sem grade vazia</td>
+      <td>Economiza muito (só o que importa)</td>
+      <td class="eff-med">Médio — novo componente</td>
+    </tr>
+    <tr>
+      <td><strong>D</strong> — Por profissional</td>
+      <td>Não (dia por profissional)</td>
+      <td><span class="stars">★★★★★</span> direto ao ponto</td>
+      <td>Muito confortável</td>
+      <td class="eff-low">Baixo–médio — filtra lista existente</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="reply">
+  <strong>Como responder:</strong> me diga <strong>"Agenda A"</strong>, <strong>"Agenda B"</strong>,
+  <strong>"Agenda C"</strong> ou <strong>"Agenda D"</strong> (pode combinar, ex: "Agenda C no mobile e
+  a semanal atual no desktop"). Assim que escolher, implemento no app.
+</div>
+
+</body>
+</html>

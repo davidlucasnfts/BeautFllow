@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarDays, CalendarRange } from "lucide-react";
+import { CalendarDays, CalendarRange, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, addDays, startOfWeek, endOfWeek } from "date-fns";
 import { isoToDateBR, dateBRToISO, maskDateBR } from "@/lib/input-masks";
 import type { ViewMode } from "@/components/calendar/types";
@@ -118,6 +118,7 @@ export default function AppointmentFilters({
             size="sm"
             onClick={() => setWeekOffset(o => o - 1)}
           >
+            <ChevronLeft className="h-3.5 w-3.5" />
             Anterior
           </Button>
           <span className="text-sm font-medium min-w-[140px] text-center">
@@ -129,6 +130,7 @@ export default function AppointmentFilters({
             onClick={() => setWeekOffset(o => o + 1)}
           >
             Próxima
+            <ChevronRight className="h-3.5 w-3.5" />
           </Button>
         </>
       ) : (
@@ -138,6 +140,7 @@ export default function AppointmentFilters({
             size="sm"
             onClick={() => setSelectedDate(d => addDays(d, -1))}
           >
+            <ChevronLeft className="h-3.5 w-3.5" />
             Anterior
           </Button>
           <Input
@@ -156,6 +159,7 @@ export default function AppointmentFilters({
             onClick={() => setSelectedDate(d => addDays(d, 1))}
           >
             Próxima
+            <ChevronRight className="h-3.5 w-3.5" />
           </Button>
         </>
       )}

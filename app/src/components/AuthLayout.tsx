@@ -38,6 +38,7 @@ import { useLocation, useNavigate } from "react-router";
 import { AuthLayoutSkeleton } from "./AuthLayoutSkeleton";
 import { Button } from "./ui/button";
 import { MobileTopBar } from "./MobileTopBar";
+import MobileSidebarCloser from "./MobileSidebarCloser";
 import { SidebarUserMenu } from "./SidebarUserMenu";
 import { trpc } from "@/providers/trpc";
 import CreateSalonForm from "./CreateSalonForm";
@@ -218,18 +219,6 @@ type AuthLayoutContentProps = {
   setSidebarWidth: (width: number) => void;
 };
 
-/** Fecha o sheet da sidebar mobile sempre que a rota muda (desktop não usa openMobile) */
-function MobileSidebarCloser() {
-  const { pathname } = useLocation();
-  const { setOpenMobile } = useSidebar();
-
-  useEffect(() => {
-    setOpenMobile(false);
-  }, [pathname, setOpenMobile]);
-
-  return null;
-}
-
 function AuthLayoutContent({
   children,
   setSidebarWidth,
@@ -297,21 +286,13 @@ function AuthLayoutContent({
     return <CreateSalonForm />;
   }
 
-  return (
+  // Wrapper só no mobile: o Sheet usa h-full (layout viewport), que fica maior
+  // que a tela visível quando a barra de URL some — o wrapper h-dvh limita a
+  // altura ao viewport real. No desktop o wrapper fica fora do DOM (sidebar
+  // desktop depende da estrutura exata de flex children do shadcn).
+  const sidebarBody = (
     <>
-      <div className="relative" ref={sidebarRef}>
-        <Sidebar collapsible="icon" className="border-r-0">
-          {/* Mobile: o Sheet usa h-full (layout viewport), que fica maior que a
-              tela visível quando a barra de URL some — o wrapper h-dvh limita a
-              altura ao viewport real. Desktop: display contents não altera nada. */}
-          <div
-            className={
-              isMobile
-                ? "flex h-dvh flex-col overflow-hidden"
-                : "contents"
-            }
-          >
-            <SidebarHeader className="h-16 shrink-0 justify-center">
+      <SidebarHeader className="h-16 shrink-0 justify-center">
             <div className="flex items-center gap-3 px-2 transition-all w-full">
               <button
                 onClick={toggleSidebar}
@@ -371,7 +352,20 @@ function AuthLayoutContent({
           <SidebarFooter className="p-3 shrink-0">
             <SidebarUserMenu />
           </SidebarFooter>
-          </div>
+    </>
+  );
+
+  return (
+    <>
+      <div className="relative" ref={sidebarRef}>
+        <Sidebar collapsible="icon" className="border-r-0">
+          {isMobile ? (
+            <div className="flex h-dvh flex-col overflow-hidden">
+              {sidebarBody}
+            </div>
+          ) : (
+            sidebarBody
+          )}
         </Sidebar>
         <div
           className={`absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-primary/20 transition-colors ${isCollapsed ? "hidden" : ""}`}

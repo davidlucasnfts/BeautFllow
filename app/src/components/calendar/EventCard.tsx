@@ -154,28 +154,30 @@ export default function EventCard({
 
         {/* Ações */}
         {appt.status === "scheduled" && (
-          <div className={`flex gap-0.5 shrink-0 ${isDay ? "" : "mt-2"}`}>
+          <div className="flex flex-col gap-1 shrink-0">
             <Button
-              size="icon"
-              variant="ghost"
-              className="h-6 w-6"
+              type="button"
+              size="sm"
               onClick={e => {
                 e.stopPropagation();
                 onCheckIn(appt.id);
               }}
+              className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-green-50 text-green-600 hover:bg-green-100"
             >
-              <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+              <CheckCircle2 className="h-3 w-3" />
+              Chegada
             </Button>
             <Button
-              size="icon"
-              variant="ghost"
-              className="h-6 w-6"
+              type="button"
+              size="sm"
               onClick={e => {
                 e.stopPropagation();
                 onCancel(appt.id);
               }}
+              className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100"
             >
-              <XCircle className="h-3 w-3 text-rose-500" />
+              <XCircle className="h-3 w-3" />
+              Cancelar
             </Button>
           </div>
         )}
