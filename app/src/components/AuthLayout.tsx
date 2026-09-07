@@ -1,12 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useSalon } from "@/providers/useSalon";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -30,7 +23,6 @@ import {
   DollarSign,
   MessageSquare,
   FileCheck,
-  LogOut,
   PanelLeft,
   Building2,
   Settings,
@@ -45,6 +37,8 @@ import {
 import { useLocation, useNavigate } from "react-router";
 import { AuthLayoutSkeleton } from "./AuthLayoutSkeleton";
 import { Button } from "./ui/button";
+import { MobileTopBar } from "./MobileTopBar";
+import { SidebarUserMenu } from "./SidebarUserMenu";
 import { trpc } from "@/providers/trpc";
 import CreateSalonForm from "./CreateSalonForm";
 import { getSegmentLabel, type SalonSegment } from "@contracts/segment-labels";
@@ -146,6 +140,28 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
   }, [sidebarWidth]);
 
+  // Tema também no <html>: portais (sheet mobile, dialogs) ficam fora da
+  // árvore do SidebarProvider e herdariam apenas a cor do :root
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    const themeId = salon
+      ? (salon.theme ?? defaultThemeForSegment(salon.segment).id)
+      : null;
+    const vars = themeId ? getThemeCssVars(themeId) : {};
+    const previous: Record<string, string> = {};
+    for (const [key, value] of Object.entries(vars)) {
+      previous[key] = root.style.getPropertyValue(key);
+      root.style.setProperty(key, value);
+    }
+    return () => {
+      for (const key of Object.keys(vars)) {
+        if (previous[key]) root.style.setProperty(key, previous[key]);
+        else root.style.removeProperty(key);
+      }
+    };
+  }, [salon]);
+
   if (isLoading) {
     return <AuthLayoutSkeleton />;
   }
@@ -189,6 +205,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         } as CSSProperties
       }
     >
+      <MobileSidebarCloser />
       <AuthLayoutContent setSidebarWidth={setSidebarWidth}>
         {children}
       </AuthLayoutContent>
@@ -201,11 +218,23 @@ type AuthLayoutContentProps = {
   setSidebarWidth: (width: number) => void;
 };
 
+/** Fecha o sheet da sidebar mobile sempre que a rota muda (desktop não usa openMobile) */
+function MobileSidebarCloser() {
+  const { pathname } = useLocation();
+  const { setOpenMobile } = useSidebar();
+
+  useEffect(() => {
+    setOpenMobile(false);
+  }, [pathname, setOpenMobile]);
+
+  return null;
+}
+
 function AuthLayoutContent({
   children,
   setSidebarWidth,
 }: AuthLayoutContentProps) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { salon, setSalon } = useSalon();
   const location = useLocation();
   const navigate = useNavigate();
@@ -272,7 +301,7 @@ function AuthLayoutContent({
     <>
       <div className="relative" ref={sidebarRef}>
         <Sidebar collapsible="icon" className="border-r-0">
-          <SidebarHeader className="h-16 justify-center">
+          <SidebarHeader className="h-16 shrink-0 justify-center">
             <div className="flex items-center gap-3 px-2 transition-all w-full">
               <button
                 onClick={toggleSidebar}
@@ -293,7 +322,7 @@ function AuthLayoutContent({
           </SidebarHeader>
 
           {!isCollapsed && salon && (
-            <div className="px-4 pb-2">
+            <div className="px-4 pb-2 shrink-0">
               <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
                 <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div className="min-w-0 flex-1">
@@ -306,7 +335,7 @@ function AuthLayoutContent({
             </div>
           )}
 
-          <SidebarContent className="gap-0">
+          <SidebarContent className="gap-0 overflow-y-auto">
             <SidebarMenu className="px-2 py-1">
               {getMenuItems(salon?.segment ?? "beauty_salon").map(item => {
                 const isActive = location.pathname === item.path;
@@ -329,35 +358,8 @@ function AuthLayoutContent({
             </SidebarMenu>
           </SidebarContent>
 
-          <SidebarFooter className="p-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-3 rounded-lg px-1 py-1 hover:bg-accent/50 transition-colors w-full text-left group-data-[collapsible=icon]:justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                  <Avatar className="h-9 w-9 border shrink-0">
-                    <AvatarFallback className="text-xs font-medium">
-                      {user?.name?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
-                    <p className="text-sm font-medium truncate leading-none">
-                      {user?.name || "-"}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate mt-1.5">
-                      {user?.email || "-"}
-                    </p>
-                  </div>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem
-                  onClick={logout}
-                  className="cursor-pointer text-destructive focus:text-destructive"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sair</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <SidebarFooter className="p-3 shrink-0">
+            <SidebarUserMenu />
           </SidebarFooter>
         </Sidebar>
         <div
@@ -372,24 +374,7 @@ function AuthLayoutContent({
 
       <SidebarInset>
         {isMobile && (
-          <div className="flex border-b h-14 items-center justify-between bg-background/95 px-2 backdrop-blur supports-backdrop-filter:backdrop-blur sticky top-0 z-40">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={toggleSidebar}
-                className="h-9 w-9 flex items-center justify-center hover:bg-accent rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0"
-                aria-label="Abrir menu"
-              >
-                <PanelLeft className="h-5 w-5 text-muted-foreground" />
-              </button>
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col gap-1">
-                  <span className="tracking-tight text-foreground">
-                    {activeMenuItem?.label ?? "Menu"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <MobileTopBar title={activeMenuItem?.label ?? "Menu"} />
         )}
         <main className="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full">
           {children}

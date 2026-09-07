@@ -112,7 +112,7 @@ export const themes: Record<string, SegmentTheme> = {
   "grafite-prata": {
     id: "grafite-prata",
     segment: "barbershop",
-    name: "Industrial",
+    name: "Moderno",
     palette: buildPalette(
       "#374151",
       "#9CA3AF",

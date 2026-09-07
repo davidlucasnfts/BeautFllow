@@ -5,18 +5,17 @@ import { toast } from "sonner";
 export function PublicLinkBanner({ slug }: { slug: string }) {
   const url = `${window.location.origin}/agendar/${slug}`;
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-lg border border-blue-200 bg-blue-50">
-      <Link2 className="h-5 w-5 shrink-0 text-blue-600" />
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-lg border border-primary/20 bg-primary/10">
+      <Link2 className="h-5 w-5 shrink-0 text-primary" />
       <div className="flex-1">
-        <p className="text-sm font-medium text-blue-900">
+        <p className="text-sm font-semibold text-foreground">
           Seu link de agendamento online
         </p>
-        <p className="text-xs text-blue-700 break-all">{url}</p>
+        <p className="text-xs text-muted-foreground break-all">{url}</p>
       </div>
       <Button
         size="sm"
         variant="outline"
-        className="bg-white"
         onClick={() => {
           navigator.clipboard.writeText(url);
           toast.success("Link copiado! Envie para seus clientes.");
