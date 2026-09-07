@@ -17,6 +17,7 @@ import DayView from "@/components/calendar/DayView";
 import AppointmentFilters from "@/components/appointments/AppointmentFilters";
 import AppointmentDialog from "@/components/appointments/AppointmentDialog";
 import FilaDoDia from "@/components/appointments/FilaDoDia";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import { useAppointmentForm } from "@/components/appointments/useAppointmentForm";
 import {
   generateTimeSlots,
@@ -36,6 +37,10 @@ export default function Appointments() {
   const [filaDate, setFilaDate] = useState(new Date());
   const [weekOffset, setWeekOffset] = useState(0);
   const [open, setOpen] = useState(false);
+  const [cancelTarget, setCancelTarget] = useState<{
+    id: number;
+    label: string;
+  } | null>(null);
   const [filterProfessional, setFilterProfessional] = useState<string>("all");
   const [filterService, setFilterService] = useState<string>("all");
 
@@ -146,8 +151,14 @@ export default function Appointments() {
   }
 
   function handleCancel(id: number) {
-    if (!salon) return;
-    updateMutation.mutate({ id, salonId: salon.id, status: "cancelled" });
+    const appt = appointments?.find(a => a.id === id);
+    const client = clients?.find(c => c.id === appt?.clientId);
+    setCancelTarget({
+      id,
+      label: client?.name
+        ? `${client.name} às ${appt?.startTime?.slice(0, 5) ?? ""}`
+        : `agendamento #${id}`,
+    });
   }
 
   function calculateEndTime(start: string, durationMinutes: number): string {    const [h, m] = start.split(":").map(Number);
@@ -308,6 +319,23 @@ export default function Appointments() {
           onReschedule={handleReschedule}
         />
       )}
+
+      <ConfirmDeleteDialog
+        open={!!cancelTarget}
+        onOpenChange={open => !open && setCancelTarget(null)}
+        itemType="agendamento"
+        itemName={cancelTarget?.label ?? ""}
+        onConfirm={() => {
+          if (salon && cancelTarget) {
+            updateMutation.mutate({
+              id: cancelTarget.id,
+              salonId: salon.id,
+              status: "cancelled",
+            });
+            setCancelTarget(null);
+          }
+        }}
+      />
     </div>
   );
 }
