@@ -335,17 +335,18 @@ export default function Clients() {
                       <MessageCircle className="w-3 h-3" />
                       WhatsApp
                     </a>
-                    <button
+                    <Button
                       type="button"
+                      size="sm"
                       onClick={e => {
                         e.stopPropagation();
                         handleEdit(client);
                       }}
-                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-blue-600 text-white hover:bg-blue-700"
+                      className="h-auto gap-1.5 px-2 py-1 text-[11px] shadow-sm"
                     >
                       <Edit3 className="w-3 h-3" />
                       Editar
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </CardHeader>

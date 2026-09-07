@@ -150,7 +150,6 @@ export default function Settings() {
             <Button
               onClick={handleSave}
               disabled={updateMutation.isPending || !form}
-              className="bg-blue-600 hover:bg-blue-700"
             >
               {updateMutation.isPending ? "Salvando..." : "Salvar"}
             </Button>
@@ -217,7 +216,6 @@ export default function Settings() {
             <Button
               onClick={handleSave}
               disabled={updateMutation.isPending || !form || !themeId}
-              className="bg-blue-600 hover:bg-blue-700"
             >
               {updateMutation.isPending ? "Salvando..." : "Salvar"}
             </Button>

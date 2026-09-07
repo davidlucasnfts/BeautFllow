@@ -64,7 +64,7 @@ export const themes: Record<string, SegmentTheme> = {
   "rosa-classico": {
     id: "rosa-classico",
     segment: "beauty_salon",
-    name: "Rosa Clássico",
+    name: "Doce",
     palette: buildPalette(
       "#E8A0BF",
       "#D4AF37",
@@ -76,7 +76,7 @@ export const themes: Record<string, SegmentTheme> = {
   "rosa-choque": {
     id: "rosa-choque",
     segment: "beauty_salon",
-    name: "Rosa Choque",
+    name: "Vibrante",
     palette: buildPalette(
       "#EC4899",
       "#D4AF37",
@@ -88,7 +88,7 @@ export const themes: Record<string, SegmentTheme> = {
   "rose-gold": {
     id: "rose-gold",
     segment: "beauty_salon",
-    name: "Rose Gold",
+    name: "Elegante",
     palette: buildPalette(
       "#B76E79",
       "#D4AF37",
@@ -100,7 +100,7 @@ export const themes: Record<string, SegmentTheme> = {
   "preto-dourado": {
     id: "preto-dourado",
     segment: "barbershop",
-    name: "Preto + Dourado",
+    name: "Clássico",
     palette: buildPalette(
       "#1F1F1F",
       "#C9A227",
@@ -112,7 +112,7 @@ export const themes: Record<string, SegmentTheme> = {
   "grafite-prata": {
     id: "grafite-prata",
     segment: "barbershop",
-    name: "Grafite + Prata",
+    name: "Industrial",
     palette: buildPalette(
       "#374151",
       "#9CA3AF",
@@ -124,7 +124,7 @@ export const themes: Record<string, SegmentTheme> = {
   "preto-fosco-dourado": {
     id: "preto-fosco-dourado",
     segment: "barbershop",
-    name: "Preto Fosco + Dourado Forte",
+    name: "Premium",
     palette: buildPalette(
       "#0A0A0A",
       "#D4AF37",
@@ -136,7 +136,7 @@ export const themes: Record<string, SegmentTheme> = {
   "lilas-suave": {
     id: "lilas-suave",
     segment: "aesthetic_clinic",
-    name: "Lilás Suave",
+    name: "Sereno",
     palette: buildPalette(
       "#A78BFA",
       "#D4AF37",
@@ -148,7 +148,7 @@ export const themes: Record<string, SegmentTheme> = {
   "lavanda-profunda": {
     id: "lavanda-profunda",
     segment: "aesthetic_clinic",
-    name: "Lavanda Profunda",
+    name: "Sofisticado",
     palette: buildPalette(
       "#7C3AED",
       "#D4AF37",
@@ -160,7 +160,7 @@ export const themes: Record<string, SegmentTheme> = {
   "lilas-luxo": {
     id: "lilas-luxo",
     segment: "aesthetic_clinic",
-    name: "Lilás Luxo",
+    name: "Luxo",
     palette: buildPalette(
       "#8B5CF6",
       "#D4AF37",

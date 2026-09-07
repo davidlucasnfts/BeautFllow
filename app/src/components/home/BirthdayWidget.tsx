@@ -1,12 +1,13 @@
-import { Cake } from "lucide-react";
+import { useState } from "react";
+import { addMonths } from "date-fns";
+import { Cake, ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
-/** Widget de aniversariantes do mês (Fase 1) */
+/** Widget de aniversariantes com navegação livre entre meses */
 export function BirthdayWidget() {
   const { salon } = useSalon();
   const { data: clients, isLoading } = trpc.customer.list.useQuery(
@@ -14,24 +15,56 @@ export function BirthdayWidget() {
     { enabled: !!salon }
   );
 
-  const currentMonth = new Date().getMonth() + 1;
+  const [monthOffset, setMonthOffset] = useState(0);
+  const selectedMonth = addMonths(new Date(), monthOffset);
+  const monthLabel = selectedMonth.toLocaleDateString("pt-BR", {
+    month: "long",
+    year: "numeric",
+  });
 
   const birthdays = (clients ?? [])
     .filter(
       (c): c is typeof c & { birthDate: string } =>
-        !!c.birthDate && Number(c.birthDate.slice(5, 7)) === currentMonth
+        !!c.birthDate &&
+        Number(c.birthDate.slice(5, 7)) === selectedMonth.getMonth() + 1
     )
-    .sort((a, b) => a.birthDate.slice(8, 10).localeCompare(b.birthDate.slice(8, 10)));
+    .sort((a, b) =>
+      a.birthDate.slice(8, 10).localeCompare(b.birthDate.slice(8, 10))
+    );
 
   return (
     <Card className="h-full">
       <CardHeader>
         <CardTitle className="text-base font-serif flex items-center gap-2">
           <Cake className="h-4 w-4 text-primary" />
-          Aniversariantes do mês
+          Aniversariantes
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-7 w-7 p-0"
+            onClick={() => setMonthOffset(o => o - 1)}
+            aria-label="Mês anterior"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <span className="text-sm font-semibold capitalize text-center">
+            {monthLabel}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-7 w-7 p-0"
+            onClick={() => setMonthOffset(o => o + 1)}
+            aria-label="Próximo mês"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+
         {isLoading ? (
           <Skeleton className="h-24 w-full" />
         ) : birthdays.length > 0 ? (
@@ -52,8 +85,7 @@ export function BirthdayWidget() {
           </ul>
         ) : (
           <p className="text-sm text-muted-foreground text-center py-8">
-            Nenhum aniversariante em{" "}
-            {format(new Date(), "MMMM", { locale: ptBR })}.
+            Nenhum aniversariante em {monthLabel}.
           </p>
         )}
       </CardContent>

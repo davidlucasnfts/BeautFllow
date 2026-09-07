@@ -316,7 +316,7 @@ function AuthLayoutContent({
                       isActive={isActive}
                       onClick={() => navigate(item.path)}
                       tooltip={item.label}
-                      className={`h-10 transition-all font-normal`}
+                      className={`h-10 transition-all font-normal data-[active=true]:bg-primary/10 data-[active=true]:text-primary`}
                     >
                       <item.icon
                         className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
