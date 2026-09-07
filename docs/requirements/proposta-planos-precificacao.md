@@ -148,6 +148,7 @@ Base: Supabase Pro (R$ ~135/mês) atende ~150 salões (ver estratégia de infra)
 | 5 | Limite do Grátis: agendamentos ou clientes? | Manter ambos (100 agend./200 clientes) | ⏳ Pendente |
 | 6 | Quando implementar cobrança? | Após 10 salões ativos usando de graça | ⏳ Pendente |
 | 7 | Gateway de pagamento? | Mercado Pago ou Stripe (verificar taxas no Brasil) | ⏳ Pendente |
+| 8 | Escolha de tema como vantagem de plano pago? | Sim — Grátis fica no tema padrão do segmento; Pro+ escolhe entre os 3 temas do segmento (mecânica já pronta em `segment-palettes.ts` + `salons.settings`; só falta o bloqueio por plano quando existir cobrança) | ⏳ Pendente |
 
 ---
 

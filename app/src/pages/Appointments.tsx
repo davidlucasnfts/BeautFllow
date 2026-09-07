@@ -1,13 +1,22 @@
 import { useState, useMemo } from "react";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { format, addDays, startOfWeek, endOfWeek } from "date-fns";
+import {
+  format,
+  addDays,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+} from "date-fns";
 import WeekView from "@/components/calendar/WeekView";
 import DayView from "@/components/calendar/DayView";
 import AppointmentFilters from "@/components/appointments/AppointmentFilters";
 import AppointmentDialog from "@/components/appointments/AppointmentDialog";
+import FilaDoDia from "@/components/appointments/FilaDoDia";
 import { useAppointmentForm } from "@/components/appointments/useAppointmentForm";
 import {
   generateTimeSlots,
@@ -16,12 +25,15 @@ import {
 import type {
   ViewMode,
   CalendarAppointment,
+  CalendarService,
 } from "@/components/calendar/types";
 
 export default function Appointments() {
   const { salon } = useSalon();
+  const isMobile = useIsMobile();
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [filaDate, setFilaDate] = useState(new Date());
   const [weekOffset, setWeekOffset] = useState(0);
   const [open, setOpen] = useState(false);
   const [filterProfessional, setFilterProfessional] = useState<string>("all");
@@ -38,17 +50,28 @@ export default function Appointments() {
 
   const utils = trpc.useUtils();
 
+  // Mobile traz o mês inteiro (a fila troca de dia com 1 toque);
+  // desktop mantém o intervalo da visão escolhida (semana/dia)
+  const queryRange = isMobile
+    ? {
+        from: format(startOfMonth(filaDate), "yyyy-MM-dd"),
+        to: format(endOfMonth(filaDate), "yyyy-MM-dd"),
+      }
+    : viewMode === "week"
+      ? {
+          from: format(weekStart, "yyyy-MM-dd"),
+          to: format(weekEnd, "yyyy-MM-dd"),
+        }
+      : {
+          from: format(selectedDate, "yyyy-MM-dd"),
+          to: format(selectedDate, "yyyy-MM-dd"),
+        };
+
   const { data: appointments, isLoading } = trpc.appointment.list.useQuery(
     {
       salonId: salon?.id ?? 0,
-      fromDate:
-        viewMode === "week"
-          ? format(weekStart, "yyyy-MM-dd")
-          : format(selectedDate, "yyyy-MM-dd"),
-      toDate:
-        viewMode === "week"
-          ? format(weekEnd, "yyyy-MM-dd")
-          : format(selectedDate, "yyyy-MM-dd"),
+      fromDate: queryRange.from,
+      toDate: queryRange.to,
     },
     { enabled: !!salon }
   );
@@ -117,8 +140,17 @@ export default function Appointments() {
     onError: e => toast.error(e.message),
   });
 
-  function calculateEndTime(start: string, durationMinutes: number): string {
-    const [h, m] = start.split(":").map(Number);
+  function handleCheckIn(id: number) {
+    if (!salon) return;
+    updateMutation.mutate({ id, salonId: salon.id, status: "checked_in" });
+  }
+
+  function handleCancel(id: number) {
+    if (!salon) return;
+    updateMutation.mutate({ id, salonId: salon.id, status: "cancelled" });
+  }
+
+  function calculateEndTime(start: string, durationMinutes: number): string {    const [h, m] = start.split(":").map(Number);
     const totalMinutes = h * 60 + m + durationMinutes;
     const endH = Math.floor(totalMinutes / 60);
     const endM = totalMinutes % 60;
@@ -204,23 +236,30 @@ export default function Appointments() {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <AppointmentFilters
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-            weekOffset={weekOffset}
-            setWeekOffset={setWeekOffset}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            filterProfessional={filterProfessional}
-            setFilterProfessional={setFilterProfessional}
-            filterService={filterService}
-            setFilterService={setFilterService}
-            professionals={professionals}
-            services={services}
-          />
+          {!isMobile && (
+            <AppointmentFilters
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+              weekOffset={weekOffset}
+              setWeekOffset={setWeekOffset}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              filterProfessional={filterProfessional}
+              setFilterProfessional={setFilterProfessional}
+              filterService={filterService}
+              setFilterService={setFilterService}
+              professionals={professionals}
+              services={services}
+            />
+          )}
           <AppointmentDialog
             open={open}
-            onOpenChange={setOpen}
+            onOpenChange={v => {
+              // na fila, o novo agendamento já nasce no dia selecionado
+              if (v && isMobile)
+                updateField("appointmentDate", format(filaDate, "yyyy-MM-dd"));
+              setOpen(v);
+            }}
             form={form}
             onFieldChange={updateField}
             onCreate={handleCreate}
@@ -235,6 +274,16 @@ export default function Appointments() {
 
       {isLoading ? (
         <Skeleton className="h-96 w-full bg-muted" />
+      ) : isMobile ? (
+        <FilaDoDia
+          selectedDay={filaDate}
+          onSelectDay={setFilaDate}
+          appointments={(appointments ?? []) as CalendarAppointment[]}
+          services={(services ?? []) as CalendarService[]}
+          clients={clients ?? []}
+          onCheckIn={handleCheckIn}
+          onCancel={handleCancel}
+        />
       ) : viewMode === "week" ? (
         <WeekView
           weekDays={weekDays}
@@ -244,22 +293,8 @@ export default function Appointments() {
           }
           clients={clients ?? []}
           services={services ?? []}
-          onCheckIn={id => {
-            if (!salon) return;
-            updateMutation.mutate({
-              id,
-              salonId: salon.id,
-              status: "checked_in",
-            });
-          }}
-          onCancel={id => {
-            if (!salon) return;
-            updateMutation.mutate({
-              id,
-              salonId: salon.id,
-              status: "cancelled",
-            });
-          }}
+          onCheckIn={handleCheckIn}
+          onCancel={handleCancel}
         />
       ) : (
         <DayView
@@ -268,22 +303,8 @@ export default function Appointments() {
           clients={clients ?? []}
           services={services ?? []}
           professionals={professionals ?? []}
-          onCheckIn={id => {
-            if (!salon) return;
-            updateMutation.mutate({
-              id,
-              salonId: salon.id,
-              status: "checked_in",
-            });
-          }}
-          onCancel={id => {
-            if (!salon) return;
-            updateMutation.mutate({
-              id,
-              salonId: salon.id,
-              status: "cancelled",
-            });
-          }}
+          onCheckIn={handleCheckIn}
+          onCancel={handleCancel}
           onReschedule={handleReschedule}
         />
       )}
