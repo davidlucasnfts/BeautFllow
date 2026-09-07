@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StudioFlow — Fila do Dia: Botões de Ação (3 opções)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+    padding: 32px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  .sub { color: #64748b; font-size: 14px; margin-bottom: 28px; max-width: 720px; }
+  h2 {
+    font-size: 18px;
+    margin: 36px 0 4px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .opt-desc { color: #64748b; font-size: 13px; margin-bottom: 18px; max-width: 720px; }
+  .opt-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #64748b;
+    margin-bottom: 6px;
+  }
+  .state-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #8B5CF6;
+    margin: 22px 0 8px;
+  }
+  .state-note { font-size: 12px; color: #64748b; margin: -4px 0 8px; }
+
+  /* ===== frame de celular ===== */
+  .phone-wrap { display: flex; justify-content: center; }
+  .phone {
+    width: 360px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(15,23,42,.06);
+  }
+  .phone-head {
+    background: #8B5CF6;
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .phone-head span { font-weight: 400; font-size: 11px; opacity: .85; }
+
+  /* ===== linha da fila ===== */
+  .rows { display: flex; flex-direction: column; }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+  }
+  .row.expanded { background: #FAFAFF; border-bottom: none; }
+  .hora {
+    width: 48px;
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #8B5CF6;
+  }
+  .hora .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+  }
+  .dot.blue { background: #2563EB; }
+  .dot.amber { background: #F59E0B; }
+  .info { flex: 1; min-width: 0; }
+  .info .nome { font-size: 14px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .info .servico { font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .badge.blue { background: #DBEAFE; color: #1D4ED8; }
+  .badge.amber { background: #FEF3C7; color: #B45309; }
+
+  .col-dir {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  /* ===== botões sólidos ===== */
+  .abtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: none;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    color: #fff;
+  }
+  .abtn svg { width: 11px; height: 11px; }
+  .abtn.green  { background: #16A34A; }
+  .abtn.green:hover  { background: #15803D; }
+  .abtn.red    { background: #DC2626; }
+  .abtn.red:hover    { background: #B91C1C; }
+  .abtn.blue   { background: #2563EB; }
+  .abtn.blue:hover   { background: #1D4ED8; }
+  .abtn.big { font-size: 11px; padding: 9px 6px; border-radius: 8px; flex: 1; }
+  .abtn.big svg { width: 13px; height: 13px; }
+  .abtn.block { width: 100%; justify-content: flex-start; font-size: 11px; padding: 8px 10px; }
+
+  /* ===== Opção A: barra full-width ===== */
+  .action-bar {
+    display: flex;
+    gap: 6px;
+    padding: 10px 12px 12px;
+    background: #FAFAFF;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  /* ===== Opção B: coluna fixa de ações ===== */
+  .col-acoes { width: 104px; flex-shrink: 0; display: flex; flex-direction: column; gap: 4px; }
+
+  /* ===== recomendação ===== */
+  .reco {
+    margin-top: 36px;
+    padding: 18px 20px;
+    background: #fff;
+    border: 2px solid #8B5CF6;
+    border-radius: 12px;
+  }
+  .reco h3 { font-size: 15px; margin-bottom: 6px; color: #6D28D9; }
+  .reco p { font-size: 14px; color: #334155; margin-bottom: 6px; }
+  .reco .resposta { font-weight: 700; color: #1e293b; }
+  .foot { margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 13px; }
+</style>
+</head>
+<body>
+  <h1>StudioFlow — Fila do Dia: botões de ação</h1>
+  <p class="sub">Na agenda mobile (Fila do dia), cada atendimento é uma linha: hora, cliente + serviço e, à direita, badge de status + botão WhatsApp. Tocar na linha expande as ações (Confirmar/Chegada/Concluir/Cancelar). O design atual — pilha de botões desalinhada à direita — foi considerado poluído e desperdiçador de espaço. Três propostas abaixo, todas com botões sólidos, texto+ícone e tamanho compacto. Dados simulados: 09:00 debora/Escova e 13:30 marcos/Corte, status Agendado e Chegou.</p>
+
+  <!-- ícones (lucide, inline) -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+      <symbol id="i-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.8 10A10 10 0 1 1 17 3.3"/><path d="m9 11 3 3L22 4"/></symbol>
+      <symbol id="i-check-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></symbol>
+      <symbol id="i-x-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></symbol>
+      <symbol id="i-msg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ===================== OPÇÃO A ===================== -->
+  <h2><span class="opt-tag">Opção A</span><br>Ações em linha própria (barra full-width)</h2>
+  <p class="opt-desc">A linha fechada fica limpa: hora, nome, serviço e só o badge + WhatsApp à direita. Ao expandir, uma <strong>segunda linha ocupa a largura toda</strong> por baixo, com os botões divididos horizontalmente — área de toque generosa e bem aproveitada (~360px úteis).</p>
+
+  <p class="state-label">1. Linha normal (fechada)</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="phone-head">Fila do dia <span>qui, 12/09</span></div>
+      <div class="rows">
+        <div class="row">
+          <div class="hora">09:00</div>
+          <div class="info">
+            <div class="nome">debora</div>
+            <div class="servico">Escova</div>
+          </div>
+          <div class="col-dir">
+            <span class="badge blue">Agendado</span>
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="state-label">2. Linha expandida — barra de ações full-width</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="phone-head">Fila do dia <span>qui, 12/09</span></div>
+      <div class="rows">
+        <div class="row expanded">
+          <div class="hora">09:00</div>
+          <div class="info">
+            <div class="nome">debora</div>
+            <div class="servico">Escova</div>
+          </div>
+          <div class="col-dir">
+            <span class="badge blue">Agendado</span>
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+          </div>
+        </div>
+        <div class="action-bar">
+          <a class="abtn big blue"><svg><use href="#i-check"/></svg>Confirmar</a>
+          <a class="abtn big green"><svg><use href="#i-check-circle"/></svg>Chegada</a>
+          <a class="abtn big green"><svg><use href="#i-check-check"/></svg>Concluir</a>
+          <a class="abtn big red"><svg><use href="#i-x-circle"/></svg>Cancelar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="state-label">3. Grupo de linhas (uma expandida, em contexto)</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="phone-head">Fila do dia <span>qui, 12/09</span></div>
+      <div class="rows">
+        <div class="row">
+          <div class="hora">09:00</div>
+          <div class="info">
+            <div class="nome">debora</div>
+            <div class="servico">Escova</div>
+          </div>
+          <div class="col-dir">
+            <span class="badge blue">Agendado</span>
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+          </div>
+        </div>
+        <div class="row expanded">
+          <div class="hora">11:00</div>
+          <div class="info">
+            <div class="nome">ana</div>
+            <div class="servico">Manicure</div>
+          </div>
+          <div class="col-dir">
+            <span class="badge amber">Chegou</span>
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+          </div>
+        </div>
+        <div class="action-bar">
+          <a class="abtn big green"><svg><use href="#i-check-check"/></svg>Concluir</a>
+          <a class="abtn big red"><svg><use href="#i-x-circle"/></svg>Cancelar</a>
+        </div>
+        <div class="row">
+          <div class="hora">13:30</div>
+          <div class="info">
+            <div class="nome">marcos</div>
+            <div class="servico">Corte</div>
+          </div>
+          <div class="col-dir">
+            <span class="badge blue">Agendado</span>
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== OPÇÃO B ===================== -->
+  <h2><span class="opt-tag">Opção B</span><br>Coluna direita enxuta + ações substituem o WhatsApp</h2>
+  <p class="opt-desc">A direita da linha tem <strong>sempre a mesma estrutura</strong>: badge pequeno em cima + pill WhatsApp embaixo. Ao expandir, o WhatsApp é <strong>substituído</strong> por uma coluna de ações de largura fixa (~104px), botões sólidos empilhados (Chegada, Concluir, Cancelar). A linha não cresce horizontalmente — só o necessário.</p>
+
+  <p class="state-label">1. Linha normal (fechada)</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="phone-head">Fila do dia <span>qui, 12/09</span></div>
+      <div class="rows">
+        <div class="row">
+          <div class="hora">09:00</div>
+          <div class="info">
+            <div class="nome">debora</div>
+            <div class="servico">Escova</div>
+          </div>
+          <div class="col-dir">
+            <span class="badge blue">Agendado</span>
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="state-label">2. Linha expandida — WhatsApp vira coluna de ações</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="phone-head">Fila do dia <span>qui, 12/09</span></div>
+      <div class="rows">
+        <div class="row expanded">
+          <div class="hora">09:00</div>
+          <div class="info">
+            <div class="nome">debora</div>
+            <div class="servico">Escova</div>
+          </div>
+          <div class="col-acoes">
+            <span class="badge blue" style="align-self:flex-end">Agendado</span>
+            <a class="abtn block blue"><svg><use href="#i-check"/></svg>Confirmar</a>
+            <a class="abtn block green"><svg><use href="#i-check-circle"/></svg>Chegada</a>
+            <a class="abtn block green"><svg><use href="#i-check-check"/></svg>Concluir</a>
+            <a class="abtn block red"><svg><use href="#i-x-circle"/></svg>Cancelar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="state-label">3. Grupo de linhas (uma expandida, em contexto)</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="phone-head">Fila do dia <span>qui, 12/09</span></div>
+      <div class="rows">
+        <div class="row">
+          <div class="hora">09:00</div>
+          <div class="info">
+            <div class="nome">debora</div>
+            <div class="servico">Escova</div>
+          </div>
+          <div class="col-dir">
+            <span class="badge blue">Agendado</span>
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+          </div>
+        </div>
+        <div class="row expanded">
+          <div class="hora">11:00</div>
+          <div class="info">
+            <div class="nome">ana</div>
+            <div class="servico">Manicure</div>
+          </div>
+          <div class="col-acoes">
+            <span class="badge amber" style="align-self:flex-end">Chegou</span>
+            <a class="abtn block green"><svg><use href="#i-check-check"/></svg>Concluir</a>
+            <a class="abtn block red"><svg><use href="#i-x-circle"/></svg>Cancelar</a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="hora">13:30</div>
+          <div class="info">
+            <div class="nome">marcos</div>
+            <div class="servico">Corte</div>
+          </div>
+          <div class="col-dir">
+            <span class="badge blue">Agendado</span>
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== OPÇÃO C ===================== -->
+  <h2><span class="opt-tag">Opção C</span><br>Status como bolinha colorida + ações inline</h2>
+  <p class="opt-desc">Linha minimal: <strong>bolinha colorida</strong> ao lado da hora indica o status (azul = Agendado, âmbar = Chegou) — sem badge de texto. Expandido, as ações aparecem <strong>na mesma linha</strong>, ao lado do WhatsApp, com flex-wrap.</p>
+
+  <p class="state-label">1. Linha normal (fechada) — sem badge, só bolinha</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="phone-head">Fila do dia <span>qui, 12/09</span></div>
+      <div class="rows">
+        <div class="row">
+          <div class="hora"><span class="dot blue"></span>09:00</div>
+          <div class="info">
+            <div class="nome">debora</div>
+            <div class="servico">Escova</div>
+          </div>
+          <div class="col-dir" style="flex-direction:row">
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="state-label">2. Linha expandida — ações inline ao lado do WhatsApp</p>
+  <p class="state-note">Com status "Chegou" (Concluir + Cancelar) cabe numa linha só. Com 3+ ações (ex.: Agendado online), o flex-wrap joga o restante para uma segunda linha alinhada à direita — fica apertado.</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="phone-head">Fila do dia <span>qui, 12/09</span></div>
+      <div class="rows">
+        <div class="row expanded" style="flex-wrap:wrap">
+          <div class="hora"><span class="dot amber"></span>11:00</div>
+          <div class="info">
+            <div class="nome">ana</div>
+            <div class="servico">Manicure</div>
+          </div>
+          <div class="col-dir" style="flex-direction:row">
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+            <a class="abtn green"><svg><use href="#i-check-check"/></svg>Concluir</a>
+            <a class="abtn red"><svg><use href="#i-x-circle"/></svg>Cancelar</a>
+          </div>
+        </div>
+        <div class="row" style="cursor:default; background:#fff7ed; border-bottom:none">
+          <div style="font-size:11px; color:#9a3412; padding:2px 4px">↑ Agendado online teria Confirmar + Chegada + Concluir + Cancelar + WhatsApp — não cabe; quebraria em 2 linhas.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="state-label">3. Grupo de linhas — o conjunto fica bem enxuto</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="phone-head">Fila do dia <span>qui, 12/09</span></div>
+      <div class="rows">
+        <div class="row">
+          <div class="hora"><span class="dot blue"></span>09:00</div>
+          <div class="info">
+            <div class="nome">debora</div>
+            <div class="servico">Escova</div>
+          </div>
+          <div class="col-dir" style="flex-direction:row">
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="hora"><span class="dot amber"></span>11:00</div>
+          <div class="info">
+            <div class="nome">ana</div>
+            <div class="servico">Manicure</div>
+          </div>
+          <div class="col-dir" style="flex-direction:row">
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="hora"><span class="dot blue"></span>13:30</div>
+          <div class="info">
+            <div class="nome">marcos</div>
+            <div class="servico">Corte</div>
+          </div>
+          <div class="col-dir" style="flex-direction:row">
+            <a class="abtn green"><svg><use href="#i-msg"/></svg>WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== RECOMENDAÇÃO ===================== -->
+  <div class="reco">
+    <h3>Minha recomendação: Opção A</h3>
+    <p>A linha fechada fica tão limpa quanto a C, mas a barra expandida usa os ~360px inteiros — botões grandes, fáceis de acertar com o polegar, e escala bem de 2 a 4 ações sem apertar. A B tem alvos de toque estreitos (coluna de 104px) e a C quebra em duas linhas quando há 3+ ações, o que reintroduz a poluição.</p>
+    <p class="resposta">Responda com "Opção A", "Opção B" ou "Opção C" — ou peça ajustes em qualquer uma (ex.: "A, mas com a barra só vermelho/verde").</p>
+  </div>
+
+  <p class="foot">Simulação estática (HTML/CSS puro, sem JS). Cores: primária lilás #8B5CF6 · ações sólidas verde #16A34A / vermelho #DC2626 / azul #2563EB · status Agendado (azul) e Chegou (âmbar) conforme o design system atual.</p>
+</body>
+</html>
