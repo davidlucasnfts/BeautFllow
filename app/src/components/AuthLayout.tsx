@@ -301,7 +301,17 @@ function AuthLayoutContent({
     <>
       <div className="relative" ref={sidebarRef}>
         <Sidebar collapsible="icon" className="border-r-0">
-          <SidebarHeader className="h-16 shrink-0 justify-center">
+          {/* Mobile: o Sheet usa h-full (layout viewport), que fica maior que a
+              tela visível quando a barra de URL some — o wrapper h-dvh limita a
+              altura ao viewport real. Desktop: display contents não altera nada. */}
+          <div
+            className={
+              isMobile
+                ? "flex h-dvh flex-col overflow-hidden"
+                : "contents"
+            }
+          >
+            <SidebarHeader className="h-16 shrink-0 justify-center">
             <div className="flex items-center gap-3 px-2 transition-all w-full">
               <button
                 onClick={toggleSidebar}
@@ -361,6 +371,7 @@ function AuthLayoutContent({
           <SidebarFooter className="p-3 shrink-0">
             <SidebarUserMenu />
           </SidebarFooter>
+          </div>
         </Sidebar>
         <div
           className={`absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-primary/20 transition-colors ${isCollapsed ? "hidden" : ""}`}

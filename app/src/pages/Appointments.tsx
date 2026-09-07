@@ -234,7 +234,7 @@ export default function Appointments() {
       </div>
 
       {isLoading ? (
-        <Skeleton className="h-96 w-full" />
+        <Skeleton className="h-96 w-full bg-muted" />
       ) : viewMode === "week" ? (
         <WeekView
           weekDays={weekDays}

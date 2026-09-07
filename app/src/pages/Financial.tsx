@@ -114,23 +114,23 @@ export default function Financial() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Financeiro</h1>
           <p className="text-muted-foreground">
             Seus ganhos, comissões e gastos
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <Input
             type="month"
             value={month}
             onChange={e => setMonth(e.target.value)}
-            className="w-40"
+            className="flex-1 sm:flex-none sm:w-40"
           />
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="shrink-0">
                 <Plus className="mr-2 h-4 w-4" /> Novo registro
               </Button>
             </DialogTrigger>
@@ -351,7 +351,7 @@ export default function Financial() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <Skeleton className="h-40 w-full" />
+            <Skeleton className="h-40 w-full bg-muted" />
           ) : records && records.length > 0 ? (
             <Table>
               <TableHeader>

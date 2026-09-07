@@ -118,7 +118,7 @@ export default function Communications() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Mensagens</h1>
           <p className="text-muted-foreground">
@@ -250,7 +250,7 @@ export default function Communications() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-24" />
+            <Skeleton key={i} className="h-24 bg-muted" />
           ))}
         </div>
       ) : comms && comms.length > 0 ? (

@@ -184,7 +184,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-3">
             {isLoading ? (
-              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-24 w-full bg-muted" />
             ) : (
               <>
                 <div className="flex items-center justify-between">
@@ -237,7 +237,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-3">
             {isLoading ? (
-              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-32 w-full bg-muted" />
             ) : metrics?.upcomingAppointments &&
               metrics.upcomingAppointments.length > 0 ? (
               metrics.upcomingAppointments.map(appt => (
@@ -291,7 +291,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-3 max-h-[320px] overflow-y-auto">
             {isLoading ? (
-              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-32 w-full bg-muted" />
             ) : metrics?.recentActivity && metrics.recentActivity.length > 0 ? (
               metrics.recentActivity.map(activity => (
                 <div

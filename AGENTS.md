@@ -12,7 +12,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 
 ## Regras de código
 - **Limite de 400 linhas por arquivo.** Se ultrapassar, redistribuir em componentes/utilitários menores.
-- **Exceção:** componentes do shadcn/ui em `src/components/ui/` — são de biblioteca externa, não mexer.
+- **Exceção:** componentes do shadcn/ui em `src/components/ui/` — são de biblioteca externa, não mexer. Única exceção já aplicada: `ui/skeleton.tsx` usa `bg-muted` (não `bg-accent` — accent é cor da marca do tema, deixaria todo loading colorido)
 
 ---
 

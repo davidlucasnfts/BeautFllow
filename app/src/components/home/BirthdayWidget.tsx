@@ -66,7 +66,7 @@ export function BirthdayWidget() {
         </div>
 
         {isLoading ? (
-          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full bg-muted" />
         ) : birthdays.length > 0 ? (
           <ul className="space-y-2">
             {birthdays.map(client => (
