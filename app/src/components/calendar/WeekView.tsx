@@ -14,6 +14,8 @@ interface WeekViewProps {
   clients: CalendarClient[];
   services: CalendarService[];
   onCheckIn: (id: number) => void;
+  onConclude: (appt: CalendarAppointment) => void;
+  onConfirm: (id: number) => void;
   onCancel: (id: number) => void;
 }
 
@@ -24,6 +26,8 @@ export default function WeekView({
   clients,
   services,
   onCheckIn,
+  onConclude,
+  onConfirm,
   onCancel,
 }: WeekViewProps) {
   return (
@@ -59,6 +63,8 @@ export default function WeekView({
                   client={clients.find(c => c.id === appt.clientId)}
                   service={services.find(s => s.id === appt.serviceId)}
                   onCheckIn={onCheckIn}
+                  onConclude={onConclude}
+                  onConfirm={onConfirm}
                   onCancel={onCancel}
                   variant="week"
                 />

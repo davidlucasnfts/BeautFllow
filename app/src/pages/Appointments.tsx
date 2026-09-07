@@ -17,12 +17,12 @@ import DayView from "@/components/calendar/DayView";
 import AppointmentFilters from "@/components/appointments/AppointmentFilters";
 import AppointmentDialog from "@/components/appointments/AppointmentDialog";
 import FilaDoDia from "@/components/appointments/FilaDoDia";
+import CheckoutDialog, {
+  type CheckoutTarget,
+} from "@/components/appointments/CheckoutDialog";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import { useAppointmentForm } from "@/components/appointments/useAppointmentForm";
-import {
-  generateTimeSlots,
-  filterAvailableSlots,
-} from "@/lib/time-slots";
+import { generateTimeSlots, filterAvailableSlots } from "@/lib/time-slots";
 import type {
   ViewMode,
   CalendarAppointment,
@@ -41,6 +41,9 @@ export default function Appointments() {
     id: number;
     label: string;
   } | null>(null);
+  const [checkoutTarget, setCheckoutTarget] = useState<CheckoutTarget | null>(
+    null
+  );
   const [filterProfessional, setFilterProfessional] = useState<string>("all");
   const [filterService, setFilterService] = useState<string>("all");
 
@@ -113,8 +116,7 @@ export default function Appointments() {
     )
     .filter(
       a =>
-        !form.professionalId ||
-        a.professionalId === Number(form.professionalId)
+        !form.professionalId || a.professionalId === Number(form.professionalId)
     )
     .map(a => ({ start: a.startTime, end: a.endTime as string }));
   const availableSlots = filterAvailableSlots(
@@ -150,6 +152,26 @@ export default function Appointments() {
     updateMutation.mutate({ id, salonId: salon.id, status: "checked_in" });
   }
 
+  function handleConfirm(id: number) {
+    if (!salon) return;
+    updateMutation.mutate({ id, salonId: salon.id, status: "confirmed" });
+  }
+
+  function handleConclude(appt: CalendarAppointment) {
+    const client = clients?.find(c => c.id === appt.clientId);
+    const service = services?.find(s => s.id === appt.serviceId);
+    const professional = professionals?.find(p => p.id === appt.professionalId);
+    setCheckoutTarget({
+      appointment: appt,
+      clientId: appt.clientId,
+      clientName: client?.name ?? "Cliente",
+      serviceName: service?.name ?? "Serviço",
+      professionalId: appt.professionalId,
+      professionalName: professional?.name ?? null,
+      defaultAmount: service?.price ?? "0.00",
+    });
+  }
+
   function handleCancel(id: number) {
     const appt = appointments?.find(a => a.id === id);
     const client = clients?.find(c => c.id === appt?.clientId);
@@ -161,7 +183,8 @@ export default function Appointments() {
     });
   }
 
-  function calculateEndTime(start: string, durationMinutes: number): string {    const [h, m] = start.split(":").map(Number);
+  function calculateEndTime(start: string, durationMinutes: number): string {
+    const [h, m] = start.split(":").map(Number);
     const totalMinutes = h * 60 + m + durationMinutes;
     const endH = Math.floor(totalMinutes / 60);
     const endM = totalMinutes % 60;
@@ -242,9 +265,7 @@ export default function Appointments() {
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Agendamentos</h1>
-          <p className="text-muted-foreground">
-            Sua agenda de atendimentos
-          </p>
+          <p className="text-muted-foreground">Sua agenda de atendimentos</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {!isMobile && (
@@ -292,7 +313,9 @@ export default function Appointments() {
           appointments={(appointments ?? []) as CalendarAppointment[]}
           services={(services ?? []) as CalendarService[]}
           clients={clients ?? []}
+          onConfirm={handleConfirm}
           onCheckIn={handleCheckIn}
+          onConclude={handleConclude}
           onCancel={handleCancel}
         />
       ) : viewMode === "week" ? (
@@ -304,7 +327,9 @@ export default function Appointments() {
           }
           clients={clients ?? []}
           services={services ?? []}
+          onConfirm={handleConfirm}
           onCheckIn={handleCheckIn}
+          onConclude={handleConclude}
           onCancel={handleCancel}
         />
       ) : (
@@ -314,11 +339,18 @@ export default function Appointments() {
           clients={clients ?? []}
           services={services ?? []}
           professionals={professionals ?? []}
+          onConfirm={handleConfirm}
           onCheckIn={handleCheckIn}
+          onConclude={handleConclude}
           onCancel={handleCancel}
           onReschedule={handleReschedule}
         />
       )}
+
+      <CheckoutDialog
+        target={checkoutTarget}
+        onOpenChange={open => !open && setCheckoutTarget(null)}
+      />
 
       <ConfirmDeleteDialog
         open={!!cancelTarget}

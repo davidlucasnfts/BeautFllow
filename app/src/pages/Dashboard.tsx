@@ -20,6 +20,7 @@ import { getSegmentLabel } from "@contracts/segment-labels";
 import { BirthdayWidget } from "@/components/home/BirthdayWidget";
 import { KpiCard } from "@/components/home/KpiCard";
 import { PublicLinkBanner } from "@/components/home/PublicLinkBanner";
+import TodayAppointmentsBoard from "@/components/home/TodayAppointmentsBoard";
 
 export default function Dashboard() {
   const { salon } = useSalon();
@@ -69,12 +70,9 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-serif font-bold tracking-tight">
-          Resumo
-        </h1>
+        <h1 className="text-2xl font-serif font-bold tracking-tight">Resumo</h1>
         <p className="text-muted-foreground">
-          Visão geral do desempenho{" "}
-          {segmentLabel("segmentArticle")}{" "}
+          Visão geral do desempenho {segmentLabel("segmentArticle")}{" "}
           {segmentLabel("segmentName").toLowerCase()} em{" "}
           {format(new Date(), "MMMM yyyy", { locale: ptBR })}
         </p>
@@ -91,10 +89,8 @@ export default function Dashboard() {
             <p className="text-sm font-medium">
               {metrics.pendingConsents} {segmentLabel("client").toLowerCase()}
               {metrics.pendingConsents > 1 ? "s" : ""}{" "}
-              {metrics.pendingConsents > 1
-                ? "não assinaram"
-                : "não assinou"}{" "}
-              a autorização de uso dos dados (LGPD)
+              {metrics.pendingConsents > 1 ? "não assinaram" : "não assinou"} a
+              autorização de uso dos dados (LGPD)
             </p>
           </div>
         </div>
@@ -105,8 +101,9 @@ export default function Dashboard() {
           <AlertCircle className="h-5 w-5 shrink-0" />
           <div className="flex-1">
             <p className="text-sm font-medium">
-              {metrics.noShowRate}% dos clientes faltaram nos últimos dias — o ideal é
-              ficar abaixo de 15%. Considere ativar lembretes automáticos.
+              {metrics.noShowRate}% dos clientes faltaram nos últimos dias — o
+              ideal é ficar abaixo de 15%. Considere ativar lembretes
+              automáticos.
             </p>
           </div>
         </div>
@@ -174,9 +171,12 @@ export default function Dashboard() {
         />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {/* Agendamentos de hoje */}
+        <TodayAppointmentsBoard />
+
         {/* Status dos Agendamentos */}
-        <Card>
+        <Card className="h-full">
           <CardHeader>
             <CardTitle className="text-base font-serif">
               Agendamentos do mês
@@ -229,7 +229,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Próximos Agendamentos */}
-        <Card>
+        <Card className="h-full">
           <CardHeader>
             <CardTitle className="text-base font-serif">
               Próximos atendimentos
@@ -283,7 +283,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Atividades Recentes */}
-        <Card>
+        <Card className="h-full">
           <CardHeader>
             <CardTitle className="text-base font-serif">
               Atividades Recentes
@@ -352,28 +352,28 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 text-sm text-muted-foreground">
-          <div className="flex gap-3">
-            <TrendingUp className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-            <p>
-              Cliente que não volta em 45 dias provavelmente não volta mais.
-              Mande uma mensagem carinhosa convidando ela de volta.
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <DollarSign className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-            <p>
-              Quem fecha pacote de 5 sessões gasta 40% mais com você. Faça um
-              preço melhor para quem compra o pacote fechado.
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <Users className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-            <p>
-              Seus clientes que mais gastam gostam de se sentir especiais. Faça
-              ofertas só para eles, em vez de promoção para todo mundo.
-            </p>
-          </div>
-        </CardContent>
+            <div className="flex gap-3">
+              <TrendingUp className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <p>
+                Cliente que não volta em 45 dias provavelmente não volta mais.
+                Mande uma mensagem carinhosa convidando ela de volta.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <DollarSign className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <p>
+                Quem fecha pacote de 5 sessões gasta 40% mais com você. Faça um
+                preço melhor para quem compra o pacote fechado.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Users className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <p>
+                Seus clientes que mais gastam gostam de se sentir especiais.
+                Faça ofertas só para eles, em vez de promoção para todo mundo.
+              </p>
+            </div>
+          </CardContent>
         </Card>
       </div>
     </div>

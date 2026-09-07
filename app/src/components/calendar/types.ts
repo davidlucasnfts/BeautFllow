@@ -10,6 +10,7 @@ export interface CalendarAppointment {
   endTime: string | null;
   status: string;
   notes: string | null;
+  source: string;
 }
 
 export interface DropPosition {

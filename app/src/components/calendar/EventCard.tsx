@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -7,16 +6,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Scissors, Clock, User, Phone, Mail } from "lucide-react";
 import {
-  Scissors,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  User,
-  Phone,
-  Mail,
-} from "lucide-react";
-import { STATUS_COLORS, STATUS_LABELS } from "./constants";
+  STATUS_COLORS,
+  STATUS_LABELS,
+  hasAppointmentActions,
+} from "./constants";
+import AppointmentActions from "@/components/appointments/AppointmentActions";
 import type {
   CalendarAppointment,
   CalendarClient,
@@ -29,7 +25,9 @@ interface EventCardProps {
   client?: CalendarClient;
   service?: CalendarService;
   professional?: CalendarProfessional;
+  onConfirm: (id: number) => void;
   onCheckIn: (id: number) => void;
+  onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
   onReschedule?: (appointmentId: number, newStartTime: string) => void;
   variant?: "week" | "day";
@@ -40,7 +38,9 @@ export default function EventCard({
   client,
   service,
   professional,
+  onConfirm,
   onCheckIn,
+  onConclude,
   onCancel,
   onReschedule,
   variant = "week",
@@ -153,33 +153,15 @@ export default function EventCard({
         </div>
 
         {/* Ações */}
-        {appt.status === "scheduled" && (
-          <div className="flex flex-col gap-1 shrink-0">
-            <Button
-              type="button"
-              size="sm"
-              onClick={e => {
-                e.stopPropagation();
-                onCheckIn(appt.id);
-              }}
-              className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-green-50 text-green-600 hover:bg-green-100"
-            >
-              <CheckCircle2 className="h-3 w-3" />
-              Chegada
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              onClick={e => {
-                e.stopPropagation();
-                onCancel(appt.id);
-              }}
-              className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-600 hover:bg-red-100"
-            >
-              <XCircle className="h-3 w-3" />
-              Cancelar
-            </Button>
-          </div>
+        {hasAppointmentActions(appt) && (
+          <AppointmentActions
+            appt={appt}
+            onConfirm={onConfirm}
+            onCheckIn={onCheckIn}
+            onConclude={onConclude}
+            onCancel={onCancel}
+            className="shrink-0"
+          />
         )}
       </div>
     </div>

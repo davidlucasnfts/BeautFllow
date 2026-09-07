@@ -7,10 +7,14 @@ import {
   isSameDay,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { MessageCircle, CheckCircle2, XCircle, CalendarDays } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MessageCircle, CalendarDays } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { STATUS_COLORS, STATUS_LABELS } from "@/components/calendar/constants";
+import {
+  STATUS_COLORS,
+  STATUS_LABELS,
+  hasAppointmentActions,
+} from "@/components/calendar/constants";
+import AppointmentActions from "@/components/appointments/AppointmentActions";
 import type {
   CalendarAppointment,
   CalendarService,
@@ -25,7 +29,9 @@ interface FilaDoDiaProps {
   appointments: CalendarAppointment[];
   services: CalendarService[];
   clients: FilaClient[];
+  onConfirm: (id: number) => void;
   onCheckIn: (id: number) => void;
+  onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
 }
 
@@ -36,7 +42,9 @@ export default function FilaDoDia({
   appointments,
   services,
   clients,
+  onConfirm,
   onCheckIn,
+  onConclude,
   onCancel,
 }: FilaDoDiaProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -167,32 +175,15 @@ export default function FilaDoDia({
                 </div>
 
                 {/* Ações do compromisso (toque na linha expande) */}
-                {expanded && appt.status === "scheduled" && (
-                  <div className="flex gap-2 px-3 pb-3 pl-[68px]">
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={e => {
-                        e.stopPropagation();
-                        onCheckIn(appt.id);
-                      }}
-                      className="h-auto gap-1 px-2 py-1 text-[11px] font-medium bg-green-50 text-green-600 hover:bg-green-100"
-                    >
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      Chegada
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={e => {
-                        e.stopPropagation();
-                        onCancel(appt.id);
-                      }}
-                      className="h-auto gap-1 px-2 py-1 text-[11px] font-medium bg-red-50 text-red-600 hover:bg-red-100"
-                    >
-                      <XCircle className="h-3.5 w-3.5" />
-                      Cancelar
-                    </Button>
+                {expanded && hasAppointmentActions(appt) && (
+                  <div className="flex justify-end px-3 pb-3">
+                    <AppointmentActions
+                      appt={appt}
+                      onConfirm={onConfirm}
+                      onCheckIn={onCheckIn}
+                      onConclude={onConclude}
+                      onCancel={onCancel}
+                    />
                   </div>
                 )}
               </div>
