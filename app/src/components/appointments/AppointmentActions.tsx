@@ -1,28 +1,32 @@
 import type { MouseEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCheck, XCircle } from "lucide-react";
+import { CheckCheck, Play, XCircle } from "lucide-react";
 import type { CalendarAppointment } from "@/components/calendar/types";
 
-// NOTA: `checked_in`/`in_progress` ficam no backend para o futuro recurso de
-// fila de espera / "Iniciar atendimento" — por ora a UI não usa (removido em 08/09).
-const ACTIVE_STATUSES = ["scheduled", "confirmed", "checked_in"];
+const ACTIVE_STATUSES = ["scheduled", "confirmed", "checked_in", "in_progress"];
 
 interface AppointmentActionsProps {
   appt: CalendarAppointment;
+  onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
   className?: string;
 }
 
 /**
- * Coluna de ações rápidas do compromisso (desktop — EventCard semana/dia).
+ * Ações rápidas do compromisso (desktop — EventCard semana/dia).
  *
  * Matriz por status:
- * - scheduled/confirmed/checked_in: Concluir, Cancelar
- * - completed/cancelled/no_show/in_progress: nenhuma
+ * - scheduled/confirmed: Iniciar, Concluir, Cancelar
+ * - checked_in/in_progress: Concluir, Cancelar
+ * - completed/cancelled/no_show: nenhuma
+ *
+ * Peso visual: Iniciar = tema (sólido), Concluir = verde sólido,
+ * Cancelar = outline (destrutivo discreto).
  */
 export default function AppointmentActions({
   appt,
+  onStart,
   onConclude,
   onCancel,
   className = "",
@@ -32,10 +36,22 @@ export default function AppointmentActions({
     handler();
   };
 
+  const canStart = appt.status === "scheduled" || appt.status === "confirmed";
   const canConclude = ACTIVE_STATUSES.includes(appt.status);
 
   return (
     <div className={`flex flex-row flex-wrap gap-1.5 justify-end ${className}`}>
+      {canStart && (
+        <Button
+          type="button"
+          size="sm"
+          onClick={stop(() => onStart(appt.id))}
+          className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-primary text-primary-foreground hover:bg-primary/90"
+        >
+          <Play className="h-3 w-3" />
+          Iniciar
+        </Button>
+      )}
       {canConclude && (
         <Button
           type="button"
@@ -51,8 +67,9 @@ export default function AppointmentActions({
         <Button
           type="button"
           size="sm"
+          variant="outline"
           onClick={stop(() => onCancel(appt.id))}
-          className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-red-600 text-white hover:bg-red-700"
+          className="h-auto gap-1 border-red-600 px-1.5 py-0.5 text-[10px] font-medium text-red-600 hover:bg-red-50 hover:text-red-600"
         >
           <XCircle className="h-3 w-3" />
           Cancelar

@@ -15,6 +15,7 @@ interface DayViewProps {
   clients: CalendarClient[];
   services: CalendarService[];
   professionals: CalendarProfessional[];
+  onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
   onReschedule?: (appointmentId: number, newStartTime: string) => void;
@@ -26,6 +27,7 @@ export default function DayView({
   clients,
   services,
   professionals,
+  onStart,
   onConclude,
   onCancel,
   onReschedule,
@@ -113,6 +115,7 @@ export default function DayView({
                 professional={professionals.find(
                   p => p.id === appt.professionalId
                 )}
+                onStart={onStart}
                 onConclude={onConclude}
                 onCancel={onCancel}
                 onReschedule={onReschedule}

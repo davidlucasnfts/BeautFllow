@@ -147,6 +147,11 @@ export default function Appointments() {
     onError: e => toast.error(e.message),
   });
 
+  function handleStart(id: number) {
+    if (!salon) return;
+    updateMutation.mutate({ id, salonId: salon.id, status: "in_progress" });
+  }
+
   function handleConclude(appt: CalendarAppointment) {
     const client = clients?.find(c => c.id === appt.clientId);
     const service = services?.find(s => s.id === appt.serviceId);
@@ -303,6 +308,7 @@ export default function Appointments() {
           appointments={(appointments ?? []) as CalendarAppointment[]}
           services={(services ?? []) as CalendarService[]}
           clients={clients ?? []}
+          onStart={handleStart}
           onConclude={handleConclude}
           onCancel={handleCancel}
         />
@@ -315,6 +321,7 @@ export default function Appointments() {
           }
           clients={clients ?? []}
           services={services ?? []}
+          onStart={handleStart}
           onConclude={handleConclude}
           onCancel={handleCancel}
         />
@@ -325,6 +332,7 @@ export default function Appointments() {
           clients={clients ?? []}
           services={services ?? []}
           professionals={professionals ?? []}
+          onStart={handleStart}
           onConclude={handleConclude}
           onCancel={handleCancel}
           onReschedule={handleReschedule}

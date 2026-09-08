@@ -11,6 +11,7 @@ import {
   MessageCircle,
   CalendarDays,
   CheckCheck,
+  Play,
   XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ interface FilaDoDiaProps {
   appointments: CalendarAppointment[];
   services: CalendarService[];
   clients: FilaClient[];
+  onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
 }
@@ -45,6 +47,7 @@ export default function FilaDoDia({
   appointments,
   services,
   clients,
+  onStart,
   onConclude,
   onCancel,
 }: FilaDoDiaProps) {
@@ -175,9 +178,25 @@ export default function FilaDoDia({
                   </div>
                 </div>
 
-                {/* Barra de ações full-width (toque na linha expande) */}
+                {/* Barra de ações (toque na linha expande) — hierarquia de peso:
+                    Iniciar = tema sólido, Concluir = verde sólido, Cancelar = outline */}
                 {expanded && hasAppointmentActions(appt) && (
-                  <div className="flex gap-2 px-3 pb-3">
+                  <div className="flex justify-end gap-2 px-3 pb-3">
+                    {(appt.status === "scheduled" ||
+                      appt.status === "confirmed") && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={e => {
+                          e.stopPropagation();
+                          onStart(appt.id);
+                        }}
+                        className="h-8 gap-1.5 bg-primary px-3 text-xs font-semibold text-primary-foreground hover:bg-primary/90"
+                      >
+                        <Play className="h-3.5 w-3.5" />
+                        Iniciar
+                      </Button>
+                    )}
                     <Button
                       type="button"
                       size="sm"
@@ -185,21 +204,22 @@ export default function FilaDoDia({
                         e.stopPropagation();
                         onConclude(appt);
                       }}
-                      className="h-9 flex-1 gap-1.5 bg-green-600 text-xs font-semibold text-white hover:bg-green-700"
+                      className="h-8 gap-1.5 bg-green-600 px-3 text-xs font-semibold text-white hover:bg-green-700"
                     >
-                      <CheckCheck className="h-4 w-4" />
+                      <CheckCheck className="h-3.5 w-3.5" />
                       Concluir
                     </Button>
                     <Button
                       type="button"
                       size="sm"
+                      variant="outline"
                       onClick={e => {
                         e.stopPropagation();
                         onCancel(appt.id);
                       }}
-                      className="h-9 flex-1 gap-1.5 bg-red-600 text-xs font-semibold text-white hover:bg-red-700"
+                      className="h-8 gap-1.5 border-red-600 px-3 text-xs font-semibold text-red-600 hover:bg-red-50 hover:text-red-600"
                     >
-                      <XCircle className="h-4 w-4" />
+                      <XCircle className="h-3.5 w-3.5" />
                       Cancelar
                     </Button>
                   </div>

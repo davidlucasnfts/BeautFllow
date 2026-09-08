@@ -25,6 +25,7 @@ interface EventCardProps {
   client?: CalendarClient;
   service?: CalendarService;
   professional?: CalendarProfessional;
+  onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
   onReschedule?: (appointmentId: number, newStartTime: string) => void;
@@ -36,6 +37,7 @@ export default function EventCard({
   client,
   service,
   professional,
+  onStart,
   onConclude,
   onCancel,
   onReschedule,
@@ -152,6 +154,7 @@ export default function EventCard({
         {hasAppointmentActions(appt) && (
           <AppointmentActions
             appt={appt}
+            onStart={onStart}
             onConclude={onConclude}
             onCancel={onCancel}
             className="shrink-0"
