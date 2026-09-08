@@ -152,11 +152,6 @@ export default function Appointments() {
     updateMutation.mutate({ id, salonId: salon.id, status: "checked_in" });
   }
 
-  function handleConfirm(id: number) {
-    if (!salon) return;
-    updateMutation.mutate({ id, salonId: salon.id, status: "confirmed" });
-  }
-
   function handleConclude(appt: CalendarAppointment) {
     const client = clients?.find(c => c.id === appt.clientId);
     const service = services?.find(s => s.id === appt.serviceId);
@@ -313,7 +308,6 @@ export default function Appointments() {
           appointments={(appointments ?? []) as CalendarAppointment[]}
           services={(services ?? []) as CalendarService[]}
           clients={clients ?? []}
-          onConfirm={handleConfirm}
           onCheckIn={handleCheckIn}
           onConclude={handleConclude}
           onCancel={handleCancel}
@@ -327,7 +321,6 @@ export default function Appointments() {
           }
           clients={clients ?? []}
           services={services ?? []}
-          onConfirm={handleConfirm}
           onCheckIn={handleCheckIn}
           onConclude={handleConclude}
           onCancel={handleCancel}
@@ -339,7 +332,6 @@ export default function Appointments() {
           clients={clients ?? []}
           services={services ?? []}
           professionals={professionals ?? []}
-          onConfirm={handleConfirm}
           onCheckIn={handleCheckIn}
           onConclude={handleConclude}
           onCancel={handleCancel}

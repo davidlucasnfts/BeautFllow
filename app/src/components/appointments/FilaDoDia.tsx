@@ -7,14 +7,20 @@ import {
   isSameDay,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { MessageCircle, CalendarDays } from "lucide-react";
+import {
+  MessageCircle,
+  CalendarDays,
+  CheckCircle2,
+  CheckCheck,
+  XCircle,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   STATUS_COLORS,
   STATUS_LABELS,
   hasAppointmentActions,
 } from "@/components/calendar/constants";
-import AppointmentActions from "@/components/appointments/AppointmentActions";
 import type {
   CalendarAppointment,
   CalendarService,
@@ -29,7 +35,6 @@ interface FilaDoDiaProps {
   appointments: CalendarAppointment[];
   services: CalendarService[];
   clients: FilaClient[];
-  onConfirm: (id: number) => void;
   onCheckIn: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
@@ -42,7 +47,6 @@ export default function FilaDoDia({
   appointments,
   services,
   clients,
-  onConfirm,
   onCheckIn,
   onConclude,
   onCancel,
@@ -174,16 +178,48 @@ export default function FilaDoDia({
                   </div>
                 </div>
 
-                {/* Ações do compromisso (toque na linha expande) */}
+                {/* Barra de ações full-width (toque na linha expande) */}
                 {expanded && hasAppointmentActions(appt) && (
-                  <div className="flex justify-end px-3 pb-3">
-                    <AppointmentActions
-                      appt={appt}
-                      onConfirm={onConfirm}
-                      onCheckIn={onCheckIn}
-                      onConclude={onConclude}
-                      onCancel={onCancel}
-                    />
+                  <div className="flex gap-2 px-3 pb-3">
+                    {(appt.status === "scheduled" ||
+                      appt.status === "confirmed") && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={e => {
+                          e.stopPropagation();
+                          onCheckIn(appt.id);
+                        }}
+                        className="h-9 flex-1 gap-1.5 bg-green-600 text-xs font-semibold text-white hover:bg-green-700"
+                      >
+                        <CheckCircle2 className="h-4 w-4" />
+                        Chegada
+                      </Button>
+                    )}
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={e => {
+                        e.stopPropagation();
+                        onConclude(appt);
+                      }}
+                      className="h-9 flex-1 gap-1.5 bg-green-600 text-xs font-semibold text-white hover:bg-green-700"
+                    >
+                      <CheckCheck className="h-4 w-4" />
+                      Concluir
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={e => {
+                        e.stopPropagation();
+                        onCancel(appt.id);
+                      }}
+                      className="h-9 flex-1 gap-1.5 bg-red-600 text-xs font-semibold text-white hover:bg-red-700"
+                    >
+                      <XCircle className="h-4 w-4" />
+                      Cancelar
+                    </Button>
                   </div>
                 )}
               </div>

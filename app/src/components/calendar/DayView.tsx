@@ -17,7 +17,6 @@ interface DayViewProps {
   professionals: CalendarProfessional[];
   onCheckIn: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
-  onConfirm: (id: number) => void;
   onCancel: (id: number) => void;
   onReschedule?: (appointmentId: number, newStartTime: string) => void;
 }
@@ -30,7 +29,6 @@ export default function DayView({
   professionals,
   onCheckIn,
   onConclude,
-  onConfirm,
   onCancel,
   onReschedule,
 }: DayViewProps) {
@@ -119,7 +117,6 @@ export default function DayView({
                 )}
                 onCheckIn={onCheckIn}
                 onConclude={onConclude}
-                onConfirm={onConfirm}
                 onCancel={onCancel}
                 onReschedule={onReschedule}
                 variant="day"

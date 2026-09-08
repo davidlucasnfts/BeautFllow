@@ -25,7 +25,6 @@ interface EventCardProps {
   client?: CalendarClient;
   service?: CalendarService;
   professional?: CalendarProfessional;
-  onConfirm: (id: number) => void;
   onCheckIn: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
@@ -38,7 +37,6 @@ export default function EventCard({
   client,
   service,
   professional,
-  onConfirm,
   onCheckIn,
   onConclude,
   onCancel,
@@ -156,7 +154,6 @@ export default function EventCard({
         {hasAppointmentActions(appt) && (
           <AppointmentActions
             appt={appt}
-            onConfirm={onConfirm}
             onCheckIn={onCheckIn}
             onConclude={onConclude}
             onCancel={onCancel}
