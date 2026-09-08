@@ -69,6 +69,8 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Widget Aniversariantes do mês na Dashboard (Fase 1) | 06/09 |
 | Ciclo da agenda completo: Concluir com check-out financeiro vinculado, board "Agendamentos de hoje" na Dashboard, cancelar com confirmação | 07/09 |
 | Ciclo da agenda: `Agendado → (Iniciar) → Em andamento → (Concluir) → Completo`, com Cancelar até o fim (outline); removido "Confirmar"; badge "Chegou" virou "Em andamento" na cor do tema; DatePicker calendário em todos os campos de data; ações da fila do dia compactas alinhadas à direita | 08/09 |
+| Fix crítico: componentes shadcn convertidos de sintaxe Tailwind v4 para v3 (110 ocorrências, 27 arquivos) — sidebar fixa não cobre mais o conteúdo, selects/menus com max-height e origem de animação corretos | 08/09 |
+| Clientes em lista padrão Fila do Dia (Opção A aprovada via `docs/clientes-preview.html`): ficha expande na linha com borda lilás, WhatsApp ícone oficial sozinho, Editar azul, Excluir outline; grid de cards removido | 08/09 |
 
 ---
 
