@@ -2,7 +2,7 @@
 
 > **Arquivo de referência.** Para contexto rápido, leia MEMORY.md primeiro.
 
-Última atualização: 05/09/2026
+Última atualização: 08/09/2026
 
 ---
 
@@ -21,6 +21,23 @@
 | 6 | Crescimento | ⏳ | — |
 
 **Próxima ação:** completar o smoke test da Fase 2 local → push → validar Fase 3 em produção.
+
+---
+
+## 🎯 Passos para Sucesso do Produto (SaaS)
+
+> Levantamento estratégico de 08/09/2026: arquitetura técnica está alinhada com o mercado (stack, segurança, processo). Os itens abaixo são os débitos que separam "app pronto" de "produto que vende".
+
+| Ordem | Item | Por que é crítico | Status |
+|-------|------|-------------------|--------|
+| 1 | **Cobrança recorrente** (Stripe ou Mercado Pago) | Sem billing não é SaaS — é software gratuito. Bloqueia a Fase 5 (primeiros clientes) | ⏳ |
+| 2 | **Sentry ativo em produção** | Código já integrado (`main.tsx`), mas só liga com `VITE_SENTRY_DSN` na Vercel — verificar se a env var está configurada | [~] |
+| 3 | **Analytics de uso** (ex: Plausible/Umami) | Sem dados de uso não dá para saber onde o cliente trava e o que melhorar | ⏳ |
+| 4 | **Onboarding guiado** (checklist "configure seu salão em 5 passos") | SaaS de sucesso reduz desistência do trial no dia 1 | ⏳ |
+| 5 | **Testes E2E** (Playwright) nos fluxos críticos: login, agendar, concluir atendimento, financeiro | Cobertura unitária existe (60 testes); E2E protege o que gera receita | ⏳ |
+| 6 | **Distribuição** (canal de aquisição) | Decisão de negócio do David — app bom sem canal de aquisição morre. Ligado à Fase 4 (landings por segmento) | ⏳ |
+
+Ordem sugerida de ataque: 1 → 2 → 3 → 4 → 5 (o 6 acontece em paralelo com o negócio).
 
 ---
 
