@@ -23,8 +23,8 @@ import {
   Trash2,
   Edit3,
   ShieldCheck,
-  MessageCircle,
 } from "lucide-react";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
@@ -318,7 +318,7 @@ export default function Clients() {
                       aria-label={`Chamar ${client.name} no WhatsApp`}
                       className="h-8 w-8 flex items-center justify-center rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors"
                     >
-                      <MessageCircle className="h-4 w-4" />
+                      <WhatsAppIcon className="h-4 w-4" />
                     </a>
                     <button
                       type="button"
