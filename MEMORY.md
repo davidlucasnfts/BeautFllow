@@ -68,7 +68,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Catálogo de 9 temas (3 por segmento) com escolha do proprietário em Configurações — aplica no painel e no link de agendamento (estética deixou de ser verde → lilás) | 06/09 |
 | Widget Aniversariantes do mês na Dashboard (Fase 1) | 06/09 |
 | Ciclo da agenda completo: Concluir com check-out financeiro vinculado, board "Agendamentos de hoje" na Dashboard, cancelar com confirmação | 07/09 |
-| Ciclo simplificado: removido "Confirmar" e "Chegada" (ficou Agendado → Concluir/Cancelar); statuses `checked_in`/`in_progress` preservados no backend para futura fila de espera; DatePicker calendário em todos os campos de data; ações da fila do dia em barra full-width | 08/09 |
+| Ciclo da agenda: `Agendado → (Iniciar) → Em andamento → (Concluir) → Completo`, com Cancelar até o fim (outline); removido "Confirmar"; badge "Chegou" virou "Em andamento" na cor do tema; DatePicker calendário em todos os campos de data; ações da fila do dia compactas alinhadas à direita | 08/09 |
 
 ---
 
