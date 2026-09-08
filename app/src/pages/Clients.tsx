@@ -4,7 +4,6 @@ import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
 import { getSegmentLabel } from "@contracts/segment-labels";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +23,6 @@ import {
   Trash2,
   Edit3,
   ShieldCheck,
-  ChevronDown,
   MessageCircle,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -259,116 +257,106 @@ export default function Clients() {
       </div>
 
       {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="rounded-xl border bg-card divide-y overflow-hidden">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-40 w-full bg-muted" />
+            <Skeleton key={i} className="h-[76px] w-full rounded-none bg-muted" />
           ))}
         </div>
       ) : filtered && filtered.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map(client => (
-            <Card
-              key={client.id}
-              className="relative group h-full cursor-pointer gap-1.5 py-2.5"
-              onClick={() =>
-                setSelectedId(client.id === selectedId ? null : client.id)
-              }
-            >
-              <CardHeader className="p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-2">
-                    <div
-                      className="h-9 w-9 rounded-full flex items-center justify-center shrink-0 text-sm font-bold"
-                      style={{
-                        backgroundColor: `${palette.primary}2E`,
-                        color: palette.primary,
-                      }}
-                    >
-                      {client.name.trim().charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <CardTitle className="text-base">{client.name}</CardTitle>
-                      <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+        <div className="rounded-xl border bg-card divide-y overflow-hidden">
+          {filtered.map(client => {
+            const expanded = selectedId === client.id;
+            return (
+              <div
+                key={client.id}
+                className={`cursor-pointer transition-colors ${
+                  expanded ? "bg-primary/5" : "hover:bg-blue-50/50"
+                }`}
+                onClick={() => setSelectedId(expanded ? null : client.id)}
+              >
+                <div className="flex items-center gap-3 px-4 py-2.5">
+                  <div
+                    className="h-9 w-9 rounded-full flex items-center justify-center shrink-0 text-sm font-bold"
+                    style={{
+                      backgroundColor: `${palette.primary}2E`,
+                      color: palette.primary,
+                    }}
+                  >
+                    {client.name.trim().charAt(0).toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium truncate">{client.name}</p>
+                    <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                      <Badge
+                        variant="secondary"
+                        className={segmentColors[client.segment] + " text-[10px]"}
+                      >
+                        {segmentLabels[client.segment]}
+                      </Badge>
+                      {client.consentGiven && (
                         <Badge
                           variant="secondary"
-                          className={
-                            segmentColors[client.segment] + " text-[10px]"
-                          }
+                          className="bg-emerald-100 text-emerald-700 text-[10px]"
                         >
-                          {segmentLabels[client.segment]}
+                          <ShieldCheck className="w-3 h-3 mr-0.5" />
+                          Dados autorizados
                         </Badge>
-                        {client.consentGiven && (
-                          <Badge
-                            variant="secondary"
-                            className="bg-emerald-100 text-emerald-700 text-[10px]"
-                          >
-                            <ShieldCheck className="w-3 h-3 mr-0.5" />
-                            Dados autorizados
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
-                        <Phone className="h-3 w-3" />
-                        <span>{client.phone}</span>
-                      </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
+                      <Phone className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{client.phone}</span>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-1.5 shrink-0 w-[92px]">
+                  <div className="flex flex-row items-center gap-1.5 shrink-0">
                     <a
                       href={`https://wa.me/55${client.phone.replace(/\D/g, "")}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={e => e.stopPropagation()}
-                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-green-600 text-white hover:bg-green-700"
+                      title={`Chamar ${client.name} no WhatsApp`}
+                      aria-label={`Chamar ${client.name} no WhatsApp`}
+                      className="h-8 w-8 flex items-center justify-center rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors"
                     >
-                      <MessageCircle className="w-3 h-3" />
-                      WhatsApp
+                      <MessageCircle className="h-4 w-4" />
                     </a>
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleEdit(client);
-                      }}
-                      className="h-auto gap-1.5 px-2 py-1 text-[11px] shadow-sm"
-                    >
-                      <Edit3 className="w-3 h-3" />
-                      Editar
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              {selectedId === client.id && (
-                <CardContent className="px-4 pb-2 pt-0 space-y-4">
-                  <ClientCardDetails client={client} />
-                  <div className="flex justify-end">
                     <button
                       type="button"
                       onClick={e => {
                         e.stopPropagation();
-                        setDeleteTarget({
-                          id: client.id,
-                          name: client.name,
-                        });
+                        handleEdit(client);
                       }}
-                      className="flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-md bg-red-50 text-red-600 hover:bg-red-100"
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
                     >
-                      <Trash2 className="w-3 h-3" />
-                      Excluir {segmentLabel("client")}
+                      <Edit3 className="h-3.5 w-3.5" />
+                      Editar
                     </button>
                   </div>
-                </CardContent>
-              )}
-              <div className="flex justify-center pb-1.5">
-                <ChevronDown
-                  className={`w-3.5 h-3.5 text-slate-400 transition-transform ${
-                    selectedId === client.id ? "rotate-180" : ""
-                  }`}
-                />
+                </div>
+                {expanded && (
+                  <div className="border-l-2 border-primary px-4 pb-3 pt-1 space-y-3">
+                    <ClientCardDetails client={client} />
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={e => {
+                          e.stopPropagation();
+                          setDeleteTarget({
+                            id: client.id,
+                            name: client.name,
+                          });
+                        }}
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Excluir {segmentLabel("client")}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
-            </Card>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-20 text-muted-foreground">

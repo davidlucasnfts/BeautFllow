@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StudioFlow — Clientes: novo layout (3 opções)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+    padding: 32px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  .sub { color: #64748b; font-size: 14px; margin-bottom: 8px; max-width: 760px; }
+  .context {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 8px;
+    line-height: 1.55;
+  }
+  h2 {
+    font-size: 18px;
+    margin: 36px 0 4px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .opt-desc { color: #64748b; font-size: 13px; margin-bottom: 16px; max-width: 760px; line-height: 1.5; }
+  .opt-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+    background: #ede9fe;
+    color: #6d28d9;
+  }
+  .state-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #8B5CF6;
+    margin: 22px 0 8px;
+  }
+  .state-note { font-size: 12px; color: #64748b; margin: -4px 0 8px; }
+
+  /* ===== tabela comparativa ===== */
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; font-size: 12px; margin-top: 12px; }
+  th, td { padding: 9px 11px; text-align: left; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  th { background: #f8fafc; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: #64748b; }
+  tr:last-child td { border-bottom: none; }
+
+  /* ===== frames ===== */
+  .phone-wrap { display: flex; justify-content: center; }
+  .phone {
+    width: 360px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(15,23,42,.06);
+  }
+  .desktop-wrap { display: flex; justify-content: center; }
+  .desktop {
+    width: 100%;
+    max-width: 980px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(15,23,42,.06);
+  }
+  .app-head {
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 12px 14px;
+  }
+  .app-head .bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .app-head h3 { font-size: 16px; font-weight: 700; }
+  .app-head h3 small { display: block; font-size: 11px; font-weight: 400; color: #94a3b8; }
+  .search {
+    margin-top: 10px;
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid #e2e8f0; border-radius: 8px;
+    padding: 8px 10px; font-size: 12px; color: #94a3b8; background: #fff;
+  }
+  .search svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ===== botões padrão ===== */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+    border-radius: 8px; font-size: 12px; font-weight: 600;
+    padding: 8px 14px; cursor: pointer; white-space: nowrap; border: none;
+  }
+  .btn svg { width: 14px; height: 14px; }
+  .btn.primary { background: #8B5CF6; color: #fff; }
+  .btn.primary:hover { background: #7C3AED; }
+  .btn.edit { background: #EFF6FF; color: #2563EB; }
+  .btn.edit:hover { background: #DBEAFE; }
+  .btn.edit.sm { font-size: 11px; padding: 6px 10px; border-radius: 6px; }
+  .btn.del {
+    background: #fff; border: 1.5px solid #DC2626; color: #DC2626;
+  }
+  .btn.del:hover { background: #FEF2F2; }
+  .btn.del.sm { font-size: 11px; padding: 5px 10px; border-radius: 6px; }
+  .wa-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 6px;
+    background: #16A34A; color: #fff; flex-shrink: 0;
+  }
+  .wa-btn:hover { background: #15803D; }
+  .wa-btn svg { width: 16px; height: 16px; }
+
+  /* ===== avatares e badges ===== */
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    background: #EDE9FE; color: #6D28D9;
+  }
+  .avatar.lg { width: 56px; height: 56px; font-size: 20px; }
+  .badge {
+    font-size: 10px; font-weight: 600;
+    padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+  }
+  .badge.novo { background: #DBEAFE; color: #1D4ED8; }
+  .badge.ativo { background: #D1FAE5; color: #065F46; }
+  .badge.vip { background: #FEF3C7; color: #B45309; }
+  .badge.sumindo { background: #FCE7F3; color: #BE185D; }
+  .badge.inativo { background: #F1F5F9; color: #64748B; }
+  .badge.lgpd { background: #ECFDF5; color: #047857; }
+  .tag-chip {
+    font-size: 10px; font-weight: 500; color: #475569;
+    background: #F1F5F9; border-radius: 999px; padding: 2px 8px; white-space: nowrap;
+  }
+
+  /* ===== linhas (Opção A / B) ===== */
+  .rows { display: flex; flex-direction: column; }
+  .clinha {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .clinha.sel { background: #F5F3FF; box-shadow: inset 3px 0 0 #8B5CF6; }
+  .cinfo { flex: 1; min-width: 0; }
+  .cinfo .nome { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cinfo .fone { font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cbadges { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; margin-top: 3px; }
+  .cacoes { display: flex; flex-direction: row; align-items: center; gap: 6px; flex-shrink: 0; }
+
+  /* ficha expandida (Opção A) */
+  .ficha {
+    background: #FAFAFF; border-left: 3px solid #8B5CF6;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 10px 12px 12px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .ficha h4 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #8B5CF6; }
+  .ficha .dados { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 11px; color: #334155; }
+  .ficha .dados b { color: #64748b; font-weight: 500; }
+  .ficha .tags { display: flex; gap: 4px; flex-wrap: wrap; }
+  .hist { font-size: 11px; color: #334155; }
+  .hist div { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed #E9E4FB; }
+  .hist div:last-child { border-bottom: none; }
+  .hist .val { font-weight: 600; }
+  .ficha .rodape { display: flex; justify-content: flex-end; }
+
+  /* ===== Opção B: master-detail ===== */
+  .md { display: flex; min-height: 420px; }
+  .md-lista { width: 330px; flex-shrink: 0; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+  .md-lista .search { margin: 10px; }
+  .md-lista .clinha { padding: 10px 12px; }
+  .md-ficha { flex: 1; padding: 18px 20px; }
+  .md-topo { display: flex; align-items: flex-start; gap: 12px; }
+  .md-topo .who h3 { font-size: 17px; font-weight: 700; }
+  .md-topo .who .cbadges { margin-top: 5px; }
+  .md-acoes { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+  .md-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin-top: 16px; }
+  .md-grid .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #94a3b8; }
+  .md-grid .val { font-size: 13px; font-weight: 600; margin-top: 2px; }
+  .md-sec { margin-top: 16px; }
+  .md-sec h4 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #8B5CF6; margin-bottom: 6px; }
+
+  /* bottom sheet (Opção B mobile) */
+  .sheet-backdrop { position: relative; background: rgba(15,23,42,.45); padding: 90px 10px 0; }
+  .sheet {
+    background: #fff; border-radius: 14px 14px 0 0;
+    padding: 8px 14px 14px; max-height: 300px; overflow: hidden;
+  }
+  .sheet .handle { width: 36px; height: 4px; border-radius: 999px; background: #e2e8f0; margin: 0 auto 10px; }
+  .sheet h4 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #8B5CF6; margin: 8px 0 4px; }
+
+  /* ===== Opção C: cards ===== */
+  .grid-cards { display: grid; gap: 10px; padding: 12px; }
+  .grid-cards.d2 { grid-template-columns: 1fr 1fr; }
+  .grid-cards.d3 { grid-template-columns: repeat(3, 1fr); }
+  .card {
+    border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 12px; cursor: pointer;
+    display: flex; flex-direction: column; gap: 6px;
+    height: 100%; background: #fff;
+  }
+  .card:hover { border-color: #c4b5fd; }
+  .card .topo { display: flex; align-items: center; gap: 8px; }
+  .card .topo .nome { font-size: 13px; font-weight: 700; }
+  .card .topo .nome:hover { text-decoration: underline; }
+  .card .fone { font-size: 11px; color: #64748b; }
+  .card .cbadges { margin-top: 0; }
+  .card .cacoes { margin-top: auto; padding-top: 6px; }
+
+  /* ===== estado vazio ===== */
+  .vazio { text-align: center; padding: 34px 16px; color: #94a3b8; }
+  .vazio svg { width: 34px; height: 34px; opacity: .3; margin-bottom: 8px; }
+  .vazio p { font-size: 13px; }
+
+  /* ===== resposta ===== */
+  .reply {
+    margin-top: 28px; background: #ede9fe; border: 1px solid #c4b5fd;
+    border-radius: 12px; padding: 16px; font-size: 14px; color: #5b21b6; line-height: 1.6;
+  }
+  .foot { margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 13px; }
+</style>
+</head>
+<body>
+  <h1>StudioFlow — Clientes: novo layout</h1>
+  <p class="sub">Primeira rodada de prévia · página de Clientes · StudioFlow</p>
+  <div class="context">
+    <strong>Auditoria da página atual:</strong> grid de cards com alturas irregulares (sem <code>h-full</code>),
+    ação <strong>Excluir escondida</strong> (só aparece depois de expandir), chevron no rodapé do card ocupa
+    espaço sem função clara, e o app já aprovou o padrão <strong>"fila do dia"</strong> na agenda: linhas com
+    ações à direita em coluna horizontal, ficha abre no toque. As 3 opções abaixo resolvem isso de formas
+    diferentes. Dados simulados: nomes, telefones (85) 9xxxx e datas dd/mm reais.
+  </div>
+
+  <!-- tabela comparativa -->
+  <table>
+    <thead>
+      <tr><th>Opção</th><th>Força principal</th><th>Debate</th><th>Esforço</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>A</strong> — Lista + ficha expande na linha</td>
+        <td>Consistente com a Fila do Dia (padrão aprovado); enxuta; toque expande, ações sempre à mão</td>
+        <td>Ficha longa empurra as linhas de baixo (mesmo comportamento da agenda)</td>
+        <td>Baixo — reusa ClientCardDetails</td>
+      </tr>
+      <tr>
+        <td><strong>B</strong> — Master-detail (lista + painel)</td>
+        <td>Desktop ótimo: ficha generosa ao lado, nada empurra nada; fica moderno</td>
+        <td>Mobile precisa de bottom sheet (componente novo); com poucos clientes o painel fica vazio largo</td>
+        <td>Médio–alto</td>
+      </tr>
+      <tr>
+        <td><strong>C</strong> — Cards melhorados</td>
+        <td>Muda menos: mantém o grid; só corrige alturas, ações visíveis e tira o chevron</td>
+        <td>Mobile 2 colunas fica apertado com badges + ações; segue poluído com muitos clientes</td>
+        <td>Baixo</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ícones (lucide inline + WhatsApp oficial) -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+      <symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ===================== OPÇÃO A ===================== -->
+  <h2><span class="opt-tag">Opção A</span><br>Lista com ficha expandindo na própria linha (padrão Fila do Dia)</h2>
+  <p class="opt-desc">Em todas as telas: linhas com avatar + nome + badges + telefone; à direita, em coluna horizontal, o WhatsApp (ícone oficial sozinho, <code>h-8 w-8</code> — exceção aprovada) e o Editar compacto. <strong>Toque na linha expande a ficha abaixo</strong> (aniversário, tags, histórico, consentimento LGPD) terminando em Excluir em outline. Sem chevron: a linha expandida se destaca com <strong>fundo lilás clarinho + borda esquerda lilás</strong>.</p>
+
+  <p class="state-label">1. Lista fechada (mobile)</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="app-head">
+        <div class="bar">
+          <h3>Clientes<small>128 cadastrados</small></h3>
+          <button class="btn primary"><svg><use href="#i-users"/></svg>Novo Cliente</button>
+        </div>
+        <div class="search"><svg><use href="#i-search"/></svg>Buscar por nome ou telefone</div>
+      </div>
+      <div class="rows">
+        <div class="clinha">
+          <div class="avatar">M</div>
+          <div class="cinfo">
+            <div class="nome">Maria Fernanda Duarte</div>
+            <div class="fone">(85) 99812-4432</div>
+            <div class="cbadges"><span class="badge novo">Novo</span><span class="badge lgpd">Dados autorizados</span></div>
+          </div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+          </div>
+        </div>
+        <div class="clinha">
+          <div class="avatar" style="background:#FCE7F3;color:#BE185D">J</div>
+          <div class="cinfo">
+            <div class="nome">Juliana Rocha</div>
+            <div class="fone">(85) 99755-1023</div>
+            <div class="cbadges"><span class="badge vip">VIP</span><span class="badge lgpd">Dados autorizados</span></div>
+          </div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+          </div>
+        </div>
+        <div class="clinha">
+          <div class="avatar" style="background:#D1FAE5;color:#065F46">C</div>
+          <div class="cinfo">
+            <div class="nome">Camila Ferreira</div>
+            <div class="fone">(85) 99601-7788</div>
+            <div class="cbadges"><span class="badge ativo">Ativo</span></div>
+          </div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+          </div>
+        </div>
+        <div class="clinha">
+          <div class="avatar" style="background:#FEF3C7;color:#B45309">B</div>
+          <div class="cinfo">
+            <div class="nome">Beatriz Nogueira</div>
+            <div class="fone">(85) 99452-3310</div>
+            <div class="cbadges"><span class="badge sumindo">Sumindo</span></div>
+          </div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="state-label">2. Linha expandida — ficha abaixo do conteúdo</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="app-head">
+        <div class="bar">
+          <h3>Clientes<small>128 cadastrados</small></h3>
+          <button class="btn primary"><svg><use href="#i-users"/></svg>Novo Cliente</button>
+        </div>
+      </div>
+      <div class="rows">
+        <div class="clinha sel">
+          <div class="avatar">M</div>
+          <div class="cinfo">
+            <div class="nome">Maria Fernanda Duarte</div>
+            <div class="fone">(85) 99812-4432</div>
+            <div class="cbadges"><span class="badge novo">Novo</span><span class="badge lgpd">Dados autorizados</span></div>
+          </div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+          </div>
+        </div>
+        <div class="ficha">
+          <div class="dados">
+            <span><b>Aniversário:</b> 14/03</span>
+            <span><b>Última visita:</b> 02/09</span>
+            <span><b>Cliente desde:</b> 10/01/2026</span>
+          </div>
+          <div class="tags">
+            <span class="tag-chip">loiro</span><span class="tag-chip">corte curto</span><span class="tag-chip">agendamento fixo</span>
+          </div>
+          <div>
+            <h4>Histórico recente</h4>
+            <div class="hist">
+              <div><span>02/09 · Escova modelada</span><span class="val">R$ 45,00</span></div>
+              <div><span>15/08 · Corte + hidratação</span><span class="val">R$ 120,00</span></div>
+            </div>
+          </div>
+          <div class="dados"><span><svg style="width:11px;height:11px;vertical-align:-1px"><use href="#i-shield"/></svg> <b>LGPD:</b> dados autorizados em 10/01/2026</span></div>
+          <div class="rodape">
+            <a class="btn del sm"><svg><use href="#i-trash"/></svg>Excluir</a>
+          </div>
+        </div>
+        <div class="clinha">
+          <div class="avatar" style="background:#FCE7F3;color:#BE185D">J</div>
+          <div class="cinfo">
+            <div class="nome">Juliana Rocha</div>
+            <div class="fone">(85) 99755-1023</div>
+            <div class="cbadges"><span class="badge vip">VIP</span><span class="badge lgpd">Dados autorizados</span></div>
+          </div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="state-label">3. Estado vazio (busca sem resultado)</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="app-head">
+        <div class="bar">
+          <h3>Clientes<small>128 cadastrados</small></h3>
+          <button class="btn primary"><svg><use href="#i-users"/></svg>Novo Cliente</button>
+        </div>
+        <div class="search"><svg><use href="#i-search"/></svg>marlene</div>
+      </div>
+      <div class="vazio">
+        <svg><use href="#i-users"/></svg>
+        <p>Nenhum cliente encontrado.<br>Confira a busca ou cadastre uma cliente nova.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== OPÇÃO B ===================== -->
+  <h2><span class="opt-tag">Opção B</span><br>Lista + painel de ficha ao lado (master-detail)</h2>
+  <p class="opt-desc"><strong>Desktop:</strong> lista de clientes à esquerda (~330px) e a ficha do selecionado ocupa o resto da tela — foto grande, contatos, aniversário, tags, histórico, consentimento e ações (WhatsApp, Editar, Excluir outline) no topo da ficha. Nada empurra nada: a lista continua visível. <strong>Mobile:</strong> o toque abre a ficha como <strong>folha inferior (bottom sheet)</strong> deslizando por cima da lista.</p>
+
+  <p class="state-label">1. Desktop — lista + ficha lado a lado</p>
+  <div class="desktop-wrap">
+    <div class="desktop">
+      <div class="app-head">
+        <div class="bar">
+          <h3>Clientes<small>128 cadastrados</small></h3>
+          <button class="btn primary"><svg><use href="#i-users"/></svg>Novo Cliente</button>
+        </div>
+      </div>
+      <div class="md">
+        <div class="md-lista">
+          <div class="search"><svg><use href="#i-search"/></svg>Buscar por nome ou telefone</div>
+          <div class="clinha sel">
+            <div class="avatar">M</div>
+            <div class="cinfo">
+              <div class="nome">Maria Fernanda Duarte</div>
+              <div class="fone">(85) 99812-4432</div>
+              <div class="cbadges"><span class="badge novo">Novo</span></div>
+            </div>
+          </div>
+          <div class="clinha">
+            <div class="avatar" style="background:#FCE7F3;color:#BE185D">J</div>
+            <div class="cinfo">
+              <div class="nome">Juliana Rocha</div>
+              <div class="fone">(85) 99755-1023</div>
+              <div class="cbadges"><span class="badge vip">VIP</span></div>
+            </div>
+          </div>
+          <div class="clinha">
+            <div class="avatar" style="background:#D1FAE5;color:#065F46">C</div>
+            <div class="cinfo">
+              <div class="nome">Camila Ferreira</div>
+              <div class="fone">(85) 99601-7788</div>
+              <div class="cbadges"><span class="badge ativo">Ativo</span></div>
+            </div>
+          </div>
+          <div class="clinha">
+            <div class="avatar" style="background:#FEF3C7;color:#B45309">B</div>
+            <div class="cinfo">
+              <div class="nome">Beatriz Nogueira</div>
+              <div class="fone">(85) 99452-3310</div>
+              <div class="cbadges"><span class="badge sumindo">Sumindo</span></div>
+            </div>
+          </div>
+          <div class="clinha">
+            <div class="avatar" style="background:#F1F5F9;color:#64748B">P</div>
+            <div class="cinfo">
+              <div class="nome">Patrícia Lopes</div>
+              <div class="fone">(85) 99887-2210</div>
+              <div class="cbadges"><span class="badge inativo">Inativo</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="md-ficha">
+          <div class="md-topo">
+            <div class="avatar lg">M</div>
+            <div class="who">
+              <h3>Maria Fernanda Duarte</h3>
+              <div class="cbadges">
+                <span class="badge novo">Novo</span>
+                <span class="badge lgpd">Dados autorizados</span>
+                <span class="tag-chip">loiro</span><span class="tag-chip">corte curto</span>
+              </div>
+            </div>
+            <div class="md-acoes">
+              <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+              <a class="btn edit"><svg><use href="#i-pencil"/></svg>Editar</a>
+              <a class="btn del"><svg><use href="#i-trash"/></svg>Excluir</a>
+            </div>
+          </div>
+          <div class="md-grid">
+            <div><div class="lbl">Telefone</div><div class="val">(85) 99812-4432</div></div>
+            <div><div class="lbl">Aniversário</div><div class="val">14/03</div></div>
+            <div><div class="lbl">Última visita</div><div class="val">02/09</div></div>
+            <div><div class="lbl">Cliente desde</div><div class="val">10/01/2026</div></div>
+          </div>
+          <div class="md-sec">
+            <h4>Histórico recente</h4>
+            <div class="hist">
+              <div><span>02/09 · Escova modelada</span><span class="val">R$ 45,00</span></div>
+              <div><span>15/08 · Corte + hidratação</span><span class="val">R$ 120,00</span></div>
+              <div><span>28/06 · Corte</span><span class="val">R$ 80,00</span></div>
+            </div>
+          </div>
+          <div class="md-sec">
+            <h4>Consentimento LGPD</h4>
+            <div class="dados" style="font-size:12px;color:#334155"><svg style="width:12px;height:12px;vertical-align:-1px"><use href="#i-shield"/></svg> Autorizado em 10/01/2026 · versão do termo v2</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="state-label">2. Mobile — ficha como folha inferior (bottom sheet)</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="app-head">
+        <div class="bar">
+          <h3>Clientes<small>128 cadastrados</small></h3>
+          <button class="btn primary"><svg><use href="#i-users"/></svg>Novo Cliente</button>
+        </div>
+        <div class="search"><svg><use href="#i-search"/></svg>Buscar por nome ou telefone</div>
+      </div>
+      <div class="rows">
+        <div class="clinha sel">
+          <div class="avatar">M</div>
+          <div class="cinfo">
+            <div class="nome">Maria Fernanda Duarte</div>
+            <div class="fone">(85) 99812-4432</div>
+            <div class="cbadges"><span class="badge novo">Novo</span><span class="badge lgpd">Dados autorizados</span></div>
+          </div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+          </div>
+        </div>
+        <div class="clinha" style="opacity:.55">
+          <div class="avatar" style="background:#FCE7F3;color:#BE185D">J</div>
+          <div class="cinfo">
+            <div class="nome">Juliana Rocha</div>
+            <div class="fone">(85) 99755-1023</div>
+            <div class="cbadges"><span class="badge vip">VIP</span></div>
+          </div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+          </div>
+        </div>
+        <div class="clinha" style="opacity:.55">
+          <div class="avatar" style="background:#D1FAE5;color:#065F46">C</div>
+          <div class="cinfo">
+            <div class="nome">Camila Ferreira</div>
+            <div class="fone">(85) 99601-7788</div>
+            <div class="cbadges"><span class="badge ativo">Ativo</span></div>
+          </div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <div class="sheet-backdrop">
+        <div class="sheet">
+          <div class="handle"></div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="avatar">M</div>
+            <div class="cinfo">
+              <div class="nome" style="font-size:14px">Maria Fernanda Duarte</div>
+              <div class="cbadges"><span class="badge novo">Novo</span><span class="badge lgpd">Dados autorizados</span></div>
+            </div>
+            <div class="cacoes">
+              <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+              <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+            </div>
+          </div>
+          <div class="dados" style="display:flex;gap:14px;font-size:11px;color:#334155;margin-top:8px">
+            <span><b style="color:#64748b;font-weight:500">Aniversário:</b> 14/03</span>
+            <span><b style="color:#64748b;font-weight:500">Última visita:</b> 02/09</span>
+            <span><b style="color:#64748b;font-weight:500">Desde:</b> 10/01/2026</span>
+          </div>
+          <h4>Histórico recente</h4>
+          <div class="hist">
+            <div><span>02/09 · Escova modelada</span><span class="val">R$ 45,00</span></div>
+            <div><span>15/08 · Corte + hidratação</span><span class="val">R$ 120,00</span></div>
+          </div>
+          <div class="rodape" style="display:flex;justify-content:flex-end;margin-top:8px">
+            <a class="btn del sm"><svg><use href="#i-trash"/></svg>Excluir</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== OPÇÃO C ===================== -->
+  <h2><span class="opt-tag">Opção C</span><br>Cards melhorados (mantém o grid atual)</h2>
+  <p class="opt-desc">O grid de cards continua, mas: <strong>ações sempre visíveis no card</strong> (WhatsApp ícone + Editar + Excluir outline no canto, sem precisar expandir), <strong>sem chevron</strong> no rodapé — o card inteiro continua clicável pra ver a ficha, indicado pelo nome sublinhado no hover — e cards <strong>h-full com alturas iguais</strong>.</p>
+
+  <p class="state-label">1. Mobile — grid de 2 colunas</p>
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="app-head">
+        <div class="bar">
+          <h3>Clientes<small>128 cadastrados</small></h3>
+          <button class="btn primary"><svg><use href="#i-users"/></svg>Novo Cliente</button>
+        </div>
+        <div class="search"><svg><use href="#i-search"/></svg>Buscar por nome ou telefone</div>
+      </div>
+      <div class="grid-cards d2">
+        <div class="card">
+          <div class="topo">
+            <div class="avatar">M</div>
+            <div>
+              <div class="nome">Maria Fernanda</div>
+              <div class="fone">(85) 99812-4432</div>
+            </div>
+          </div>
+          <div class="cbadges"><span class="badge novo">Novo</span><span class="badge lgpd">Dados autorizados</span></div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+            <a class="btn del sm"><svg><use href="#i-trash"/></svg></a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="topo">
+            <div class="avatar" style="background:#FCE7F3;color:#BE185D">J</div>
+            <div>
+              <div class="nome">Juliana Rocha</div>
+              <div class="fone">(85) 99755-1023</div>
+            </div>
+          </div>
+          <div class="cbadges"><span class="badge vip">VIP</span><span class="badge lgpd">Dados autorizados</span></div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+            <a class="btn del sm"><svg><use href="#i-trash"/></svg></a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="topo">
+            <div class="avatar" style="background:#D1FAE5;color:#065F46">C</div>
+            <div>
+              <div class="nome">Camila Ferreira</div>
+              <div class="fone">(85) 99601-7788</div>
+            </div>
+          </div>
+          <div class="cbadges"><span class="badge ativo">Ativo</span></div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+            <a class="btn del sm"><svg><use href="#i-trash"/></svg></a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="topo">
+            <div class="avatar" style="background:#FEF3C7;color:#B45309">B</div>
+            <div>
+              <div class="nome">Beatriz Nogueira</div>
+              <div class="fone">(85) 99452-3310</div>
+            </div>
+          </div>
+          <div class="cbadges"><span class="badge sumindo">Sumindo</span></div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+            <a class="btn del sm"><svg><use href="#i-trash"/></svg></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="state-note" style="text-align:center">↑ Ações sempre visíveis; delete em outline (sem bloco vermelho); alturas iguais por linha.</p>
+
+  <p class="state-label">2. Desktop — 3 colunas, alturas iguais</p>
+  <div class="desktop-wrap">
+    <div class="desktop">
+      <div class="app-head">
+        <div class="bar">
+          <h3>Clientes<small>128 cadastrados</small></h3>
+          <button class="btn primary"><svg><use href="#i-users"/></svg>Novo Cliente</button>
+        </div>
+        <div class="search" style="max-width:340px"><svg><use href="#i-search"/></svg>Buscar por nome ou telefone</div>
+      </div>
+      <div class="grid-cards d3">
+        <div class="card">
+          <div class="topo">
+            <div class="avatar">M</div>
+            <div>
+              <div class="nome">Maria Fernanda Duarte</div>
+              <div class="fone">(85) 99812-4432</div>
+            </div>
+          </div>
+          <div class="cbadges"><span class="badge novo">Novo</span><span class="badge lgpd">Dados autorizados</span></div>
+          <div style="font-size:11px;color:#94a3b8">Última visita: 02/09</div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+            <a class="btn del sm"><svg><use href="#i-trash"/></svg>Excluir</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="topo">
+            <div class="avatar" style="background:#FCE7F3;color:#BE185D">J</div>
+            <div>
+              <div class="nome">Juliana Rocha</div>
+              <div class="fone">(85) 99755-1023</div>
+            </div>
+          </div>
+          <div class="cbadges"><span class="badge vip">VIP</span><span class="badge lgpd">Dados autorizados</span></div>
+          <div style="font-size:11px;color:#94a3b8">Última visita: 05/09</div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+            <a class="btn del sm"><svg><use href="#i-trash"/></svg>Excluir</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="topo">
+            <div class="avatar" style="background:#D1FAE5;color:#065F46">C</div>
+            <div>
+              <div class="nome">Camila Ferreira</div>
+              <div class="fone">(85) 99601-7788</div>
+            </div>
+          </div>
+          <div class="cbadges"><span class="badge ativo">Ativo</span></div>
+          <div style="font-size:11px;color:#94a3b8">Última visita: 28/08 · Aniversário: 03/11</div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+            <a class="btn del sm"><svg><use href="#i-trash"/></svg>Excluir</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="topo">
+            <div class="avatar" style="background:#FEF3C7;color:#B45309">B</div>
+            <div>
+              <div class="nome">Beatriz Nogueira</div>
+              <div class="fone">(85) 99452-3310</div>
+            </div>
+          </div>
+          <div class="cbadges"><span class="badge sumindo">Sumindo</span></div>
+          <div style="font-size:11px;color:#94a3b8">Última visita: 12/07</div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+            <a class="btn del sm"><svg><use href="#i-trash"/></svg>Excluir</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="topo">
+            <div class="avatar" style="background:#F1F5F9;color:#64748B">R</div>
+            <div>
+              <div class="nome">Renata Sales</div>
+              <div class="fone">(85) 99123-8845</div>
+            </div>
+          </div>
+          <div class="cbadges"><span class="badge ativo">Ativo</span></div>
+          <div style="font-size:11px;color:#94a3b8">Última visita: 10/09</div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+            <a class="btn del sm"><svg><use href="#i-trash"/></svg>Excluir</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="topo">
+            <div class="avatar" style="background:#F1F5F9;color:#64748B">P</div>
+            <div>
+              <div class="nome">Patrícia Lopes</div>
+              <div class="fone">(85) 99887-2210</div>
+            </div>
+          </div>
+          <div class="cbadges"><span class="badge inativo">Inativo</span></div>
+          <div style="font-size:11px;color:#94a3b8">Última visita: 22/03</div>
+          <div class="cacoes">
+            <a class="wa-btn" title="Chamar no WhatsApp"><svg><use href="#i-wa"/></svg></a>
+            <a class="btn edit sm"><svg><use href="#i-pencil"/></svg>Editar</a>
+            <a class="btn del sm"><svg><use href="#i-trash"/></svg>Excluir</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== RESPOSTA ===================== -->
+  <div class="reply">
+    <strong>Minha recomendação: Opção A.</strong> É a que mantém o app consistente (o padrão "linha + ficha expande"
+    já foi aprovado na agenda), resolve todos os pontos da auditoria com o menor esforço e funciona igual no
+    mobile e no desktop. A B é a mais bonita no desktop, mas exige um componente novo (bottom sheet) no mobile;
+    a C muda menos, mas não aproveita o padrão aprovado e segue apertada com muitos clientes.<br /><br />
+    <strong>David responde no formato:</strong> <strong>"Opção A"</strong>, <strong>"Opção B"</strong> ou
+    <strong>"Opção C"</strong> — ou combine/ajuste (ex.: "Opção A, mas com a ficha estilo painel da B no desktop").
+    Assim que escolher, implemento no app.
+  </div>
+
+  <p class="foot">Simulação estática (HTML/CSS puro, sem JS). Padrão de botões: WhatsApp ícone oficial sozinho h-8 w-8 (exceção aprovada pelo dono) · Editar azul suave (#EFF6FF/#2563EB) · Excluir outline vermelho (nunca bloco vermelho) · Status: Novo azul, Ativo verde, VIP âmbar, Sumindo rosa, Inativo cinza · LGPD verde. Primária lilás #8B5CF6.</p>
+</body>
+</html>
