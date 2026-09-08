@@ -452,6 +452,7 @@ npm run db:migrate # Aplicar migrations (prod)
 - **Infra/custos por fase:** `docs/runbooks/estrategia-infra-escala.md` — consultar antes de mexer em infra/upgrade
 - **Regras de negócio (RN-NNN):** `docs/requirements/regras-de-negocio.md` — consultar antes de criar/editar funcionalidade (RN-002: violação multi-tenant = 404, nunca 403)
 - **QA visual:** `docs/qa-visual-checklist.md` — rodar em 375px/1440px antes de entregar tela nova (está no DoD)
+- **Melhorias de UI por página:** `docs/ui-improvements-playbook.md` — ler antes de melhorar qualquer tela (padrão aprovado na Agenda)
 - **Precificação (proposta):** `docs/requirements/proposta-planos-precificacao.md` — valores pendentes de decisão do David
 
 ---

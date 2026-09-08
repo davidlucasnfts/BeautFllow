@@ -21,6 +21,7 @@
 | `docs/requirements/regras-de-negocio.md` | Regras de negócio (RN-NNN) | Kimi | Nova regra de negócio |
 | `docs/requirements/proposta-planos-precificacao.md` | Proposta de planos/preços (status: proposta) | Kimi | Decisão de precificação |
 | `docs/qa-visual-checklist.md` | Checklist de QA visual (375px/1440px) | Kimi | Novo padrão de verificação |
+| `docs/ui-improvements-playbook.md` | Padrões de UI aprovados por página (base: Agenda) | Kimi | Antes de melhorar qualquer tela |
 | `docs/DOR.md` | Definition of Ready | Kimi | Mudança no processo |
 | `docs/DOD.md` | Definition of Done | Kimi | Mudança no processo |
 | `docs/LGPD.md` | Compliance LGPD | Kimi | Mudança legal |
