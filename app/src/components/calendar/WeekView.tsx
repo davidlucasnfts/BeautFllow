@@ -13,7 +13,6 @@ interface WeekViewProps {
   appointmentsByDay: Record<string, CalendarAppointment[]>;
   clients: CalendarClient[];
   services: CalendarService[];
-  onCheckIn: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
 }
@@ -24,7 +23,6 @@ export default function WeekView({
   appointmentsByDay,
   clients,
   services,
-  onCheckIn,
   onConclude,
   onCancel,
 }: WeekViewProps) {
@@ -60,7 +58,6 @@ export default function WeekView({
                   appt={appt}
                   client={clients.find(c => c.id === appt.clientId)}
                   service={services.find(s => s.id === appt.serviceId)}
-                  onCheckIn={onCheckIn}
                   onConclude={onConclude}
                   onCancel={onCancel}
                   variant="week"

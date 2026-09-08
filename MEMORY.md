@@ -64,6 +64,11 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Fix: campo de horário não fica mais travado no agendamento online (grade só aparece com serviço + data) | 06/09 |
 | Configuração de horário por estabelecimento: aba Configurações (abre/fecha, intervalo 30/60) salva em `salons.settings` | 06/09 |
 | Card do cliente compacto: Excluir só aparece dentro do card aberto (menos chance de apagar sem querer) | 06/09 |
+| Tema primário global azul-600 (design system) + avatar com inicial na cor do segmento + "Cliente desde" + campo tags no form | 06/09 |
+| Catálogo de 9 temas (3 por segmento) com escolha do proprietário em Configurações — aplica no painel e no link de agendamento (estética deixou de ser verde → lilás) | 06/09 |
+| Widget Aniversariantes do mês na Dashboard (Fase 1) | 06/09 |
+| Ciclo da agenda completo: Concluir com check-out financeiro vinculado, board "Agendamentos de hoje" na Dashboard, cancelar com confirmação | 07/09 |
+| Ciclo simplificado: removido "Confirmar" e "Chegada" (ficou Agendado → Concluir/Cancelar); statuses `checked_in`/`in_progress` preservados no backend para futura fila de espera; DatePicker calendário em todos os campos de data; ações da fila do dia em barra full-width | 08/09 |
 
 ---
 

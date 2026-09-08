@@ -10,7 +10,6 @@ import { ptBR } from "date-fns/locale";
 import {
   MessageCircle,
   CalendarDays,
-  CheckCircle2,
   CheckCheck,
   XCircle,
 } from "lucide-react";
@@ -35,7 +34,6 @@ interface FilaDoDiaProps {
   appointments: CalendarAppointment[];
   services: CalendarService[];
   clients: FilaClient[];
-  onCheckIn: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
 }
@@ -47,7 +45,6 @@ export default function FilaDoDia({
   appointments,
   services,
   clients,
-  onCheckIn,
   onConclude,
   onCancel,
 }: FilaDoDiaProps) {
@@ -181,21 +178,6 @@ export default function FilaDoDia({
                 {/* Barra de ações full-width (toque na linha expande) */}
                 {expanded && hasAppointmentActions(appt) && (
                   <div className="flex gap-2 px-3 pb-3">
-                    {(appt.status === "scheduled" ||
-                      appt.status === "confirmed") && (
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={e => {
-                          e.stopPropagation();
-                          onCheckIn(appt.id);
-                        }}
-                        className="h-9 flex-1 gap-1.5 bg-primary text-xs font-semibold text-primary-foreground hover:bg-primary/90"
-                      >
-                        <CheckCircle2 className="h-4 w-4" />
-                        Chegada
-                      </Button>
-                    )}
                     <Button
                       type="button"
                       size="sm"
