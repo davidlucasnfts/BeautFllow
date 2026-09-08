@@ -282,9 +282,15 @@ export default function Appointments() {
           <AppointmentDialog
             open={open}
             onOpenChange={v => {
-              // na fila, o novo agendamento já nasce no dia selecionado
-              if (v && isMobile)
-                updateField("appointmentDate", format(filaDate, "yyyy-MM-dd"));
+              if (v) {
+                // abrindo: formulário sempre limpo; a data inicial segue o
+                // contexto (dia selecionado na fila no mobile, hoje no desktop)
+                resetForm();
+                updateField(
+                  "appointmentDate",
+                  format(isMobile ? filaDate : new Date(), "yyyy-MM-dd")
+                );
+              }
               setOpen(v);
             }}
             form={form}

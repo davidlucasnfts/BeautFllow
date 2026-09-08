@@ -22,7 +22,7 @@ export const HOUR_HEIGHT = 64;
 export const START_HOUR = 8;
 export const END_HOUR = 20;
 
-const ACTIVE_STATUSES = ["scheduled", "confirmed", "checked_in"];
+const ACTIVE_STATUSES = ["scheduled", "confirmed", "checked_in", "in_progress"];
 
 /** O compromisso tem alguma ação rápida disponível no status atual? */
 export function hasAppointmentActions(appt: { status: string }): boolean {

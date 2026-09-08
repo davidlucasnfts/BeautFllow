@@ -71,7 +71,7 @@ export default function AppointmentDialog({
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[60]">
                 {clients?.map(c => (
                   <SelectItem key={c.id} value={String(c.id)}>
                     {c.name}
@@ -91,7 +91,7 @@ export default function AppointmentDialog({
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[60]">
                   {professionals?.map(p => (
                     <SelectItem key={p.id} value={String(p.id)}>
                       {p.name}
@@ -109,7 +109,7 @@ export default function AppointmentDialog({
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[60]">
                   {services?.map(s => (
                     <SelectItem key={s.id} value={String(s.id)}>
                       {s.name} - R$ {s.price}
@@ -150,7 +150,7 @@ export default function AppointmentDialog({
                     }
                   />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[60]">
                   {(availableSlots ?? []).map(slot => (
                     <SelectItem key={slot} value={slot}>
                       {slot}

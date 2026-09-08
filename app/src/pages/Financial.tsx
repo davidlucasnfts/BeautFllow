@@ -149,7 +149,7 @@ export default function Financial() {
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[60]">
                       {clients?.map(c => (
                         <SelectItem key={c.id} value={String(c.id)}>
                           {c.name}
@@ -170,7 +170,7 @@ export default function Financial() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[60]">
                         <SelectItem value="service">Serviço</SelectItem>
                         <SelectItem value="product">Produto</SelectItem>
                         <SelectItem value="package">Pacote</SelectItem>
@@ -239,7 +239,7 @@ export default function Financial() {
                       <SelectTrigger>
                         <SelectValue placeholder="Opcional" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[60]">
                         {professionals?.map(p => (
                           <SelectItem key={p.id} value={String(p.id)}>
                             {p.name}
@@ -259,7 +259,7 @@ export default function Financial() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[60]">
                         <SelectItem value="pix">Pix</SelectItem>
                         <SelectItem value="credit_card">
                           Cartão Crédito

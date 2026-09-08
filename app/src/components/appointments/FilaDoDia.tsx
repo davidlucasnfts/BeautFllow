@@ -7,15 +7,10 @@ import {
   isSameDay,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import {
-  MessageCircle,
-  CalendarDays,
-  CheckCheck,
-  Play,
-  XCircle,
-} from "lucide-react";
+import { CalendarDays, CheckCheck, Play, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 import {
   STATUS_COLORS,
   STATUS_LABELS,
@@ -156,7 +151,7 @@ export default function FilaDoDia({
                       {service?.name ?? "Serviço"}
                     </p>
                   </div>
-                  <div className="flex shrink-0 flex-col items-end gap-1">
+                  <div className="flex shrink-0 flex-row items-center gap-1.5">
                     <Badge
                       variant="secondary"
                       className={`${STATUS_COLORS[appt.status] ?? ""} text-[10px]`}
@@ -169,10 +164,11 @@ export default function FilaDoDia({
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={e => e.stopPropagation()}
-                        className="flex items-center gap-1 rounded-md bg-green-600 px-1.5 py-0.5 text-[10px] font-semibold text-white transition-colors hover:bg-green-700"
+                        title="Chamar no WhatsApp"
+                        aria-label={`Chamar ${client.name} no WhatsApp`}
+                        className="flex h-8 w-8 items-center justify-center rounded-md bg-green-600 text-white transition-colors hover:bg-green-700"
                       >
-                        <MessageCircle className="h-3 w-3" />
-                        WhatsApp
+                        <WhatsAppIcon className="h-4 w-4" />
                       </a>
                     )}
                   </div>

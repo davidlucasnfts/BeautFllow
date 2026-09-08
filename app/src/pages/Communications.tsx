@@ -145,7 +145,7 @@ export default function Communications() {
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[60]">
                     {clients?.map(c => (
                       <SelectItem key={c.id} value={String(c.id)}>
                         {c.name}
@@ -166,7 +166,7 @@ export default function Communications() {
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[60]">
                       <SelectItem value="whatsapp">WhatsApp</SelectItem>
                       <SelectItem value="sms">SMS</SelectItem>
                       <SelectItem value="email">E-mail</SelectItem>
@@ -184,11 +184,13 @@ export default function Communications() {
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[60]">
                       <SelectItem value="confirmation">Confirmação</SelectItem>
                       <SelectItem value="reminder">Lembrete</SelectItem>
                       <SelectItem value="post_care">Pós-cuidado</SelectItem>
-                      <SelectItem value="reactivation">Trazer de volta</SelectItem>
+                      <SelectItem value="reactivation">
+                        Trazer de volta
+                      </SelectItem>
                       <SelectItem value="manual">Escrita por você</SelectItem>
                     </SelectContent>
                   </Select>
@@ -232,17 +234,14 @@ export default function Communications() {
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <AlertTriangle className="h-4 w-4 text-amber-500" />
             <span>
-              Clientes que estão sumidos recebem mensagem automática para
-              voltar
+              Clientes que estão sumidos recebem mensagem automática para voltar
             </span>
           </div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-            <span>
-              Mensagens pelo WhatsApp com aviso quando chegam
-            </span>
+            <span>Mensagens pelo WhatsApp com aviso quando chegam</span>
           </div>
         </Card>
       </div>

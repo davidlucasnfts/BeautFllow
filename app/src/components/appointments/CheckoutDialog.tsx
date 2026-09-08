@@ -155,7 +155,7 @@ function CheckoutForm({
             <SelectTrigger id="checkout-pagamento">
               <SelectValue className="truncate" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[60]">
               {PAYMENT_OPTIONS.map(opt => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
