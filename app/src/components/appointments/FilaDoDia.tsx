@@ -190,7 +190,7 @@ export default function FilaDoDia({
                           e.stopPropagation();
                           onCheckIn(appt.id);
                         }}
-                        className="h-9 flex-1 gap-1.5 bg-green-600 text-xs font-semibold text-white hover:bg-green-700"
+                        className="h-9 flex-1 gap-1.5 bg-primary text-xs font-semibold text-primary-foreground hover:bg-primary/90"
                       >
                         <CheckCircle2 className="h-4 w-4" />
                         Chegada

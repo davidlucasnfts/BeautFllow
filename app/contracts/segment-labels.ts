@@ -44,7 +44,7 @@ export const segmentLabels: Record<
     segmentNamePlural: "Estéticas",
     segmentArticle: "da",
     segmentPossessive: "sua",
-    professional: "Esteticista",
+    professional: "Profissional",
     client: "Cliente",
     service: "Serviço",
     appointment: "Agendamento",

@@ -43,7 +43,7 @@ export default function AppointmentActions({
           type="button"
           size="sm"
           onClick={stop(() => onCheckIn(appt.id))}
-          className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-green-600 text-white hover:bg-green-700"
+          className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-primary text-primary-foreground hover:bg-primary/90"
         >
           <CheckCircle2 className="h-3 w-3" />
           Chegada
