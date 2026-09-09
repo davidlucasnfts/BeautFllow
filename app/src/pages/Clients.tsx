@@ -20,7 +20,6 @@ import {
   Plus,
   Phone,
   Users,
-  Trash2,
   Edit3,
   ShieldCheck,
 } from "lucide-react";
@@ -30,7 +29,7 @@ import { toast } from "sonner";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import { onlyText, maskPhoneBR } from "@/lib/input-masks";
 import DatePicker from "@/components/DatePicker";
-import ClientCardDetails from "@/components/clients/ClientCardDetails";
+import ClientExpandedSection from "@/components/clients/ClientExpandedSection";
 import { getSegmentPalette } from "@contracts/segment-palettes";
 
 const segmentColors: Record<string, string> = {
@@ -333,26 +332,15 @@ export default function Clients() {
                     </button>
                   </div>
                 </div>
-                {expanded && (
-                  <div className="border-l-2 border-primary px-4 pb-3 pt-1 space-y-3">
-                    <ClientCardDetails client={client} />
-                    <div className="flex justify-end">
-                      <button
-                        type="button"
-                        onClick={e => {
-                          e.stopPropagation();
-                          setDeleteTarget({
-                            id: client.id,
-                            name: client.name,
-                          });
-                        }}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        Excluir {segmentLabel("client")}
-                      </button>
-                    </div>
-                  </div>
+                {expanded && salon && (
+                  <ClientExpandedSection
+                    client={client}
+                    salonId={salon.id}
+                    deleteLabel={`Excluir ${segmentLabel("client")}`}
+                    onDelete={() =>
+                      setDeleteTarget({ id: client.id, name: client.name })
+                    }
+                  />
                 )}
               </div>
             );

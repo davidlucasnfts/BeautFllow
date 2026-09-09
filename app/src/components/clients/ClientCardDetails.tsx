@@ -8,7 +8,6 @@ export type ClientForDetails = {
   notes: string | null;
   totalVisits: number;
   totalSpent: string;
-  createdAt: Date | string;
 };
 
 function ageFromISO(iso: string): number | null {
@@ -35,27 +34,29 @@ function Detail({ label, value }: { label: string; value: string }) {
 
 export default function ClientCardDetails({
   client,
+  lastVisit,
 }: {
   client: ClientForDetails;
+  /** Data (ISO) do último atendimento concluído — vem do histórico */
+  lastVisit: string | null;
 }) {
   const age = client.birthDate ? ageFromISO(client.birthDate) : null;
-  const createdIso =
-    typeof client.createdAt === "string"
-      ? client.createdAt
-      : client.createdAt.toISOString();
   return (
     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
       <Detail
-        label="Nascimento"
+        label="Aniversário"
         value={
           client.birthDate
-            ? `${isoToDateBR(client.birthDate)}${age !== null ? ` · ${age} anos` : ""}`
+            ? `${isoToDateBR(client.birthDate).slice(0, 5)}${age !== null ? ` · ${age} anos` : ""}`
             : "—"
         }
       />
+      <Detail
+        label="Última visita"
+        value={lastVisit ? isoToDateBR(lastVisit) : "—"}
+      />
       <Detail label="Visitas" value={String(client.totalVisits)} />
       <Detail label="Total gasto" value={`R$ ${client.totalSpent}`} />
-      <Detail label="Cliente desde" value={isoToDateBR(createdIso)} />
       <div className="col-span-2">
         <Detail
           label="Observações / Alergias"

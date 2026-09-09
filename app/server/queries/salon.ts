@@ -263,6 +263,29 @@ export async function getAppointmentById(id: number, salonId: number) {
   });
 }
 
+/** Histórico recente do cliente: atendimentos concluídos com nome/valor do serviço */
+export async function getClientHistory(salonId: number, clientId: number, limit = 5) {
+  return getDb()
+    .select({
+      id: appointments.id,
+      appointmentDate: appointments.appointmentDate,
+      status: appointments.status,
+      serviceName: services.name,
+      servicePrice: services.price,
+    })
+    .from(appointments)
+    .innerJoin(services, eq(appointments.serviceId, services.id))
+    .where(
+      and(
+        eq(appointments.salonId, salonId),
+        eq(appointments.clientId, clientId),
+        eq(appointments.status, "completed")
+      )
+    )
+    .orderBy(desc(appointments.appointmentDate), desc(appointments.startTime))
+    .limit(limit);
+}
+
 export async function updateAppointment(
   id: number,
   salonId: number,

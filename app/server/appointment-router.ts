@@ -5,6 +5,7 @@ import {
   getAppointmentsBySalon,
   getAppointmentsByProfessional,
   getAppointmentById,
+  getClientHistory,
   updateAppointment,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
@@ -43,6 +44,18 @@ export const appointmentRouter = createRouter({
   byId: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .query(({ input }) => getAppointmentById(input.id, input.salonId)),
+
+  historyByClient: authedQuery
+    .input(
+      z.object({
+        salonId: z.number(),
+        clientId: z.number(),
+        limit: z.number().min(1).max(20).default(5),
+      })
+    )
+    .query(({ input }) =>
+      getClientHistory(input.salonId, input.clientId, input.limit)
+    ),
 
   create: authedQuery
     .input(
