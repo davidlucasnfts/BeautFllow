@@ -36,6 +36,12 @@ export default function DatePicker({
   const [open, setOpen] = useState(false);
   const selected = value ? new Date(`${value}T00:00:00`) : undefined;
 
+  // Range de navegação: o que o uso definiu ou um padrão amplo (80 anos p/ trás,
+  // 5 p/ frente) — sem isso o dropdown de ano só mostra o ano corrente
+  const currentYear = new Date().getFullYear();
+  const start = fromDate ?? new Date(currentYear - 80, 0, 1);
+  const end = toDate ?? new Date(currentYear + 5, 11, 1);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -66,8 +72,13 @@ export default function DatePicker({
             }
           }}
           locale={ptBR}
-          fromDate={fromDate}
-          toDate={toDate}
+          captionLayout="dropdown"
+          fromDate={start}
+          toDate={end}
+          formatters={{
+            formatMonthDropdown: date =>
+              date.toLocaleString("pt-BR", { month: "short" }),
+          }}
           initialFocus
         />
       </PopoverContent>

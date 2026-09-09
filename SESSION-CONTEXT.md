@@ -126,7 +126,7 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [x] Rodar migration 006-remove-client-cpf-email.sql no Supabase (SQL Editor) — remove CPF e e-mail do cadastro de cliente. O app já funciona sem esses campos antes da migration; ela só apaga as colunas
 - [x] Rodar migration 005-rls-salons.sql no Supabase (SQL Editor) — fecha lacuna: tabela `salons` estava sem RLS. App não é afetado (backend acessa como owner), mas testar o fluxo local depois
 - [ ] Apagar usuário de teste `teste.kimi.2026@gmail.com` na tabela `local_users` do Supabase (opcional)
-- [ ] **Rodar migration 007-client-segment-manual.sql no Supabase** (SQL Editor → colar o conteúdo de `supabase/migrations/007-client-segment-manual.sql` → Run) — adiciona a coluna `segmentManual` na tabela `clients`. Sem ela, a listagem de clientes e o cálculo automático de status quebram (erro de coluna inexistente)
+- [x] Rodar migration 007-client-segment-manual.sql no Supabase — **aplicada pelo Kimi direto no banco em 09/09** (coluna `segmentManual` na tabela `clients`). Sem ela, listagem e cadastro de clientes quebravam com erro 500
 
 ---
 

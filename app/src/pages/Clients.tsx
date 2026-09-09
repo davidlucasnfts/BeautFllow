@@ -235,6 +235,7 @@ export default function Clients() {
                   value={form.birthDate}
                   onChange={iso => setForm({ ...form, birthDate: iso })}
                   placeholder="Selecione"
+                  toDate={new Date()}
                 />
               </div>
               <div className="grid gap-2">

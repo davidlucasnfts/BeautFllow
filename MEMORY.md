@@ -73,6 +73,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Ficha do cliente: Aniversário dd/mm + idade, Última visita e Histórico recente de atendimentos (endpoint `appointment.historyByClient`) | 08/09 |
 | Status dos clientes híbrido: regras automáticas configuráveis (VIP por gasto ou atendimentos no mês, dias p/ Sumindo/Inativo) + seletor manual por cliente + totais reais de visitas/gasto recalculados ao listar (migration 007) | 08/09 |
 | Renomeação "Visitas" → "Atendimentos" nas telas de cliente | 08/09 |
+| DatePicker com seletor de mês e ano (dropdowns) em todas as telas — nascimento bloqueia datas futuras | 09/09 |
 | Ciclo da agenda completo: Concluir com check-out financeiro vinculado, board "Agendamentos de hoje" na Dashboard, cancelar com confirmação | 07/09 |
 | Ciclo da agenda: `Agendado → (Iniciar) → Em andamento → (Concluir) → Completo`, com Cancelar até o fim (outline); removido "Confirmar"; badge "Chegou" virou "Em andamento" na cor do tema; DatePicker calendário em todos os campos de data; ações da fila do dia compactas alinhadas à direita | 08/09 |
 | Fix crítico: componentes shadcn convertidos de sintaxe Tailwind v4 para v3 (110 ocorrências, 27 arquivos) — sidebar fixa não cobre mais o conteúdo, selects/menus com max-height e origem de animação corretos | 08/09 |
