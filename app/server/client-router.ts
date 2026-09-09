@@ -7,13 +7,18 @@ import {
   updateClient,
   deleteClient,
   searchClients,
+  refreshClientSegments,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
 
 export const customerRouter = createRouter({
   list: authedQuery
     .input(z.object({ salonId: z.number(), limit: z.number().default(100) }))
-    .query(({ input }) => getClientsBySalon(input.salonId, input.limit)),
+    .query(async ({ input }) => {
+      // Recalcula totais e status automáticos antes de listar (híbrido)
+      await refreshClientSegments(input.salonId);
+      return getClientsBySalon(input.salonId, input.limit);
+    }),
 
   byId: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
@@ -67,13 +72,16 @@ export const customerRouter = createRouter({
         segment: z
           .enum(["new", "active", "vip", "at_risk", "inactive"])
           .optional(),
+        /** true = dono escolheu o status na mão (não mexe mais sozinho) */
+        segmentManual: z.boolean().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { id, salonId, birthDate, ...data } = input;
+      const { id, salonId, birthDate, segmentManual, ...data } = input;
       const result = await updateClient(id, salonId, {
         ...data,
         birthDate: birthDate || undefined,
+        ...(segmentManual !== undefined ? { segmentManual } : {}),
       });
       await auditAction(
         "update",

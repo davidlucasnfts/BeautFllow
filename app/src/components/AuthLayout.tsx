@@ -252,6 +252,7 @@ function AuthLayoutContent({
         plan: first.plan,
         schedule: first.schedule,
         theme: first.theme,
+        clientStatus: first.clientStatus,
       });
     }
   }, [salonsData, salon, setSalon]);

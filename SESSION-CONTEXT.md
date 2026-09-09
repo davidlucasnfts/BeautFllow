@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 04/09/2026
-> **Sessão atual:** Correção do auth local (login/logout) + favicon + regra global de teste local antes de produção
+> **Atualizado em:** 08/09/2026
+> **Sessão atual:** Melhorias da página de Clientes — ficha expandida, ícone WhatsApp oficial, status híbrido (automático + manual)
 
 ---
 
@@ -11,9 +11,17 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 ---
 
 ## Última funcionalidade trabalhada
-**Cópia de padrões do MandatoDigital para o AGENTS.md + auditoria de design do projeto** — 05/09
+**Página de Clientes — ficha expandida + status híbrido dos clientes** — 08/09
 
-### O que mudou nesta sessão (05/09):
+### O que mudou nesta sessão (08/09):
+1. **Lista de clientes padrão Fila do Dia** — ficha expande na linha (sem trocar de tela), WhatsApp com ícone oficial na lateral, Excluir só dentro do card aberto
+2. **Ficha completa** — Aniversário dd/mm + idade, Última visita, Histórico recente de atendimentos (endpoint novo `appointment.historyByClient`)
+3. **Status híbrido dos clientes** — regras automáticas configuráveis em Configurações (VIP por R$ gasto ou nº de atendimentos no mês, dias p/ Sumindo/Inativo) + seletor manual "Automático/Novo/Ativo/VIP/Sumindo/Inativo" no editar do cliente (`segmentManual`, migration 007)
+4. **Totais reais** — `totalVisits`, `totalSpent` e `lastVisitAt` são recalculados dos agendamentos concluídos sempre que a lista carrega (antes ficavam zerados)
+5. **Renomeação "Visitas" → "Atendimentos"** nas telas de cliente
+6. **Fix Tailwind v4→v3** nos componentes shadcn (sidebar fixa não cobria mais o conteúdo)
+
+### Sessão anterior (05/09):
 1. **AGENTS.md ganhou 8 padrões copiados do MandatoDigital** (commit f6c56b0): checklist pré-commit obrigatório, padrão de páginas de teste (V2/V3), padrão de preview/detalhes (ficha do item selecionado), abas/filtros, cards h-full + grids simétricos, mobile-first responsivo obrigatório, regra de senha PostgreSQL sem caracteres especiais
 2. **Auditoria de design executada** — achados pendentes de aplicação:
    - `Clients.tsx`, `Services.tsx`, `Professionals.tsx` usam botões de ícone sozinhos (ghost, Edit3/Trash2 sem texto) — violam a regra "sempre texto + ícone" do próprio design system
@@ -118,6 +126,7 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [x] Rodar migration 006-remove-client-cpf-email.sql no Supabase (SQL Editor) — remove CPF e e-mail do cadastro de cliente. O app já funciona sem esses campos antes da migration; ela só apaga as colunas
 - [x] Rodar migration 005-rls-salons.sql no Supabase (SQL Editor) — fecha lacuna: tabela `salons` estava sem RLS. App não é afetado (backend acessa como owner), mas testar o fluxo local depois
 - [ ] Apagar usuário de teste `teste.kimi.2026@gmail.com` na tabela `local_users` do Supabase (opcional)
+- [ ] **Rodar migration 007-client-segment-manual.sql no Supabase** (SQL Editor → colar o conteúdo de `supabase/migrations/007-client-segment-manual.sql` → Run) — adiciona a coluna `segmentManual` na tabela `clients`. Sem ela, a listagem de clientes e o cálculo automático de status quebram (erro de coluna inexistente)
 
 ---
 

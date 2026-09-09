@@ -206,6 +206,7 @@ export const clients = pgTable(
     notes: text("notes"),
     tags: text("tags"),
     segment: clientSegmentEnum("segment").default("new").notNull(),
+    segmentManual: boolean("segmentManual").default(false).notNull(),
     lastVisitAt: timestamp("lastVisitAt"),
     totalVisits: integer("totalVisits").default(0).notNull(),
     totalSpent: decimal("totalSpent", { precision: 12, scale: 2 })

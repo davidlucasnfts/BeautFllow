@@ -68595,6 +68595,161 @@ var SignJWT = class {
   }
 };
 
+// contracts/segment-palettes.ts
+function hexToHsl(hex3) {
+  const normalized = hex3.replace("#", "");
+  const r = parseInt(normalized.substring(0, 2), 16) / 255;
+  const g = parseInt(normalized.substring(2, 4), 16) / 255;
+  const b2 = parseInt(normalized.substring(4, 6), 16) / 255;
+  const max = Math.max(r, g, b2);
+  const min = Math.min(r, g, b2);
+  const l = (max + min) / 2;
+  const d = max - min;
+  let h = 0;
+  let s = 0;
+  if (d > 0) {
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = (g - b2) / d + (g < b2 ? 6 : 0);
+    else if (max === g) h = (b2 - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+  }
+  return `${Math.round(h)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+}
+function buildPalette(primary, secondary, accent, background, text2) {
+  return {
+    primary,
+    secondary,
+    accent,
+    background,
+    text: text2,
+    primaryHsl: hexToHsl(primary),
+    secondaryHsl: hexToHsl(secondary),
+    accentHsl: hexToHsl(accent)
+  };
+}
+var themes = {
+  "rosa-classico": {
+    id: "rosa-classico",
+    segment: "beauty_salon",
+    name: "Doce",
+    palette: buildPalette(
+      "#E8A0BF",
+      "#D4AF37",
+      "#F472B6",
+      "#FAFAFA",
+      "#1E293B"
+    )
+  },
+  "rosa-choque": {
+    id: "rosa-choque",
+    segment: "beauty_salon",
+    name: "Vibrante",
+    palette: buildPalette(
+      "#EC4899",
+      "#D4AF37",
+      "#BE185D",
+      "#FAFAFA",
+      "#1E293B"
+    )
+  },
+  "rose-gold": {
+    id: "rose-gold",
+    segment: "beauty_salon",
+    name: "Elegante",
+    palette: buildPalette(
+      "#B76E79",
+      "#D4AF37",
+      "#E8B4B8",
+      "#FAFAFA",
+      "#1E293B"
+    )
+  },
+  "preto-dourado": {
+    id: "preto-dourado",
+    segment: "barbershop",
+    name: "Cl\xE1ssico",
+    palette: buildPalette(
+      "#1F1F1F",
+      "#C9A227",
+      "#A16207",
+      "#F5F5F4",
+      "#1C1917"
+    )
+  },
+  "grafite-prata": {
+    id: "grafite-prata",
+    segment: "barbershop",
+    name: "Moderno",
+    palette: buildPalette(
+      "#374151",
+      "#9CA3AF",
+      "#111827",
+      "#F5F5F4",
+      "#1C1917"
+    )
+  },
+  "preto-fosco-dourado": {
+    id: "preto-fosco-dourado",
+    segment: "barbershop",
+    name: "Premium",
+    palette: buildPalette(
+      "#0A0A0A",
+      "#D4AF37",
+      "#B8860B",
+      "#F5F5F4",
+      "#1C1917"
+    )
+  },
+  "lilas-suave": {
+    id: "lilas-suave",
+    segment: "aesthetic_clinic",
+    name: "Sereno",
+    palette: buildPalette(
+      "#A78BFA",
+      "#D4AF37",
+      "#C4B5FD",
+      "#F8FAFC",
+      "#0F172A"
+    )
+  },
+  "lavanda-profunda": {
+    id: "lavanda-profunda",
+    segment: "aesthetic_clinic",
+    name: "Sofisticado",
+    palette: buildPalette(
+      "#7C3AED",
+      "#D4AF37",
+      "#A78BFA",
+      "#F8FAFC",
+      "#0F172A"
+    )
+  },
+  "lilas-luxo": {
+    id: "lilas-luxo",
+    segment: "aesthetic_clinic",
+    name: "Luxo",
+    palette: buildPalette(
+      "#8B5CF6",
+      "#D4AF37",
+      "#6D28D9",
+      "#F8FAFC",
+      "#0F172A"
+    )
+  }
+};
+function themesForSegment(segment) {
+  return Object.values(themes).filter((t2) => t2.segment === segment);
+}
+function defaultThemeForSegment(segment) {
+  return themesForSegment(segment)[0];
+}
+var segmentPalettes = {
+  beauty_salon: defaultThemeForSegment("beauty_salon").palette,
+  barbershop: defaultThemeForSegment("barbershop").palette,
+  aesthetic_clinic: defaultThemeForSegment("aesthetic_clinic").palette
+};
+
 // contracts/constants.ts
 var Session = {
   cookieName: "studioflow_sid",
@@ -68604,6 +68759,66 @@ var ErrorMessages = {
   unauthenticated: "Authentication required",
   insufficientRole: "Insufficient permissions"
 };
+var Schedule = {
+  slotMinutes: 30,
+  dayStart: "07:00",
+  dayEnd: "21:00"
+};
+var defaultScheduleSettings = {
+  dayStart: Schedule.dayStart,
+  dayEnd: Schedule.dayEnd,
+  slotMinutes: Schedule.slotMinutes
+};
+var defaultClientStatusSettings = {
+  mode: "spent",
+  vipThreshold: 1e3,
+  atRiskDays: 45,
+  inactiveDays: 90
+};
+var POSITIVE_INT = /^\d+$/;
+function parseClientStatusSettings(raw2) {
+  const d = defaultClientStatusSettings;
+  try {
+    const parsed = raw2 ? JSON.parse(raw2) : null;
+    if (!parsed || typeof parsed !== "object") return d;
+    const s = parsed.clientStatus;
+    if (!s || typeof s !== "object") return d;
+    const num = (v, fallback, max) => typeof v === "number" && Number.isFinite(v) && v >= 0 ? Math.min(Math.floor(v), max) : typeof v === "string" && POSITIVE_INT.test(v) ? Math.min(parseInt(v, 10), max) : fallback;
+    return {
+      mode: s.mode === "visits" ? "visits" : "spent",
+      vipThreshold: num(s.vipThreshold, d.vipThreshold, 999999),
+      atRiskDays: Math.max(1, num(s.atRiskDays, d.atRiskDays, 365)),
+      inactiveDays: Math.max(1, num(s.inactiveDays, d.inactiveDays, 730))
+    };
+  } catch {
+    return d;
+  }
+}
+var TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
+function parseThemeSettings(raw2) {
+  try {
+    const parsed = raw2 ? JSON.parse(raw2) : null;
+    if (!parsed || typeof parsed !== "object") return null;
+    const theme = parsed.theme;
+    return typeof theme === "string" && theme in themes ? theme : null;
+  } catch {
+    return null;
+  }
+}
+function parseScheduleSettings(raw2) {
+  try {
+    const parsed = raw2 ? JSON.parse(raw2) : null;
+    if (!parsed || typeof parsed !== "object") return defaultScheduleSettings;
+    const s = parsed;
+    return {
+      dayStart: typeof s.dayStart === "string" && TIME_REGEX.test(s.dayStart) ? s.dayStart : defaultScheduleSettings.dayStart,
+      dayEnd: typeof s.dayEnd === "string" && TIME_REGEX.test(s.dayEnd) ? s.dayEnd : defaultScheduleSettings.dayEnd,
+      slotMinutes: typeof s.slotMinutes === "number" && s.slotMinutes >= 15 && s.slotMinutes <= 120 ? Math.floor(s.slotMinutes) : defaultScheduleSettings.slotMinutes
+    };
+  } catch {
+    return defaultScheduleSettings;
+  }
+}
 
 // node_modules/@trpc/server/dist/initTRPC-BRf4imah.mjs
 var import_objectSpread2$2 = __toESM2(require_objectSpread2(), 1);
@@ -74916,6 +75131,9 @@ var Index = class {
 function index(name) {
   return new IndexBuilderOn(false, name);
 }
+function uniqueIndex(name) {
+  return new IndexBuilderOn(true, name);
+}
 
 // node_modules/drizzle-orm/pg-core/primary-keys.js
 var PrimaryKeyBuilder = class {
@@ -79065,7 +79283,8 @@ var salonUsers = pgTable(
   },
   (table) => ({
     userSalonIdx: index("user_salon_idx").on(table.userId, table.salonId),
-    salonIdx: index("salon_users_salon_idx").on(table.salonId)
+    salonIdx: index("salon_users_salon_idx").on(table.salonId),
+    userIdUnique: uniqueIndex("salon_users_user_id_key").on(table.userId)
   })
 );
 var clients = pgTable(
@@ -79074,13 +79293,12 @@ var clients = pgTable(
     id: serial("id").primaryKey(),
     salonId: bigint4("salonId", { mode: "number" }).notNull(),
     name: varchar("name", { length: 255 }).notNull(),
-    email: varchar("email", { length: 320 }),
     phone: varchar("phone", { length: 50 }).notNull(),
     birthDate: date5("birthDate"),
-    cpf: varchar("cpf", { length: 14 }),
     notes: text("notes"),
     tags: text("tags"),
     segment: clientSegmentEnum("segment").default("new").notNull(),
+    segmentManual: boolean4("segmentManual").default(false).notNull(),
     lastVisitAt: timestamp("lastVisitAt"),
     totalVisits: integer2("totalVisits").default(0).notNull(),
     totalSpent: decimal("totalSpent", { precision: 12, scale: 2 }).default("0.00").notNull(),
@@ -79624,9 +79842,7 @@ async function deleteClient(id, salonId) {
   await getDb().update(clients).set({
     lgpdAnonymized: true,
     name: "An\xF4nimo",
-    email: null,
     phone: "",
-    cpf: null,
     notes: null
   }).where(and(eq(clients.id, id), eq(clients.salonId, salonId)));
 }
@@ -79706,6 +79922,21 @@ async function getAppointmentById(id, salonId) {
   return getDb().query.appointments.findFirst({
     where: and(eq(appointments.id, id), eq(appointments.salonId, salonId))
   });
+}
+async function getClientHistory(salonId, clientId, limit = 5) {
+  return getDb().select({
+    id: appointments.id,
+    appointmentDate: appointments.appointmentDate,
+    status: appointments.status,
+    serviceName: services.name,
+    servicePrice: services.price
+  }).from(appointments).innerJoin(services, eq(appointments.serviceId, services.id)).where(
+    and(
+      eq(appointments.salonId, salonId),
+      eq(appointments.clientId, clientId),
+      eq(appointments.status, "completed")
+    )
+  ).orderBy(desc(appointments.appointmentDate), desc(appointments.startTime)).limit(limit);
 }
 async function updateAppointment(id, salonId, data) {
   await getDb().update(appointments).set(data).where(and(eq(appointments.id, id), eq(appointments.salonId, salonId)));
@@ -79953,6 +80184,87 @@ async function getDashboardMetrics(salonId, month) {
     revenueGrowth: Math.round(revenueGrowth * 10) / 10
   };
 }
+async function getSalonBySlug(slug) {
+  return getDb().query.salons.findFirst({
+    where: and(eq(salons.slug, slug), eq(salons.isActive, true))
+  });
+}
+async function getPublicServices(salonId) {
+  return getDb().select({
+    id: services.id,
+    name: services.name,
+    price: services.price,
+    durationMinutes: services.durationMinutes,
+    category: services.category
+  }).from(services).where(and(eq(services.salonId, salonId), eq(services.isActive, true))).orderBy(services.name);
+}
+async function getPublicProfessionals(salonId) {
+  return getDb().select({ id: professionals.id, name: professionals.name }).from(professionals).where(
+    and(
+      eq(professionals.salonId, salonId),
+      eq(professionals.isActive, true)
+    )
+  ).orderBy(professionals.name);
+}
+async function getClientByPhone(salonId, phone) {
+  return getDb().query.clients.findFirst({
+    where: and(
+      eq(clients.salonId, salonId),
+      eq(clients.phone, phone),
+      eq(clients.lgpdAnonymized, false)
+    )
+  });
+}
+async function refreshClientSegments(salonId) {
+  const db = getDb();
+  const [settingsRow, clientRows] = await Promise.all([
+    db.query.salons.findFirst({
+      where: eq(salons.id, salonId),
+      columns: { settings: true }
+    }),
+    db.query.clients.findMany({
+      where: and(eq(clients.salonId, salonId), eq(clients.lgpdAnonymized, false))
+    })
+  ]);
+  const cfg = parseClientStatusSettings(settingsRow?.settings);
+  const now = /* @__PURE__ */ new Date();
+  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+  const rows = await db.select({
+    clientId: appointments.clientId,
+    lastVisit: sql`max(${appointments.appointmentDate})`,
+    totalVisits: sql`count(*)::int`,
+    totalSpent: sql`coalesce(sum(${services.price}), 0)`,
+    monthVisits: sql`count(*) filter (where ${appointments.appointmentDate} >= ${monthStart})::int`,
+    monthSpent: sql`coalesce(sum(${services.price}) filter (where ${appointments.appointmentDate} >= ${monthStart}), 0)`
+  }).from(appointments).innerJoin(services, eq(appointments.serviceId, services.id)).where(
+    and(eq(appointments.salonId, salonId), eq(appointments.status, "completed"))
+  ).groupBy(appointments.clientId);
+  const stats = new Map(rows.map((r) => [r.clientId, r]));
+  for (const client of clientRows) {
+    const s = stats.get(client.id);
+    const lastVisitAt = s?.lastVisit ? new Date(s.lastVisit) : null;
+    const totalVisits = s?.totalVisits ?? 0;
+    const totalSpent = s?.totalSpent ?? "0";
+    let segment = client.segment;
+    if (!client.segmentManual) {
+      if (totalVisits === 0) {
+        segment = "new";
+      } else {
+        const isVip = cfg.mode === "spent" ? Number(s?.monthSpent ?? 0) >= cfg.vipThreshold : (s?.monthVisits ?? 0) >= cfg.vipThreshold;
+        const daysSince = lastVisitAt ? Math.floor(
+          (now.getTime() - lastVisitAt.getTime()) / (24 * 60 * 60 * 1e3)
+        ) : 9999;
+        if (isVip) segment = "vip";
+        else if (daysSince > cfg.inactiveDays) segment = "inactive";
+        else if (daysSince > cfg.atRiskDays) segment = "at_risk";
+        else segment = "active";
+      }
+    }
+    if (segment !== client.segment || totalVisits !== client.totalVisits || String(totalSpent) !== String(client.totalSpent) || (lastVisitAt?.getTime() ?? null) !== (client.lastVisitAt?.getTime() ?? null)) {
+      await db.update(clients).set({ segment, totalVisits, totalSpent, lastVisitAt }).where(eq(clients.id, client.id));
+    }
+  }
+}
 
 // server/salon-router.ts
 var salonSegmentSchema = external_exports.enum([
@@ -79985,7 +80297,47 @@ var salonRouter = createRouter({
     return salon;
   }),
   list: authedQuery.query(async ({ ctx }) => {
-    return getSalonsByUser(ctx.user.id);
+    const rows = await getSalonsByUser(ctx.user.id);
+    return rows.map(({ salon, role }) => ({
+      ...salon,
+      role,
+      schedule: parseScheduleSettings(salon.settings),
+      theme: parseThemeSettings(salon.settings) ?? defaultThemeForSegment(salon.segment).id,
+      clientStatus: parseClientStatusSettings(salon.settings)
+    }));
+  }),
+  updateSettings: authedQuery.input(
+    external_exports.object({
+      id: external_exports.number(),
+      dayStart: external_exports.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
+      dayEnd: external_exports.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
+      slotMinutes: external_exports.number().int().min(15).max(120),
+      theme: external_exports.string().optional(),
+      clientStatus: external_exports.object({
+        mode: external_exports.enum(["spent", "visits"]),
+        vipThreshold: external_exports.number().int().min(1).max(1e5),
+        atRiskDays: external_exports.number().int().min(7).max(365),
+        inactiveDays: external_exports.number().int().min(15).max(730)
+      }).optional()
+    })
+  ).mutation(async ({ input }) => {
+    const { id, theme, clientStatus, ...schedule } = input;
+    const current = await getSalonById(id);
+    let existing = {};
+    try {
+      const parsed = current?.settings ? JSON.parse(current.settings) : null;
+      if (parsed && typeof parsed === "object") existing = parsed;
+    } catch {
+      existing = {};
+    }
+    return updateSalon(id, {
+      settings: JSON.stringify({
+        ...existing,
+        ...schedule,
+        ...theme ? { theme } : {},
+        ...clientStatus ? { clientStatus } : {}
+      })
+    });
   }),
   update: authedQuery.input(
     external_exports.object({
@@ -80024,17 +80376,18 @@ function auditAction(action, entityType, salonId, userId, entityId, oldValue, ne
 
 // server/client-router.ts
 var customerRouter = createRouter({
-  list: authedQuery.input(external_exports.object({ salonId: external_exports.number(), limit: external_exports.number().default(100) })).query(({ input }) => getClientsBySalon(input.salonId, input.limit)),
+  list: authedQuery.input(external_exports.object({ salonId: external_exports.number(), limit: external_exports.number().default(100) })).query(async ({ input }) => {
+    await refreshClientSegments(input.salonId);
+    return getClientsBySalon(input.salonId, input.limit);
+  }),
   byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(({ input }) => getClientById(input.id, input.salonId)),
   search: authedQuery.input(external_exports.object({ salonId: external_exports.number(), query: external_exports.string() })).query(({ input }) => searchClients(input.salonId, input.query)),
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
       name: external_exports.string().min(1).max(255),
-      email: external_exports.string().email().optional().or(external_exports.literal("")),
       phone: external_exports.string().min(1).max(50),
       birthDate: external_exports.string().optional(),
-      cpf: external_exports.string().optional(),
       notes: external_exports.string().optional(),
       tags: external_exports.string().optional()
     })
@@ -80062,19 +80415,20 @@ var customerRouter = createRouter({
       id: external_exports.number(),
       salonId: external_exports.number(),
       name: external_exports.string().min(1).max(255).optional(),
-      email: external_exports.string().email().optional().or(external_exports.literal("")),
       phone: external_exports.string().min(1).max(50).optional(),
       birthDate: external_exports.string().optional(),
-      cpf: external_exports.string().optional(),
       notes: external_exports.string().optional(),
       tags: external_exports.string().optional(),
-      segment: external_exports.enum(["new", "active", "vip", "at_risk", "inactive"]).optional()
+      segment: external_exports.enum(["new", "active", "vip", "at_risk", "inactive"]).optional(),
+      /** true = dono escolheu o status na mão (não mexe mais sozinho) */
+      segmentManual: external_exports.boolean().optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    const { id, salonId, birthDate, ...data } = input;
+    const { id, salonId, birthDate, segmentManual, ...data } = input;
     const result = await updateClient(id, salonId, {
       ...data,
-      birthDate: birthDate || void 0
+      birthDate: birthDate || void 0,
+      ...segmentManual !== void 0 ? { segmentManual } : {}
     });
     await auditAction(
       "update",
@@ -80271,6 +80625,15 @@ var appointmentRouter = createRouter({
     )
   ),
   byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(({ input }) => getAppointmentById(input.id, input.salonId)),
+  historyByClient: authedQuery.input(
+    external_exports.object({
+      salonId: external_exports.number(),
+      clientId: external_exports.number(),
+      limit: external_exports.number().min(1).max(20).default(5)
+    })
+  ).query(
+    ({ input }) => getClientHistory(input.salonId, input.clientId, input.limit)
+  ),
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
@@ -80497,10 +80860,219 @@ var dashboardRouter = createRouter({
   metrics: authedQuery.input(external_exports.object({ salonId: external_exports.number(), month: external_exports.string() })).query(({ input }) => getDashboardMetrics(input.salonId, input.month))
 });
 
+// server/public-router.ts
+function addMinutes(hhmm, minutes) {
+  const [h, m] = hhmm.split(":").map(Number);
+  const total = (h * 60 + m + minutes) % (24 * 60);
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(
+    total % 60
+  ).padStart(2, "0")}`;
+}
+function floorToSlot(hhmm, stepMinutes = 30) {
+  const [h, m] = hhmm.split(":").map(Number);
+  const total = h * 60 + m;
+  const floored = total - total % stepMinutes;
+  return `${String(Math.floor(floored / 60)).padStart(2, "0")}:${String(
+    floored % 60
+  ).padStart(2, "0")}`;
+}
+var phoneSchema = external_exports.string().regex(/^\(\d{2}\) \d{4,5}-\d{4}$/, {
+  message: "Telefone inv\xE1lido. Use o formato (99) 99999-9999."
+});
+var publicRouter = createRouter({
+  // Dados da página pública de agendamento (sem login)
+  bookingPage: publicQuery.input(external_exports.object({ slug: external_exports.string().min(2).max(100) })).query(async ({ input }) => {
+    const salon = await getSalonBySlug(input.slug);
+    if (!salon) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Endere\xE7o n\xE3o encontrado."
+      });
+    }
+    const [services2, professionals2] = await Promise.all([
+      getPublicServices(salon.id),
+      getPublicProfessionals(salon.id)
+    ]);
+    return {
+      salon: {
+        name: salon.name,
+        slug: salon.slug,
+        segment: salon.segment,
+        address: salon.address,
+        city: salon.city,
+        state: salon.state,
+        phone: salon.phone,
+        theme: parseThemeSettings(salon.settings) ?? defaultThemeForSegment(salon.segment).id
+      },
+      services: services2,
+      professionals: professionals2
+    };
+  }),
+  // Horários livres de um dia (grade de 30 em 30 min, menos os ocupados)
+  availableSlots: publicQuery.input(
+    external_exports.object({
+      slug: external_exports.string().min(2).max(100),
+      date: external_exports.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      serviceId: external_exports.number().int().positive(),
+      professionalId: external_exports.number().int().positive().optional()
+    })
+  ).query(async ({ input }) => {
+    const salon = await getSalonBySlug(input.slug);
+    if (!salon) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Endere\xE7o n\xE3o encontrado."
+      });
+    }
+    const services2 = await getPublicServices(salon.id);
+    const service = services2.find((s) => s.id === input.serviceId);
+    if (!service) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Servi\xE7o n\xE3o encontrado."
+      });
+    }
+    const schedule = parseScheduleSettings(salon.settings);
+    const dayAppointments = await getAppointmentsBySalon(
+      salon.id,
+      input.date,
+      input.date
+    );
+    const busyIntervals = dayAppointments.filter((a) => {
+      if (a.status === "cancelled" || a.status === "no_show" || !a.endTime)
+        return false;
+      return input.professionalId ? a.professionalId === input.professionalId : a.professionalId === null;
+    }).flatMap((a) => {
+      if (!a.endTime) return [];
+      return [
+        { start: floorToSlot(a.startTime, schedule.slotMinutes), end: a.endTime }
+      ];
+    });
+    return {
+      slotMinutes: schedule.slotMinutes,
+      dayStart: schedule.dayStart,
+      dayEnd: schedule.dayEnd,
+      busyIntervals
+    };
+  }),
+  // Cria o agendamento vindo do link público
+  book: publicQuery.input(
+    external_exports.object({
+      slug: external_exports.string().min(2).max(100),
+      name: external_exports.string().min(2).max(255),
+      phone: phoneSchema,
+      serviceId: external_exports.number().int().positive(),
+      professionalId: external_exports.number().int().positive().optional(),
+      date: external_exports.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      startTime: external_exports.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, {
+        message: "Hor\xE1rio inv\xE1lido."
+      }),
+      notes: external_exports.string().max(500).optional()
+    })
+  ).mutation(async ({ input }) => {
+    const salon = await getSalonBySlug(input.slug);
+    if (!salon) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Endere\xE7o n\xE3o encontrado."
+      });
+    }
+    const services2 = await getPublicServices(salon.id);
+    const service = services2.find((s) => s.id === input.serviceId);
+    if (!service) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Servi\xE7o n\xE3o encontrado."
+      });
+    }
+    if (input.professionalId) {
+      const professionals2 = await getPublicProfessionals(salon.id);
+      if (!professionals2.find((p) => p.id === input.professionalId)) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Profissional n\xE3o encontrado."
+        });
+      }
+    }
+    const nowBR = new Date(
+      (/* @__PURE__ */ new Date()).toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
+    );
+    const requestedStart = /* @__PURE__ */ new Date(`${input.date}T${input.startTime}:00`);
+    if (requestedStart < nowBR) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Esse hor\xE1rio j\xE1 passou. Escolha uma data futura."
+      });
+    }
+    const newEnd = addMinutes(input.startTime, service.durationMinutes);
+    const dayAppointments = await getAppointmentsBySalon(
+      salon.id,
+      input.date,
+      input.date
+    );
+    const conflict = dayAppointments.find((a) => {
+      if (a.status === "cancelled" || a.status === "no_show") return false;
+      const sameProfessional = input.professionalId ? a.professionalId === input.professionalId : a.professionalId === null;
+      if (!sameProfessional || !a.endTime) return false;
+      return a.startTime < newEnd && a.endTime > input.startTime;
+    });
+    if (conflict) {
+      throw new TRPCError({
+        code: "CONFLICT",
+        message: "Esse hor\xE1rio j\xE1 est\xE1 ocupado. Escolha outro hor\xE1rio."
+      });
+    }
+    let client = await getClientByPhone(salon.id, input.phone);
+    if (!client) {
+      client = await createClient({
+        salonId: salon.id,
+        name: input.name,
+        phone: input.phone
+      });
+    }
+    if (!client) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "N\xE3o foi poss\xEDvel registrar seu cadastro."
+      });
+    }
+    const appointment = await createAppointment({
+      salonId: salon.id,
+      clientId: client.id,
+      serviceId: service.id,
+      professionalId: input.professionalId ?? null,
+      appointmentDate: input.date,
+      startTime: input.startTime,
+      endTime: addMinutes(input.startTime, service.durationMinutes),
+      notes: input.notes ?? null,
+      source: "online",
+      status: "scheduled"
+    });
+    await auditAction(
+      "create",
+      "appointment",
+      salon.id,
+      void 0,
+      appointment?.id ?? void 0,
+      void 0,
+      { source: "online", clientId: client.id }
+    );
+    return {
+      salonName: salon.name,
+      serviceName: service.name,
+      date: input.date,
+      startTime: input.startTime,
+      endTime: addMinutes(input.startTime, service.durationMinutes),
+      clientName: client.name
+    };
+  })
+});
+
 // server/router.ts
 var appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
   localAuth: localAuthRouter,
+  public: publicRouter,
   salon: salonRouter,
   customer: customerRouter,
   service: serviceRouter,

@@ -37,6 +37,55 @@ export const defaultScheduleSettings: ScheduleSettings = {
   slotMinutes: Schedule.slotMinutes,
 };
 
+// Configuração dos status automáticos dos clientes (salva em salons.settings como JSON)
+export interface ClientStatusSettings {
+  /** Critério VIP: "spent" = valor gasto no mês, "visits" = atendimentos no mês */
+  mode: "spent" | "visits";
+  /** Limite do VIP: R$ (mode spent) ou quantidade (mode visits) no mês corrente */
+  vipThreshold: number;
+  /** Dias sem atender para virar "Sumindo" */
+  atRiskDays: number;
+  /** Dias sem atender para virar "Inativo" */
+  inactiveDays: number;
+}
+
+export const defaultClientStatusSettings: ClientStatusSettings = {
+  mode: "spent",
+  vipThreshold: 1000,
+  atRiskDays: 45,
+  inactiveDays: 90,
+};
+
+const POSITIVE_INT = /^\d+$/;
+
+/** Lê o JSON salvo no banco e devolve a configuração de status válida (ou o padrão) */
+export function parseClientStatusSettings(
+  raw: string | null | undefined
+): ClientStatusSettings {
+  const d = defaultClientStatusSettings;
+  try {
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (!parsed || typeof parsed !== "object") return d;
+    const s = (parsed as { clientStatus?: Partial<ClientStatusSettings> })
+      .clientStatus;
+    if (!s || typeof s !== "object") return d;
+    const num = (v: unknown, fallback: number, max: number) =>
+      typeof v === "number" && Number.isFinite(v) && v >= 0
+        ? Math.min(Math.floor(v), max)
+        : typeof v === "string" && POSITIVE_INT.test(v)
+          ? Math.min(parseInt(v, 10), max)
+          : fallback;
+    return {
+      mode: s.mode === "visits" ? "visits" : "spent",
+      vipThreshold: num(s.vipThreshold, d.vipThreshold, 999999),
+      atRiskDays: Math.max(1, num(s.atRiskDays, d.atRiskDays, 365)),
+      inactiveDays: Math.max(1, num(s.inactiveDays, d.inactiveDays, 730)),
+    };
+  } catch {
+    return d;
+  }
+}
+
 const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 /** Lê o JSON de settings e devolve o id do tema salvo, se existir no catálogo */

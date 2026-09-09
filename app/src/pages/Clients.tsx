@@ -16,6 +16,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Search,
   Plus,
   Phone,
@@ -40,13 +47,17 @@ const segmentColors: Record<string, string> = {
   inactive: "bg-slate-100 text-slate-700",
 };
 
-const segmentLabels: Record<string, string> = {
+const segmentLabels = {
   new: "Novo",
   active: "Ativo",
   vip: "VIP",
   at_risk: "Sumindo",
   inactive: "Inativo",
-};
+} as const;
+
+const SEGMENT_KEYS = Object.keys(segmentLabels) as Array<
+  keyof typeof segmentLabels
+>;
 
 export default function Clients() {
   const { salon } = useSalon();
@@ -69,6 +80,7 @@ export default function Clients() {
     birthDate: "",
     notes: "",
     tags: "",
+    segment: "",
   });
 
   const utils = trpc.useUtils();
@@ -123,6 +135,7 @@ export default function Clients() {
       birthDate: "",
       notes: "",
       tags: "",
+      segment: "",
     });
   }
 
@@ -134,18 +147,28 @@ export default function Clients() {
       birthDate: client.birthDate ?? "",
       notes: client.notes ?? "",
       tags: client.tags ?? "",
+      // só pré-seleciona status manual se o dono já tiver escolhido na mão
+      segment: client.segmentManual ? client.segment : "",
     });
     setOpen(true);
   }
 
   function handleSubmit() {
     if (!salon) return;
-    const payload = { ...form };
+    const { segment, ...payload } = form;
     if (editing) {
+      // "" = volta pro automático; status escolhido = manual
+      const statusPatch = segment
+        ? {
+            segment: segment as (typeof SEGMENT_KEYS)[number],
+            segmentManual: true,
+          }
+        : { segmentManual: false };
       updateMutation.mutate({
         id: editing,
         salonId: salon.id,
         ...payload,
+        ...statusPatch,
       });
     } else {
       createMutation.mutate({
@@ -163,7 +186,7 @@ export default function Clients() {
             {segmentLabel("client")}s
           </h1>
           <p className="text-muted-foreground">
-            Toda a ficha dos seus clientes: contatos, visitas e histórico
+            Toda a ficha dos seus clientes: contatos, atendimentos e histórico
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -229,6 +252,35 @@ export default function Clients() {
                   placeholder="Ex: loiro, corte curto"
                 />
               </div>
+              {editing && (
+                <div className="grid gap-2">
+                  <Label>Status</Label>
+                  <Select
+                    value={form.segment || "auto"}
+                    onValueChange={v =>
+                      setForm({ ...form, segment: v === "auto" ? "" : v })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Automático" />
+                    </SelectTrigger>
+                    <SelectContent className="z-[60]">
+                      <SelectItem value="auto">
+                        Automático (regras do sistema)
+                      </SelectItem>
+                      {SEGMENT_KEYS.map(key => (
+                        <SelectItem key={key} value={key}>
+                          {segmentLabels[key]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    No automático, o status é calculado pelas regras definidas
+                    em Configurações.
+                  </p>
+                </div>
+              )}
             </div>
             <DialogFooter>
               <DialogClose asChild>

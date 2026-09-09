@@ -4,6 +4,7 @@ import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -11,11 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Clock, Palette } from "lucide-react";
+import { Clock, Palette, Users } from "lucide-react";
 import { toast } from "sonner";
 import {
   type ScheduleSettings,
+  type ClientStatusSettings,
   defaultScheduleSettings,
+  defaultClientStatusSettings,
 } from "@contracts/constants";
 import {
   themesForSegment,
@@ -37,18 +40,26 @@ export default function Settings() {
   // sincroniza o formulário com o salão carregado (sem effect)
   const [form, setForm] = useState<ScheduleSettings | null>(null);
   const [themeId, setThemeId] = useState<string | null>(null);
+  const [clientStatus, setClientStatus] =
+    useState<ClientStatusSettings | null>(null);
   const [syncedId, setSyncedId] = useState<number | null>(null);
   if (salon && syncedId !== salon.id) {
     setSyncedId(salon.id);
     setForm(salon.schedule);
     setThemeId(salon.theme ?? defaultThemeForSegment(salon.segment).id);
+    setClientStatus(salon.clientStatus);
   }
 
   const updateMutation = trpc.salon.updateSettings.useMutation({
     onSuccess: () => {
       utils.salon.list.invalidate();
       if (salon && form)
-        setSalon({ ...salon, schedule: form, theme: themeId });
+        setSalon({
+          ...salon,
+          schedule: form,
+          theme: themeId,
+          clientStatus: clientStatus ?? defaultClientStatusSettings,
+        });
       toast.success("Configurações salvas");
     },
     onError: e => toast.error(e.message),
@@ -60,10 +71,16 @@ export default function Settings() {
       toast.error("O horário de fechamento deve ser depois do horário de abertura.");
       return;
     }
-    updateMutation.mutate({ id: salon.id, ...form, theme: themeId ?? undefined });
+    updateMutation.mutate({
+      id: salon.id,
+      ...form,
+      theme: themeId ?? undefined,
+      clientStatus: clientStatus ?? undefined,
+    });
   }
 
   const current = form ?? defaultScheduleSettings;
+  const currentStatus = clientStatus ?? defaultClientStatusSettings;
   const segmentThemes = salon ? themesForSegment(salon.segment) : [];
 
   return (
@@ -159,6 +176,107 @@ export default function Settings() {
             Esses horários aparecem na sua agenda e no seu link de agendamento
             online.
           </p>
+        </CardContent>
+      </Card>
+
+      <Card className="max-w-xl">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Users className="h-4 w-4 text-slate-500" />
+            Status dos clientes
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-2">
+            <Label>Cliente vira VIP quando atingir</Label>
+            <Select
+              value={currentStatus.mode}
+              onValueChange={v =>
+                setClientStatus({
+                  ...currentStatus,
+                  mode: v as ClientStatusSettings["mode"],
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="spent">Valor gasto no mês</SelectItem>
+                <SelectItem value="visits">
+                  Quantidade de atendimentos no mês
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid gap-2">
+            <Label>
+              {currentStatus.mode === "spent"
+                ? "Limite VIP (R$ por mês)"
+                : "Limite VIP (atendimentos por mês)"}
+            </Label>
+            <Input
+              type="number"
+              min={1}
+              value={currentStatus.vipThreshold}
+              onChange={e =>
+                setClientStatus({
+                  ...currentStatus,
+                  vipThreshold: Math.max(1, Number(e.target.value) || 1),
+                })
+              }
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label>Dias sem atender vira "Sumindo"</Label>
+              <Input
+                type="number"
+                min={7}
+                max={365}
+                value={currentStatus.atRiskDays}
+                onChange={e =>
+                  setClientStatus({
+                    ...currentStatus,
+                    atRiskDays: Math.max(7, Number(e.target.value) || 7),
+                  })
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Dias sem atender vira "Inativo"</Label>
+              <Input
+                type="number"
+                min={15}
+                max={730}
+                value={currentStatus.inactiveDays}
+                onChange={e =>
+                  setClientStatus({
+                    ...currentStatus,
+                    inactiveDays: Math.max(15, Number(e.target.value) || 15),
+                  })
+                }
+              />
+            </div>
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            Os status "Novo", "Ativo", "Sumindo" e "Inativo" são calculados
+            automaticamente a partir dos agendamentos. Você também pode ajustar
+            o status de cada cliente na tela de {` `}
+            <span className="font-medium">Clientes</span>.
+          </p>
+
+          <div className="flex justify-end pt-2">
+            <Button
+              onClick={handleSave}
+              disabled={updateMutation.isPending || !clientStatus}
+            >
+              {updateMutation.isPending ? "Salvando..." : "Salvar"}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

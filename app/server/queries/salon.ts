@@ -1,5 +1,6 @@
 import { eq, and, desc, sql } from "drizzle-orm";
 import { getDb } from "./connection";
+import { parseClientStatusSettings } from "@contracts/constants";
 import {
   salons,
   salonUsers,
@@ -717,4 +718,88 @@ export async function getClientByPhone(salonId: number, phone: string) {
       eq(clients.lgpdAnonymized, false)
     ),
   });
+}
+
+// ==========================================
+// Status automático dos clientes (híbrido: regras + manual)
+// ==========================================
+
+/**
+ * Recalcula lastVisitAt/totalVisits/totalSpent e o segmento automático
+ * de todos os clientes do salão. Clientes com segmentManual = true só
+ * têm os totais atualizados — o status escolhido pelo dono não mexe.
+ */
+export async function refreshClientSegments(salonId: number) {
+  const db = getDb();
+  const [settingsRow, clientRows] = await Promise.all([
+    db.query.salons.findFirst({
+      where: eq(salons.id, salonId),
+      columns: { settings: true },
+    }),
+    db.query.clients.findMany({
+      where: and(eq(clients.salonId, salonId), eq(clients.lgpdAnonymized, false)),
+    }),
+  ]);
+  const cfg = parseClientStatusSettings(settingsRow?.settings);
+
+  // Agrega atendimentos concluídos por cliente (join com services p/ valor)
+  const now = new Date();
+  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+  const rows = await db
+    .select({
+      clientId: appointments.clientId,
+      lastVisit: sql<string | null>`max(${appointments.appointmentDate})`,
+      totalVisits: sql<number>`count(*)::int`,
+      totalSpent: sql<string>`coalesce(sum(${services.price}), 0)`,
+      monthVisits: sql<number>`count(*) filter (where ${appointments.appointmentDate} >= ${monthStart})::int`,
+      monthSpent: sql<string>`coalesce(sum(${services.price}) filter (where ${appointments.appointmentDate} >= ${monthStart}), 0)`,
+    })
+    .from(appointments)
+    .innerJoin(services, eq(appointments.serviceId, services.id))
+    .where(
+      and(eq(appointments.salonId, salonId), eq(appointments.status, "completed"))
+    )
+    .groupBy(appointments.clientId);
+
+  const stats = new Map(rows.map(r => [r.clientId, r]));
+
+  for (const client of clientRows) {
+    const s = stats.get(client.id);
+    const lastVisitAt = s?.lastVisit ? new Date(s.lastVisit) : null;
+    const totalVisits = s?.totalVisits ?? 0;
+    const totalSpent = s?.totalSpent ?? "0";
+
+    let segment = client.segment;
+    if (!client.segmentManual) {
+      if (totalVisits === 0) {
+        segment = "new";
+      } else {
+        const isVip =
+          cfg.mode === "spent"
+            ? Number(s?.monthSpent ?? 0) >= cfg.vipThreshold
+            : (s?.monthVisits ?? 0) >= cfg.vipThreshold;
+        const daysSince = lastVisitAt
+          ? Math.floor(
+              (now.getTime() - lastVisitAt.getTime()) / (24 * 60 * 60 * 1000)
+            )
+          : 9999;
+        if (isVip) segment = "vip";
+        else if (daysSince > cfg.inactiveDays) segment = "inactive";
+        else if (daysSince > cfg.atRiskDays) segment = "at_risk";
+        else segment = "active";
+      }
+    }
+
+    if (
+      segment !== client.segment ||
+      totalVisits !== client.totalVisits ||
+      String(totalSpent) !== String(client.totalSpent) ||
+      (lastVisitAt?.getTime() ?? null) !== (client.lastVisitAt?.getTime() ?? null)
+    ) {
+      await db
+        .update(clients)
+        .set({ segment, totalVisits, totalSpent, lastVisitAt })
+        .where(eq(clients.id, client.id));
+    }
+  }
 }

@@ -67,6 +67,12 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Tema primário global azul-600 (design system) + avatar com inicial na cor do segmento + "Cliente desde" + campo tags no form | 06/09 |
 | Catálogo de 9 temas (3 por segmento) com escolha do proprietário em Configurações — aplica no painel e no link de agendamento (estética deixou de ser verde → lilás) | 06/09 |
 | Widget Aniversariantes do mês na Dashboard (Fase 1) | 06/09 |
+| Fix Tailwind v4→v3 nos componentes shadcn (110 ocorrências, 27 arquivos) — sidebar fixa não cobre mais o conteúdo ao reduzir a tela | 08/09 |
+| Clientes em lista padrão Fila do Dia (Opção A): ficha expande na linha, ações na lateral | 08/09 |
+| Ícone oficial do WhatsApp (WhatsAppIcon) em toda a ficha/lista de clientes | 08/09 |
+| Ficha do cliente: Aniversário dd/mm + idade, Última visita e Histórico recente de atendimentos (endpoint `appointment.historyByClient`) | 08/09 |
+| Status dos clientes híbrido: regras automáticas configuráveis (VIP por gasto ou atendimentos no mês, dias p/ Sumindo/Inativo) + seletor manual por cliente + totais reais de visitas/gasto recalculados ao listar (migration 007) | 08/09 |
+| Renomeação "Visitas" → "Atendimentos" nas telas de cliente | 08/09 |
 | Ciclo da agenda completo: Concluir com check-out financeiro vinculado, board "Agendamentos de hoje" na Dashboard, cancelar com confirmação | 07/09 |
 | Ciclo da agenda: `Agendado → (Iniciar) → Em andamento → (Concluir) → Completo`, com Cancelar até o fim (outline); removido "Confirmar"; badge "Chegou" virou "Em andamento" na cor do tema; DatePicker calendário em todos os campos de data; ações da fila do dia compactas alinhadas à direita | 08/09 |
 | Fix crítico: componentes shadcn convertidos de sintaxe Tailwind v4 para v3 (110 ocorrências, 27 arquivos) — sidebar fixa não cobre mais o conteúdo, selects/menus com max-height e origem de animação corretos | 08/09 |

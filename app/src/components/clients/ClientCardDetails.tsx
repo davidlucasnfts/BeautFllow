@@ -55,7 +55,7 @@ export default function ClientCardDetails({
         label="Última visita"
         value={lastVisit ? isoToDateBR(lastVisit) : "—"}
       />
-      <Detail label="Visitas" value={String(client.totalVisits)} />
+      <Detail label="Atendimentos" value={String(client.totalVisits)} />
       <Detail label="Total gasto" value={`R$ ${client.totalSpent}`} />
       <div className="col-span-2">
         <Detail

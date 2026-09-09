@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { createRouter, authedQuery } from "./middleware";
-import { parseScheduleSettings, parseThemeSettings } from "@contracts/constants";
+import {
+  parseScheduleSettings,
+  parseThemeSettings,
+  parseClientStatusSettings,
+} from "@contracts/constants";
 import { defaultThemeForSegment } from "@contracts/segment-palettes";
 import {
   createSalon,
@@ -52,6 +56,7 @@ export const salonRouter = createRouter({
       theme:
         parseThemeSettings(salon.settings) ??
         defaultThemeForSegment(salon.segment).id,
+      clientStatus: parseClientStatusSettings(salon.settings),
     }));
   }),
 
@@ -63,10 +68,18 @@ export const salonRouter = createRouter({
         dayEnd: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
         slotMinutes: z.number().int().min(15).max(120),
         theme: z.string().optional(),
+        clientStatus: z
+          .object({
+            mode: z.enum(["spent", "visits"]),
+            vipThreshold: z.number().int().min(1).max(100000),
+            atRiskDays: z.number().int().min(7).max(365),
+            inactiveDays: z.number().int().min(15).max(730),
+          })
+          .optional(),
       })
     )
     .mutation(async ({ input }) => {
-      const { id, theme, ...schedule } = input;
+      const { id, theme, clientStatus, ...schedule } = input;
       // merge: preserva chaves desconhecidas já salvas em settings
       const current = await getSalonById(id);
       let existing: Record<string, unknown> = {};
@@ -81,6 +94,7 @@ export const salonRouter = createRouter({
           ...existing,
           ...schedule,
           ...(theme ? { theme } : {}),
+          ...(clientStatus ? { clientStatus } : {}),
         }),
       });
     }),

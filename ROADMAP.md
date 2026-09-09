@@ -43,6 +43,14 @@ Ordem sugerida de ataque: 1 → 2 → 3 → 4 → 5 (o 6 acontece em paralelo co
 
 ## Registro de Alterações
 
+### 08/09/2026 — Página de Clientes: Ficha Expandida + Status Híbrido
+- [feat] Lista padrão Fila do Dia — ficha expande na linha, WhatsApp com ícone oficial, Excluir só no card aberto
+- [feat] Ficha do cliente: Aniversário dd/mm + idade, Última visita, Histórico recente (endpoint `appointment.historyByClient`)
+- [feat] Status híbrido dos clientes: regras automáticas configuráveis (VIP por R$ gasto ou nº de atendimentos no mês, dias p/ Sumindo/Inativo) + seletor manual por cliente (`segmentManual`, migration 007)
+- [feat] Totais reais de visitas/gasto recalculados dos agendamentos concluídos ao carregar a lista
+- [refactor] Renomeação "Visitas" → "Atendimentos" nas telas de cliente
+- [fix] Tailwind v4→v3 nos componentes shadcn — sidebar fixa não cobre mais o conteúdo
+
 ### 24/08/2026 — Renomeação e Segmentação (estratégia de produto)
 - [feat] Renomeação concluída: BeautyFlow → StudioFlow (código, docs, metadados)
 - [feat] Segmentação por tenant: salão de beleza, barbearia, clínica de estética
