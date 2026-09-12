@@ -32,55 +32,54 @@ export default function ServiceCard({
   return (
     <Card className="h-full gap-1.5 py-2.5">
       <CardHeader className="p-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            <div
-              className="h-10 w-10 rounded-md flex items-center justify-center shrink-0"
-              style={{ backgroundColor: (s.color ?? "#6366f1") + "20" }}
-            >
-              <span
-                className="h-3 w-3 rounded-full"
-                style={{ backgroundColor: s.color ?? "#6366f1" }}
-              />
-            </div>
-            <div className="min-w-0">
-              <CardTitle className="text-base truncate">{s.name}</CardTitle>
-              {s.category && (
-                <p className="text-xs text-muted-foreground truncate">
-                  {s.category}
-                </p>
-              )}
-            </div>
+        <div className="flex items-center gap-3 min-w-0">
+          <div
+            className="h-10 w-10 rounded-md flex items-center justify-center shrink-0"
+            style={{ backgroundColor: (s.color ?? "#6366f1") + "20" }}
+          >
+            <span
+              className="h-3 w-3 rounded-full"
+              style={{ backgroundColor: s.color ?? "#6366f1" }}
+            />
           </div>
-          <div className="flex flex-col gap-1 shrink-0">
-            <button
-              type="button"
-              onClick={() => onEdit(s)}
-              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
-            >
-              <Edit3 className="h-3 w-3" />
-              Editar
-            </button>
-            <button
-              type="button"
-              onClick={() => onDuplicate(s)}
-              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors"
-            >
-              <Copy className="h-3 w-3" />
-              Duplicar
-            </button>
-            <button
-              type="button"
-              onClick={() => onDelete(s)}
-              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-            >
-              <Trash2 className="h-3 w-3" />
-              Excluir
-            </button>
+          <div className="min-w-0">
+            <CardTitle className="text-base truncate">{s.name}</CardTitle>
+            {s.category && (
+              <p className="text-xs text-muted-foreground truncate">
+                {s.category}
+              </p>
+            )}
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-2 text-sm">
+        {/* linha de ações ocupa a largura toda do card — não quebra em tela estreita */}
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={() => onEdit(s)}
+            className="flex flex-1 items-center justify-center gap-1 px-1.5 py-1.5 text-[11px] font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+          >
+            <Edit3 className="h-3 w-3" />
+            Editar
+          </button>
+          <button
+            type="button"
+            onClick={() => onDuplicate(s)}
+            className="flex flex-1 items-center justify-center gap-1 px-1.5 py-1.5 text-[11px] font-medium rounded-md bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors"
+          >
+            <Copy className="h-3 w-3" />
+            Duplicar
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete(s)}
+            className="flex flex-1 items-center justify-center gap-1 px-1.5 py-1.5 text-[11px] font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+          >
+            <Trash2 className="h-3 w-3" />
+            Excluir
+          </button>
+        </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="h-3.5 w-3.5" />
