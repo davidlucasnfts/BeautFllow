@@ -6,13 +6,22 @@ import {
   getServiceById,
   updateService,
   deleteService,
+  reactivateService,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
 
 export const serviceRouter = createRouter({
   list: authedQuery
-    .input(z.object({ salonId: z.number() }))
-    .query(({ input }) => getServicesBySalon(input.salonId)),
+    .input(
+      z.object({
+        salonId: z.number(),
+        /** true = traz também inativos (excluídos logicamente) */
+        includeInactive: z.boolean().default(false),
+      })
+    )
+    .query(({ input }) =>
+      getServicesBySalon(input.salonId, input.includeInactive)
+    ),
 
   byId: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
@@ -96,6 +105,22 @@ export const serviceRouter = createRouter({
         input.salonId,
         ctx.user?.id,
         input.id
+      );
+      return { success: true };
+    }),
+
+  reactivate: authedQuery
+    .input(z.object({ id: z.number(), salonId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      await reactivateService(input.id, input.salonId);
+      await auditAction(
+        "update",
+        "service",
+        input.salonId,
+        ctx.user?.id,
+        input.id,
+        undefined,
+        { reactivated: true }
       );
       return { success: true };
     }),

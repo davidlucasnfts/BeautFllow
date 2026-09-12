@@ -139,11 +139,15 @@ export async function createService(data: InsertService) {
   return db.query.services.findFirst({ where: eq(services.id, id) });
 }
 
-export async function getServicesBySalon(salonId: number) {
+export async function getServicesBySalon(salonId: number, includeInactive = false) {
   return getDb()
     .select()
     .from(services)
-    .where(and(eq(services.salonId, salonId), eq(services.isActive, true)))
+    .where(
+      includeInactive
+        ? eq(services.salonId, salonId)
+        : and(eq(services.salonId, salonId), eq(services.isActive, true))
+    )
     .orderBy(services.name);
 }
 
@@ -169,6 +173,14 @@ export async function deleteService(id: number, salonId: number) {
   await getDb()
     .update(services)
     .set({ isActive: false })
+    .where(and(eq(services.id, id), eq(services.salonId, salonId)));
+}
+
+/** Reativa um serviço inativado por engano (exclusão é lógica) */
+export async function reactivateService(id: number, salonId: number) {
+  await getDb()
+    .update(services)
+    .set({ isActive: true })
     .where(and(eq(services.id, id), eq(services.salonId, salonId)));
 }
 

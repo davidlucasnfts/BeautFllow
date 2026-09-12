@@ -51,6 +51,17 @@ Ordem sugerida de ataque: 1 → 2 → 3 → 4 → 5 (o 6 acontece em paralelo co
 - [refactor] Renomeação "Visitas" → "Atendimentos" nas telas de cliente
 - [fix] Tailwind v4→v3 nos componentes shadcn — sidebar fixa não cobre mais o conteúdo
 
+### 12/09/2026 — Página de Serviços (padrão design system)
+- [fix] Preço exibido no padrão Brasil (`R$ 100,00`) no card e na lista de inativos
+- [fix] Botões Editar/Duplicar/Excluir nas cores do design system (fundo suave, texto + ícone, empilhados)
+- [fix] Checkbox nativo substituído pelo componente shadcn
+- [fix] Texto "enviado automaticamente" removido dos pré/pós-cuidados (automação ainda não existe)
+- [feat] Busca por nome ou categoria
+- [feat] Sugestão de categorias já cadastradas enquanto digita (datalist)
+- [feat] Duplicar serviço (abre formulário pré-preenchido com " (cópia)")
+- [feat] Seção "Inativos" com botão Reativar (exclusão já era lógica — backend ganhou `service.reactivate`)
+- [refactor] Página quebrada em componentes (`ServiceFormDialog`, `ServiceCard`) — respeita limite de 400 linhas
+
 ### 24/08/2026 — Renomeação e Segmentação (estratégia de produto)
 - [feat] Renomeação concluída: BeautyFlow → StudioFlow (código, docs, metadados)
 - [feat] Segmentação por tenant: salão de beleza, barbearia, clínica de estética

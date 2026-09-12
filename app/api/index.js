@@ -79860,8 +79860,10 @@ async function createService(data) {
   const [{ id }] = await db.insert(services).values(data).returning();
   return db.query.services.findFirst({ where: eq(services.id, id) });
 }
-async function getServicesBySalon(salonId) {
-  return getDb().select().from(services).where(and(eq(services.salonId, salonId), eq(services.isActive, true))).orderBy(services.name);
+async function getServicesBySalon(salonId, includeInactive = false) {
+  return getDb().select().from(services).where(
+    includeInactive ? eq(services.salonId, salonId) : and(eq(services.salonId, salonId), eq(services.isActive, true))
+  ).orderBy(services.name);
 }
 async function getServiceById(id, salonId) {
   return getDb().query.services.findFirst({
@@ -79874,6 +79876,9 @@ async function updateService(id, salonId, data) {
 }
 async function deleteService(id, salonId) {
   await getDb().update(services).set({ isActive: false }).where(and(eq(services.id, id), eq(services.salonId, salonId)));
+}
+async function reactivateService(id, salonId) {
+  await getDb().update(services).set({ isActive: true }).where(and(eq(services.id, id), eq(services.salonId, salonId)));
 }
 async function createProfessional(data) {
   const db = getDb();
@@ -80456,7 +80461,15 @@ var customerRouter = createRouter({
 
 // server/service-router.ts
 var serviceRouter = createRouter({
-  list: authedQuery.input(external_exports.object({ salonId: external_exports.number() })).query(({ input }) => getServicesBySalon(input.salonId)),
+  list: authedQuery.input(
+    external_exports.object({
+      salonId: external_exports.number(),
+      /** true = traz também inativos (excluídos logicamente) */
+      includeInactive: external_exports.boolean().default(false)
+    })
+  ).query(
+    ({ input }) => getServicesBySalon(input.salonId, input.includeInactive)
+  ),
   byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(({ input }) => getServiceById(input.id, input.salonId)),
   create: authedQuery.input(
     external_exports.object({
@@ -80528,6 +80541,19 @@ var serviceRouter = createRouter({
       input.salonId,
       ctx.user?.id,
       input.id
+    );
+    return { success: true };
+  }),
+  reactivate: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await reactivateService(input.id, input.salonId);
+    await auditAction(
+      "update",
+      "service",
+      input.salonId,
+      ctx.user?.id,
+      input.id,
+      void 0,
+      { reactivated: true }
     );
     return { success: true };
   })

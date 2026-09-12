@@ -3,38 +3,31 @@ import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-
-import {
-  Plus,
-  Scissors,
-  Clock,
-  DollarSign,
-  Edit3,
-  Trash2,
-  ShieldCheck,
-} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Search, Scissors, RotateCcw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { getSegmentLabel } from "@contracts/segment-labels";
-import {
-  onlyText,
-  onlyDigits,
-  maskMoneyBR,
-  moneyBRToDot,
-  moneyDotToBR,
-} from "@/lib/input-masks";
+import { moneyDotToBR } from "@/lib/input-masks";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
+import ServiceCard, { type ServiceForCard } from "@/components/services/ServiceCard";
+import ServiceFormDialog, {
+  type ServiceFormValues,
+} from "@/components/services/ServiceFormDialog";
+
+function formFromService(s: ServiceForCard): ServiceFormValues {
+  return {
+    name: s.name,
+    description: s.description ?? "",
+    category: s.category ?? "",
+    durationMinutes: s.durationMinutes,
+    price: moneyDotToBR(String(s.price)),
+    color: s.color ?? "#6366f1",
+    requiresConsent: s.requiresConsent,
+    preCareInstructions: s.preCareInstructions ?? "",
+    postCareInstructions: s.postCareInstructions ?? "",
+  };
+}
 
 export default function Services() {
   const { salon } = useSalon();
@@ -42,101 +35,101 @@ export default function Services() {
     salon
       ? getSegmentLabel(salon.segment, key)
       : getSegmentLabel("beauty_salon", key);
+  const label = segmentLabel("service");
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<number | null>(null);
+  const [initialForm, setInitialForm] = useState<ServiceFormValues | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{
     id: number;
     name: string;
   } | null>(null);
-  const [form, setForm] = useState({
-    name: "",
-    description: "",
-    category: "",
-    durationMinutes: 60,
-    price: "",
-    color: "#6366f1",
-    requiresConsent: false,
-    preCareInstructions: "",
-    postCareInstructions: "",
-  });
 
   const utils = trpc.useUtils();
+  // traz ativos e inativos de uma vez (catálogo é pequeno) e separa na tela
   const { data: services, isLoading } = trpc.service.list.useQuery(
-    { salonId: salon?.id ?? 0 },
+    { salonId: salon?.id ?? 0, includeInactive: true },
     { enabled: !!salon }
   );
 
+  const invalidate = () => utils.service.list.invalidate();
+
   const createMutation = trpc.service.create.useMutation({
     onSuccess: () => {
-      utils.service.list.invalidate();
+      invalidate();
       setOpen(false);
-      resetForm();
-      toast.success(`${segmentLabel("service")} criado`);
+      toast.success(`${label} criado`);
     },
     onError: e => toast.error(e.message),
   });
 
   const updateMutation = trpc.service.update.useMutation({
     onSuccess: () => {
-      utils.service.list.invalidate();
+      invalidate();
       setOpen(false);
       setEditing(null);
-      resetForm();
-      toast.success(`${segmentLabel("service")} atualizado`);
+      toast.success(`${label} atualizado`);
     },
     onError: e => toast.error(e.message),
   });
 
   const deleteMutation = trpc.service.delete.useMutation({
     onSuccess: () => {
-      utils.service.list.invalidate();
+      invalidate();
       setDeleteTarget(null);
-      toast.success(`${segmentLabel("service")} removido`);
+      toast.success(`${label} removido`);
     },
     onError: e => toast.error(e.message),
   });
 
-  function resetForm() {
-    setForm({
-      name: "",
-      description: "",
-      category: "",
-      durationMinutes: 60,
-      price: "",
-      color: "#6366f1",
-      requiresConsent: false,
-      preCareInstructions: "",
-      postCareInstructions: "",
-    });
+  const reactivateMutation = trpc.service.reactivate.useMutation({
+    onSuccess: () => {
+      invalidate();
+      toast.success(`${label} reativado`);
+    },
+    onError: e => toast.error(e.message),
+  });
+
+  const active = services?.filter(s => s.isActive);
+  const inactive = services?.filter(s => !s.isActive);
+  const categories = [
+    ...new Set((services ?? []).map(s => s.category).filter((c): c is string => !!c)),
+  ];
+
+  function matches(s: ServiceForCard) {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      s.name.toLowerCase().includes(q) ||
+      (s.category ?? "").toLowerCase().includes(q)
+    );
   }
 
-  function handleEdit(s: NonNullable<typeof services>[number]) {
-    setEditing(s.id);
-    setForm({
-      name: s.name,
-      description: s.description ?? "",
-      category: s.category ?? "",
-      durationMinutes: s.durationMinutes,
-      price: moneyDotToBR(String(s.price)),
-      color: s.color ?? "#6366f1",
-      requiresConsent: s.requiresConsent,
-      preCareInstructions: s.preCareInstructions ?? "",
-      postCareInstructions: s.postCareInstructions ?? "",
-    });
+  function handleNew() {
+    setEditing(null);
+    setInitialForm(null);
     setOpen(true);
   }
 
-  function handleSubmit() {
+  function handleEdit(s: ServiceForCard) {
+    setEditing(s.id);
+    setInitialForm(formFromService(s));
+    setOpen(true);
+  }
+
+  function handleDuplicate(s: ServiceForCard) {
+    setEditing(null);
+    setInitialForm({ ...formFromService(s), name: `${s.name} (cópia)` });
+    setOpen(true);
+  }
+
+  function handleSubmit(values: ServiceFormValues) {
     if (!salon) return;
-    if (!form.durationMinutes || form.durationMinutes < 1) {
-      toast.error("Informe a duração do serviço em minutos (ex: 60).");
-      return;
-    }
-    const payload = { ...form, price: moneyBRToDot(form.price) };
+    const { price, ...data } = values;
     if (editing) {
-      updateMutation.mutate({ id: editing, salonId: salon.id, ...payload });
+      updateMutation.mutate({ id: editing, salonId: salon.id, ...data, price });
     } else {
-      createMutation.mutate({ salonId: salon.id, ...payload });
+      createMutation.mutate({ salonId: salon.id, ...data, price });
     }
   }
 
@@ -144,158 +137,24 @@ export default function Services() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {segmentLabel("service")}s
-          </h1>
+          <h1 className="text-2xl font-bold tracking-tight">{label}s</h1>
           <p className="text-muted-foreground">
-            Seus {segmentLabel("service").toLowerCase()}s e preços
+            Seus {label.toLowerCase()}s e preços
           </p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button
-              onClick={() => {
-                setEditing(null);
-                resetForm();
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" /> Novo {segmentLabel("service")}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {editing
-                  ? `Editar ${segmentLabel("service")}`
-                  : `Novo ${segmentLabel("service")}`}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label>Nome *</Label>
-                <Input
-                  value={form.name}
-                  onChange={e =>
-                    setForm({ ...form, name: onlyText(e.target.value) })
-                  }
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Categoria</Label>
-                  <Input
-                    value={form.category}
-                    onChange={e =>
-                      setForm({
-                        ...form,
-                        category: onlyText(e.target.value),
-                      })
-                    }
-                    placeholder="Ex: Estética"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Duração (min) *</Label>
-                  <Input
-                    value={form.durationMinutes || ""}
-                    onChange={e =>
-                      setForm({
-                        ...form,
-                        durationMinutes: Number(
-                          onlyDigits(e.target.value).slice(0, 3)
-                        ),
-                      })
-                    }
-                    placeholder="Ex: 60"
-                    inputMode="numeric"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Preço (R$) *</Label>
-                  <Input
-                    value={form.price}
-                    onChange={e =>
-                      setForm({ ...form, price: maskMoneyBR(e.target.value, 7) })
-                    }
-                    placeholder="0,00"
-                    inputMode="numeric"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Cor do calendário</Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="color"
-                      value={form.color}
-                      onChange={e =>
-                        setForm({ ...form, color: e.target.value })
-                      }
-                      className="w-12 h-10 p-1"
-                    />
-                    <span className="text-sm text-muted-foreground">
-                      {form.color}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <Label>Descrição</Label>
-                <Input
-                  value={form.description}
-                  onChange={e =>
-                    setForm({ ...form, description: e.target.value })
-                  }
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="requiresConsent"
-                  checked={form.requiresConsent}
-                  onChange={e =>
-                    setForm({ ...form, requiresConsent: e.target.checked })
-                  }
-                />
-                <Label htmlFor="requiresConsent" className="cursor-pointer">
-                  Exige termo de autorização
-                </Label>
-              </div>
-              <div className="grid gap-2">
-                <Label>Pré-cuidados (enviado automaticamente)</Label>
-                <Input
-                  value={form.preCareInstructions}
-                  onChange={e =>
-                    setForm({ ...form, preCareInstructions: e.target.value })
-                  }
-                  placeholder="Evite maquiagem antes do procedimento..."
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Pós-cuidados (enviado automaticamente)</Label>
-                <Input
-                  value={form.postCareInstructions}
-                  onChange={e =>
-                    setForm({ ...form, postCareInstructions: e.target.value })
-                  }
-                  placeholder="Não exponha ao sol por 24h..."
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Cancelar</Button>
-              </DialogClose>
-              <Button
-                onClick={handleSubmit}
-                disabled={createMutation.isPending || updateMutation.isPending}
-              >
-                Salvar
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={handleNew}>
+          <Plus className="mr-2 h-4 w-4" /> Novo {label}
+        </Button>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Search className="h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Buscar por nome ou categoria..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="max-w-sm"
+        />
       </div>
 
       {isLoading ? (
@@ -304,84 +163,81 @@ export default function Services() {
             <Skeleton key={i} className="h-36 bg-muted" />
           ))}
         </div>
-      ) : services && services.length > 0 ? (
+      ) : active && active.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {services.map(s => (
-            <Card key={s.id} className="group h-full gap-1.5 py-2.5">
-              <CardHeader className="p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="h-10 w-10 rounded-md flex items-center justify-center"
-                      style={{ backgroundColor: (s.color ?? "#6366f1") + "20" }}
-                    >
-                      <Scissors
-                        className="h-5 w-5"
-                        style={{ color: s.color ?? undefined }}
-                      />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base">{s.name}</CardTitle>
-                      {s.category && (
-                        <p className="text-xs text-muted-foreground">
-                          {s.category}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-1.5 shrink-0 w-[92px]">
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => handleEdit(s)}
-                      className="h-auto gap-1.5 px-2 py-1 text-[11px] shadow-sm"
-                    >
-                      <Edit3 className="w-3 h-3" />
-                      Editar
-                    </Button>
-                    <button
-                      type="button"
-                      onClick={() => setDeleteTarget({ id: s.id, name: s.name })}
-                      className="flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-semibold rounded-md shadow-sm bg-red-600 text-white hover:bg-red-700"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                      Excluir
-                    </button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Clock className="h-3.5 w-3.5" />
-                    <span>{s.durationMinutes} min</span>
-                  </div>
-                  <div className="flex items-center gap-2 font-medium">
-                    <DollarSign className="h-3.5 w-3.5" />
-                    <span>R$ {s.price}</span>
-                  </div>
-                </div>
-                {s.requiresConsent && (
-                  <div className="flex items-center gap-2 text-amber-600 text-xs">
-                    <ShieldCheck className="h-3.5 w-3.5" />
-                    <span>Precisa de autorização assinada</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          {active.filter(matches).map(s => (
+            <ServiceCard
+              key={s.id}
+              service={s}
+              onEdit={handleEdit}
+              onDuplicate={handleDuplicate}
+              onDelete={svc => setDeleteTarget({ id: svc.id, name: svc.name })}
+            />
           ))}
         </div>
       ) : (
         <div className="text-center py-20 text-muted-foreground">
           <Scissors className="h-12 w-12 mx-auto mb-4 opacity-20" />
-          <p>Nenhum serviço cadastrado.</p>
+          <p>Nenhum {label.toLowerCase()} cadastrado.</p>
         </div>
       )}
+
+      {inactive && inactive.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-sm font-semibold text-muted-foreground">
+            Inativos ({inactive.length})
+          </h2>
+          <div className="rounded-xl border bg-card divide-y overflow-hidden">
+            {inactive.filter(matches).map(s => (
+              <div
+                key={s.id}
+                className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50/50 transition-colors"
+              >
+                <span
+                  className="h-3 w-3 rounded-full shrink-0"
+                  style={{ backgroundColor: s.color ?? "#6366f1" }}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium truncate">{s.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {s.durationMinutes} min · R$ {moneyDotToBR(String(s.price))}
+                  </p>
+                </div>
+                <Badge variant="secondary" className="bg-slate-100 text-slate-600 text-[10px]">
+                  Inativo
+                </Badge>
+                <button
+                  type="button"
+                  onClick={() =>
+                    salon &&
+                    reactivateMutation.mutate({ id: s.id, salonId: salon.id })
+                  }
+                  className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-green-50 text-green-600 hover:bg-green-100 transition-colors shrink-0"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  Reativar
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <ServiceFormDialog
+        open={open}
+        onOpenChange={setOpen}
+        editingId={editing}
+        initial={initialForm}
+        categories={categories}
+        serviceLabel={label}
+        isPending={createMutation.isPending || updateMutation.isPending}
+        onSubmit={handleSubmit}
+      />
 
       <ConfirmDeleteDialog
         open={!!deleteTarget}
         onOpenChange={open => !open && setDeleteTarget(null)}
-        itemType={segmentLabel("service")}
+        itemType={label}
         itemName={deleteTarget?.name ?? ""}
         onConfirm={() => {
           if (salon && deleteTarget) {
