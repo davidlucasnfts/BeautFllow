@@ -117,15 +117,6 @@ export default function AppointmentFilters({
 
       <div className="flex items-center border rounded-md overflow-hidden">
         <Button
-          variant={viewMode === "week" ? "default" : "ghost"}
-          size="sm"
-          className="rounded-none h-8 px-3"
-          onClick={() => setViewMode("week")}
-        >
-          <CalendarRange className="h-4 w-4 mr-1.5" />
-          Semana
-        </Button>
-        <Button
           variant={viewMode === "day" ? "default" : "ghost"}
           size="sm"
           className="rounded-none h-8 px-3"
@@ -133,6 +124,15 @@ export default function AppointmentFilters({
         >
           <CalendarDays className="h-4 w-4 mr-1.5" />
           Dia
+        </Button>
+        <Button
+          variant={viewMode === "week" ? "default" : "ghost"}
+          size="sm"
+          className="rounded-none h-8 px-3"
+          onClick={() => setViewMode("week")}
+        >
+          <CalendarRange className="h-4 w-4 mr-1.5" />
+          Semana
         </Button>
         <Button
           variant={viewMode === "month" ? "default" : "ghost"}
@@ -209,8 +209,11 @@ export default function AppointmentFilters({
             <ChevronLeft className="h-3.5 w-3.5" />
             Anterior
           </Button>
-          <span className="text-sm font-medium min-w-[140px] text-center capitalize">
-            {format(monthCursor, "MMMM 'de' yyyy", { locale: ptBR })}
+          <span className="text-sm font-medium min-w-[140px] text-center">
+            {format(monthCursor, "MMMM 'de' yyyy", { locale: ptBR }).replace(
+              /^./,
+              c => c.toUpperCase()
+            )}
           </span>
           <Button
             variant="outline"

@@ -251,6 +251,10 @@ export default function Appointments() {
           return false;
         return true;
       }) ?? []
+    ).sort(
+      (a, b) =>
+        a.appointmentDate.localeCompare(b.appointmentDate) ||
+        (a.startTime ?? "").localeCompare(b.startTime ?? "")
     );
   }, [appointments, filterProfessional, filterService]);
 
