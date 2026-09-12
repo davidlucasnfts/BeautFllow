@@ -286,6 +286,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 ### Mobile-First — Obrigatório
 > Ao criar/modificar qualquer página, dialog, tabela, grid ou lista, SEMPRE aplicar classes responsivas. Nunca esperar o usuário pedir.
 
+- **Alinhamento duplo obrigatório:** toda mudança deve funcionar em **mobile E desktop** sem quebra. Estouro horizontal (conteúdo cortado na direita, botão pela metade) é bug crítico — a área de conteúdo tem `min-w-0` + `overflow-x-clip` no layout justamente pra impedir isso; nunca remover
 - **Touch targets:** mínimo 44px de altura
 - **Inputs:** mínimo 16px de fonte | **Texto corrido:** mínimo 14px
 - **Padrões responsivos mínimos:**

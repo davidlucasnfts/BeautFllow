@@ -199,6 +199,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider
+      className="overflow-x-clip"
       style={
         {
           ...(themeId ? getThemeCssVars(themeId) : {}),
@@ -378,7 +379,7 @@ function AuthLayoutContent({
         />
       </div>
 
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         {isMobile && (
           <MobileTopBar title={activeMenuItem?.label ?? "Menu"} />
         )}
