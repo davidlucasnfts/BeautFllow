@@ -18,6 +18,11 @@ interface WeekViewProps {
   onCancel: (id: number) => void;
 }
 
+/**
+ * Semana em faixas horizontais: cada dia é uma linha (label à esquerda no
+ * desktop, no topo no mobile) e os atendimentos ficam lado a lado na
+ * sequência do horário — usa a largura toda, diferente das colunas estreitas.
+ */
 export default function WeekView({
   weekDays,
   today,
@@ -29,7 +34,7 @@ export default function WeekView({
   onCancel,
 }: WeekViewProps) {
   return (
-    <div className="grid grid-cols-7 gap-2">
+    <div className="space-y-2">
       {weekDays.map(day => {
         const key = format(day, "yyyy-MM-dd");
         const dayAppts = appointmentsByDay[key] ?? [];
@@ -37,40 +42,43 @@ export default function WeekView({
         return (
           <div
             key={key}
-            className={`border rounded-lg p-2 ${
+            className={`rounded-lg border p-3 ${
               isToday ? "border-rose-300 bg-rose-50/30" : ""
             }`}
           >
-            <div className="text-center mb-2">
-              <p className="text-xs text-muted-foreground uppercase">
-                {format(day, "EEE", { locale: ptBR })}
-              </p>
-              <p
-                className={`text-lg font-bold ${
-                  isToday ? "text-rose-600" : ""
-                }`}
-              >
-                {format(day, "dd")}
-              </p>
-            </div>
-            <div className="space-y-2">
-              {dayAppts.map(appt => (
-                <EventCard
-                  key={appt.id}
-                  appt={appt}
-                  client={clients.find(c => c.id === appt.clientId)}
-                  service={services.find(s => s.id === appt.serviceId)}
-                  onStart={onStart}
-                  onConclude={onConclude}
-                  onCancel={onCancel}
-                  variant="week"
-                />
-              ))}
-              {dayAppts.length === 0 && (
-                <p className="text-[10px] text-muted-foreground text-center py-2">
-                  Sem agendamentos
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+              <div className="flex sm:flex-col items-center sm:items-start gap-2 sm:gap-0 sm:w-20 shrink-0 sm:pt-0.5">
+                <p className="text-xs text-muted-foreground uppercase">
+                  {format(day, "EEE", { locale: ptBR })}
                 </p>
-              )}
+                <p
+                  className={`text-lg font-bold leading-none ${
+                    isToday ? "text-rose-600" : ""
+                  }`}
+                >
+                  {format(day, "dd")}
+                </p>
+              </div>
+              <div className="flex-1 flex flex-wrap gap-2">
+                {dayAppts.map(appt => (
+                  <div key={appt.id} className="w-full sm:w-60">
+                    <EventCard
+                      appt={appt}
+                      client={clients.find(c => c.id === appt.clientId)}
+                      service={services.find(s => s.id === appt.serviceId)}
+                      onStart={onStart}
+                      onConclude={onConclude}
+                      onCancel={onCancel}
+                      variant="week"
+                    />
+                  </div>
+                ))}
+                {dayAppts.length === 0 && (
+                  <p className="text-xs text-muted-foreground self-center py-1">
+                    Sem agendamentos
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         );

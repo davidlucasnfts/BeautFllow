@@ -11,8 +11,6 @@ interface AppointmentActionsProps {
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
   className?: string;
-  /** Empilha os botões na largura total (colunas estreitas da semana) */
-  stack?: boolean;
 }
 
 /**
@@ -32,7 +30,6 @@ export default function AppointmentActions({
   onConclude,
   onCancel,
   className = "",
-  stack = false,
 }: AppointmentActionsProps) {
   const stop = (handler: () => void) => (e: MouseEvent) => {
     e.stopPropagation();
@@ -42,16 +39,10 @@ export default function AppointmentActions({
   const canStart = appt.status === "scheduled" || appt.status === "confirmed";
   const canConclude = ACTIVE_STATUSES.includes(appt.status);
 
-  const btnClass = stack
-    ? "w-full justify-center gap-1 px-1.5 py-1 text-[10px] font-medium"
-    : "h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium";
+  const btnClass = "h-auto gap-1 px-1.5 py-1 text-[10px] font-medium";
 
   return (
-    <div
-      className={`flex gap-1.5 justify-end ${
-        stack ? "w-full flex-col" : "flex-row flex-wrap"
-      } ${className}`}
-    >
+    <div className={`flex flex-row flex-wrap gap-1.5 ${className}`}>
       {canStart && (
         <Button
           type="button"

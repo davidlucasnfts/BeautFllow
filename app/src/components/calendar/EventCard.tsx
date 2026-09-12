@@ -163,8 +163,7 @@ export default function EventCard({
             onStart={onStart}
             onConclude={onConclude}
             onCancel={onCancel}
-            className={isDay ? "shrink-0" : ""}
-            stack={!isDay}
+            className={isDay ? "shrink-0 justify-end" : ""}
           />
         )}
       </div>
