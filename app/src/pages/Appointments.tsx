@@ -107,9 +107,17 @@ export default function Appointments() {
     { enabled: !!salon }
   );
 
+  // Traz ativos e inativos: atendimentos antigos precisam exibir o nome do
+  // serviço mesmo depois de ele ser "excluído" (exclusão é lógica)
   const { data: services } = trpc.service.list.useQuery(
-    { salonId: salon?.id ?? 0 },
+    { salonId: salon?.id ?? 0, includeInactive: true },
     { enabled: !!salon }
+  );
+
+  // Para NOVOS agendamentos só vale serviço ativo
+  const activeServices = useMemo(
+    () => (services ?? []).filter(s => s.isActive),
+    [services]
   );
 
   // Agenda do dia escolhido no formulário (para esconder horários ocupados)
@@ -122,7 +130,7 @@ export default function Appointments() {
     { enabled: !!salon && open && !!form.appointmentDate }
   );
 
-  const formService = services?.find(s => s.id === Number(form.serviceId));
+  const formService = activeServices.find(s => s.id === Number(form.serviceId));
   const busyIntervals = (formDayAppointments ?? [])
     .filter(
       a => a.status !== "cancelled" && a.status !== "no_show" && a.endTime
@@ -325,7 +333,7 @@ export default function Appointments() {
             isPending={createMutation.isPending}
             clients={clients}
             professionals={professionals}
-            services={services}
+            services={activeServices}
             availableSlots={availableSlots}
           />
         </div>
