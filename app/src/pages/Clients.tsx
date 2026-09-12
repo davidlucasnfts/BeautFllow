@@ -197,15 +197,16 @@ export default function Clients() {
                 resetForm();
               }}
             >
-              <Plus className="mr-2 h-4 w-4" /> Novo {segmentLabel("client")}
+              <Plus className="mr-2 h-4 w-4" /> Novo{" "}
+              {segmentLabel("client").toLowerCase()}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editing
-                  ? `Editar ${segmentLabel("client")}`
-                  : `Novo ${segmentLabel("client")}`}
+                  ? `Editar ${segmentLabel("client").toLowerCase()}`
+                  : `Novo ${segmentLabel("client").toLowerCase()}`}
               </DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">

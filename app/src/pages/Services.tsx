@@ -143,7 +143,7 @@ export default function Services() {
           </p>
         </div>
         <Button onClick={handleNew}>
-          <Plus className="mr-2 h-4 w-4" /> Novo {label}
+          <Plus className="mr-2 h-4 w-4" /> Novo {label.toLowerCase()}
         </Button>
       </div>
 
@@ -229,7 +229,7 @@ export default function Services() {
         editingId={editing}
         initial={initialForm}
         categories={categories}
-        serviceLabel={label}
+        serviceLabel={label.toLowerCase()}
         isPending={createMutation.isPending || updateMutation.isPending}
         onSubmit={handleSubmit}
       />

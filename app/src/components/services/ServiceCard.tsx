@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Clock, DollarSign, Edit3, Copy, Trash2, ShieldCheck } from "lucide-react";
+import { Clock, Edit3, Copy, Trash2, ShieldCheck } from "lucide-react";
 import { moneyDotToBR } from "@/lib/input-masks";
 
 export type ServiceForCard = {
@@ -86,10 +86,7 @@ export default function ServiceCard({
             <Clock className="h-3.5 w-3.5" />
             <span>{s.durationMinutes} min</span>
           </div>
-          <div className="flex items-center gap-2 font-medium">
-            <DollarSign className="h-3.5 w-3.5" />
-            <span>R$ {moneyDotToBR(String(s.price))}</span>
-          </div>
+          <div className="font-medium">R$ {moneyDotToBR(String(s.price))}</div>
         </div>
         {s.requiresConsent && (
           <div className="flex items-center gap-2 text-amber-600 text-xs">
