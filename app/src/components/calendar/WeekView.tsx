@@ -29,7 +29,7 @@ export default function WeekView({
   onCancel,
 }: WeekViewProps) {
   return (
-    <div className="grid grid-cols-7 gap-3">
+    <div className="grid grid-cols-7 gap-2">
       {weekDays.map(day => {
         const key = format(day, "yyyy-MM-dd");
         const dayAppts = appointmentsByDay[key] ?? [];
@@ -37,11 +37,11 @@ export default function WeekView({
         return (
           <div
             key={key}
-            className={`border rounded-lg p-3 ${
+            className={`border rounded-lg p-2 ${
               isToday ? "border-rose-300 bg-rose-50/30" : ""
             }`}
           >
-            <div className="text-center mb-3">
+            <div className="text-center mb-2">
               <p className="text-xs text-muted-foreground uppercase">
                 {format(day, "EEE", { locale: ptBR })}
               </p>

@@ -76,12 +76,18 @@ export default function EventCard({
       }}
     >
       <div
-        className={`flex ${isDay ? "items-start justify-between gap-2" : "items-center justify-between mb-1"}`}
+        className={
+          isDay
+            ? "flex items-start justify-between gap-2"
+            : "space-y-1.5"
+        }
       >
-        <div className="min-w-0 flex-1">
+        <div className={isDay ? "min-w-0 flex-1" : "min-w-0"}>
           {/* Horário + Status */}
           <div
-            className={`flex items-center ${isDay ? "gap-1.5 mb-0.5" : "gap-1 mb-1"}`}
+            className={`flex items-center flex-wrap ${
+              isDay ? "gap-1.5 mb-0.5" : "gap-1 mb-1"
+            }`}
           >
             {isDay && (
               <Clock className="h-3 w-3 text-muted-foreground shrink-0" />
@@ -157,7 +163,8 @@ export default function EventCard({
             onStart={onStart}
             onConclude={onConclude}
             onCancel={onCancel}
-            className="shrink-0"
+            className={isDay ? "shrink-0" : ""}
+            stack={!isDay}
           />
         )}
       </div>

@@ -11,6 +11,8 @@ interface AppointmentActionsProps {
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
   className?: string;
+  /** Empilha os botões na largura total (colunas estreitas da semana) */
+  stack?: boolean;
 }
 
 /**
@@ -30,6 +32,7 @@ export default function AppointmentActions({
   onConclude,
   onCancel,
   className = "",
+  stack = false,
 }: AppointmentActionsProps) {
   const stop = (handler: () => void) => (e: MouseEvent) => {
     e.stopPropagation();
@@ -39,14 +42,22 @@ export default function AppointmentActions({
   const canStart = appt.status === "scheduled" || appt.status === "confirmed";
   const canConclude = ACTIVE_STATUSES.includes(appt.status);
 
+  const btnClass = stack
+    ? "w-full justify-center gap-1 px-1.5 py-1 text-[10px] font-medium"
+    : "h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium";
+
   return (
-    <div className={`flex flex-row flex-wrap gap-1.5 justify-end ${className}`}>
+    <div
+      className={`flex gap-1.5 justify-end ${
+        stack ? "w-full flex-col" : "flex-row flex-wrap"
+      } ${className}`}
+    >
       {canStart && (
         <Button
           type="button"
           size="sm"
           onClick={stop(() => onStart(appt.id))}
-          className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-primary text-primary-foreground hover:bg-primary/90"
+          className={`${btnClass} bg-primary text-primary-foreground hover:bg-primary/90`}
         >
           <Play className="h-3 w-3" />
           Iniciar
@@ -57,7 +68,7 @@ export default function AppointmentActions({
           type="button"
           size="sm"
           onClick={stop(() => onConclude(appt))}
-          className="h-auto gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-green-600 text-white hover:bg-green-700"
+          className={`${btnClass} bg-green-600 text-white hover:bg-green-700`}
         >
           <CheckCheck className="h-3 w-3" />
           Concluir
@@ -69,7 +80,7 @@ export default function AppointmentActions({
           size="sm"
           variant="outline"
           onClick={stop(() => onCancel(appt.id))}
-          className="h-auto gap-1 border-red-600 px-1.5 py-0.5 text-[10px] font-medium text-red-600 hover:bg-red-50 hover:text-red-600"
+          className={`${btnClass} border-red-600 text-red-600 hover:bg-red-50 hover:text-red-600`}
         >
           <XCircle className="h-3 w-3" />
           Cancelar
