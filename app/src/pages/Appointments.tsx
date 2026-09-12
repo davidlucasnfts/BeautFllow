@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import {
   format,
   addDays,
+  addMonths,
   startOfWeek,
   endOfWeek,
   startOfMonth,
@@ -14,6 +15,7 @@ import {
 } from "date-fns";
 import WeekView from "@/components/calendar/WeekView";
 import DayView from "@/components/calendar/DayView";
+import MonthView from "@/components/calendar/MonthView";
 import AppointmentFilters from "@/components/appointments/AppointmentFilters";
 import AppointmentDialog from "@/components/appointments/AppointmentDialog";
 import FilaDoDia from "@/components/appointments/FilaDoDia";
@@ -36,6 +38,7 @@ export default function Appointments() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [filaDate, setFilaDate] = useState(new Date());
   const [weekOffset, setWeekOffset] = useState(0);
+  const [monthOffset, setMonthOffset] = useState(0);
   const [open, setOpen] = useState(false);
   const [cancelTarget, setCancelTarget] = useState<{
     id: number;
@@ -55,25 +58,35 @@ export default function Appointments() {
   });
   const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  const monthCursor = addMonths(today, monthOffset);
+  const monthDays = Array.from({ length: 42 }, (_, i) =>
+    addDays(startOfWeek(startOfMonth(monthCursor), { weekStartsOn: 1 }), i)
+  );
 
   const utils = trpc.useUtils();
 
-  // Mobile traz o mês inteiro (a fila troca de dia com 1 toque);
-  // desktop mantém o intervalo da visão escolhida (semana/dia)
-  const queryRange = isMobile
-    ? {
-        from: format(startOfMonth(filaDate), "yyyy-MM-dd"),
-        to: format(endOfMonth(filaDate), "yyyy-MM-dd"),
-      }
-    : viewMode === "week"
+  // Mobile na visão "dia" traz o mês inteiro (a fila troca de dia com 1 toque);
+  // demais visões usam o intervalo correspondente (semana / dia / mês)
+  const queryRange =
+    isMobile && viewMode === "day"
       ? {
-          from: format(weekStart, "yyyy-MM-dd"),
-          to: format(weekEnd, "yyyy-MM-dd"),
+          from: format(startOfMonth(filaDate), "yyyy-MM-dd"),
+          to: format(endOfMonth(filaDate), "yyyy-MM-dd"),
         }
-      : {
-          from: format(selectedDate, "yyyy-MM-dd"),
-          to: format(selectedDate, "yyyy-MM-dd"),
-        };
+      : viewMode === "week"
+        ? {
+            from: format(weekStart, "yyyy-MM-dd"),
+            to: format(weekEnd, "yyyy-MM-dd"),
+          }
+        : viewMode === "month"
+          ? {
+              from: format(startOfMonth(monthCursor), "yyyy-MM-dd"),
+              to: format(endOfMonth(monthCursor), "yyyy-MM-dd"),
+            }
+          : {
+              from: format(selectedDate, "yyyy-MM-dd"),
+              to: format(selectedDate, "yyyy-MM-dd"),
+            };
 
   const { data: appointments, isLoading } = trpc.appointment.list.useQuery(
     {
@@ -250,6 +263,15 @@ export default function Appointments() {
     return map;
   }, [filteredAppointments, weekDays]);
 
+  const monthAppointmentsByDay = useMemo(() => {
+    const map: Record<string, typeof appointments> = {};
+    monthDays.forEach(d => {
+      const key = format(d, "yyyy-MM-dd");
+      map[key] = filteredAppointments.filter(a => a.appointmentDate === key);
+    });
+    return map;
+  }, [filteredAppointments, monthDays]);
+
   const dayAppointments = useMemo(() => {
     const key = format(selectedDate, "yyyy-MM-dd");
     return filteredAppointments.filter(a => a.appointmentDate === key);
@@ -263,22 +285,22 @@ export default function Appointments() {
           <p className="text-muted-foreground">Sua agenda de atendimentos</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          {!isMobile && (
-            <AppointmentFilters
-              viewMode={viewMode}
-              setViewMode={setViewMode}
-              weekOffset={weekOffset}
-              setWeekOffset={setWeekOffset}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              filterProfessional={filterProfessional}
-              setFilterProfessional={setFilterProfessional}
-              filterService={filterService}
-              setFilterService={setFilterService}
-              professionals={professionals}
-              services={services}
-            />
-          )}
+          <AppointmentFilters
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            weekOffset={weekOffset}
+            setWeekOffset={setWeekOffset}
+            monthOffset={monthOffset}
+            setMonthOffset={setMonthOffset}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            filterProfessional={filterProfessional}
+            setFilterProfessional={setFilterProfessional}
+            filterService={filterService}
+            setFilterService={setFilterService}
+            professionals={professionals}
+            services={services}
+          />
           <AppointmentDialog
             open={open}
             onOpenChange={v => {
@@ -307,17 +329,31 @@ export default function Appointments() {
 
       {isLoading ? (
         <Skeleton className="h-96 w-full bg-muted" />
-      ) : isMobile ? (
-        <FilaDoDia
-          selectedDay={filaDate}
-          onSelectDay={setFilaDate}
-          appointments={(appointments ?? []) as CalendarAppointment[]}
-          services={(services ?? []) as CalendarService[]}
-          clients={clients ?? []}
-          onStart={handleStart}
-          onConclude={handleConclude}
-          onCancel={handleCancel}
-        />
+      ) : viewMode === "day" ? (
+        isMobile ? (
+          <FilaDoDia
+            selectedDay={filaDate}
+            onSelectDay={setFilaDate}
+            appointments={(appointments ?? []) as CalendarAppointment[]}
+            services={(services ?? []) as CalendarService[]}
+            clients={clients ?? []}
+            onStart={handleStart}
+            onConclude={handleConclude}
+            onCancel={handleCancel}
+          />
+        ) : (
+          <DayView
+            day={selectedDate}
+            appointments={dayAppointments}
+            clients={clients ?? []}
+            services={services ?? []}
+            professionals={professionals ?? []}
+            onStart={handleStart}
+            onConclude={handleConclude}
+            onCancel={handleCancel}
+            onReschedule={handleReschedule}
+          />
+        )
       ) : viewMode === "week" ? (
         <WeekView
           weekDays={weekDays}
@@ -332,16 +368,19 @@ export default function Appointments() {
           onCancel={handleCancel}
         />
       ) : (
-        <DayView
-          day={selectedDate}
-          appointments={dayAppointments}
+        <MonthView
+          monthDays={monthDays}
+          cursorMonth={monthCursor}
+          today={today}
+          appointmentsByDay={
+            monthAppointmentsByDay as Record<string, CalendarAppointment[]>
+          }
           clients={clients ?? []}
-          services={services ?? []}
-          professionals={professionals ?? []}
-          onStart={handleStart}
-          onConclude={handleConclude}
-          onCancel={handleCancel}
-          onReschedule={handleReschedule}
+          onSelectDay={day => {
+            setSelectedDate(() => day);
+            if (isMobile) setFilaDate(day);
+            setViewMode("day");
+          }}
         />
       )}
 
