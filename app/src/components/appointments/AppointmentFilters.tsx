@@ -19,6 +19,7 @@ import {
   addMonths,
   startOfWeek,
   endOfWeek,
+  differenceInCalendarWeeks,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -145,8 +146,9 @@ export default function AppointmentFilters({
         </Button>
       </div>
 
+      {/* Navegação: ‹ Anterior | seletor da data | Próxima › (mesmo grupo nas 3 visões) */}
       {viewMode === "week" && (
-        <>
+        <div className="flex items-center gap-1.5">
           <Button
             variant="outline"
             size="sm"
@@ -155,9 +157,24 @@ export default function AppointmentFilters({
             <ChevronLeft className="h-3.5 w-3.5" />
             Anterior
           </Button>
-          <span className="text-sm font-medium min-w-[140px] text-center">
-            {format(weekStart, "dd/MM")} - {format(weekEnd, "dd/MM")}
-          </span>
+          <div className="w-36">
+            <DatePicker
+              value={format(weekStart, "yyyy-MM-dd")}
+              onChange={iso => {
+                const chosen = startOfWeek(new Date(`${iso}T00:00:00`), {
+                  weekStartsOn: 1,
+                });
+                const thisWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
+                setWeekOffset(
+                  () =>
+                    differenceInCalendarWeeks(chosen, thisWeek, {
+                      weekStartsOn: 1,
+                    })
+                );
+              }}
+              placeholder={`${format(weekStart, "dd/MM")} - ${format(weekEnd, "dd/MM")}`}
+            />
+          </div>
           <Button
             variant="outline"
             size="sm"
@@ -166,11 +183,11 @@ export default function AppointmentFilters({
             Próxima
             <ChevronRight className="h-3.5 w-3.5" />
           </Button>
-        </>
+        </div>
       )}
 
       {viewMode === "day" && !isMobile && (
-        <>
+        <div className="flex items-center gap-1.5">
           <Button
             variant="outline"
             size="sm"
@@ -196,11 +213,11 @@ export default function AppointmentFilters({
             Próxima
             <ChevronRight className="h-3.5 w-3.5" />
           </Button>
-        </>
+        </div>
       )}
 
       {viewMode === "month" && (
-        <>
+        <div className="flex items-center gap-1.5">
           <Button
             variant="outline"
             size="sm"
@@ -209,12 +226,54 @@ export default function AppointmentFilters({
             <ChevronLeft className="h-3.5 w-3.5" />
             Anterior
           </Button>
-          <span className="text-sm font-medium min-w-[140px] text-center">
-            {format(monthCursor, "MMMM 'de' yyyy", { locale: ptBR }).replace(
-              /^./,
-              c => c.toUpperCase()
-            )}
-          </span>
+          <Select
+            value={String(monthCursor.getMonth())}
+            onValueChange={v => {
+              const m = Number(v);
+              setMonthOffset(
+                () =>
+                  (monthCursor.getFullYear() - today.getFullYear()) * 12 +
+                  (m - today.getMonth())
+              );
+            }}
+          >
+            <SelectTrigger className="w-[118px] h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from({ length: 12 }, (_, m) => (
+                <SelectItem key={m} value={String(m)}>
+                  {capitalizeFirst(
+                    format(new Date(2026, m, 1), "MMMM", { locale: ptBR })
+                  )}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={String(monthCursor.getFullYear())}
+            onValueChange={v => {
+              const y = Number(v);
+              setMonthOffset(
+                () =>
+                  (y - today.getFullYear()) * 12 +
+                  (monthCursor.getMonth() - today.getMonth())
+              );
+            }}
+          >
+            <SelectTrigger className="w-[84px] h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from({ length: 6 }, (_, i) => today.getFullYear() - 2 + i).map(
+                y => (
+                  <SelectItem key={y} value={String(y)}>
+                    {y}
+                  </SelectItem>
+                )
+              )}
+            </SelectContent>
+          </Select>
           <Button
             variant="outline"
             size="sm"
@@ -223,8 +282,12 @@ export default function AppointmentFilters({
             Próxima
             <ChevronRight className="h-3.5 w-3.5" />
           </Button>
-        </>
+        </div>
       )}
     </div>
   );
+}
+
+function capitalizeFirst(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
