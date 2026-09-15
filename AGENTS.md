@@ -299,6 +299,14 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
   - Espaçamento: `space-y-4 lg:space-y-6` em sections, `p-4 lg:p-6` em cards
   - Botões lado a lado: `flex-wrap` quando necessário
 
+### 🎯 Excelência de Produto — Método de Trabalho
+> O que separa app de grande marca não é feature, é polimento + confiança. Regra permanente de trabalho do Kimi (definida com David em 12/09/2026).
+
+1. **Benchmark antes de redesenhar** — para mudança visual/UX em qualquer tela, comparar com 2-3 referências de mercado (Booksy, Fresha, Google Calendar etc.) antes de propor; pesquisar quando necessário
+2. **Checklist de excelência por página** — cada página responde: estado vazio existe e orienta? ações visíveis (texto+ícone)? tarefa em 2-3 toques? mobile+desktop? dados nunca se perdem (exclusão lógica, nomes de itens inativos continuam visíveis no histórico)?
+3. **Conselho sincero sempre** — dizer quando algo está "bom para MVP" vs. quando merece investimento de polimento, com prioridade e justificativa de negócio; nunca vender trabalho desnecessário
+4. **Diferencial estratégico do StudioFlow** — WhatsApp-first, reengajamento automático (cliente sumido, aniversariante, pós-atendimento), simplicidade para dono não-técnico. Decisões de produto devem fortalecer esses pilares, não seguir concorrente genérico
+
 ### Cores do Projeto (Tailwind)
 | Uso | Cor |
 |---|---|

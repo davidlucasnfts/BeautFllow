@@ -39,6 +39,17 @@
 
 Ordem sugerida de ataque: 1 → 2 → 3 → 4 → 5 (o 6 acontece em paralelo com o negócio).
 
+### Diferenciais de produto (decidido em 12/09/2026)
+
+> Agenda em si é commodity (Booksy/Fresha têm igual). O destaque do StudioFlow vem dos pilares: **WhatsApp-first, reengajamento automático, simplicidade**. Itens abaixo são os próximos saltos de valor na agenda:
+
+| Item | Valor para o dono | Status |
+|------|-------------------|--------|
+| **Indicador de cliente atrasado** (horário passou, status ainda "agendado") | O app "trabalha por ele" — avisa que fulana não chegou | ⏳ |
+| **Confirmação automática por WhatsApp** (lembrete + botão de confirmar) | Reduz falta em até 30-50% — argumento de venda direto | ⏳ |
+| **Botão "Hoje"** na navegação semana/mês | Volta ao dia atual com 1 clique | ⏳ |
+| Reengajamento automático: cliente sumido, aniversariante, pós-atendimento | Receita recuperada sem esforço — o diferencial central | ⏳ |
+
 ---
 
 ## Registro de Alterações
