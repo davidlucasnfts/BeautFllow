@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
 > **Atualizado em:** 15/09/2026
-> **Sessão atual:** Homologação da página de Agendamentos — Opção 5 (linha única + chips de profissional) aguardando validação de David no localhost
+> **Sessão atual:** Agendamentos — branch `homologacao-agenda` **mesclada na `main`** (10 commits); aguardando David validar local antes de qualquer push
 
 ---
 
@@ -11,24 +11,20 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 ---
 
 ## Última funcionalidade trabalhada
-**Agendamentos — seletor Dia/Semana/Mês no padrão Opção 5** — 15/09 (branch `homologacao-agenda`, 9 commits, nada mesclado na main)
+**Agendamentos — Opção 5 + filtros reais + alerta de pendentes** — 15/09 (na `main`, commit `9b748b6`)
 
 ### O que mudou nesta sessão (15/09):
-1. **Mockup navegável** `docs/mockups/agendamento-seletor-visao.html` — 5 opções renderizadas (mobile 390px + desktop) com prós/contras; David escolheu a **Opção 5**
+1. **Mockup navegável** `docs/mockups/agendamento-seletor-visao.html` — 5 opções renderizadas; David escolheu e aprovou a **Opção 5**
 2. **Nova regra no AGENTS.md** — "Visualização externa de propostas": sempre que David pedir pra visualizar algo (botão, funcionalidade, tela), gerar HTML navegável em `docs/mockups/`, nunca só texto no chat
-3. **Layout Opção 5 implementado** em `AppointmentFilters.tsx`:
-   - Linha 1: `[Dia][Semana][Mês]` + navegação central (desktop) + botão `+ Novo`
-   - Linha 2 (mobile): navegação `‹ [rótulo ▾] ›` — o centro abre o DatePicker e pula pro dia/semana/mês escolhido (padrão Google Calendar)
-   - Linha 3: **chips de profissional com cor** nas visões Dia/Semana (mobile + desktop) — antes o filtro de profissional só existia no desktop
-   - Visão Mês (desktop) mantém os filtros em Select
-4. **DatePicker ganhou prop `label`** — exibe rótulo customizado com ChevronDown no lugar da data
-5. **Trigger "+ Novo" saiu do `AppointmentDialog`** e foi pra linha 1 dos filtros (dialog virou 100% controlado)
-
-### Commits da branch homologacao-agenda (8 anteriores + este):
-semana em faixas horizontais → seletor em todas as telas + MonthView → ordem Dia|Semana|Mês + rótulo "Setembro de 2026" → navegação em grupo único → ações da semana empilhadas → fix "Serviço" genérico (service.list com includeInactive) → docs método "Excelência de Produto" → fix iPhone 12 Pro (setas ícone puro no mobile) → **Opção 5**
+3. **Layout Opção 5** — `[Dia][Semana][Mês]` + Novo em uma linha; navegação `‹ [rótulo ▾] ›` com centro clicável (pula pro dia/semana/mês escolhido); **chips de profissional com cor** em dia/semana (mobile + desktop); botão **Hoje** reseta a navegação
+4. **Fix real:** filtro por profissional/serviço **não funcionava na fila do dia (mobile)** — recebia atendimentos brutos; agora recebe filtrados
+5. **Visão Mês simplificada** — só o dia + badge com quantidade de atendimentos (chips de horário não cabiam no mobile)
+6. **Alerta de pendentes** (novo `PendingPastAlert`) — na visão Dia, aviso âmbar com atendimentos dos últimos 90 dias sem concluir/cancelar, respeitando o filtro ativo; botão "Ver dia" leva ao mais antigo
+7. **Fila mobile:** ponto indicador nos dias que têm atendimento do filtro atual (clicar no chip mostra onde aquele profissional atende)
+8. **Refactor:** seleção de visões extraída da página pra `AgendaViews.tsx` (`Appointments.tsx` estourava o limite de 400 linhas)
 
 ### Como testar local:
-`cd app && npm run dev` → abrir `http://localhost:3000` → página Agendamentos → testar as 3 visões no modo mobile (dev tools, iPhone 12 Pro) e desktop
+`cd app && npm run dev` → `http://localhost:3000` → Agendamentos → testar as 3 visões no iPhone 12 Pro e desktop: chips filtram, mês mostra contagem, alerta de pendentes aparece se houver atendimento antigo sem concluir/cancelar
 
 ---
 
