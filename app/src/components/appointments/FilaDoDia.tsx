@@ -76,6 +76,13 @@ export default function FilaDoDia({
     [appointments, dayKey]
   );
 
+  // Dias que têm atendimento (já filtrados por profissional/serviço na página) —
+  // o ponto na faixa mostra onde estão os atendimentos do filtro atual
+  const daysWithAppointments = useMemo(
+    () => new Set(appointments.map(a => a.appointmentDate)),
+    [appointments]
+  );
+
   return (
     <div className="space-y-4">
       {/* Faixa de dias do mês — trocar de dia com 1 toque */}
@@ -100,6 +107,13 @@ export default function FilaDoDia({
               <span className="text-base font-bold leading-tight">
                 {format(day, "d")}
               </span>
+              {daysWithAppointments.has(format(day, "yyyy-MM-dd")) && (
+                <span
+                  className={`mt-0.5 h-1 w-1 rounded-full ${
+                    selected ? "bg-primary-foreground" : "bg-primary"
+                  }`}
+                />
+              )}
             </button>
           );
         })}

@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import {
   format,
@@ -13,12 +12,9 @@ import {
   startOfMonth,
   endOfMonth,
 } from "date-fns";
-import WeekView from "@/components/calendar/WeekView";
-import DayView from "@/components/calendar/DayView";
-import MonthView from "@/components/calendar/MonthView";
+import AgendaViews from "@/components/appointments/AgendaViews";
 import AppointmentFilters from "@/components/appointments/AppointmentFilters";
 import AppointmentDialog from "@/components/appointments/AppointmentDialog";
-import FilaDoDia from "@/components/appointments/FilaDoDia";
 import CheckoutDialog, {
   type CheckoutTarget,
 } from "@/components/appointments/CheckoutDialog";
@@ -28,7 +24,6 @@ import { generateTimeSlots, filterAvailableSlots } from "@/lib/time-slots";
 import type {
   ViewMode,
   CalendarAppointment,
-  CalendarService,
 } from "@/components/calendar/types";
 
 export default function Appointments() {
@@ -313,6 +308,12 @@ export default function Appointments() {
             professionals={professionals}
             services={services}
             onNew={() => setOpen(true)}
+            onToday={() => {
+              setSelectedDate(new Date());
+              setFilaDate(new Date());
+              setWeekOffset(0);
+              setMonthOffset(0);
+            }}
           />
           <AppointmentDialog
             open={open}
@@ -340,62 +341,38 @@ export default function Appointments() {
         </div>
       </div>
 
-      {isLoading ? (
-        <Skeleton className="h-96 w-full bg-muted" />
-      ) : viewMode === "day" ? (
-        isMobile ? (
-          <FilaDoDia
-            selectedDay={filaDate}
-            onSelectDay={setFilaDate}
-            appointments={(appointments ?? []) as CalendarAppointment[]}
-            services={(services ?? []) as CalendarService[]}
-            clients={clients ?? []}
-            onStart={handleStart}
-            onConclude={handleConclude}
-            onCancel={handleCancel}
-          />
-        ) : (
-          <DayView
-            day={selectedDate}
-            appointments={dayAppointments}
-            clients={clients ?? []}
-            services={services ?? []}
-            professionals={professionals ?? []}
-            onStart={handleStart}
-            onConclude={handleConclude}
-            onCancel={handleCancel}
-            onReschedule={handleReschedule}
-          />
-        )
-      ) : viewMode === "week" ? (
-        <WeekView
-          weekDays={weekDays}
-          today={today}
-          appointmentsByDay={
-            appointmentsByDay as Record<string, CalendarAppointment[]>
-          }
-          clients={clients ?? []}
-          services={services ?? []}
-          onStart={handleStart}
-          onConclude={handleConclude}
-          onCancel={handleCancel}
-        />
-      ) : (
-        <MonthView
-          monthDays={monthDays}
-          cursorMonth={monthCursor}
-          today={today}
-          appointmentsByDay={
-            monthAppointmentsByDay as Record<string, CalendarAppointment[]>
-          }
-          clients={clients ?? []}
-          onSelectDay={day => {
-            setSelectedDate(() => day);
-            if (isMobile) setFilaDate(day);
-            setViewMode("day");
-          }}
-        />
-      )}
+      <AgendaViews
+        isLoading={isLoading}
+        isMobile={isMobile}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        today={today}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        filaDate={filaDate}
+        setFilaDate={setFilaDate}
+        salonId={salon?.id}
+        filterProfessional={filterProfessional}
+        filterService={filterService}
+        dayAppointments={dayAppointments as CalendarAppointment[]}
+        weekDays={weekDays}
+        appointmentsByDay={
+          appointmentsByDay as Record<string, CalendarAppointment[]>
+        }
+        monthDays={monthDays}
+        monthCursor={monthCursor}
+        monthAppointmentsByDay={
+          monthAppointmentsByDay as Record<string, CalendarAppointment[]>
+        }
+        filaAppointments={filteredAppointments as CalendarAppointment[]}
+        clients={clients ?? []}
+        services={services ?? []}
+        professionals={professionals ?? []}
+        onStart={handleStart}
+        onConclude={handleConclude}
+        onCancel={handleCancel}
+        onReschedule={handleReschedule}
+      />
 
       <CheckoutDialog
         target={checkoutTarget}
