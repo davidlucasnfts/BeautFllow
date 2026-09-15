@@ -152,10 +152,11 @@ export default function AppointmentFilters({
           <Button
             variant="outline"
             size="sm"
+            aria-label="Semana anterior"
             onClick={() => setWeekOffset(o => o - 1)}
           >
             <ChevronLeft className="h-3.5 w-3.5" />
-            Anterior
+            <span className="hidden sm:inline ml-1">Anterior</span>
           </Button>
           <div className="w-36">
             <DatePicker
@@ -178,9 +179,10 @@ export default function AppointmentFilters({
           <Button
             variant="outline"
             size="sm"
+            aria-label="Próxima semana"
             onClick={() => setWeekOffset(o => o + 1)}
           >
-            Próxima
+            <span className="hidden sm:inline mr-1">Próxima</span>
             <ChevronRight className="h-3.5 w-3.5" />
           </Button>
         </div>
@@ -221,10 +223,11 @@ export default function AppointmentFilters({
           <Button
             variant="outline"
             size="sm"
+            aria-label="Mês anterior"
             onClick={() => setMonthOffset(o => o - 1)}
           >
             <ChevronLeft className="h-3.5 w-3.5" />
-            Anterior
+            <span className="hidden sm:inline ml-1">Anterior</span>
           </Button>
           <Select
             value={String(monthCursor.getMonth())}
@@ -237,7 +240,7 @@ export default function AppointmentFilters({
               );
             }}
           >
-            <SelectTrigger className="w-[118px] h-8 text-xs">
+            <SelectTrigger className="w-[104px] sm:w-[118px] h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -261,7 +264,7 @@ export default function AppointmentFilters({
               );
             }}
           >
-            <SelectTrigger className="w-[84px] h-8 text-xs">
+            <SelectTrigger className="w-[72px] sm:w-[84px] h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -277,9 +280,10 @@ export default function AppointmentFilters({
           <Button
             variant="outline"
             size="sm"
+            aria-label="Próximo mês"
             onClick={() => setMonthOffset(o => o + 1)}
           >
-            Próxima
+            <span className="hidden sm:inline mr-1">Próxima</span>
             <ChevronRight className="h-3.5 w-3.5" />
           </Button>
         </div>
