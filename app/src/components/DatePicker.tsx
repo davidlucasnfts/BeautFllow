@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -17,6 +17,9 @@ interface DatePickerProps {
   value: string;
   onChange: (iso: string) => void;
   placeholder?: string;
+  /** Quando informado, exibe esse rótulo (com ChevronDown) no lugar da data —
+   * ex.: "Setembro de 2026" ou "14 – 20 set." (padrão Google Calendar) */
+  label?: string;
   disabled?: boolean;
   fromDate?: Date;
   toDate?: Date;
@@ -28,6 +31,7 @@ export default function DatePicker({
   value,
   onChange,
   placeholder = "Selecione",
+  label,
   disabled,
   fromDate,
   toDate,
@@ -51,14 +55,23 @@ export default function DatePicker({
           disabled={disabled}
           className={cn(
             "w-full justify-start gap-2 font-normal",
-            !value && "text-muted-foreground",
+            !value && !label && "text-muted-foreground",
             className
           )}
         >
-          <CalendarIcon className="h-4 w-4 shrink-0" />
-          <span className="truncate">
-            {value ? isoToDateBR(value) : placeholder}
-          </span>
+          {label ? (
+            <>
+              <span className="truncate">{label}</span>
+              <ChevronDown className="h-4 w-4 shrink-0" />
+            </>
+          ) : (
+            <>
+              <CalendarIcon className="h-4 w-4 shrink-0" />
+              <span className="truncate">
+                {value ? isoToDateBR(value) : placeholder}
+              </span>
+            </>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">

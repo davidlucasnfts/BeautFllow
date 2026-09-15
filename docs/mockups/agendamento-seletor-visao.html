@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StudioFlow — Mockup: Seletor Dia/Semana/Mês da Agenda</title>
+<style>
+  :root {
+    --primary: #7c3aed;
+    --primary-soft: #ede9fe;
+    --ink: #1e293b;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --bg: #f1f5f9;
+    --green: #16a34a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    padding: 24px 16px 64px;
+  }
+  .wrap { max-width: 1240px; margin: 0 auto; }
+  header h1 { font-size: 24px; font-weight: 700; }
+  header .meta { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .context {
+    background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px; margin: 16px 0; font-size: 14px;
+  }
+  .context strong { color: var(--primary); }
+  .reco {
+    background: var(--primary-soft); border: 1px solid #c4b5fd; border-radius: 12px;
+    padding: 14px 16px; margin: 16px 0 32px; font-size: 14px;
+  }
+  .reco b { color: var(--primary); }
+
+  .opt {
+    background: #fff; border: 1px solid var(--line); border-radius: 16px;
+    padding: 24px; margin-bottom: 32px;
+  }
+  .opt-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+  .opt-head h2 { font-size: 18px; }
+  .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 8px; background: var(--ink); color: #fff;
+    font-size: 13px; font-weight: 700;
+  }
+  .badge {
+    background: var(--primary); color: #fff; font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 999px;
+  }
+  .badge.naorec { background: #dc2626; }
+  .opt-sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+
+  .frames { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+  .frame-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+  .phone, .desktop {
+    background: #fff; border: 1px solid #cbd5e1; border-radius: 16px; padding: 14px;
+  }
+  .phone { width: 390px; max-width: 100%; }
+  .desktop { width: 780px; max-width: 100%; }
+  .screen-title { font-family: Georgia, serif; font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+  .screen-sub { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+
+  /* ---- átomos de UI (réplica do app) ---- */
+  .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .row + .row { margin-top: 10px; }
+  .grow { flex: 1; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+  .seg button {
+    display: inline-flex; align-items: center; gap: 6px; border: 0; background: #fff;
+    padding: 7px 14px; font-size: 12px; color: var(--ink); cursor: default; font-family: inherit;
+  }
+  .seg button.on { background: var(--primary); color: #fff; }
+  .seg.big { display: flex; width: 100%; }
+  .seg.big button { flex: 1; justify-content: center; padding: 12px 0; font-size: 13px; }
+  .btn-o {
+    display: inline-flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1; background: #fff;
+    border-radius: 8px; padding: 7px 12px; font-size: 12px; color: var(--ink); font-family: inherit;
+  }
+  .btn-p {
+    display: inline-flex; align-items: center; gap: 6px; border: 0; background: var(--primary);
+    border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 600; color: #fff; font-family: inherit;
+  }
+  .sel {
+    display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
+    border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; padding: 7px 10px;
+    font-size: 12px; color: var(--ink); min-width: 96px;
+  }
+  .nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    width: 100%; max-width: 300px; margin: 0 auto;
+  }
+  .nav .core {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;
+    padding: 6px 10px; border-radius: 8px; background: var(--primary-soft); color: var(--primary);
+  }
+  .arrow { color: var(--muted); font-size: 16px; padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1;
+    background: #fff; border-radius: 999px; padding: 5px 12px; font-size: 11px; white-space: nowrap;
+  }
+  .chip.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .chips-scroll { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+  .weekstrip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 12px; }
+  .day {
+    border: 1px solid var(--line); border-radius: 10px; padding: 6px 4px; text-align: center;
+    font-size: 10px; color: var(--muted);
+  }
+  .day b { display: block; font-size: 14px; color: var(--ink); }
+  .day.today { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .day.today b { color: #fff; }
+  .appt {
+    border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 8px;
+    display: flex; align-items: center; gap: 10px; font-size: 12px;
+  }
+  .appt .hour { color: var(--primary); font-weight: 700; }
+  .appt .who { flex: 1; }
+  .appt .who small { display: block; color: var(--muted); font-size: 10px; }
+  .status { background: var(--primary-soft); color: var(--primary); font-size: 10px; padding: 2px 8px; border-radius: 999px; }
+  .wa { width: 26px; height: 26px; border-radius: 8px; background: var(--green); display: inline-flex; align-items: center; justify-content: center; }
+
+  .pc { display: flex; gap: 24px; margin-top: 18px; flex-wrap: wrap; }
+  .pc div { flex: 1; min-width: 240px; font-size: 13px; }
+  .pc h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+  .pc .pros h4 { color: var(--green); }
+  .pc .cons h4 { color: #dc2626; }
+  .pc ul { list-style: none; }
+  .pc li { padding-left: 16px; position: relative; margin-bottom: 4px; color: #334155; }
+  .pc .pros li::before { content: "+"; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+  .pc .cons li::before { content: "–"; position: absolute; left: 0; color: #dc2626; font-weight: 700; }
+  .fit { margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .fit b { color: var(--ink); }
+
+  footer { color: var(--muted); font-size: 13px; margin-top: 8px; }
+  @media (max-width: 860px) { .desktop { width: 100%; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Agendamento — Seletor Dia / Semana / Mês</h1>
+  <div class="meta">StudioFlow · Mockup de decisão · 14/09/2026 · Branch <code>homologacao-agenda</code> · nada implementado ainda</div>
+</header>
+
+<div class="context">
+  <strong>Contexto:</strong> público híbrido do app — de donos solo (1–2 funcionários, usam no balcão com pressa)
+  até clínicas/barbearias/estéticas com 5–7 profissionais (precisam filtrar por profissional e ver densidade de agenda).
+  As opções abaixo são réplicas visuais renderizadas em HTML — igualzinho ficaria no app, nas cores e padrões atuais.
+</div>
+
+<div class="reco">
+  <b>Recomendação:</b> <b>Opção 2</b> (linha única estilo Google Calendar) <b>+ Opção 5</b> (chips de profissional nas visões Dia/Semana).
+  É o padrão que Google, Apple, Outlook e Booksy convergiram — um toque troca a visão, clique no centro pula pra data,
+  e o caso "5–7 funcionários" se resolve com o filtro de profissional, que hoje <b>não existe no mobile</b>.
+</div>
+
+<!-- ============ OPÇÃO 1 ============ -->
+<section class="opt">
+  <div class="opt-head"><span class="num">1</span><h2>Atual</h2><span class="badge">o que está no app hoje</span></div>
+  <div class="opt-sub">Seletor em grupo + navegação em grupo separado, 2 linhas de controles no mobile.</div>
+  <div class="frames">
+    <div>
+      <div class="frame-label">Mobile — 390px (iPhone 12 Pro)</div>
+      <div class="phone">
+        <div class="screen-title">Agendamentos</div>
+        <div class="screen-sub">Sua agenda de atendimentos</div>
+        <div class="row">
+          <div class="seg">
+            <button><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Dia</button>
+            <button><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Semana</button>
+            <button class="on"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Mês</button>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn-o">‹</button>
+          <button class="sel" style="min-width:88px">Setembro <span>▾</span></button>
+          <button class="sel" style="min-width:64px">2026 <span>▾</span></button>
+          <button class="btn-o">›</button>
+        </div>
+        <div class="row"><button class="btn-p">+ Novo</button></div>
+      </div>
+    </div>
+    <div>
+      <div class="frame-label">Desktop — 1440px</div>
+      <div class="desktop">
+        <div class="screen-title">Agendamentos</div>
+        <div class="screen-sub">Sua agenda de atendimentos</div>
+        <div class="row">
+          <button class="sel" style="min-width:150px">Todos profissionais <span>▾</span></button>
+          <button class="sel" style="min-width:150px">Todos serviços <span>▾</span></button>
+        </div>
+        <div class="row">
+          <div class="seg">
+            <button>Dia</button><button>Semana</button><button class="on">Mês</button>
+          </div>
+          <span class="grow"></span>
+          <button class="btn-o">‹ Anterior</button>
+          <button class="sel" style="min-width:150px">Setembro de 2026 <span>▾</span></button>
+          <button class="btn-o">Próxima ›</button>
+          <button class="btn-p">+ Novo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pc">
+    <div class="pros"><h4>Prós</h4><ul>
+      <li>Já está validada e homologada</li>
+      <li>Todos os controles visíveis, sem esconder nada</li>
+    </ul></div>
+    <div class="cons"><h4>Contras</h4><ul>
+      <li>2 linhas de controles no mobile (~110px de altura antes do calendário)</li>
+      <li>Botão "+ Novo" solto, fora do fluxo visual</li>
+      <li>Navegação ocupa espaço que o calendário precisa no celular</li>
+    </ul></div>
+  </div>
+  <div class="fit"><b>Serve melhor para:</b> ninguém especificamente — é o ponto de partida, não o destino.</div>
+</section>
+
+<!-- ============ OPÇÃO 2 ============ -->
+<section class="opt">
+  <div class="opt-head"><span class="num">2</span><h2>Linha única</h2><span class="badge">estilo Google Calendar ⭐ recomendada</span></div>
+  <div class="opt-sub">O centro (<i>Setembro de 2026 ▾</i>) é um único botão clicável que abre o seletor de data. Padrão de Google, Apple, Outlook e Booksy.</div>
+  <div class="frames">
+    <div>
+      <div class="frame-label">Mobile — 390px</div>
+      <div class="phone">
+        <div class="screen-title">Agendamentos</div>
+        <div class="screen-sub">Sua agenda de atendimentos</div>
+        <div class="row">
+          <div class="seg">
+            <button>Dia</button><button>Semana</button><button class="on">Mês</button>
+          </div>
+          <span class="grow"></span>
+          <button class="btn-p">+ Novo</button>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <div class="nav">
+            <span class="arrow">‹</span>
+            <span class="core">Setembro de 2026 ▾</span>
+            <span class="arrow">›</span>
+          </div>
+        </div>
+        <div class="fit" style="margin-top:12px">No app, o rótulo muda por visão: Dia → <b>14/09/2026 ▾</b> · Semana → <b>14 – 20 set. ▾</b> · Mês → <b>Setembro de 2026 ▾</b></div>
+      </div>
+    </div>
+    <div>
+      <div class="frame-label">Desktop — 1440px</div>
+      <div class="desktop">
+        <div class="screen-title">Agendamentos</div>
+        <div class="screen-sub">Sua agenda de atendimentos</div>
+        <div class="row">
+          <div class="seg">
+            <button>Dia</button><button>Semana</button><button class="on">Mês</button>
+          </div>
+          <div class="nav" style="max-width:320px">
+            <span class="arrow">‹</span>
+            <span class="core">Setembro de 2026 ▾</span>
+            <span class="arrow">›</span>
+          </div>
+          <button class="btn-p">+ Novo</button>
+        </div>
+        <div class="row">
+          <button class="sel" style="min-width:150px">Todos profissionais <span>▾</span></button>
+          <button class="sel" style="min-width:150px">Todos serviços <span>▾</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pc">
+    <div class="pros"><h4>Prós</h4><ul>
+      <li>1 linha de controles no mobile — calendário sobe ~50px</li>
+      <li>Padrão de mercado: usuário já sabe usar, zero curva de aprendizado</li>
+      <li>Clique no centro abre o DatePicker (funciona igual nas 3 visões)</li>
+    </ul></div>
+    <div class="cons"><h4>Contras</h4><ul>
+      <li>Setas menores — resolvido com área de toque de 40px em cada seta</li>
+    </ul></div>
+  </div>
+  <div class="fit"><b>Serve melhor para:</b> os dois extremos — solo usa as setas; equipe grande usa o centro pra pular semanas/meses.</div>
+</section>
+
+<!-- ============ OPÇÃO 3 ============ -->
+<section class="opt">
+  <div class="opt-head"><span class="num">3</span><h2>Segmented grande</h2><span class="badge">estilo iOS</span></div>
+  <div class="opt-sub">Dia/Semana/Mês dividem a largura total em 3 partes iguais — alvo de toque gigante. Variação é usada pelo Booksy.</div>
+  <div class="frames">
+    <div>
+      <div class="frame-label">Mobile — 390px</div>
+      <div class="phone">
+        <div class="screen-title">Agendamentos</div>
+        <div class="screen-sub">Sua agenda de atendimentos</div>
+        <div class="seg big">
+          <button>Dia</button><button>Semana</button><button class="on">Mês</button>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <div class="nav">
+            <span class="arrow">‹</span>
+            <span class="core">Setembro de 2026 ▾</span>
+            <span class="arrow">›</span>
+          </div>
+        </div>
+        <div class="row" style="margin-top:12px"><button class="btn-p" style="width:100%;justify-content:center">+ Novo agendamento</button></div>
+      </div>
+    </div>
+    <div>
+      <div class="frame-label">Desktop — 1440px</div>
+      <div class="desktop">
+        <div class="screen-title">Agendamentos</div>
+        <div class="screen-sub">Sua agenda de atendimentos</div>
+        <div class="row">
+          <div class="seg big" style="max-width:360px">
+            <button>Dia</button><button>Semana</button><button class="on">Mês</button>
+          </div>
+          <div class="nav" style="max-width:300px">
+            <span class="arrow">‹</span>
+            <span class="core">Set 2026 ▾</span>
+            <span class="arrow">›</span>
+          </div>
+          <button class="btn-p">+ Novo</button>
+        </div>
+        <div class="row">
+          <button class="sel" style="min-width:150px">Todos profissionais <span>▾</span></button>
+          <button class="sel" style="min-width:150px">Todos serviços <span>▾</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pc">
+    <div class="pros"><h4>Prós</h4><ul>
+      <li>Alvo de toque enorme — ideal pro balcão, com pressa e uma mão só</li>
+      <li>Visual limpo, sem ícones repetidos</li>
+    </ul></div>
+    <div class="cons"><h4>Contras</h4><ul>
+      <li>Fica com 2 linhas no mobile (igual à Opção 1)</li>
+      <li>Sem ícones: perde escaneabilidade rápida</li>
+    </ul></div>
+  </div>
+  <div class="fit"><b>Serve melhor para:</b> dono solo com 1–2 funcionários, uso no balcão.</div>
+</section>
+
+<!-- ============ OPÇÃO 4 ============ -->
+<section class="opt">
+  <div class="opt-head"><span class="num">4</span><h2>Mínima</h2><span class="badge naorec">não recomendada</span></div>
+  <div class="opt-sub">Tudo vira Select. Menos espaço, mas a ação mais frequente da tela fica escondida.</div>
+  <div class="frames">
+    <div>
+      <div class="frame-label">Mobile — 390px</div>
+      <div class="phone">
+        <div class="screen-title">Agendamentos</div>
+        <div class="screen-sub">Sua agenda de atendimentos</div>
+        <div class="row">
+          <button class="sel grow">Visão: Semana <span>▾</span></button>
+          <button class="btn-p">+ Novo</button>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <div class="nav">
+            <span class="arrow">‹</span>
+            <span class="core">14 – 20 set. ▾</span>
+            <span class="arrow">›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="frame-label">Desktop — 1440px</div>
+      <div class="desktop">
+        <div class="screen-title">Agendamentos</div>
+        <div class="screen-sub">Sua agenda de atendimentos</div>
+        <div class="row">
+          <button class="sel">Semana ▾</button>
+          <button class="sel">14 – 20 set. ▾</button>
+          <button class="btn-p">+ Novo</button>
+          <span class="grow"></span>
+          <button class="sel" style="min-width:150px">Todos profissionais <span>▾</span></button>
+          <button class="sel" style="min-width:150px">Todos serviços <span>▾</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pc">
+    <div class="pros"><h4>Prós</h4><ul>
+      <li>Layout mais compacto de todos</li>
+    </ul></div>
+    <div class="cons"><h4>Contras</h4><ul>
+      <li>Trocar de visão vira 2 toques (abrir select + escolher) em vez de 1</li>
+      <li>Esconde Dia/Semana/Mês — a ação mais frequente da tela inteira</li>
+      <li>Nenhum app grande faz isso justamente por isso</li>
+    </ul></div>
+  </div>
+  <div class="fit"><b>Serve melhor para:</b> ninguém — listada só pra completar o leque de decisão.</div>
+</section>
+
+<!-- ============ OPÇÃO 5 ============ -->
+<section class="opt">
+  <div class="opt-head"><span class="num">5</span><h2>Opção 2 + chips de profissional</h2><span class="badge">resolve o caso 5–7 funcionários ⭐ recomendada</span></div>
+  <div class="opt-sub">A Opção 2 ganha uma linha de chips coloridos (cor de cada profissional) nas visões Dia/Semana.
+    Hoje o filtro de profissional <b>só existe no desktop</b> — no mobile uma clínica com 7 profissionais não consegue filtrar.</div>
+  <div class="frames">
+    <div>
+      <div class="frame-label">Mobile — 390px · visão Semana</div>
+      <div class="phone">
+        <div class="screen-title">Agendamentos</div>
+        <div class="screen-sub">Sua agenda de atendimentos</div>
+        <div class="row">
+          <div class="seg">
+            <button>Dia</button><button class="on">Semana</button><button>Mês</button>
+          </div>
+          <span class="grow"></span>
+          <button class="btn-p">+ Novo</button>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <div class="nav">
+            <span class="arrow">‹</span>
+            <span class="core">14 – 20 set. ▾</span>
+            <span class="arrow">›</span>
+          </div>
+        </div>
+        <div class="chips-scroll" style="margin-top:12px">
+          <span class="chip on">Todos</span>
+          <span class="chip"><span class="dot" style="background:#f59e0b"></span>Ana</span>
+          <span class="chip"><span class="dot" style="background:#3b82f6"></span>Carlos</span>
+          <span class="chip"><span class="dot" style="background:#7c3aed"></span>Débora</span>
+          <span class="chip"><span class="dot" style="background:#10b981"></span>João</span>
+          <span class="chip"><span class="dot" style="background:#ef4444"></span>Marina</span>
+          <span class="chip"><span class="dot" style="background:#06b6d4"></span>Paula</span>
+          <span class="chip"><span class="dot" style="background:#f97316"></span>Rafa</span>
+        </div>
+        <div class="weekstrip">
+          <div class="day">SEG<b>14</b></div>
+          <div class="day today">TER<b>15</b></div>
+          <div class="day">QUA<b>16</b></div>
+          <div class="day">QUI<b>17</b></div>
+          <div class="day">SEX<b>18</b></div>
+          <div class="day">SÁB<b>19</b></div>
+          <div class="day">DOM<b>20</b></div>
+        </div>
+        <div class="appt">
+          <span class="hour">09:00</span>
+          <span class="who">Débora<small>Corte + barba</small></span>
+          <span class="status">Em andamento</span>
+          <span class="wa"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5 13.6c-.2.6-1.2 1.1-1.7 1.2-.4 0-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.4l.9 2.1c.1.2.1.4 0 .6l-.4.6-.5.5c-.1.2-.3.3-.1.6.2.3.8 1.4 1.8 2.2 1.3 1.1 2.3 1.5 2.7 1.6.3.2.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1l2.1 1c.3.2.5.3.6.4 0 .1 0 .7-.2 1.2z"/></svg></span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="frame-label">Desktop — 1440px · chips viram abas com nome completo</div>
+      <div class="desktop">
+        <div class="screen-title">Agendamentos</div>
+        <div class="screen-sub">Sua agenda de atendimentos</div>
+        <div class="row">
+          <div class="seg">
+            <button>Dia</button><button class="on">Semana</button><button>Mês</button>
+          </div>
+          <div class="nav" style="max-width:300px">
+            <span class="arrow">‹</span>
+            <span class="core">14 – 20 set. ▾</span>
+            <span class="arrow">›</span>
+          </div>
+          <button class="btn-p">+ Novo</button>
+        </div>
+        <div class="row">
+          <span class="chip on">Todos</span>
+          <span class="chip"><span class="dot" style="background:#f59e0b"></span>Ana Souza</span>
+          <span class="chip"><span class="dot" style="background:#3b82f6"></span>Carlos Lima</span>
+          <span class="chip"><span class="dot" style="background:#7c3aed"></span>Débora Melo</span>
+          <span class="chip"><span class="dot" style="background:#10b981"></span>João Pedro</span>
+          <span class="chip"><span class="dot" style="background:#ef4444"></span>Marina Reis</span>
+          <span class="chip"><span class="dot" style="background:#06b6d4"></span>Paula Nunes</span>
+          <span class="chip"><span class="dot" style="background:#f97316"></span>Rafa Costa</span>
+          <span class="grow"></span>
+          <button class="sel" style="min-width:140px">Todos serviços <span>▾</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pc">
+    <div class="pros"><h4>Prós</h4><ul>
+      <li>Fecha o gap real: filtro de profissional no mobile (hoje inexistente)</li>
+      <li>Dono solo ignora os chips — 1 toque em "Todos" e pronto</li>
+      <li>Cor de cada profissional já existe no app — os chips reforçam a identidade visual</li>
+    </ul></div>
+    <div class="cons"><h4>Contras</h4><ul>
+      <li>+1 linha de altura, só nas visões Dia/Semana (na visão Mês não aparece)</li>
+    </ul></div>
+  </div>
+  <div class="fit"><b>Serve melhor para:</b> o público híbrido completo — é a opção que atende os dois extremos ao mesmo tempo.</div>
+</section>
+
+<footer>
+  <b>Como decidir:</b> analise as 5 opções acima e me diga qual (ou combinação) quer —
+  ex.: "Opção 2 + 5". Eu implemento na branch <code>homologacao-agenda</code> e te aviso pra testar
+  no <code>localhost:3000</code> com o iPhone 12 Pro antes de qualquer merge.
+</footer>
+
+</div>
+</body>
+</html>

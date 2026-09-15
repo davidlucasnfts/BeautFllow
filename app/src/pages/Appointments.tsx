@@ -296,7 +296,7 @@ export default function Appointments() {
           <h1 className="text-2xl font-bold tracking-tight">Agendamentos</h1>
           <p className="text-muted-foreground">Sua agenda de atendimentos</p>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-start">
           <AppointmentFilters
             viewMode={viewMode}
             setViewMode={setViewMode}
@@ -312,6 +312,7 @@ export default function Appointments() {
             setFilterService={setFilterService}
             professionals={professionals}
             services={services}
+            onNew={() => setOpen(true)}
           />
           <AppointmentDialog
             open={open}

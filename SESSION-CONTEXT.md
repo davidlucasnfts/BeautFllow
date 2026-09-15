@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 08/09/2026
-> **Sessão atual:** Melhorias da página de Clientes — ficha expandida, ícone WhatsApp oficial, status híbrido (automático + manual)
+> **Atualizado em:** 15/09/2026
+> **Sessão atual:** Homologação da página de Agendamentos — Opção 5 (linha única + chips de profissional) aguardando validação de David no localhost
 
 ---
 
@@ -9,6 +9,30 @@
 React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + Supabase (PostgreSQL) + Vercel
 
 ---
+
+## Última funcionalidade trabalhada
+**Agendamentos — seletor Dia/Semana/Mês no padrão Opção 5** — 15/09 (branch `homologacao-agenda`, 9 commits, nada mesclado na main)
+
+### O que mudou nesta sessão (15/09):
+1. **Mockup navegável** `docs/mockups/agendamento-seletor-visao.html` — 5 opções renderizadas (mobile 390px + desktop) com prós/contras; David escolheu a **Opção 5**
+2. **Nova regra no AGENTS.md** — "Visualização externa de propostas": sempre que David pedir pra visualizar algo (botão, funcionalidade, tela), gerar HTML navegável em `docs/mockups/`, nunca só texto no chat
+3. **Layout Opção 5 implementado** em `AppointmentFilters.tsx`:
+   - Linha 1: `[Dia][Semana][Mês]` + navegação central (desktop) + botão `+ Novo`
+   - Linha 2 (mobile): navegação `‹ [rótulo ▾] ›` — o centro abre o DatePicker e pula pro dia/semana/mês escolhido (padrão Google Calendar)
+   - Linha 3: **chips de profissional com cor** nas visões Dia/Semana (mobile + desktop) — antes o filtro de profissional só existia no desktop
+   - Visão Mês (desktop) mantém os filtros em Select
+4. **DatePicker ganhou prop `label`** — exibe rótulo customizado com ChevronDown no lugar da data
+5. **Trigger "+ Novo" saiu do `AppointmentDialog`** e foi pra linha 1 dos filtros (dialog virou 100% controlado)
+
+### Commits da branch homologacao-agenda (8 anteriores + este):
+semana em faixas horizontais → seletor em todas as telas + MonthView → ordem Dia|Semana|Mês + rótulo "Setembro de 2026" → navegação em grupo único → ações da semana empilhadas → fix "Serviço" genérico (service.list com includeInactive) → docs método "Excelência de Produto" → fix iPhone 12 Pro (setas ícone puro no mobile) → **Opção 5**
+
+### Como testar local:
+`cd app && npm run dev` → abrir `http://localhost:3000` → página Agendamentos → testar as 3 visões no modo mobile (dev tools, iPhone 12 Pro) e desktop
+
+---
+
+## Consolidação dos arquivos mestre — 05/09
 
 ## Última funcionalidade trabalhada
 **Página de Clientes — ficha expandida + status híbrido dos clientes** — 08/09

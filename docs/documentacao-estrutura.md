@@ -22,6 +22,7 @@
 | `docs/requirements/proposta-planos-precificacao.md` | Proposta de planos/preços (status: proposta) | Kimi | Decisão de precificação |
 | `docs/qa-visual-checklist.md` | Checklist de QA visual (375px/1440px) | Kimi | Novo padrão de verificação |
 | `docs/ui-improvements-playbook.md` | Padrões de UI aprovados por página (base: Agenda) | Kimi | Antes de melhorar qualquer tela |
+| `docs/mockups/*.html` | Prévias visuais navegáveis de propostas de UI (botões, telas, funcionalidades) | Kimi | Quando David pedir para visualizar algo externamente |
 | `docs/DOR.md` | Definition of Ready | Kimi | Mudança no processo |
 | `docs/DOD.md` | Definition of Done | Kimi | Mudança no processo |
 | `docs/LGPD.md` | Compliance LGPD | Kimi | Mudança legal |

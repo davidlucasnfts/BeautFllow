@@ -10,6 +10,11 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - **Modo direto:** resultado primeiro, sem rodeios, sem narração do processo
 - Expandir explicações só se pedido explicitamente
 
+### Visualização externa de propostas (regra obrigatória)
+- Quando David pedir para **visualizar algo externamente** (botão, funcionalidade, layout, tela nova), gerar um **documento HTML navegável em `docs/mockups/`** com as opções renderizadas de verdade — nunca apenas descrever em texto/ASCII no chat
+- O mockup deve conter: contexto, cada opção com prévia (mobile ~390px e desktop), prós/contras e recomendação
+- David escolhe a opção no navegador; só então implementar em branch local para homologação
+
 ## Regras de código
 - **Limite de 400 linhas por arquivo.** Se ultrapassar, redistribuir em componentes/utilitários menores.
 - **Exceção:** componentes do shadcn/ui em `src/components/ui/` — são de biblioteca externa, não mexer. Exceções já aplicadas:
