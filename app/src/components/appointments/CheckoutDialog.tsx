@@ -102,8 +102,15 @@ function CheckoutForm({
     onError: e => toast.error(e.message),
   });
 
+  // Todo atendimento concluído precisa ter valor — zero/vazio não passa
+  const valorInvalido = !valor || Number(moneyBRToDot(valor)) <= 0;
+
   function handleConfirm() {
     if (!salon || !valor) return;
+    if (valorInvalido) {
+      toast.error("Informe um valor maior que zero para concluir.");
+      return;
+    }
     if (generateFinancial) {
       financialMutation.mutate({
         salonId: salon.id,

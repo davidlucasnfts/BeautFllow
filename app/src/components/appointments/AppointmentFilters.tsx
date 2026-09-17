@@ -44,8 +44,6 @@ interface AppointmentFiltersProps {
   professionals?: Professional[];
   services?: Service[];
   onNew: () => void;
-  /** Volta pra hoje: reseta dia/semana/mês selecionados */
-  onToday: () => void;
 }
 
 const chipBase =
@@ -72,7 +70,6 @@ export default function AppointmentFilters({
   professionals,
   services,
   onNew,
-  onToday,
 }: AppointmentFiltersProps) {
   const today = new Date();
   const weekStart = startOfWeek(addDays(today, weekOffset * 7), {
@@ -155,14 +152,6 @@ export default function AppointmentFilters({
           className="justify-center"
         />
       </div>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
-        onClick={onToday}
-      >
-        Hoje
-      </Button>
       <Button
         variant="outline"
         size="icon"

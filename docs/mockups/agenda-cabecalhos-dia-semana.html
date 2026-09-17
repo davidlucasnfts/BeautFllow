@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StudioFlow — Mockup: Cabeçalhos da Agenda (Semana e Dia)</title>
+<style>
+  :root {
+    --primary: #7c3aed;
+    --primary-soft: #ede9fe;
+    --ink: #1e293b;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --bg: #f1f5f9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+    padding: 24px 16px 64px;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  header h1 { font-size: 24px; font-weight: 700; }
+  header .meta { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .context {
+    background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px; margin: 16px 0; font-size: 14px;
+  }
+  .context strong { color: var(--primary); }
+  .reco {
+    background: var(--primary-soft); border: 1px solid #c4b5fd; border-radius: 12px;
+    padding: 14px 16px; margin: 16px 0 32px; font-size: 14px;
+  }
+  .reco b { color: var(--primary); }
+
+  .opt {
+    background: #fff; border: 1px solid var(--line); border-radius: 16px;
+    padding: 24px; margin-bottom: 24px;
+  }
+  .opt-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+  .opt-head h2 { font-size: 17px; }
+  .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 8px; background: var(--ink); color: #fff;
+    font-size: 13px; font-weight: 700;
+  }
+  .badge {
+    background: var(--primary); color: #fff; font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 999px;
+  }
+  .badge.atual { background: #475569; }
+  .opt-sub { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+
+  .frame {
+    border: 1px solid #cbd5e1; border-radius: 14px; padding: 18px; background: #fff;
+  }
+  .frame-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin: 18px 0 8px; }
+  .frame-label:first-child { margin-top: 0; }
+
+  /* réplica da linha da semana */
+  .weekrow {
+    display: flex; gap: 14px; border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px; background: #fff; margin-bottom: 12px; align-items: stretch;
+  }
+  .daycol { width: 96px; flex-shrink: 0; display: flex; flex-direction: column; }
+  .dow { font-size: 10px; font-weight: 600; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+  .dnum { font-size: 15px; font-weight: 700; }
+  .dnum-lg { font-size: 34px; font-weight: 800; color: var(--primary); line-height: 1.1; }
+  .dcount { font-size: 11px; color: var(--muted); margin-top: auto; padding-top: 8px; }
+  .dcount b { color: var(--ink); }
+  .datamed { font-size: 16px; font-weight: 700; }
+  .countpill {
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-top: auto; background: var(--primary-soft); color: var(--primary);
+    font-size: 11px; font-weight: 700; border-radius: 999px; padding: 3px 10px; align-self: flex-start;
+  }
+  .cards { display: flex; gap: 10px; flex: 1; flex-wrap: wrap; }
+  .card {
+    width: 190px; border: 1px solid var(--line); border-left: 3px solid var(--primary);
+    border-radius: 8px; padding: 8px 10px; background: #fafafa;
+  }
+  .card .hour { color: var(--primary); font-weight: 700; font-size: 12px; }
+  .card .who { font-size: 12px; font-weight: 600; }
+  .card .svc { font-size: 11px; color: var(--muted); }
+
+  /* réplica do cabeçalho da visão dia */
+  .dayheader {
+    border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px;
+    background: #fff; margin-bottom: 12px;
+  }
+  .dh-muted { background: #f8fafc; }
+  .serif { font-family: Georgia, "Times New Roman", serif; }
+  .b1-title { font-size: 19px; font-weight: 700; }
+  .b1-sub { font-size: 13px; color: var(--muted); }
+  .b2-dow { font-size: 11px; font-weight: 600; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+  .b2-row { display: flex; align-items: baseline; gap: 10px; }
+  .b2-num { font-size: 40px; font-weight: 800; color: var(--primary); line-height: 1; }
+  .b2-month { font-size: 15px; color: var(--ink); }
+  .b2-count { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .b3 { display: flex; align-items: center; gap: 16px; }
+  .b3-badge {
+    width: 64px; height: 64px; border-radius: 14px; background: var(--primary);
+    color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .b3-badge .n { font-size: 26px; font-weight: 800; line-height: 1; }
+  .b3-badge .m { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .9; }
+  .b3-title { font-size: 17px; font-weight: 700; }
+  .b3-sub { font-size: 13px; color: var(--muted); }
+  .totais { display: flex; gap: 16px; margin-top: 8px; font-size: 12px; color: var(--muted); }
+  .totais b { color: var(--ink); }
+
+  .pc { display: flex; gap: 24px; margin-top: 14px; flex-wrap: wrap; }
+  .pc div { flex: 1; min-width: 240px; font-size: 13px; }
+  .pc h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+  .pc .pros h4 { color: #16a34a; }
+  .pc .cons h4 { color: #dc2626; }
+  .pc ul { list-style: none; }
+  .pc li { padding-left: 16px; position: relative; margin-bottom: 4px; color: #334155; }
+  .pc .pros li::before { content: "+"; position: absolute; left: 0; color: #16a34a; font-weight: 700; }
+  .pc .cons li::before { content: "–"; position: absolute; left: 0; color: #dc2626; font-weight: 700; }
+
+  h3.secao { font-size: 20px; margin: 40px 0 6px; }
+  p.secao-sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Cabeçalhos da Agenda — Semana e Dia</h1>
+  <div class="meta">StudioFlow · Mockup de decisão · 17/09/2026 · nada implementado ainda · os dois pontos são <b>só desktop</b> (no mobile a semana já usa outro layout e o dia usa a fila)</div>
+</header>
+
+<div class="context">
+  <strong>Dois problemas apontados na homologação:</strong>
+  ① na visão <strong>Semana</strong>, a coluna do dia (esquerda) fica com um grande espaço vazio embaixo do número quando o dia tem vários atendimentos;
+  ② na visão <strong>Dia</strong>, o cabeçalho "Terça-Feira, 01 De Setembro" + "3 agendamentos" está tudo no mesmo peso visual, sem destaque.
+  As opções abaixo são réplicas renderizadas — como ficariam no app de verdade.
+</div>
+
+<div class="reco">
+  <b>Recomendação:</b> Semana → <b>S3</b> (número grande em roxo + contagem de atendimentos aproveitando o espaço vazio) ·
+  Dia → <b>D2</b> (hierarquia tipográfica: semana pequena, número gigante, mês médio) ou <b>D4</b> se quiser já ver o total em R$ do dia.
+</div>
+
+<h3 class="secao">SEÇÃO 1 — Coluna do dia na visão SEMANA (desktop)</h3>
+<p class="secao-sub">Réplica de uma linha da semana em cada opção — compare a coluna à esquerda.</p>
+
+<!-- S1 -->
+<section class="opt">
+  <div class="opt-head"><span class="num">S1</span><h2>Atual</h2><span class="badge atual">o que está no app hoje</span></div>
+  <div class="opt-sub">Dia da semana pequeno + número normal — espaço vazio embaixo não é usado.</div>
+  <div class="frame">
+    <div class="weekrow">
+      <div class="daycol">
+        <span class="dow">Terça</span>
+        <span class="dnum">15</span>
+      </div>
+      <div class="cards">
+        <div class="card"><span class="hour">09:00</span><div class="who">débora</div><div class="svc">Corte de cabelo</div></div>
+        <div class="card"><span class="hour">11:00</span><div class="who">camila</div><div class="svc">Manicure</div></div>
+        <div class="card"><span class="hour">17:00</span><div class="who">débora</div><div class="svc">Escova</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S2 -->
+<section class="opt">
+  <div class="opt-head"><span class="num">S2</span><h2>Número grande em destaque</h2></div>
+  <div class="opt-sub">O número vira o elemento principal (roxo, 34px) — a semana fica pequena acima. Hoje fica ainda mais fácil de localizar.</div>
+  <div class="frame">
+    <div class="weekrow">
+      <div class="daycol">
+        <span class="dow">Terça</span>
+        <span class="dnum-lg">15</span>
+      </div>
+      <div class="cards">
+        <div class="card"><span class="hour">09:00</span><div class="who">débora</div><div class="svc">Corte de cabelo</div></div>
+        <div class="card"><span class="hour">11:00</span><div class="who">camila</div><div class="svc">Manicure</div></div>
+        <div class="card"><span class="hour">17:00</span><div class="who">débora</div><div class="svc">Escova</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S3 -->
+<section class="opt">
+  <div class="opt-head"><span class="num">S3</span><h2>Número grande + contagem</h2><span class="badge">⭐ recomendada</span></div>
+  <div class="opt-sub">Aproveita o espaço vazio com informação útil: quantos atendimentos o dia tem (respeita o filtro de profissional ativo).</div>
+  <div class="frame">
+    <div class="weekrow">
+      <div class="daycol">
+        <span class="dow">Terça</span>
+        <span class="dnum-lg">15</span>
+        <span class="dcount"><b>3</b> atendimentos</span>
+      </div>
+      <div class="cards">
+        <div class="card"><span class="hour">09:00</span><div class="who">débora</div><div class="svc">Corte de cabelo</div></div>
+        <div class="card"><span class="hour">11:00</span><div class="who">camila</div><div class="svc">Manicure</div></div>
+        <div class="card"><span class="hour">17:00</span><div class="who">débora</div><div class="svc">Escova</div></div>
+      </div>
+    </div>
+    <div class="weekrow" style="margin-bottom:0">
+      <div class="daycol">
+        <span class="dow">Quarta</span>
+        <span class="dnum-lg">16</span>
+        <span class="dcount"><b>0</b> atendimentos</span>
+      </div>
+      <div class="cards"><span style="color:var(--muted);font-size:13px;align-self:center">Sem agendamentos</span></div>
+    </div>
+  </div>
+  <div class="pc">
+    <div class="pros"><h4>Prós</h4><ul>
+      <li>Espaço vazio vira informação: bater o olho na semana inteira e ver a carga de cada dia</li>
+      <li>Consistente com o resto do app (cores e hierarquia)</li>
+    </ul></div>
+    <div class="cons"><h4>Contras</h4><ul>
+      <li>Nenhum relevante — mesmo com 10+ cards, a coluna comporta</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- S4 -->
+<section class="opt">
+  <div class="opt-head"><span class="num">S4</span><h2>Data abreviada + badge</h2></div>
+  <div class="opt-sub">"15/09" em vez de só o número, com a contagem em pill roxa.</div>
+  <div class="frame">
+    <div class="weekrow">
+      <div class="daycol">
+        <span class="dow">Terça</span>
+        <span class="datamed">15/09</span>
+        <span class="countpill">3</span>
+      </div>
+      <div class="cards">
+        <div class="card"><span class="hour">09:00</span><div class="who">débora</div><div class="svc">Corte de cabelo</div></div>
+        <div class="card"><span class="hour">11:00</span><div class="who">camila</div><div class="svc">Manicure</div></div>
+        <div class="card"><span class="hour">17:00</span><div class="who">débora</div><div class="svc">Escova</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="pc">
+    <div class="pros"><h4>Prós</h4><ul>
+      <li>Mês sempre visível sem olhar pra navegação</li>
+    </ul></div>
+    <div class="cons"><h4>Contras</h4><ul>
+      <li>Redundante: o mês já aparece na navegação "Setembro de 2026 ▾"</li>
+      <li>Menos impacto visual que o número grande</li>
+    </ul></div>
+  </div>
+</section>
+
+<h3 class="secao">SEÇÃO 2 — Cabeçalho da visão DIA (desktop)</h3>
+<p class="secao-sub">Réplica do topo da visão diária em cada opção — "hoje" seria destacado no app com o fundo rosa, como já é.</p>
+
+<!-- D1 -->
+<section class="opt">
+  <div class="opt-head"><span class="num">D1</span><h2>Atual</h2><span class="badge atual">o que está no app hoje</span></div>
+  <div class="opt-sub">Tudo no mesmo peso: título serif forte + subtítulo cinza. Nenhum destaque do dia em si.</div>
+  <div class="frame">
+    <div class="dayheader dh-muted">
+      <div class="b1-title serif">Terça-Feira, 01 De Setembro</div>
+      <div class="b1-sub">3 agendamentos</div>
+    </div>
+  </div>
+</section>
+
+<!-- D2 -->
+<section class="opt">
+  <div class="opt-head"><span class="num">D2</span><h2>Hierarquia tipográfica</h2><span class="badge">⭐ recomendada</span></div>
+  <div class="opt-sub">Três níveis: semana pequena (cinza) → número gigante (roxo) → mês médio. O olho vai direto pro dia. Padrão usado em Google Calendar e Notion.</div>
+  <div class="frame">
+    <div class="dayheader">
+      <div class="b2-dow">Terça-feira</div>
+      <div class="b2-row">
+        <span class="b2-num">01</span>
+        <span class="b2-month">de setembro de 2026</span>
+      </div>
+      <div class="b2-count">3 agendamentos</div>
+    </div>
+  </div>
+  <div class="pc">
+    <div class="pros"><h4>Prós</h4><ul>
+      <li>Dia fica gritante — útil quando se navega muito pela agenda</li>
+      <li>Só CSS, sem custo de implementação</li>
+    </ul></div>
+    <div class="cons"><h4>Contras</h4><ul>
+      <li>Nenhum relevante</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- D3 -->
+<section class="opt">
+  <div class="opt-head"><span class="num">D3</span><h2>Badge de calendário</h2></div>
+  <div class="opt-sub">Bloco roxo estilo ícone de calendário (dia grande + mês abreviado) com o texto ao lado.</div>
+  <div class="frame">
+    <div class="dayheader">
+      <div class="b3">
+        <div class="b3-badge"><span class="n">01</span><span class="m">Set</span></div>
+        <div>
+          <div class="b3-title">Terça-feira</div>
+          <div class="b3-sub">3 agendamentos</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pc">
+    <div class="pros"><h4>Prós</h4><ul>
+      <li>Visual forte, lembra apps de calendário</li>
+    </ul></div>
+    <div class="cons"><h4>Contras</h4><ul>
+      <li>Pesa mais visualmente — compete com os cards de atendimento</li>
+      <li>Quebra a linguagem "limpa" das outras telas</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- D4 -->
+<section class="opt">
+  <div class="opt-head"><span class="num">D4</span><h2>Hierarquia + totais do dia</h2></div>
+  <div class="opt-sub">A D2 ganha uma linha de totais: quantidade + valor previsto (soma dos preços dos serviços do dia). Bom pro dono olhar faturamento do dia de manhã.</div>
+  <div class="frame">
+    <div class="dayheader">
+      <div class="b2-dow">Terça-feira</div>
+      <div class="b2-row">
+        <span class="b2-num">01</span>
+        <span class="b2-month">de setembro de 2026</span>
+      </div>
+      <div class="totais">
+        <span><b>3</b> agendamentos</span>
+        <span><b>R$ 150,00</b> previstos</span>
+      </div>
+    </div>
+  </div>
+  <div class="pc">
+    <div class="pros"><h4>Prós</h4><ul>
+      <li>Informação de negócio no topo: carga e faturamento do dia</li>
+    </ul></div>
+    <div class="cons"><h4>Contras</h4><ul>
+      <li>Exige somar preços dos serviços (pequeno custo de implementação)</li>
+      <li>"Previstos" pode confundir perto do valor real do financeiro</li>
+    </ul></div>
+  </div>
+</section>
+
+<footer>
+  <b>Como decidir:</b> me diga qual opção de cada seção — ex.: "S3 e D2". Implemento na <code>main</code> e te aviso pra testar no <code>localhost:3000</code>.
+  Enquanto isso, já foram feitos (sem precisar de mockup): remoção do botão "Hoje" e bloqueio de valor zerado no checkout.
+</footer>
+
+</div>
+</body>
+</html>

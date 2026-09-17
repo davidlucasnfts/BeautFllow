@@ -308,12 +308,6 @@ export default function Appointments() {
             professionals={professionals}
             services={services}
             onNew={() => setOpen(true)}
-            onToday={() => {
-              setSelectedDate(new Date());
-              setFilaDate(new Date());
-              setWeekOffset(0);
-              setMonthOffset(0);
-            }}
           />
           <AppointmentDialog
             open={open}
