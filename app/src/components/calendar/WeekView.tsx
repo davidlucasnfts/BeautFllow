@@ -47,16 +47,20 @@ export default function WeekView({
             }`}
           >
             <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
-              <div className="flex sm:flex-col items-center sm:items-start gap-2 sm:gap-0 sm:w-20 shrink-0 sm:pt-0.5">
-                <p className="text-xs text-muted-foreground uppercase">
+              <div className="flex sm:flex-col items-center sm:items-start gap-2 sm:gap-0 sm:w-24 shrink-0 sm:pt-0.5">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                   {format(day, "EEE", { locale: ptBR })}
                 </p>
                 <p
-                  className={`text-lg font-bold leading-none ${
-                    isToday ? "text-rose-600" : ""
+                  className={`text-3xl font-extrabold leading-none ${
+                    isToday ? "text-rose-600" : "text-primary"
                   }`}
                 >
                   {format(day, "dd")}
+                </p>
+                <p className="mt-auto hidden pt-2 text-[11px] leading-tight text-muted-foreground sm:block">
+                  <b className="text-foreground">{dayAppts.length}</b>{" "}
+                  atendimento{dayAppts.length !== 1 ? "s" : ""}
                 </p>
               </div>
               <div className="flex-1 flex flex-wrap gap-2">

@@ -43,12 +43,20 @@ export default function DayView({
 
   return (
     <div className="border rounded-lg overflow-hidden">
-      {/* Header */}
+      {/* Header — hierarquia: semana pequena, número gigante em destaque, mês médio */}
       <div className="bg-muted/50 px-4 py-3 border-b">
-        <h2 className="text-lg font-semibold capitalize">
-          {format(day, "EEEE, dd 'de' MMMM", { locale: ptBR })}
-        </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+          {capitalizeFirst(format(day, "EEEE", { locale: ptBR }))}
+        </p>
+        <div className="mt-0.5 flex items-baseline gap-2">
+          <span className="text-4xl font-extrabold leading-none text-primary">
+            {format(day, "dd")}
+          </span>
+          <span className="text-sm text-foreground">
+            de {format(day, "MMMM 'de' yyyy", { locale: ptBR })}
+          </span>
+        </div>
+        <p className="mt-1.5 text-xs text-muted-foreground">
           {appointments.length} agendamento
           {appointments.length !== 1 ? "s" : ""}
         </p>
@@ -127,6 +135,10 @@ export default function DayView({
       </div>
     </div>
   );
+}
+
+function capitalizeFirst(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function getTimePosition(timeStr: string | null): number {
