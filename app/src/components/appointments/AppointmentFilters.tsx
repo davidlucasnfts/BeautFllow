@@ -150,6 +150,7 @@ export default function AppointmentFilters({
           onChange={jumpTo}
           label={centerLabel}
           className="justify-center"
+          hideSelectedDay={viewMode !== "day"}
         />
       </div>
       <Button
