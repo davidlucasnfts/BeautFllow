@@ -20,6 +20,10 @@ interface DatePickerProps {
    *  ou setas) — sem precisar clicar num dia. Útil em filtros por mês, onde a
    *  troca de mês já deve aplicar. Ao clicar num dia, onChange dispara junto. */
   onMonthChange?: (iso: string) => void;
+  /** Não destaca nenhum dia como "selecionado" — para filtros por mês, onde o
+   *  value é só o 1º do mês (pra posicionar o calendário) e pintar o dia 1
+   *  junto com o "hoje" confunde. O dia de hoje continua com o estilo padrão. */
+  hideSelectedDay?: boolean;
   placeholder?: string;
   /** Quando informado, exibe esse rótulo (com ChevronDown) no lugar da data —
    * ex.: "Setembro de 2026" ou "14 – 20 set." (padrão Google Calendar) */
@@ -35,6 +39,7 @@ export default function DatePicker({
   value,
   onChange,
   onMonthChange,
+  hideSelectedDay = false,
   placeholder = "Selecione",
   label,
   disabled,
@@ -82,7 +87,7 @@ export default function DatePicker({
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
-          selected={selected}
+          selected={hideSelectedDay ? undefined : selected}
           onSelect={day => {
             if (day) {
               onChange(format(day, "yyyy-MM-dd"));

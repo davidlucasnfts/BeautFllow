@@ -126,6 +126,7 @@ export default function FinancialRecordsList({
               value={`${month}-01`}
               onChange={iso => onMonth(iso.slice(0, 7))}
               onMonthChange={iso => onMonth(iso.slice(0, 7))}
+              hideSelectedDay
               label={capitalizeFirst(
                 format(new Date(`${month}-01T00:00:00`), "MMMM 'de' yyyy", {
                   locale: ptBR,
