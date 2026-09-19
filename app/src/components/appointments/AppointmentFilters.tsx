@@ -10,20 +10,15 @@ import {
   CalendarDays,
   CalendarRange,
   Calendar,
-  ChevronLeft,
-  ChevronRight,
   Plus,
 } from "lucide-react";
 import {
-  format,
   addDays,
   addMonths,
   startOfWeek,
-  endOfWeek,
   differenceInCalendarWeeks,
 } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import DatePicker from "@/components/DatePicker";
+import PeriodNavigator from "@/components/PeriodNavigator";
 import { cn } from "@/lib/utils";
 import type { ViewMode } from "@/components/calendar/types";
 import type { Professional, Service } from "@db/schema";
@@ -75,7 +70,6 @@ export default function AppointmentFilters({
   const weekStart = startOfWeek(addDays(today, weekOffset * 7), {
     weekStartsOn: 1,
   });
-  const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
   const monthCursor = addMonths(today, monthOffset);
 
   function stepPrev() {
@@ -90,9 +84,9 @@ export default function AppointmentFilters({
     else setMonthOffset(o => o + 1);
   }
 
-  // Centro clicável abre o DatePicker e pula direto pro dia/semana/mês escolhido
-  function jumpTo(iso: string) {
-    const chosen = new Date(`${iso}T00:00:00`);
+  // Centro clicável abre o seletor de período e pula direto pro dia/semana/mês
+  // escolhido (padrão "real" do sistema — PeriodNavigator)
+  function jumpToDate(chosen: Date) {
     if (viewMode === "day") {
       setSelectedDate(() => chosen);
     } else if (viewMode === "week") {
@@ -110,59 +104,19 @@ export default function AppointmentFilters({
     }
   }
 
-  const centerLabel =
-    viewMode === "day"
-      ? format(selectedDate, "dd/MM/yyyy")
-      : viewMode === "week"
-        ? `${format(weekStart, "dd/MM")} – ${format(weekEnd, "dd/MM")}`
-        : capitalizeFirst(
-            format(monthCursor, "MMMM 'de' yyyy", { locale: ptBR })
-          );
-
-  const centerValue =
-    viewMode === "day"
-      ? format(selectedDate, "yyyy-MM-dd")
-      : viewMode === "week"
-        ? format(weekStart, "yyyy-MM-dd")
-        : format(monthCursor, "yyyy-MM-dd");
-
-  const centerWidth =
-    viewMode === "day"
-      ? "w-[128px]"
-      : viewMode === "week"
-        ? "w-[150px]"
-        : "w-[180px]";
-
   const nav = (
-    <div className="flex items-center justify-center gap-1.5">
-      <Button
-        variant="outline"
-        size="icon"
-        aria-label="Anterior"
-        className="h-9 w-9 sm:h-8 sm:w-8"
-        onClick={stepPrev}
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
-      <div className={centerWidth}>
-        <DatePicker
-          value={centerValue}
-          onChange={jumpTo}
-          label={centerLabel}
-          className="justify-center"
-          hideSelectedDay={viewMode !== "day"}
-        />
-      </div>
-      <Button
-        variant="outline"
-        size="icon"
-        aria-label="Próximo"
-        className="h-9 w-9 sm:h-8 sm:w-8"
-        onClick={stepNext}
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
-    </div>
+    <PeriodNavigator
+      period={viewMode}
+      anchor={
+        viewMode === "day"
+          ? selectedDate
+          : viewMode === "week"
+            ? weekStart
+            : monthCursor
+      }
+      onStep={amount => (amount < 0 ? stepPrev() : stepNext())}
+      onPick={jumpToDate}
+    />
   );
 
   return (
@@ -315,6 +269,3 @@ export default function AppointmentFilters({
   );
 }
 
-function capitalizeFirst(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}

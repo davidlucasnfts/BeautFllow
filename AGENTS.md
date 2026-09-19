@@ -230,7 +230,7 @@ Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a 
 - **Grupo esquerda:** seletor de visão/período (Dia | Semana | Mês) + navegação (setas ‹ › + rótulo clicável com DatePicker/PeriodPicker)
 - **Grupo direita:** filtros contextuais (busca, select de serviço) + ação primária (+ Novo)
 - **Mobile:** visão + ação na 1ª linha, navegação centralizada na 2ª, filtros embaixo
-- Seletor de período "real": Dia abre grade de dias, Semana abre lista de semanas, Mês abre grade de 12 meses (estilo iOS) — implementação de referência: `app/src/components/financial/PeriodPicker.tsx`
+- Seletor de período "real" (componente compartilhado `app/src/components/PeriodNavigator.tsx`): Dia abre grade de dias, Semana abre lista de semanas, Mês abre grade de 12 meses (estilo iOS) — usado no Agendamento e no Financeiro
 - Referências: mockups `docs/mockups/financeiro-seletor-periodo.html` e `docs/mockups/financeiro-barra-desktop.html`
 
 ### Botões de Ação — REGRAS OBRIGATÓRIAS

@@ -1,4 +1,5 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useMemo } from "react";
+import { format, startOfWeek, addDays, addMonths } from "date-fns";
 import {
   Edit3,
   Trash2,
@@ -23,13 +24,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { dateToBR } from "@/lib/input-masks";
-import PeriodPicker, { type FinancialPeriod } from "./PeriodPicker";
+import PeriodNavigator, {
+  type Period,
+  type WeekStats,
+} from "@/components/PeriodNavigator";
+import { dateToBR, toISODate } from "@/lib/input-masks";
 import FinancialRecordExpanded, {
   type FinancialRecordForList,
 } from "./FinancialRecordExpanded";
 
-export type { FinancialPeriod };
+export type FinancialPeriod = Period;
 
 interface FinancialRecordsListProps {
   isLoading: boolean;
@@ -106,6 +110,27 @@ export default function FinancialRecordsList({
   const professionalNameOf = (id: number | null) =>
     id ? (professionals.find(p => p.id === id)?.name ?? "-") : "-";
 
+  // passo das setas ‹ › conforme o período (dia → ±1 dia, semana → ±7, mês → ±1 mês)
+  function stepAnchor(amount: number) {
+    if (period === "month") onAnchor(addMonths(anchor, amount));
+    else onAnchor(addDays(anchor, amount * (period === "week" ? 7 : 1)));
+  }
+
+  // totais por semana do mês da âncora (popup da visão Semana)
+  const weekStats = useMemo(() => {
+    const map = new Map<string, WeekStats>();
+    for (const r of monthRecords) {
+      const d = new Date(`${toISODate(r.recordDate)}T00:00:00`);
+      const key = format(startOfWeek(d, { weekStartsOn: 1 }), "yyyy-MM-dd");
+      const s = map.get(key) ?? { count: 0, total: 0 };
+      s.count += 1;
+      s.total +=
+        r.type === "refund" ? -Math.abs(Number(r.amount)) : Number(r.amount);
+      map.set(key, s);
+    }
+    return map;
+  }, [monthRecords]);
+
   const actions = (r: FinancialRecordForList) => (
     <div className="flex flex-col gap-1" onClick={e => e.stopPropagation()}>
       <button
@@ -181,11 +206,12 @@ export default function FinancialRecordsList({
               </button>
             </div>
             <div className="hidden md:block md:pl-1">
-              <PeriodPicker
+              <PeriodNavigator
                 period={period}
                 anchor={anchor}
-                onAnchor={onAnchor}
-                monthRecords={monthRecords}
+                onStep={stepAnchor}
+                onPick={onAnchor}
+                weekStats={weekStats}
               />
             </div>
             <div className="grow" />
@@ -203,11 +229,12 @@ export default function FinancialRecordsList({
             </Button>
           </div>
           <div className="md:hidden flex justify-center">
-            <PeriodPicker
+            <PeriodNavigator
               period={period}
               anchor={anchor}
-              onAnchor={onAnchor}
-              monthRecords={monthRecords}
+              onStep={stepAnchor}
+              onPick={onAnchor}
+              weekStats={weekStats}
             />
           </div>
           <div className="relative sm:hidden">
