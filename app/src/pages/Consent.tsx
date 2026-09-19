@@ -29,7 +29,7 @@ export default function Consent() {
   } | null>(null);
 
   const utils = trpc.useUtils();
-  const { data: forms, isLoading } = trpc.consent.list.useQuery(
+  const { data: forms, isLoading, isError } = trpc.consent.list.useQuery(
     { salonId: salon?.id ?? 0 },
     { enabled: !!salon }
   );
@@ -152,6 +152,11 @@ export default function Consent() {
             {Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className="h-32 bg-muted" />
             ))}
+          </div>
+        ) : isError ? (
+          <div className="text-center py-12 text-muted-foreground border rounded-lg">
+            <ShieldCheck className="h-10 w-10 mx-auto mb-3 opacity-20" />
+            <p>Falha ao carregar. Atualize a página.</p>
           </div>
         ) : forms && forms.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2">

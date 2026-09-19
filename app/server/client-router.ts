@@ -13,7 +13,7 @@ import { auditAction } from "./lib/audit";
 
 export const customerRouter = createRouter({
   list: authedQuery
-    .input(z.object({ salonId: z.number(), limit: z.number().default(100) }))
+    .input(z.object({ salonId: z.number(), limit: z.number().default(1000) }))
     .query(async ({ input }) => {
       // Recalcula totais e status automáticos antes de listar (híbrido)
       await refreshClientSegments(input.salonId);
@@ -66,7 +66,8 @@ export const customerRouter = createRouter({
         salonId: z.number(),
         name: z.string().min(1).max(255).optional(),
         phone: z.string().min(1).max(50).optional(),
-        birthDate: z.string().optional(),
+        /** "" (campo limpo no form) grava NULL no banco — data é nullable */
+        birthDate: z.string().nullable().optional(),
         notes: z.string().optional(),
         tags: z.string().optional(),
         segment: z
@@ -80,7 +81,9 @@ export const customerRouter = createRouter({
       const { id, salonId, birthDate, segmentManual, ...data } = input;
       const result = await updateClient(id, salonId, {
         ...data,
-        birthDate: birthDate || undefined,
+        ...(birthDate !== undefined
+          ? { birthDate: birthDate === "" ? null : birthDate }
+          : {}),
         ...(segmentManual !== undefined ? { segmentManual } : {}),
       });
       await auditAction(

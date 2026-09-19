@@ -13,8 +13,6 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import MessageFormDialog, {
   type MessagePreset,
@@ -61,19 +59,27 @@ const statusColors: Record<string, string> = {
   failed: "bg-rose-100 text-rose-700",
 };
 
+/** Quantidade de mensagens buscada por vez (botão "Carregar mais") */
+const MESSAGE_PAGE_SIZE = 50;
+
 export default function Communications() {
   const { salon } = useSalon();
   const [open, setOpen] = useState(false);
   const [preset, setPreset] = useState<MessagePreset | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [listLimit, setListLimit] = useState(MESSAGE_PAGE_SIZE);
   const [deleteTarget, setDeleteTarget] = useState<{
     id: number;
     label: string;
   } | null>(null);
 
   const utils = trpc.useUtils();
-  const { data: comms, isLoading } = trpc.communication.listBySalon.useQuery(
-    { salonId: salon?.id ?? 0 },
+  const {
+    data: comms,
+    isLoading,
+    isError,
+  } = trpc.communication.listBySalon.useQuery(
+    { salonId: salon?.id ?? 0, limit: listLimit },
     { enabled: !!salon }
   );
 
@@ -154,6 +160,11 @@ export default function Communications() {
             <Skeleton key={i} className="h-[76px] w-full rounded-none bg-muted" />
           ))}
         </div>
+      ) : isError ? (
+        <div className="text-center py-20 text-muted-foreground">
+          <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-20" />
+          <p>Falha ao carregar. Atualize a página.</p>
+        </div>
       ) : comms && comms.length > 0 ? (
         <div className="rounded-xl border bg-card divide-y overflow-hidden">
           {comms.map(c => {
@@ -231,13 +242,8 @@ export default function Communications() {
                         {c.direction === "outbound" ? "Enviada" : "Recebida"}
                       </span>
                       <span>•</span>
-                      <span>
-                        {c.createdAt
-                          ? format(new Date(c.createdAt), "dd/MM/yyyy HH:mm", {
-                              locale: ptBR,
-                            })
-                          : ""}
-                      </span>
+                      {/* createdAt já vem formatado do servidor (fuso SP) */}
+                      <span>{c.createdAt}</span>
                     </div>
                   </div>
                 </div>
@@ -270,6 +276,20 @@ export default function Communications() {
         <div className="text-center py-20 text-muted-foreground">
           <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-20" />
           <p>Nenhuma mensagem enviada ainda.</p>
+        </div>
+      )}
+
+      {!isLoading && !isError && comms && comms.length >= listLimit && (
+        <div className="flex flex-col items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setListLimit(prev => prev + MESSAGE_PAGE_SIZE)}
+          >
+            Carregar mais mensagens
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            Exibindo as {listLimit} mensagens mais recentes
+          </p>
         </div>
       )}
 

@@ -84,7 +84,11 @@ export default function Clients() {
   });
 
   const utils = trpc.useUtils();
-  const { data: clients, isLoading } = trpc.customer.list.useQuery(
+  const {
+    data: clients,
+    isLoading,
+    isError,
+  } = trpc.customer.list.useQuery(
     { salonId: salon?.id ?? 0 },
     { enabled: !!salon }
   );
@@ -232,12 +236,24 @@ export default function Clients() {
               </div>
               <div className="grid gap-2">
                 <Label>Data Nascimento</Label>
-                <DatePicker
-                  value={form.birthDate}
-                  onChange={iso => setForm({ ...form, birthDate: iso })}
-                  placeholder="Selecione"
-                  toDate={new Date()}
-                />
+                <div className="flex gap-2">
+                  <DatePicker
+                    value={form.birthDate}
+                    onChange={iso => setForm({ ...form, birthDate: iso })}
+                    placeholder="Selecione"
+                    toDate={new Date()}
+                    className="flex-1"
+                  />
+                  {editing && form.birthDate && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setForm({ ...form, birthDate: "" })}
+                    >
+                      Limpar
+                    </Button>
+                  )}
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label>Observações / Alergias</Label>
@@ -315,6 +331,11 @@ export default function Clients() {
             <Skeleton key={i} className="h-[76px] w-full rounded-none bg-muted" />
           ))}
         </div>
+      ) : isError ? (
+        <div className="text-center py-20 text-muted-foreground">
+          <Users className="h-12 w-12 mx-auto mb-4 opacity-20" />
+          <p>Falha ao carregar. Atualize a página.</p>
+        </div>
       ) : filtered && filtered.length > 0 ? (
         <div className="rounded-xl border bg-card divide-y overflow-hidden">
           {filtered.map(client => {
@@ -368,10 +389,10 @@ export default function Clients() {
                       rel="noopener noreferrer"
                       onClick={e => e.stopPropagation()}
                       title={`Chamar ${client.name} no WhatsApp`}
-                      aria-label={`Chamar ${client.name} no WhatsApp`}
-                      className="h-8 w-8 flex items-center justify-center rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors"
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors"
                     >
-                      <WhatsAppIcon className="h-4 w-4" />
+                      <WhatsAppIcon className="h-3.5 w-3.5" />
+                      WhatsApp
                     </a>
                     <button
                       type="button"

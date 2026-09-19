@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Send } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -106,6 +107,10 @@ export default function MessageFormDialog({
   }
 
   function handleSubmit() {
+    if (!form.clientId) {
+      toast.error("Selecione um cliente.");
+      return;
+    }
     onSubmit({
       clientId: Number(form.clientId),
       channel: form.channel,

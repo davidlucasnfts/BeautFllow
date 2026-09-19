@@ -25,6 +25,7 @@ import {
   defaultThemeForSegment,
 } from "@contracts/segment-palettes";
 import { generateTimeSlots } from "@/lib/time-slots";
+import { onlyDigits } from "@/lib/input-masks";
 
 const START_OPTIONS = generateTimeSlots("05:00", "12:00", 30);
 const END_OPTIONS = generateTimeSlots("12:00", "23:30", 30);
@@ -217,15 +218,17 @@ export default function Settings() {
                 : "Limite VIP (atendimentos por mês)"}
             </Label>
             <Input
-              type="number"
-              min={1}
-              value={currentStatus.vipThreshold}
+              value={String(currentStatus.vipThreshold)}
               onChange={e =>
                 setClientStatus({
                   ...currentStatus,
-                  vipThreshold: Math.max(1, Number(e.target.value) || 1),
+                  vipThreshold: Math.max(
+                    1,
+                    Number(onlyDigits(e.target.value).slice(0, 7)) || 1
+                  ),
                 })
               }
+              inputMode="numeric"
             />
           </div>
 
@@ -233,31 +236,33 @@ export default function Settings() {
             <div className="grid gap-2">
               <Label>Dias sem atender vira "Sumindo"</Label>
               <Input
-                type="number"
-                min={7}
-                max={365}
-                value={currentStatus.atRiskDays}
+                value={String(currentStatus.atRiskDays)}
                 onChange={e =>
                   setClientStatus({
                     ...currentStatus,
-                    atRiskDays: Math.max(7, Number(e.target.value) || 7),
+                    atRiskDays: Math.max(
+                      7,
+                      Number(onlyDigits(e.target.value).slice(0, 3)) || 7
+                    ),
                   })
                 }
+                inputMode="numeric"
               />
             </div>
             <div className="grid gap-2">
               <Label>Dias sem atender vira "Inativo"</Label>
               <Input
-                type="number"
-                min={15}
-                max={730}
-                value={currentStatus.inactiveDays}
+                value={String(currentStatus.inactiveDays)}
                 onChange={e =>
                   setClientStatus({
                     ...currentStatus,
-                    inactiveDays: Math.max(15, Number(e.target.value) || 15),
+                    inactiveDays: Math.max(
+                      15,
+                      Number(onlyDigits(e.target.value).slice(0, 3)) || 15
+                    ),
                   })
                 }
+                inputMode="numeric"
               />
             </div>
           </div>

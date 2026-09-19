@@ -49,7 +49,11 @@ export default function Professionals() {
 
   const utils = trpc.useUtils();
   // traz ativos e inativos de uma vez (equipe é pequena) e separa na tela
-  const { data: professionals, isLoading } = trpc.professional.list.useQuery(
+  const {
+    data: professionals,
+    isLoading,
+    isError,
+  } = trpc.professional.list.useQuery(
     { salonId: salon?.id ?? 0, includeInactive: true },
     { enabled: !!salon }
   );
@@ -158,6 +162,11 @@ export default function Professionals() {
             <Skeleton key={i} className="h-36 bg-muted" />
           ))}
         </div>
+      ) : isError ? (
+        <div className="text-center py-20 text-muted-foreground">
+          <UserCircle className="h-12 w-12 mx-auto mb-4 opacity-20" />
+          <p>Falha ao carregar. Atualize a página.</p>
+        </div>
       ) : active && active.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {active.filter(matches).map(p => (
@@ -195,9 +204,11 @@ export default function Professionals() {
                 />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium truncate">{p.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Comissão {p.commissionRate}%
-                  </p>
+                  {Number(p.commissionRate) > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      Comissão {Number(p.commissionRate)}%
+                    </p>
+                  )}
                 </div>
                 <Badge
                   variant="secondary"

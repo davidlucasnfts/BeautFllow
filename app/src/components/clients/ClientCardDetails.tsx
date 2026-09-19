@@ -11,7 +11,8 @@ export type ClientForDetails = {
 };
 
 function ageFromISO(iso: string): number | null {
-  const birth = new Date(iso);
+  // date-only parseado como UTC desloca 1 dia no fuso Brasil — ancorar em horário local
+  const birth = new Date(`${iso}T00:00:00`);
   if (isNaN(birth.getTime())) return null;
   const now = new Date();
   let age = now.getFullYear() - birth.getFullYear();

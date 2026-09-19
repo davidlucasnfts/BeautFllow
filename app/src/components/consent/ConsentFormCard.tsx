@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { FileText, Edit3, Trash2, ChevronDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -6,7 +5,8 @@ export type ConsentFormItem = {
   id: number;
   title: string;
   content: string;
-  createdAt: Date;
+  /** Data já formatada no servidor (dd/mm/aaaa, fuso SP) */
+  createdAt: string;
 };
 
 interface ConsentFormCardProps {
@@ -40,7 +40,7 @@ export default function ConsentFormCard({
           <div className="min-w-0 flex-1">
             <CardTitle className="text-base truncate">{form.title}</CardTitle>
             <p className="text-xs text-muted-foreground">
-              Criado em {format(new Date(form.createdAt), "dd/MM/yyyy")}
+              Criado em {form.createdAt}
             </p>
           </div>
           <ChevronDown

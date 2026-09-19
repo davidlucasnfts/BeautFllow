@@ -76,7 +76,7 @@ export async function createClient(data: InsertClient) {
   return db.query.clients.findFirst({ where: eq(clients.id, id) });
 }
 
-export async function getClientsBySalon(salonId: number, limit = 100) {
+export async function getClientsBySalon(salonId: number, limit = 1000) {
   return getDb()
     .select()
     .from(clients)
@@ -371,7 +371,7 @@ export async function getFinancialSummaryBySalon(
     conditions.push(sql`${financialRecords.recordDate} >= ${fromDate}`);
   if (toDate) conditions.push(sql`${financialRecords.recordDate} <= ${toDate}`);
 
-  const result = await getDb()
+  const [row] = await getDb()
     .select({
       totalRevenue: sql<number>`COALESCE(SUM(CASE WHEN ${financialRecords.type} != 'refund' THEN ${financialRecords.amount} ELSE 0 END), 0)`,
       totalRefunds: sql<number>`COALESCE(SUM(CASE WHEN ${financialRecords.type} = 'refund' THEN ABS(${financialRecords.amount}) ELSE 0 END), 0)`,
@@ -381,7 +381,13 @@ export async function getFinancialSummaryBySalon(
     .from(financialRecords)
     .where(and(...conditions));
 
-  return result[0];
+  // SUM/COUNT do Postgres voltam como string (numeric) — normalizar p/ número
+  return {
+    totalRevenue: Number(row?.totalRevenue ?? 0),
+    totalRefunds: Number(row?.totalRefunds ?? 0),
+    totalCommission: Number(row?.totalCommission ?? 0),
+    count: Number(row?.count ?? 0),
+  };
 }
 
 export async function updateFinancialRecord(
@@ -438,7 +444,24 @@ export async function getCommunicationsByClient(
 
 export async function getCommunicationsBySalon(salonId: number, limit = 50) {
   return getDb()
-    .select()
+    .select({
+      id: communications.id,
+      salonId: communications.salonId,
+      clientId: communications.clientId,
+      appointmentId: communications.appointmentId,
+      type: communications.type,
+      channel: communications.channel,
+      direction: communications.direction,
+      content: communications.content,
+      status: communications.status,
+      sentAt: communications.sentAt,
+      deliveredAt: communications.deliveredAt,
+      readAt: communications.readAt,
+      externalId: communications.externalId,
+      errorMessage: communications.errorMessage,
+      // timestamp gravado em UTC — formatar no servidor com o fuso do Brasil
+      createdAt: sql<string>`TO_CHAR(${communications.createdAt} AT TIME ZONE 'America/Sao_Paulo', 'DD/MM/YYYY HH24:MI')`,
+    })
     .from(communications)
     .where(eq(communications.salonId, salonId))
     .orderBy(desc(communications.createdAt))
@@ -463,7 +486,17 @@ export async function createConsentForm(data: InsertConsentForm) {
 
 export async function getConsentFormsBySalon(salonId: number) {
   return getDb()
-    .select()
+    .select({
+      id: consentForms.id,
+      salonId: consentForms.salonId,
+      title: consentForms.title,
+      content: consentForms.content,
+      isRequired: consentForms.isRequired,
+      isActive: consentForms.isActive,
+      // timestamp gravado em UTC — formatar no servidor com o fuso do Brasil
+      createdAt: sql<string>`TO_CHAR(${consentForms.createdAt} AT TIME ZONE 'America/Sao_Paulo', 'DD/MM/YYYY')`,
+      updatedAt: consentForms.updatedAt,
+    })
     .from(consentForms)
     .where(
       and(eq(consentForms.salonId, salonId), eq(consentForms.isActive, true))
@@ -548,17 +581,27 @@ export async function getAuditLogsBySalon(salonId: number, limit = 100) {
 // ==========================================
 // Dashboard Metrics
 // ==========================================
+
+/** "Hoje" no fuso de São Paulo (aaaa-mm-dd). Calculado no SQL porque a máquina
+ *  do servidor roda em UTC (Vercel) e entre 21h–23h59 BRT o dia já virou. */
+async function todaySaoPaulo(
+  db: ReturnType<typeof getDb>
+): Promise<string> {
+  const [row] = await db
+    .select({
+      today: sql<string>`TO_CHAR(NOW() AT TIME ZONE 'America/Sao_Paulo', 'YYYY-MM-DD')`,
+    })
+    .from(salons)
+    .limit(1);
+  return row.today;
+}
+
 export async function getDashboardMetrics(salonId: number, month: string) {
   const db = getDb();
 
-  const today = new Date().toISOString().split("T")[0];
-  const currentDate = new Date();
-  const prevMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() - 1,
-    1
-  );
-  const prevMonthStr = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
+  const today = await todaySaoPaulo(db);
+  const [ty, tm] = today.split("-").map(Number);
+  const prevMonthStr = `${tm === 1 ? ty - 1 : ty}-${String(tm === 1 ? 12 : tm - 1).padStart(2, "0")}`;
 
   const [
     appointmentsToday,
@@ -724,38 +767,39 @@ export async function getDashboardMetrics(salonId: number, month: string) {
   ]);
 
   const totalAppointments =
-    (appointmentsMonth[0]?.scheduled || 0) +
-    (appointmentsMonth[0]?.completed || 0);
-  const noShows = appointmentsMonth[0]?.noShow || 0;
+    Number(appointmentsMonth[0]?.scheduled ?? 0) +
+    Number(appointmentsMonth[0]?.completed ?? 0);
+  const noShows = Number(appointmentsMonth[0]?.noShow ?? 0);
   const nsRate =
     totalAppointments > 0 ? (noShows / totalAppointments) * 100 : 0;
 
-  const revenue = monthlyRevenue[0]?.total || 0;
-  const prevRevenue = prevMonthRevenue[0]?.total || 0;
+  // SUM/COUNT do Postgres voltam como string (numeric) — normalizar p/ número
+  const revenue = Number(monthlyRevenue[0]?.total ?? 0);
+  const prevRevenue = Number(prevMonthRevenue[0]?.total ?? 0);
   const revenueGrowth =
     prevRevenue > 0 ? ((revenue - prevRevenue) / prevRevenue) * 100 : 0;
 
   return {
-    appointmentsToday: appointmentsToday[0]?.count || 0,
+    appointmentsToday: Number(appointmentsToday[0]?.count ?? 0),
     appointmentsMonth: {
-      scheduled: appointmentsMonth[0]?.scheduled || 0,
-      completed: appointmentsMonth[0]?.completed || 0,
-      cancelled: appointmentsMonth[0]?.cancelled || 0,
-      noShow: appointmentsMonth[0]?.noShow || 0,
+      scheduled: Number(appointmentsMonth[0]?.scheduled ?? 0),
+      completed: Number(appointmentsMonth[0]?.completed ?? 0),
+      cancelled: Number(appointmentsMonth[0]?.cancelled ?? 0),
+      noShow: Number(appointmentsMonth[0]?.noShow ?? 0),
     },
     appointmentsPrevMonth: {
-      scheduled: appointmentsPrevMonth[0]?.scheduled || 0,
-      completed: appointmentsPrevMonth[0]?.completed || 0,
-      cancelled: appointmentsPrevMonth[0]?.cancelled || 0,
-      noShow: appointmentsPrevMonth[0]?.noShow || 0,
+      scheduled: Number(appointmentsPrevMonth[0]?.scheduled ?? 0),
+      completed: Number(appointmentsPrevMonth[0]?.completed ?? 0),
+      cancelled: Number(appointmentsPrevMonth[0]?.cancelled ?? 0),
+      noShow: Number(appointmentsPrevMonth[0]?.noShow ?? 0),
     },
-    clientsTotal: clientsTotal[0]?.count || 0,
-    newClientsThisMonth: newClientsThisMonth[0]?.count || 0,
-    newClientsPrevMonth: newClientsPrevMonth[0]?.count || 0,
+    clientsTotal: Number(clientsTotal[0]?.count ?? 0),
+    newClientsThisMonth: Number(newClientsThisMonth[0]?.count ?? 0),
+    newClientsPrevMonth: Number(newClientsPrevMonth[0]?.count ?? 0),
     noShowRate: Math.round(nsRate * 10) / 10,
     upcomingAppointments,
     recentActivity,
-    pendingConsents: pendingConsents[0]?.count || 0,
+    pendingConsents: Number(pendingConsents[0]?.count ?? 0),
     monthlyRevenue: revenue,
     revenueGrowth: Math.round(revenueGrowth * 10) / 10,
   };
@@ -832,7 +876,8 @@ export async function refreshClientSegments(salonId: number) {
 
   // Agrega atendimentos concluídos por cliente (join com services p/ valor)
   const now = new Date();
-  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+  // início do mês no fuso de SP, calculado no SQL (servidor roda em UTC)
+  const monthStart = sql<string>`TO_CHAR(NOW() AT TIME ZONE 'America/Sao_Paulo', 'YYYY-MM') || '-01'`;
   const rows = await db
     .select({
       clientId: appointments.clientId,

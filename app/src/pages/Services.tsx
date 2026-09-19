@@ -47,7 +47,11 @@ export default function Services() {
 
   const utils = trpc.useUtils();
   // traz ativos e inativos de uma vez (catálogo é pequeno) e separa na tela
-  const { data: services, isLoading } = trpc.service.list.useQuery(
+  const {
+    data: services,
+    isLoading,
+    isError,
+  } = trpc.service.list.useQuery(
     { salonId: salon?.id ?? 0, includeInactive: true },
     { enabled: !!salon }
   );
@@ -162,6 +166,11 @@ export default function Services() {
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-36 bg-muted" />
           ))}
+        </div>
+      ) : isError ? (
+        <div className="text-center py-20 text-muted-foreground">
+          <Scissors className="h-12 w-12 mx-auto mb-4 opacity-20" />
+          <p>Falha ao carregar. Atualize a página.</p>
         </div>
       ) : active && active.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
