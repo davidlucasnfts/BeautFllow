@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financeiro — Cards de resumo no mobile</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; padding: 24px; }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  .contexto { color: #64748b; font-size: 14px; margin-bottom: 24px; max-width: 720px; line-height: 1.5; }
+  .opcoes { display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start; }
+  .opcao { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .opcao h2 { font-size: 15px; margin-bottom: 2px; }
+  .opcao .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-bottom: 12px; }
+  .tag-atual { background: #e2e8f0; color: #475569; }
+  .tag-rec { background: #dcfce7; color: #15803d; }
+  .opcao .proscontras { font-size: 12px; color: #64748b; margin-top: 12px; line-height: 1.6; max-width: 360px; }
+  .opcao .proscontras b { color: #334155; }
+
+  /* ============ SIMULAÇÃO DO APP (mobile 390px) ============ */
+  .phone { width: 390px; border: 8px solid #0f172a; border-radius: 28px; overflow: hidden; background: #f8fafc; }
+  .screen { background: #f8fafc; padding: 14px; }
+  .page-title { font-size: 18px; font-weight: 700; }
+  .page-sub { font-size: 12px; color: #64748b; margin-bottom: 12px; }
+
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; }
+  .card-label { font-size: 12px; color: #475569; display: flex; justify-content: space-between; align-items: center; }
+  .card-value { font-size: 22px; font-weight: 700; margin-top: 4px; }
+  .icon { width: 16px; height: 16px; border-radius: 4px; display: inline-block; }
+  .i-up { background: #a7f3d0; }
+  .i-down { background: #fecdd3; }
+  .i-wallet { background: #fde68a; }
+
+  .section-title { font-size: 14px; font-weight: 600; margin: 16px 2px 8px; }
+  .filter { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 9px 12px; font-size: 13px; color: #94a3b8; margin-bottom: 8px; }
+  .filter-mes { color: #1e293b; display: flex; justify-content: space-between; }
+  .row-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; font-size: 13px; }
+
+  /* ---- Opção A: atual (coluna única) ---- */
+  .opt-a .kpi-grid { display: flex; flex-direction: column; gap: 10px; }
+
+  /* ---- Opção B: grade 2 colunas ---- */
+  .opt-b .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .opt-b .card-value { font-size: 18px; }
+  .opt-b .kpi-grid .card:last-child { grid-column: span 2; }
+
+  /* ---- Opção C: 3 colunas mini (bem compacto) ---- */
+  .opt-c .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .opt-c .card { padding: 10px 8px; }
+  .opt-c .card-label { font-size: 10px; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .opt-c .card-value { font-size: 15px; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<h1>Financeiro — cards de resumo no mobile</h1>
+<p class="contexto">
+  Hoje os 3 indicadores (Ganho líquido, Reembolsos, Total Comissões) ficam empilhados um embaixo do outro
+  com bastante altura. No celular isso consome quase uma tela inteira de scroll antes de chegar nos lançamentos.
+  As opções abaixo mostram como apps grandes (banco, Stripe) resolvem isso: KPIs compactos em grade.
+  <b>No desktop nada muda</b> — as 3 colunas atuais continuam.
+</p>
+
+<div class="opcoes">
+
+  <!-- ========= OPÇÃO A — ATUAL ========= -->
+  <div class="opcao opt-a">
+    <h2>Opção A — Atual (coluna única)</h2>
+    <span class="tag tag-atual">implementado hoje</span>
+    <div class="phone"><div class="screen">
+      <div class="page-title">Financeiro</div>
+      <div class="page-sub">Seus ganhos, comissões e gastos</div>
+      <div class="kpi-grid">
+        <div class="card"><div class="card-label">Ganho líquido <span class="icon i-up"></span></div><div class="card-value">R$ 350,00</div></div>
+        <div class="card"><div class="card-label">Reembolsos <span class="icon i-down"></span></div><div class="card-value">R$ 0,00</div></div>
+        <div class="card"><div class="card-label">Total Comissões <span class="icon i-wallet"></span></div><div class="card-value">R$ 0,00</div></div>
+      </div>
+      <div class="section-title">Registros do mês</div>
+      <div class="filter">Buscar descrição ou cliente</div>
+      <div class="filter filter-mes">Setembro de 2026 <span>▾</span></div>
+      <div class="row-item"><span>teste</span><b>R$ 50,00</b></div>
+      <div class="row-item"><span>Corte de cabelo …</span><b>R$ 100,00</b></div>
+      <div class="row-item"><span>Corte de cabelo …</span><b>R$ 100,00</b></div>
+    </div></div>
+    <div class="proscontras">
+      <b>Prós:</b> cards grandes e legíveis.<br>
+      <b>Contras:</b> ~3 cards de altura só de resumo; o usuário precisa rolar bastante pra ver os lançamentos — que é o que ele veio fazer.
+    </div>
+  </div>
+
+  <!-- ========= OPÇÃO B — GRADE 2 COLUNAS ========= -->
+  <div class="opcao opt-b">
+    <h2>Opção B — Grade 2 colunas</h2>
+    <span class="tag tag-rec">recomendada</span>
+    <div class="phone"><div class="screen">
+      <div class="page-title">Financeiro</div>
+      <div class="page-sub">Seus ganhos, comissões e gastos</div>
+      <div class="kpi-grid">
+        <div class="card"><div class="card-label">Ganho líquido <span class="icon i-up"></span></div><div class="card-value">R$ 350,00</div></div>
+        <div class="card"><div class="card-label">Reembolsos <span class="icon i-down"></span></div><div class="card-value">R$ 0,00</div></div>
+        <div class="card"><div class="card-label">Total Comissões <span class="icon i-wallet"></span></div><div class="card-value">R$ 0,00</div></div>
+      </div>
+      <div class="section-title">Registros do mês</div>
+      <div class="filter">Buscar descrição ou cliente</div>
+      <div class="filter filter-mes">Setembro de 2026 <span>▾</span></div>
+      <div class="row-item"><span>teste</span><b>R$ 50,00</b></div>
+      <div class="row-item"><span>Corte de cabelo …</span><b>R$ 100,00</b></div>
+      <div class="row-item"><span>Corte de cabelo …</span><b>R$ 100,00</b></div>
+      <div class="row-item"><span>Barba …</span><b>R$ 40,00</b></div>
+    </div></div>
+    <div class="proscontras">
+      <b>Prós:</b> economiza 1 card de altura; valores ainda grandes; o 3º card ocupa a linha de baixo com espaço de sobra.<br>
+      <b>Contras:</b> leve desalinhamento (3º card sozinho na linha).
+    </div>
+  </div>
+
+  <!-- ========= OPÇÃO C — 3 COLUNAS MINI ========= -->
+  <div class="opcao opt-c">
+    <h2>Opção C — 3 colunas mini</h2>
+    <span class="tag">alternativa</span>
+    <div class="phone"><div class="screen">
+      <div class="page-title">Financeiro</div>
+      <div class="page-sub">Seus ganhos, comissões e gastos</div>
+      <div class="kpi-grid">
+        <div class="card"><div class="card-label"><span class="icon i-up"></span>Ganho líqu.</div><div class="card-value">R$ 350</div></div>
+        <div class="card"><div class="card-label"><span class="icon i-down"></span>Reemb.</div><div class="card-value">R$ 0</div></div>
+        <div class="card"><div class="card-label"><span class="icon i-wallet"></span>Comiss.</div><div class="card-value">R$ 0</div></div>
+      </div>
+      <div class="section-title">Registros do mês</div>
+      <div class="filter">Buscar descrição ou cliente</div>
+      <div class="filter filter-mes">Setembro de 2026 <span>▾</span></div>
+      <div class="row-item"><span>teste</span><b>R$ 50,00</b></div>
+      <div class="row-item"><span>Corte de cabelo …</span><b>R$ 100,00</b></div>
+      <div class="row-item"><span>Corte de cabelo …</span><b>R$ 100,00</b></div>
+      <div class="row-item"><span>Barba …</span><b>R$ 40,00</b></div>
+      <div class="row-item"><span>Coloração …</span><b>R$ 80,00</b></div>
+    </div></div>
+    <div class="proscontras">
+      <b>Prós:</b> resumo em 1 linha só — os lançamentos aparecem quase sem scroll.<br>
+      <b>Contras:</b> valores menores e labels abreviados; com valores grandes (R$ 12.450,00) pode quebrar a linha.
+    </div>
+  </div>
+
+</div>
+
+<p style="margin-top: 28px; font-size: 14px; max-width: 720px; line-height: 1.6;">
+  <b>Recomendação: Opção B.</b> É o meio-termo entre legibilidade e economia de espaço, e segue o padrão
+  que apps financeiros usam no mobile. A Opção C é válida se você quiser priorizar velocidade de acesso
+  aos lançamentos. Me diz qual prefere que eu implemento.
+</p>
+
+</body>
+</html>

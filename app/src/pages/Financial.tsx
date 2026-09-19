@@ -198,7 +198,7 @@ export default function Financial() {
         </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-3">
         <Card className="h-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ganho líquido</CardTitle>
@@ -229,7 +229,7 @@ export default function Financial() {
             )}
           </CardContent>
         </Card>
-        <Card className="h-full">
+        <Card className="h-full col-span-2 md:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total Comissões
