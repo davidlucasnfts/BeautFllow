@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financeiro — Layout da barra no desktop</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; padding: 24px; }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  .contexto { color: #64748b; font-size: 14px; margin-bottom: 24px; max-width: 800px; line-height: 1.6; }
+  .opcoes { display: flex; flex-direction: column; gap: 28px; }
+  .opcao { background: #fff; border-radius: 12px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .opcao h2 { font-size: 15px; margin-bottom: 2px; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-bottom: 4px; }
+  .tag-atual { background: #e2e8f0; color: #475569; }
+  .tag-rec { background: #dcfce7; color: #15803d; }
+  .explica { font-size: 12px; color: #64748b; margin-bottom: 14px; max-width: 800px; line-height: 1.6; }
+
+  .frame { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 20px; background: #f8fafc; }
+  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+  .bar { display: flex; align-items: center; gap: 8px; }
+  .seg { display: flex; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+  .seg span { padding: 7px 12px; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 5px; color: #475569; background: #fff; }
+  .seg span.on { background: #7c3aed; color: #fff; }
+  .nav { display: flex; align-items: center; gap: 6px; }
+  .nav b { border: 1px solid #e2e8f0; background: #fff; width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-weight: 400; color: #475569; }
+  .nav .lab { border: 1px solid #e2e8f0; background: #fff; border-radius: 7px; padding: 6px 10px; font-size: 12px; white-space: nowrap; }
+  .busca { border: 1px solid #e2e8f0; border-radius: 7px; padding: 7px 12px; font-size: 12px; color: #94a3b8; background: #fff; width: 230px; }
+  .btn-novo { background: #7c3aed; color: #fff; border: none; border-radius: 7px; padding: 8px 14px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .grow { flex: 1; }
+  .nota { font-size: 12px; color: #64748b; margin-top: 12px; line-height: 1.6; }
+  .nota b { color: #334155; }
+  table { width: 100%; border-collapse: collapse; margin-top: 14px; background: #fff; border-radius: 8px; overflow: hidden; }
+  th { text-align: left; font-size: 11px; color: #64748b; font-weight: 500; padding: 8px 10px; border-bottom: 1px solid #e2e8f0; }
+  td { font-size: 12px; padding: 10px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+  td.val { text-align: right; color: #059669; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h1>Financeiro — barra de filtros no desktop</h1>
+<p class="contexto">
+  O layout atual espalha os elementos pela largura toda (visão à esquerda, navegação flutuando no centro,
+  busca e Novo colados na direita). As opções abaixo mostram formas de deixar o desktop mais compacto e
+  agrupado. <b>No mobile nada muda</b> (já foi aprovado).
+</p>
+
+<div class="opcoes">
+
+  <!-- OPÇÃO A — ATUAL -->
+  <div class="opcao">
+    <h2>Opção A — Atual (uma linha, navegação no centro)</h2>
+    <span class="tag tag-atual">implementado</span>
+    <div class="frame">
+      <div class="card-title">Registros do dia</div>
+      <div class="bar">
+        <div class="seg"><span class="on">📅 Dia</span><span>🗓 Semana</span><span>📆 Mês</span></div>
+        <div class="grow"></div>
+        <div class="nav"><b>‹</b><span class="lab">01/09/2026</span><b>›</b></div>
+        <div class="grow"></div>
+        <span class="busca">🔍 Buscar descrição ou cliente</span>
+        <button class="btn-novo">＋ Novo</button>
+      </div>
+      <table><tr><th>Data</th><th>Descrição</th><th>Cliente</th><th style="text-align:right">Valor</th></tr>
+      <tr><td>01/09/2026</td><td>Service — debora</td><td>debora</td><td class="val">R$ 0,00</td></tr></table>
+    </div>
+    <div class="nota"><b>Problema percebido:</b> com a tela larga, visão e navegação ficam longe uma da outra e a busca "voa" pra ponta direita.</div>
+  </div>
+
+  <!-- OPÇÃO B — DOIS GRUPOS -->
+  <div class="opcao">
+    <h2>Opção B — Dois grupos justificados</h2>
+    <span class="tag tag-rec">recomendada</span>
+    <div class="frame">
+      <div class="card-title">Registros do dia</div>
+      <div class="bar">
+        <div class="seg"><span class="on">📅 Dia</span><span>🗓 Semana</span><span>📆 Mês</span></div>
+        <div class="nav" style="margin-left:12px"><b>‹</b><span class="lab">01/09/2026</span><b>›</b></div>
+        <div class="grow"></div>
+        <span class="busca">🔍 Buscar descrição ou cliente</span>
+        <button class="btn-novo">＋ Novo</button>
+      </div>
+      <table><tr><th>Data</th><th>Descrição</th><th>Cliente</th><th style="text-align:right">Valor</th></tr>
+      <tr><td>01/09/2026</td><td>Service — debora</td><td>debora</td><td class="val">R$ 0,00</td></tr></table>
+    </div>
+    <div class="nota"><b>Ideia:</b> tudo que é "navegação de período" fica junto à esquerda (visão + setas); tudo que é "ação" fica junto à direita (busca + Novo). Sem elementos flutuando no meio. É o padrão do Notion, Linear e Gmail.</div>
+  </div>
+
+  <!-- OPÇÃO C — DUAS LINHAS -->
+  <div class="opcao">
+    <h2>Opção C — Duas linhas: período em cima, busca embaixo</h2>
+    <span class="tag">alternativa</span>
+    <div class="frame">
+      <div class="card-title">Registros do dia</div>
+      <div class="bar">
+        <div class="seg"><span class="on">📅 Dia</span><span>🗓 Semana</span><span>📆 Mês</span></div>
+        <div class="nav" style="margin-left:12px"><b>‹</b><span class="lab">01/09/2026</span><b>›</b></div>
+        <div class="grow"></div>
+        <button class="btn-novo">＋ Novo</button>
+      </div>
+      <div class="bar" style="margin-top:10px">
+        <span class="busca">🔍 Buscar descrição ou cliente</span>
+      </div>
+      <table><tr><th>Data</th><th>Descrição</th><th>Cliente</th><th style="text-align:right">Valor</th></tr>
+      <tr><td>01/09/2026</td><td>Service — debora</td><td>debora</td><td class="val">R$ 0,00</td></tr></table>
+    </div>
+    <div class="nota"><b>Ideia:</b> linha 1 só com controles de período + Novo; busca ganha linha própria (pode ficar mais larga e com espaço pra digitar). Mais respiro, porém ocupa 1 linha a mais de altura.</div>
+  </div>
+
+  <!-- OPÇÃO D — NAV COLADA À BUSCA -->
+  <div class="opcao">
+    <h2>Opção D — Navegação ao centro-direita, colada à busca</h2>
+    <span class="tag">alternativa</span>
+    <div class="frame">
+      <div class="card-title">Registros do dia</div>
+      <div class="bar">
+        <div class="seg"><span class="on">📅 Dia</span><span>🗓 Semana</span><span>📆 Mês</span></div>
+        <div class="grow"></div>
+        <div class="nav"><b>‹</b><span class="lab">01/09/2026</span><b>›</b></div>
+        <span class="busca" style="margin-left:12px">🔍 Buscar descrição ou cliente</span>
+        <button class="btn-novo">＋ Novo</button>
+      </div>
+      <table><tr><th>Data</th><th>Descrição</th><th>Cliente</th><th style="text-align:right">Valor</th></tr>
+      <tr><td>01/09/2026</td><td>Service — debora</td><td>debora</td><td class="val">R$ 0,00</td></tr></table>
+    </div>
+    <div class="nota"><b>Ideia:</b> visão isolada à esquerda; navegação + busca + Novo formam um grupo de trabalho à direita (quem usa a busca costuma navegar junto). O "vão" fica entre visão e navegação, que é o menos problemático.</div>
+  </div>
+
+</div>
+
+<p class="nota" style="margin-top:24px; max-width:800px">
+  <b>Recomendação: Opção B.</b> Agrupa por função (navegar | agir), não deixa nada flutuando e mantém
+  tudo numa linha só. Se preferir mais respiro, a C funciona bem também. Me diz qual que eu ajusto.
+</p>
+
+</body>
+</html>

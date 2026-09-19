@@ -180,7 +180,7 @@ export default function FinancialRecordsList({
                 Mês
               </button>
             </div>
-            <div className="hidden md:flex flex-1 justify-center px-2">
+            <div className="hidden md:block md:pl-1">
               <PeriodPicker
                 period={period}
                 anchor={anchor}
@@ -188,7 +188,7 @@ export default function FinancialRecordsList({
                 monthRecords={monthRecords}
               />
             </div>
-            <div className="grow md:hidden" />
+            <div className="grow" />
             <div className="relative hidden sm:block w-56">
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
               <Input
