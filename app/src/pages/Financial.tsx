@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, TrendingUp, TrendingDown, Wallet } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, Wallet, Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format, endOfMonth } from "date-fns";
@@ -44,6 +44,7 @@ function formFromRecord(r: FinancialRecordForList): FinancialFormValues {
 export default function Financial() {
   const { salon } = useSalon();
   const [month, setMonth] = useState(format(new Date(), "yyyy-MM"));
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<number | null>(null);
   const [initialForm, setInitialForm] = useState<FinancialFormValues | null>(
@@ -82,6 +83,23 @@ export default function Financial() {
     { salonId: salon?.id ?? 0 },
     { enabled: !!salon }
   );
+
+  // busca operacional: filtra o mês selecionado por descrição ou cliente
+  // (análises e comparativos ficam no Dashboard — aqui é achar um lançamento)
+  const visibleRecords = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    const list = (records ?? []) as FinancialRecordForList[];
+    if (!term) return list;
+    return list.filter(r => {
+      const clientName = r.clientId
+        ? (clients?.find(c => c.id === r.clientId)?.name ?? "")
+        : "";
+      return (
+        (r.description ?? "").toLowerCase().includes(term) ||
+        clientName.toLowerCase().includes(term)
+      );
+    });
+  }, [records, search, clients]);
 
   const invalidate = () => {
     utils.financial.list.invalidate();
@@ -176,7 +194,16 @@ export default function Financial() {
             Seus ganhos, comissões e gastos
           </p>
         </div>
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 min-w-44 sm:flex-none sm:w-60">
+            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <Input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Buscar descrição ou cliente"
+              className="pl-8"
+            />
+          </div>
           <Input
             type="month"
             value={month}
@@ -242,7 +269,8 @@ export default function Financial() {
       <FinancialRecordsList
         isLoading={isLoading}
         isError={isError}
-        records={(records ?? []) as FinancialRecordForList[]}
+        records={visibleRecords}
+        searchActive={!!search.trim()}
         clients={clients ?? []}
         professionals={professionals ?? []}
         selectedId={selectedId}

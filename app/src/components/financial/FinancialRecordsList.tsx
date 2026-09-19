@@ -19,6 +19,8 @@ interface FinancialRecordsListProps {
   isLoading: boolean;
   isError: boolean;
   records: FinancialRecordForList[];
+  /** true quando a lista vazia é resultado de busca (mensagem muda) */
+  searchActive?: boolean;
   clients: { id: number; name: string }[];
   professionals: { id: number; name: string }[];
   selectedId: number | null;
@@ -42,6 +44,7 @@ export default function FinancialRecordsList({
   isLoading,
   isError,
   records,
+  searchActive = false,
   clients,
   professionals,
   selectedId,
@@ -101,7 +104,11 @@ export default function FinancialRecordsList({
         ) : records.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <DollarSign className="h-10 w-10 mx-auto mb-3 opacity-20" />
-            <p>Nenhum registro neste mês.</p>
+            <p>
+              {searchActive
+                ? "Nenhum resultado para a busca."
+                : "Nenhum registro neste mês."}
+            </p>
           </div>
         ) : (
           <>
