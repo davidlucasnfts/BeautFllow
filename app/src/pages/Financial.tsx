@@ -1,9 +1,8 @@
 import { useState, useMemo } from "react";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, TrendingUp, TrendingDown, Wallet } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns";
@@ -83,6 +82,20 @@ export default function Financial() {
 
   const { data: summary } = trpc.financial.summary.useQuery(
     { salonId: salon?.id ?? 0, ...range },
+    { enabled: !!salon }
+  );
+
+  // lançamentos do mês inteiro da âncora — alimenta os totais por semana
+  // no popup do seletor de período (visão Semana)
+  const anchorMonthRange = useMemo(
+    () => ({
+      fromDate: format(startOfMonth(anchor), "yyyy-MM-dd"),
+      toDate: format(endOfMonth(anchor), "yyyy-MM-dd"),
+    }),
+    [anchor]
+  );
+  const { data: monthRecords } = trpc.financial.list.useQuery(
+    { salonId: salon?.id ?? 0, ...anchorMonthRange },
     { enabled: !!salon }
   );
 
@@ -206,9 +219,6 @@ export default function Financial() {
             Seus ganhos, comissões e gastos
           </p>
         </div>
-        <Button className="shrink-0" onClick={handleNew}>
-          <Plus className="mr-2 h-4 w-4" /> Novo registro
-        </Button>
       </div>
 
       <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-3">
@@ -272,6 +282,8 @@ export default function Financial() {
         onPeriod={setPeriod}
         anchor={anchor}
         onAnchor={setAnchor}
+        monthRecords={monthRecords ?? []}
+        onNew={handleNew}
         clients={clients ?? []}
         professionals={professionals ?? []}
         selectedId={selectedId}

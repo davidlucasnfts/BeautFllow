@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financeiro — Seletor de período "real" + botões centralizados</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; padding: 24px; }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  .contexto { color: #64748b; font-size: 14px; margin-bottom: 24px; max-width: 760px; line-height: 1.6; }
+  h2 { font-size: 16px; margin: 28px 0 4px; }
+  .explica { color: #64748b; font-size: 13px; margin-bottom: 16px; max-width: 760px; line-height: 1.6; }
+  .linha { display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start; }
+  .opcao { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .opcao h3 { font-size: 14px; margin-bottom: 2px; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-bottom: 12px; }
+  .tag-rec { background: #dcfce7; color: #15803d; }
+  .tag-alt { background: #e2e8f0; color: #475569; }
+  .pros { font-size: 12px; color: #64748b; margin-top: 12px; line-height: 1.6; max-width: 340px; }
+  .pros b { color: #334155; }
+
+  .phone { width: 390px; border: 8px solid #0f172a; border-radius: 28px; overflow: hidden; background: #f8fafc; }
+  .screen { background: #f8fafc; padding: 14px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; }
+  .card-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+
+  /* barra de botões — padrão agenda (centralizado) */
+  .l1 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .seg { display: flex; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+  .seg button { border: none; background: #fff; padding: 7px 10px; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 4px; color: #475569; cursor: pointer; }
+  .seg button.on { background: #7c3aed; color: #fff; }
+  .nav { display: flex; align-items: center; justify-content: center; gap: 6px; flex: 1; }
+  .nav button { border: 1px solid #e2e8f0; background: #fff; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; color: #475569; }
+  .nav .lab { border: 1px solid #e2e8f0; background: #fff; border-radius: 8px; padding: 7px 10px; font-size: 12px; white-space: nowrap; cursor: pointer; }
+  .btn-novo { background: #7c3aed; color: #fff; border: none; border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .busca { border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; font-size: 13px; color: #94a3b8; background: #fff; width: 100%; margin-top: 8px; }
+
+  /* popup seletores */
+  .popup { position: relative; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 12px; margin-top: 6px; }
+  .popup-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .popup-head button { border: 1px solid #e2e8f0; background: #fff; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: #475569; }
+  .popup-head .tit { font-size: 13px; font-weight: 600; }
+  .wk { display: flex; justify-content: space-between; padding: 9px 10px; border-radius: 8px; font-size: 13px; cursor: pointer; color: #334155; }
+  .wk:hover { background: #f1f5f9; }
+  .wk.sel { background: #7c3aed; color: #fff; }
+  .wk small { color: inherit; opacity: .7; }
+  .mes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .mes-grid button { border: none; background: #fff; padding: 10px 0; font-size: 12px; border-radius: 8px; cursor: pointer; color: #334155; }
+  .mes-grid button:hover { background: #f1f5f9; }
+  .mes-grid button.sel { background: #7c3aed; color: #fff; font-weight: 600; }
+  .wk-grid { border-collapse: collapse; width: 100%; }
+  .wk-grid td { text-align: center; font-size: 11px; padding: 6px 2px; color: #64748b; }
+  .wk-grid tr.wrow td { border-top: 2px solid transparent; cursor: pointer; border-radius: 6px; color: #334155; }
+  .wk-grid tr.wrow:hover td { background: #f1f5f9; }
+  .wk-grid tr.wrow.sel td { background: #ede9fe; color: #5b21b6; font-weight: 600; }
+  .sel-bar { margin-top: 10px; font-size: 11px; color: #64748b; text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>Financeiro — seletor de período "real" + botões centralizados</h1>
+<p class="contexto">
+  <b>Ideia do David (aprovada em conceito):</b> o seletor deve mostrar a unidade da visão —
+  visão <b>Dia</b> mostra os dias do mês (como hoje), visão <b>Semana</b> mostra apenas as semanas
+  (não os dias), visão <b>Mês</b> mostra apenas os 12 meses (não os dias). A barra de botões fica
+  <b>centralizada igual à agenda</b>: visão à esquerda, navegação no centro, ações à direita.
+</p>
+
+<h2>1. Barra de botões centralizada (padrão agenda)</h2>
+<p class="explica">Desktop: tudo numa linha. Mobile: visão + Novo na 1ª linha, navegação central na 2ª, busca na 3ª — igual ao Agendamento.</p>
+<div class="linha">
+  <div class="opcao">
+    <h3>Desktop</h3>
+    <span class="tag tag-rec">largura maior que 768px</span>
+    <div class="phone" style="width:520px"><div class="screen"><div class="card">
+      <div class="card-title">Registros da semana</div>
+      <div class="l1">
+        <div class="seg">
+          <button>📅 Dia</button><button class="on">🗓 Semana</button><button>📆 Mês</button>
+        </div>
+        <div class="nav">
+          <button>‹</button><span class="lab">14/09 – 20/09</span><button>›</button>
+        </div>
+        <div style="width:150px"><span class="busca" style="margin:0">🔍 Buscar descrição ou cliente</span></div>
+        <button class="btn-novo">＋ Novo registro</button>
+      </div>
+    </div></div></div>
+  </div>
+  <div class="opcao">
+    <h3>Mobile (390px)</h3>
+    <span class="tag tag-rec">celular</span>
+    <div class="phone"><div class="screen"><div class="card">
+      <div class="card-title">Registros da semana</div>
+      <div class="l1">
+        <div class="seg">
+          <button>📅 Dia</button><button class="on">🗓 Semana</button><button>📆 Mês</button>
+        </div>
+        <div style="flex:1"></div>
+        <button class="btn-novo">＋ Novo</button>
+      </div>
+      <div class="nav" style="margin-bottom:2px">
+        <button>‹</button><span class="lab">14/09 – 20/09</span><button>›</button>
+      </div>
+      <div class="busca">🔍 Buscar descrição ou cliente</div>
+    </div></div></div>
+  </div>
+</div>
+
+<h2>2. Visão Semana — o que abre ao clicar no rótulo</h2>
+<div class="linha">
+  <div class="opcao">
+    <h3>Opção A — Lista de semanas do mês</h3>
+    <span class="tag tag-rec">recomendada</span>
+    <div class="phone"><div class="screen"><div class="card">
+      <div class="nav" style="margin-bottom:4px">
+        <button>‹</button><span class="lab">setembro 2026</span><button>›</button>
+      </div>
+      <div class="popup">
+        <div class="wk"><span>31/08 – 06/09</span><small>0 registros</small></div>
+        <div class="wk sel"><span>07/09 – 13/09</span><small>4 registros · R$ 300</small></div>
+        <div class="wk"><span>14/09 – 20/09</span><small>2 registros · R$ 50</small></div>
+        <div class="wk"><span>21/09 – 27/09</span><small>0 registros</small></div>
+        <div class="wk"><span>28/09 – 04/10</span><small>0 registros</small></div>
+      </div>
+      <div class="sel-bar">mostra total de lançamentos e valor de cada semana — dá pra escolher semana sabendo o que tem dentro</div>
+    </div></div></div>
+    <div class="pros"><b>Prós:</b> escolhe a semana direto, com contexto (qtde e R$); setas mudam o mês.<br><b>Contras:</b> não mostra os dias individualmente.</div>
+  </div>
+  <div class="opcao">
+    <h3>Opção B — Calendário com linhas de semana clicáveis</h3>
+    <span class="tag tag-alt">alternativa</span>
+    <div class="phone"><div class="screen"><div class="card">
+      <div class="nav" style="margin-bottom:4px">
+        <button>‹</button><span class="lab">setembro 2026</span><button>›</button>
+      </div>
+      <div class="popup">
+        <table class="wk-grid">
+          <tr><td>D</td><td>S</td><td>T</td><td>Q</td><td>Q</td><td>S</td><td>S</td></tr>
+          <tr class="wrow"><td>30</td><td>31</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+          <tr class="wrow sel"><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td></tr>
+          <tr class="wrow"><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td></tr>
+          <tr class="wrow"><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td></tr>
+          <tr class="wrow"><td>27</td><td>28</td><td>29</td><td>30</td><td>1</td><td>2</td><td>3</td></tr>
+        </table>
+      </div>
+      <div class="sel-bar">clicar em qualquer dia da linha seleciona a semana inteira (linha destacada)</div>
+    </div></div></div>
+    <div class="pros"><b>Prós:</b> mantém o contexto visual dos dias.<br><b>Contras:</b> ainda mostra dias — não é "só semana"; mais complexo de manter.</div>
+  </div>
+</div>
+
+<h2>3. Visão Mês — o que abre ao clicar no rótulo</h2>
+<div class="linha">
+  <div class="opcao">
+    <h3>Opção A — Grade de 12 meses + ano</h3>
+    <span class="tag tag-rec">recomendada (estilo iOS)</span>
+    <div class="phone"><div class="screen"><div class="card">
+      <div class="nav" style="margin-bottom:4px">
+        <button>‹</button><span class="lab" style="font-weight:600">2026</span><button>›</button>
+      </div>
+      <div class="popup">
+        <div class="mes-grid">
+          <button>jan</button><button>fev</button><button>mar</button>
+          <button>abr</button><button>mai</button><button>jun</button>
+          <button>jul</button><button>ago</button><button class="sel">set</button>
+          <button>out</button><button>nov</button><button>dez</button>
+        </div>
+      </div>
+      <div class="sel-bar">1 clique no mês seleciona e fecha — sem grade de dias</div>
+    </div></div></div>
+    <div class="pros"><b>Prós:</b> escolha direta e rápida; é o padrão dos date-pickers de iOS/Android.<br><b>Contras:</b> nenhum relevante.</div>
+  </div>
+  <div class="opcao">
+    <h3>Opção B — Dropdowns mês + ano (sem grade de dias)</h3>
+    <span class="tag tag-alt">alternativa compacta</span>
+    <div class="phone"><div class="screen"><div class="card">
+      <div class="popup" style="margin-top:0">
+        <div style="display:flex; gap:8px; justify-content:center">
+          <span class="lab" style="border:1px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px">setembro ▾</span>
+          <span class="lab" style="border:1px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:13px">2026 ▾</span>
+        </div>
+      </div>
+      <div class="sel-bar">dois dropdowns nativos — mínimo possível, porém sem visão do ano inteiro</div>
+    </div></div></div>
+    <div class="pros"><b>Prós:</b> o mais compacto.<br><b>Contras:</b> menos visual; pular 1 ano exige 12 cliques no dropdown de mês.</div>
+  </div>
+</div>
+
+<p style="margin-top: 28px; font-size: 14px; max-width: 760px; line-height: 1.6;">
+  <b>Recomendação:</b> barra centralizada (padrão agenda) + <b>Semana: Opção A</b> (lista de semanas
+  com totais) + <b>Mês: Opção A</b> (grade de 12 meses). A visão Dia continua com a grade de dias atual.
+  Me confirma as escolhas que eu implemento.
+</p>
+
+</body>
+</html>

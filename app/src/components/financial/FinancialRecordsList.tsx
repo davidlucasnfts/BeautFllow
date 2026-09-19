@@ -1,6 +1,4 @@
-import { Fragment, useState, type ReactNode } from "react";
-import { format, startOfWeek, endOfWeek, startOfMonth, addDays, addMonths } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { Fragment, useState } from "react";
 import {
   Edit3,
   Trash2,
@@ -11,6 +9,7 @@ import {
   CalendarDays,
   CalendarRange,
   Calendar,
+  Plus,
 } from "lucide-react";
 import {
   Table,
@@ -21,15 +20,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import DatePicker from "@/components/DatePicker";
 import { dateToBR } from "@/lib/input-masks";
+import PeriodPicker, { type FinancialPeriod } from "./PeriodPicker";
 import FinancialRecordExpanded, {
   type FinancialRecordForList,
 } from "./FinancialRecordExpanded";
 
-export type FinancialPeriod = "day" | "week" | "month";
+export type { FinancialPeriod };
 
 interface FinancialRecordsListProps {
   isLoading: boolean;
@@ -45,6 +45,14 @@ interface FinancialRecordsListProps {
   /** dia de referência do período (hoje por padrão) */
   anchor: Date;
   onAnchor: (date: Date) => void;
+  /** lançamentos do mês da âncora — totais por semana no popup do período */
+  monthRecords: {
+    recordDate: string | Date;
+    amount: string | number;
+    type: string;
+  }[];
+  /** abre o dialog de novo lançamento (botão fica aqui, padrão agenda) */
+  onNew: () => void;
   clients: { id: number; name: string }[];
   professionals: { id: number; name: string }[];
   selectedId: number | null;
@@ -62,93 +70,6 @@ function formatBRL(value: string | number) {
 
 const PER_PAGE = 20;
 
-function capitalizeFirst(text: string) {
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
-
-/** Seletor de data do período — mesmo padrão do centro da agenda: setas
- *  navegam 1 dia / 1 semana / 1 mês conforme o período; o DatePicker é o
- *  atalho pra pular direto (no Dia o rótulo é a data, na Semana o intervalo
- *  14/09 – 20/09, no Mês o nome do mês). */
-function PeriodPicker({
-  period,
-  anchor,
-  onAnchor,
-}: {
-  period: FinancialPeriod;
-  anchor: Date;
-  onAnchor: (date: Date) => void;
-}) {
-  const weekStart = startOfWeek(anchor, { weekStartsOn: 1 });
-  const weekEnd = endOfWeek(anchor, { weekStartsOn: 1 });
-
-  function step(amount: number) {
-    if (period === "day") onAnchor(addDays(anchor, amount));
-    else if (period === "week") onAnchor(addDays(anchor, amount * 7));
-    else onAnchor(addMonths(anchor, amount));
-  }
-
-  const navButton =
-    "flex items-center justify-center rounded-md border border-input bg-background h-8 w-8 text-sm transition-colors hover:bg-slate-50 disabled:opacity-40";
-
-  let picker: ReactNode;
-  if (period === "day") {
-    picker = (
-      <DatePicker
-        value={format(anchor, "yyyy-MM-dd")}
-        onChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
-        label={format(anchor, "dd/MM/yyyy")}
-        className="w-[128px]"
-      />
-    );
-  } else if (period === "week") {
-    picker = (
-      <DatePicker
-        value={format(weekStart, "yyyy-MM-dd")}
-        onChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
-        hideSelectedDay
-        label={`${format(weekStart, "dd/MM")} – ${format(weekEnd, "dd/MM")}`}
-        className="w-[150px]"
-      />
-    );
-  } else {
-    picker = (
-      <DatePicker
-        value={format(startOfMonth(anchor), "yyyy-MM-dd")}
-        onChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
-        onMonthChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
-        hideSelectedDay
-        label={capitalizeFirst(
-          format(anchor, "MMMM 'de' yyyy", { locale: ptBR })
-        )}
-        className="w-[180px]"
-      />
-    );
-  }
-
-  return (
-    <div className="flex items-center gap-1.5">
-      <button
-        type="button"
-        aria-label="Período anterior"
-        className={navButton}
-        onClick={() => step(-1)}
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </button>
-      {picker}
-      <button
-        type="button"
-        aria-label="Próximo período"
-        className={navButton}
-        onClick={() => step(1)}
-      >
-        <ChevronRight className="h-4 w-4" />
-      </button>
-    </div>
-  );
-}
-
 /** Lista de lançamentos: tabela no desktop, lista estilo Fila do Dia no mobile
  *  (tabela estoura a largura no celular e esconde o valor — padrão do app). */
 export default function FinancialRecordsList({
@@ -162,6 +83,8 @@ export default function FinancialRecordsList({
   onPeriod,
   anchor,
   onAnchor,
+  monthRecords,
+  onNew,
   clients,
   professionals,
   selectedId,
@@ -214,55 +137,80 @@ export default function FinancialRecordsList({
               ? "Registros da semana"
               : "Registros do mês"}
         </CardTitle>
-        {/* Filtros ficam junto dos lançamentos (a ação "+ Novo" fica no
-            cabeçalho da página, padrão das outras telas). Período (dia/semana/
-            mês) e DatePicker seguem o mesmo padrão da agenda; busca filtra a
-            lista do período por descrição ou cliente */}
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center border rounded-md overflow-hidden">
-            <button
-              type="button"
-              onClick={() => onPeriod("day")}
-              className={`flex items-center h-8 px-2.5 text-xs font-medium transition-colors ${
-                period === "day"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-background hover:bg-accent"
-              }`}
-            >
-              <CalendarDays className="h-3.5 w-3.5 mr-1" />
-              Dia
-            </button>
-            <button
-              type="button"
-              onClick={() => onPeriod("week")}
-              className={`flex items-center h-8 px-2.5 text-xs font-medium transition-colors ${
-                period === "week"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-background hover:bg-accent"
-              }`}
-            >
-              <CalendarRange className="h-3.5 w-3.5 mr-1" />
-              Semana
-            </button>
-            <button
-              type="button"
-              onClick={() => onPeriod("month")}
-              className={`flex items-center h-8 px-2.5 text-xs font-medium transition-colors ${
-                period === "month"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-background hover:bg-accent"
-              }`}
-            >
-              <Calendar className="h-3.5 w-3.5 mr-1" />
-              Mês
-            </button>
+        {/* Barra no padrão da agenda (mockup financeiro-seletor-periodo.html):
+            linha 1 = visão + (desktop) navegação central + busca + Novo;
+            linha 2 (mobile) = navegação central; busca ocupa a linha de baixo */}
+        <div className="flex w-full flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center border rounded-md overflow-hidden">
+              <button
+                type="button"
+                onClick={() => onPeriod("day")}
+                className={`flex items-center h-8 px-2.5 text-xs font-medium transition-colors ${
+                  period === "day"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background hover:bg-accent"
+                }`}
+              >
+                <CalendarDays className="h-3.5 w-3.5 mr-1" />
+                Dia
+              </button>
+              <button
+                type="button"
+                onClick={() => onPeriod("week")}
+                className={`flex items-center h-8 px-2.5 text-xs font-medium transition-colors ${
+                  period === "week"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background hover:bg-accent"
+                }`}
+              >
+                <CalendarRange className="h-3.5 w-3.5 mr-1" />
+                Semana
+              </button>
+              <button
+                type="button"
+                onClick={() => onPeriod("month")}
+                className={`flex items-center h-8 px-2.5 text-xs font-medium transition-colors ${
+                  period === "month"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background hover:bg-accent"
+                }`}
+              >
+                <Calendar className="h-3.5 w-3.5 mr-1" />
+                Mês
+              </button>
+            </div>
+            <div className="hidden md:flex flex-1 justify-center px-2">
+              <PeriodPicker
+                period={period}
+                anchor={anchor}
+                onAnchor={onAnchor}
+                monthRecords={monthRecords}
+              />
+            </div>
+            <div className="grow md:hidden" />
+            <div className="relative hidden sm:block w-56">
+              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              <Input
+                value={search}
+                onChange={e => onSearch(e.target.value)}
+                placeholder="Buscar descrição ou cliente"
+                className="pl-8 h-8 text-xs"
+              />
+            </div>
+            <Button size="sm" onClick={onNew}>
+              <Plus className="mr-1.5 h-4 w-4" /> Novo
+            </Button>
           </div>
-          <PeriodPicker
-            period={period}
-            anchor={anchor}
-            onAnchor={onAnchor}
-          />
-          <div className="relative flex-1 min-w-40 sm:flex-none sm:w-64">
+          <div className="md:hidden flex justify-center">
+            <PeriodPicker
+              period={period}
+              anchor={anchor}
+              onAnchor={onAnchor}
+              monthRecords={monthRecords}
+            />
+          </div>
+          <div className="relative sm:hidden">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <Input
               value={search}
