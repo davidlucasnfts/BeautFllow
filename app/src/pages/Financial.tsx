@@ -1,18 +1,10 @@
-import { useState, Fragment } from "react";
+import { useState } from "react";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Plus, DollarSign, TrendingUp, TrendingDown, Wallet, Edit3, Trash2 } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format, endOfMonth } from "date-fns";
@@ -21,9 +13,8 @@ import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import FinancialFormDialog, {
   type FinancialFormValues,
 } from "@/components/financial/FinancialFormDialog";
-import FinancialRecordExpanded, {
-  type FinancialRecordForList,
-} from "@/components/financial/FinancialRecordExpanded";
+import FinancialRecordsList from "@/components/financial/FinancialRecordsList";
+import type { FinancialRecordForList } from "@/components/financial/FinancialRecordExpanded";
 
 function formatBRL(value: string | number) {
   return Number(value).toLocaleString("pt-BR", {
@@ -138,6 +129,13 @@ export default function Financial() {
     setOpen(true);
   }
 
+  function handleDelete(record: FinancialRecordForList) {
+    setDeleteTarget({
+      id: record.id,
+      name: `${record.description ?? "Registro"} (${record.recordDate ? format(new Date(record.recordDate), "dd/MM/yyyy") : "sem data"})`,
+    });
+  }
+
   function handleSubmit(values: FinancialFormValues) {
     if (!salon) return;
     if (editing) {
@@ -241,120 +239,17 @@ export default function Financial() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Registros do mês</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-40 w-full bg-muted" />
-          ) : records && records.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-24">Ações</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Descrição</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Pagamento</TableHead>
-                  <TableHead className="text-right">Valor</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {records.map(r => {
-                  const record = r as FinancialRecordForList;
-                  const expanded = selectedId === record.id;
-                  const clientName =
-                    clients?.find(c => c.id === record.clientId)?.name ?? "-";
-                  const professionalName = record.professionalId
-                    ? (professionals?.find(p => p.id === record.professionalId)
-                        ?.name ?? "-")
-                    : "-";
-                  return (
-                    <Fragment key={record.id}>
-                      <TableRow
-                        className={`cursor-pointer ${
-                          expanded ? "bg-primary/5" : "hover:bg-blue-50/50"
-                        }`}
-                        onClick={() =>
-                          setSelectedId(expanded ? null : record.id)
-                        }
-                      >
-                        <TableCell onClick={e => e.stopPropagation()}>
-                          <div className="flex flex-col gap-1">
-                            <button
-                              type="button"
-                              onClick={() => handleEdit(record)}
-                              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
-                            >
-                              <Edit3 className="h-3 w-3" />
-                              Editar
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setDeleteTarget({
-                                  id: record.id,
-                                  name: `${record.description ?? "Registro"} (${record.recordDate ? format(new Date(record.recordDate), "dd/MM/yyyy") : "sem data"})`,
-                                })
-                              }
-                              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                              Excluir
-                            </button>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {record.recordDate
-                            ? format(new Date(record.recordDate), "dd/MM/yyyy")
-                            : "-"}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {record.description}
-                        </TableCell>
-                        <TableCell>{clientName}</TableCell>
-                        <TableCell className="capitalize">
-                          {record.paymentMethod.replace("_", " ")}
-                        </TableCell>
-                        <TableCell
-                          className={`text-right font-medium ${record.type === "refund" ? "text-rose-500" : "text-emerald-600"}`}
-                        >
-                          {record.type === "refund" ? "-" : ""}
-                          {formatBRL(record.amount)}
-                        </TableCell>
-                      </TableRow>
-                      {expanded && (
-                        <TableRow className="bg-primary/5 hover:bg-primary/5">
-                          <TableCell colSpan={6} className="p-0">
-                            <FinancialRecordExpanded
-                              record={record}
-                              clientName={clientName}
-                              professionalName={professionalName}
-                              onClose={() => setSelectedId(null)}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </Fragment>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          ) : isError ? (
-            <div className="text-center py-12 text-red-600">
-              <p className="text-sm">
-                Erro ao carregar os registros. Atualize a página.
-              </p>
-            </div>
-          ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <DollarSign className="h-10 w-10 mx-auto mb-3 opacity-20" />
-              <p>Nenhum registro neste mês.</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <FinancialRecordsList
+        isLoading={isLoading}
+        isError={isError}
+        records={(records ?? []) as FinancialRecordForList[]}
+        clients={clients ?? []}
+        professionals={professionals ?? []}
+        selectedId={selectedId}
+        onSelect={setSelectedId}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
       <FinancialFormDialog
         open={open}
