@@ -15,7 +15,7 @@ import {
 import { Plus, DollarSign, TrendingUp, TrendingDown, Wallet, Edit3, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import { format, endOfMonth } from "date-fns";
 import { moneyDotToBR } from "@/lib/input-masks";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import FinancialFormDialog, {
@@ -65,8 +65,15 @@ export default function Financial() {
   } | null>(null);
 
   const utils = trpc.useUtils();
-  const { data: records, isLoading } = trpc.financial.list.useQuery(
-    { salonId: salon?.id ?? 0, fromDate: month + "-01", toDate: month + "-31" },
+  // fim real do mês (mês + "-31" quebra em meses de 30 dias → data inválida,
+  // a query falhava em silêncio e a lista aparecia vazia)
+  const monthEnd = format(
+    endOfMonth(new Date(`${month}-01T00:00:00`)),
+    "yyyy-MM-dd"
+  );
+
+  const { data: records, isLoading, isError } = trpc.financial.list.useQuery(
+    { salonId: salon?.id ?? 0, fromDate: `${month}-01`, toDate: monthEnd },
     { enabled: !!salon }
   );
 
@@ -334,6 +341,12 @@ export default function Financial() {
                 })}
               </TableBody>
             </Table>
+          ) : isError ? (
+            <div className="text-center py-12 text-red-600">
+              <p className="text-sm">
+                Erro ao carregar os registros. Atualize a página.
+              </p>
+            </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground">
               <DollarSign className="h-10 w-10 mx-auto mb-3 opacity-20" />
