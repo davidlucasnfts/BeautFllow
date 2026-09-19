@@ -1,5 +1,5 @@
-import { Fragment, useState } from "react";
-import { format, startOfWeek, endOfWeek, startOfMonth } from "date-fns";
+import { Fragment, useState, type ReactNode } from "react";
+import { format, startOfWeek, endOfWeek, startOfMonth, addDays, addMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
   Edit3,
@@ -66,9 +66,10 @@ function capitalizeFirst(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-/** Seletor de data do período — mesmo padrão do centro da agenda: no Dia o
- *  rótulo é a data, na Semana é o intervalo (14/09 – 20/09) e no Mês o nome
- *  do mês. Clicar num dia pula pro período que contém aquele dia. */
+/** Seletor de data do período — mesmo padrão do centro da agenda: setas
+ *  navegam 1 dia / 1 semana / 1 mês conforme o período; o DatePicker é o
+ *  atalho pra pular direto (no Dia o rótulo é a data, na Semana o intervalo
+ *  14/09 – 20/09, no Mês o nome do mês). */
 function PeriodPicker({
   period,
   anchor,
@@ -81,8 +82,18 @@ function PeriodPicker({
   const weekStart = startOfWeek(anchor, { weekStartsOn: 1 });
   const weekEnd = endOfWeek(anchor, { weekStartsOn: 1 });
 
+  function step(amount: number) {
+    if (period === "day") onAnchor(addDays(anchor, amount));
+    else if (period === "week") onAnchor(addDays(anchor, amount * 7));
+    else onAnchor(addMonths(anchor, amount));
+  }
+
+  const navButton =
+    "flex items-center justify-center rounded-md border border-input bg-background h-8 w-8 text-sm transition-colors hover:bg-slate-50 disabled:opacity-40";
+
+  let picker: ReactNode;
   if (period === "day") {
-    return (
+    picker = (
       <DatePicker
         value={format(anchor, "yyyy-MM-dd")}
         onChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
@@ -90,10 +101,8 @@ function PeriodPicker({
         className="w-[128px]"
       />
     );
-  }
-
-  if (period === "week") {
-    return (
+  } else if (period === "week") {
+    picker = (
       <DatePicker
         value={format(weekStart, "yyyy-MM-dd")}
         onChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
@@ -102,19 +111,41 @@ function PeriodPicker({
         className="w-[150px]"
       />
     );
+  } else {
+    picker = (
+      <DatePicker
+        value={format(startOfMonth(anchor), "yyyy-MM-dd")}
+        onChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
+        onMonthChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
+        hideSelectedDay
+        label={capitalizeFirst(
+          format(anchor, "MMMM 'de' yyyy", { locale: ptBR })
+        )}
+        className="w-[180px]"
+      />
+    );
   }
 
   return (
-    <DatePicker
-      value={format(startOfMonth(anchor), "yyyy-MM-dd")}
-      onChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
-      onMonthChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
-      hideSelectedDay
-      label={capitalizeFirst(
-        format(anchor, "MMMM 'de' yyyy", { locale: ptBR })
-      )}
-      className="w-[180px]"
-    />
+    <div className="flex items-center gap-1.5">
+      <button
+        type="button"
+        aria-label="Período anterior"
+        className={navButton}
+        onClick={() => step(-1)}
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+      {picker}
+      <button
+        type="button"
+        aria-label="Próximo período"
+        className={navButton}
+        onClick={() => step(1)}
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+    </div>
   );
 }
 

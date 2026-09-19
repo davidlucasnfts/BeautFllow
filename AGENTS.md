@@ -21,6 +21,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - **Exceção:** componentes do shadcn/ui em `src/components/ui/` — são de biblioteca externa, não mexer. Exceções já aplicadas:
   - `ui/skeleton.tsx` usa `bg-muted` (não `bg-accent` — accent é cor da marca do tema, deixaria todo loading colorido)
   - **Sintaxe Tailwind v3 (09/09/2026):** os componentes vieram gerados com sintaxe v4 (`w-(--var)`, `outline-hidden`, `size-8!`) que falha silenciosamente no v3.4 do projeto — todo o `ui/` foi convertido para a forma v3 (`w-[var(--var)]`, `outline-none`, `!size-8`). Não regenerar esses arquivos a partir do CLI novo do shadcn sem revisar a sintaxe
+  - `ui/calendar.tsx` (19/09/2026): dia "hoje" usa contorno sutil (`border-primary/50`), não fundo preenchido — preenchido ao lado de um dia selecionado parecia "2 datas marcadas"
 
 ---
 
