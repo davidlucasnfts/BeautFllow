@@ -31,6 +31,28 @@ function floorToSlot(hhmm: string, stepMinutes: number = 30): string {
   ).padStart(2, "0")}`;
 }
 
+/** Grade de horários candidatos do dia (mesma regra do frontend) */
+function generateSlots(
+  dayStart: string,
+  dayEnd: string,
+  stepMinutes: number
+): string[] {
+  const [sh, sm] = dayStart.split(":").map(Number);
+  const [eh, em] = dayEnd.split(":").map(Number);
+  const slots: string[] = [];
+  let t = sh * 60 + sm;
+  const end = eh * 60 + em;
+  while (t < end) {
+    slots.push(
+      `${String(Math.floor(t / 60)).padStart(2, "0")}:${String(
+        t % 60
+      ).padStart(2, "0")}`
+    );
+    t += stepMinutes;
+  }
+  return slots;
+}
+
 const phoneSchema = z.string().regex(/^\(\d{2}\) \d{4,5}-\d{4}$/, {
   message: "Telefone inválido. Use o formato (99) 99999-9999.",
 });
@@ -97,11 +119,10 @@ export const publicRouter = createRouter({
       }
 
       const schedule = parseScheduleSettings(salon.settings);
-      const dayAppointments = await getAppointmentsBySalon(
-        salon.id,
-        input.date,
-        input.date
-      );
+      const [dayAppointments, professionals] = await Promise.all([
+        getAppointmentsBySalon(salon.id, input.date, input.date),
+        getPublicProfessionals(salon.id),
+      ]);
       const busyIntervals = dayAppointments
         .filter(a => {
           if (a.status === "cancelled" || a.status === "no_show" || !a.endTime)
@@ -117,11 +138,34 @@ export const publicRouter = createRouter({
           ];
         });
 
+      // "Sem preferência": um slot só é livre se ALGUM profissional ativo
+      // estiver livre no intervalo — evita overbooking entre clientes que
+      // escolhem profissional e clientes que não escolhem
+      let freeSlots: string[] | undefined;
+      if (!input.professionalId && professionals.length > 0) {
+        const duration = service.durationMinutes;
+        freeSlots = generateSlots(
+          schedule.dayStart,
+          schedule.dayEnd,
+          schedule.slotMinutes
+        ).filter(slot => {
+          const slotEnd = addMinutes(slot, duration);
+          return professionals.some(p =>
+            !dayAppointments.some(a => {
+              if (a.status === "cancelled" || a.status === "no_show") return false;
+              if (a.professionalId !== p.id || !a.endTime) return false;
+              return a.startTime < slotEnd && a.endTime > slot;
+            })
+          );
+        });
+      }
+
       return {
         slotMinutes: schedule.slotMinutes,
         dayStart: schedule.dayStart,
         dayEnd: schedule.dayEnd,
         busyIntervals,
+        freeSlots,
       };
     }),
 
@@ -161,14 +205,15 @@ export const publicRouter = createRouter({
         });
       }
 
-      if (input.professionalId) {
-        const professionals = await getPublicProfessionals(salon.id);
-        if (!professionals.find(p => p.id === input.professionalId)) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Profissional não encontrado.",
-          });
-        }
+      const professionals = await getPublicProfessionals(salon.id);
+      if (
+        input.professionalId &&
+        !professionals.find(p => p.id === input.professionalId)
+      ) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Profissional não encontrado.",
+        });
       }
 
       // Não permite agendar no passado (comparando em horário de Brasília)
@@ -183,27 +228,45 @@ export const publicRouter = createRouter({
         });
       }
 
-      // Conflito de horário: bloqueia sobreposição no mesmo profissional
-      // (ou entre agendamentos sem profissional definido)
+      // Conflito de horário: bloqueia sobreposição no profissional escolhido.
+      // Sem preferência: atribui automaticamente o primeiro profissional livre
+      // (se nenhum estiver livre, o horário está cheio — evita overbooking)
       const newEnd = addMinutes(input.startTime, service.durationMinutes);
       const dayAppointments = await getAppointmentsBySalon(
         salon.id,
         input.date,
         input.date
       );
-      const conflict = dayAppointments.find(a => {
-        if (a.status === "cancelled" || a.status === "no_show") return false;
-        const sameProfessional = input.professionalId
-          ? a.professionalId === input.professionalId
-          : a.professionalId === null;
-        if (!sameProfessional || !a.endTime) return false;
-        return a.startTime < newEnd && a.endTime > input.startTime;
-      });
-      if (conflict) {
-        throw new TRPCError({
-          code: "CONFLICT",
-          message: "Esse horário já está ocupado. Escolha outro horário.",
+
+      let assignedProfessionalId = input.professionalId ?? null;
+      if (input.professionalId) {
+        const conflict = dayAppointments.find(a => {
+          if (a.status === "cancelled" || a.status === "no_show") return false;
+          if (a.professionalId !== input.professionalId || !a.endTime)
+            return false;
+          return a.startTime < newEnd && a.endTime > input.startTime;
         });
+        if (conflict) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Esse horário já está ocupado. Escolha outro horário.",
+          });
+        }
+      } else if (professionals.length > 0) {
+        const free = professionals.find(p =>
+          !dayAppointments.some(a => {
+            if (a.status === "cancelled" || a.status === "no_show") return false;
+            if (a.professionalId !== p.id || !a.endTime) return false;
+            return a.startTime < newEnd && a.endTime > input.startTime;
+          })
+        );
+        if (!free) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Esse horário já está ocupado. Escolha outro horário.",
+          });
+        }
+        assignedProfessionalId = free.id;
       }
 
       // Cliente já existe (pelo telefone)? Reutiliza. Se não, cria.
@@ -226,7 +289,7 @@ export const publicRouter = createRouter({
         salonId: salon.id,
         clientId: client.id,
         serviceId: service.id,
-        professionalId: input.professionalId ?? null,
+        professionalId: assignedProfessionalId,
         appointmentDate: input.date,
         startTime: input.startTime,
         endTime: addMinutes(input.startTime, service.durationMinutes),
