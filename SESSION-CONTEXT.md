@@ -19,6 +19,14 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 - Campo de mês trocou o input nativo `type="month"` (só abria no ícone) pelo `DatePicker` com `label` — campo inteiro clicável, mesmo padrão da agenda; troca de mês no calendário fecha o popup e aplica o filtro
 - Regra nova no `AGENTS.md`: **sempre reusar padrões existentes aprovados antes de criar do zero**
 
+### Smoke test → auditoria + correções (19/09, commits `c6b2747` + `cd4522b`):
+- **Página pública de agendamento:** overbooking resolvido — sem preferência de profissional, o backend atribui automaticamente o primeiro livre (e bloqueia se todos ocupados); `availableSlots` ganhou `freeSlots` (slot só livre se ALGUM profissional estiver livre); `startTime` não pré-seleciona mais 09:00 e limpa ao trocar serviço/profissional/data; sem flicker "Sem horários" (`keepPreviousData`); datas passadas bloqueadas; estado vazio com aviso quando não há serviços ativos
+- **Dashboard (crítico):** "hoje" calculado no SQL com `NOW() AT TIME ZONE 'America/Sao_Paulo'` — entre 21h–23h59 BRT o Dashboard mostrava o dia seguinte; SUM/COUNT do Postgres normalizados com `Number()` (KPI "R$ 3500.00" → "R$ 3.500,00")
+- **Clientes:** limite da lista 100 → 1000 (cliente 101+ sumia da tela e da busca); data de nascimento limpável na edição (grava NULL); idade corrigida (perdia 1 dia no fuso); botão WhatsApp com texto
+- **Comunicações/Termos:** horário das mensagens formatado no servidor com fuso BR (estava 3h atrasado); paginação "Carregar mais mensagens" (+50)
+- **Geral:** `isError` tratado nas 5 páginas de listagem; Settings sem `type="number"`; comissão exibida como "10%"; `MessageFormDialog` valida cliente selecionado
+- **Pendentes de decisão:** M6 (recálculo de segmentos de clientes roda 3x no Dashboard) e B5 (sparklines do Dashboard usam dados simulados) — avaliar com David
+
 ### Antes, nesta mesma sessão (19/09 — polimento das 5 páginas pendentes):
 1. Auditoria página a página contra o design system: 5 ✅ já conformes (Agendamentos, Clientes, Serviços, Dashboard, Configurações), 5 ⚠️ melhoradas nesta sessão
 2. **Financeiro:** editar/excluir lançamento (`financial.update`/`financial.delete` + audit), ficha expansível, moeda pt-BR
