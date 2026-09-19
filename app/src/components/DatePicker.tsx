@@ -94,9 +94,13 @@ export default function DatePicker({
               setOpen(false);
             }
           }}
-          onMonthChange={monthDate =>
-            onMonthChange?.(format(monthDate, "yyyy-MM-dd"))
-          }
+          onMonthChange={monthDate => {
+            onMonthChange?.(format(monthDate, "yyyy-MM-dd"));
+            // em filtros por mês, trocar o mês já é a ação — fecha o popup
+            // pra mostrar a lista atualizada (sem isso o usuário precisa
+            // clicar num dia só pra fechar)
+            if (onMonthChange) setOpen(false);
+          }}
           locale={ptBR}
           captionLayout="dropdown"
           fromDate={start}
