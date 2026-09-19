@@ -4,6 +4,7 @@ import {
   createCommunication,
   getCommunicationsByClient,
   getCommunicationsBySalon,
+  deleteCommunication,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
 
@@ -60,5 +61,19 @@ export const communicationRouter = createRouter({
         { clientId: input.clientId, type: input.type }
       );
       return result;
+    }),
+
+  delete: authedQuery
+    .input(z.object({ id: z.number(), salonId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      await deleteCommunication(input.id, input.salonId);
+      await auditAction(
+        "delete",
+        "communication",
+        input.salonId,
+        ctx.user?.id,
+        input.id
+      );
+      return { success: true };
     }),
 });

@@ -1,25 +1,10 @@
 import { useState } from "react";
-import { format } from "date-fns";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-
+import { Card } from "@/components/ui/card";
 import {
   ShieldCheck,
-  FileText,
   Plus,
   CheckCircle2,
   AlertTriangle,
@@ -27,11 +12,21 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
+import ConsentFormDialog from "@/components/consent/ConsentFormDialog";
+import ConsentFormCard, {
+  type ConsentFormItem,
+} from "@/components/consent/ConsentFormCard";
 
 export default function Consent() {
   const { salon } = useSalon();
-  const [openForm, setOpenForm] = useState(false);
-  const [form, setForm] = useState({ title: "", content: "" });
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<ConsentFormItem | null>(null);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: number;
+    title: string;
+  } | null>(null);
 
   const utils = trpc.useUtils();
   const { data: forms, isLoading } = trpc.consent.list.useQuery(
@@ -42,12 +37,45 @@ export default function Consent() {
   const createMutation = trpc.consent.create.useMutation({
     onSuccess: () => {
       utils.consent.list.invalidate();
-      setOpenForm(false);
-      setForm({ title: "", content: "" });
+      setOpen(false);
       toast.success("Termo criado");
     },
     onError: e => toast.error(e.message),
   });
+
+  const updateMutation = trpc.consent.update.useMutation({
+    onSuccess: () => {
+      utils.consent.list.invalidate();
+      setOpen(false);
+      setEditing(null);
+      toast.success("Termo atualizado");
+    },
+    onError: e => toast.error(e.message),
+  });
+
+  const deleteMutation = trpc.consent.delete.useMutation({
+    onSuccess: () => {
+      utils.consent.list.invalidate();
+      setExpandedId(null);
+      setDeleteTarget(null);
+      toast.success("Termo excluído");
+    },
+    onError: e => toast.error(e.message),
+  });
+
+  function handleEdit(form: ConsentFormItem) {
+    setEditing(form);
+    setOpen(true);
+  }
+
+  function handleSubmit(data: { title: string; content: string }) {
+    if (!salon) return;
+    if (editing) {
+      updateMutation.mutate({ id: editing.id, salonId: salon.id, ...data });
+    } else {
+      createMutation.mutate({ salonId: salon.id, ...data });
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -60,53 +88,17 @@ export default function Consent() {
             Autorizações que seus clientes assinam no celular
           </p>
         </div>
-        <Dialog open={openForm} onOpenChange={setOpenForm}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Novo Termo
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Novo Termo de Autorização</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label>Título *</Label>
-                <Input
-                  value={form.title}
-                  onChange={e => setForm({ ...form, title: e.target.value })}
-                  placeholder="Ex: Termo de Depilação a Laser"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Conteúdo do Termo *</Label>
-                <Textarea
-                  value={form.content}
-                  onChange={e => setForm({ ...form, content: e.target.value })}
-                  rows={8}
-                  placeholder="Descreva os riscos, cuidados e autorizações..."
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Cancelar</Button>
-              </DialogClose>
-              <Button
-                onClick={() =>
-                  salon && createMutation.mutate({ salonId: salon.id, ...form })
-                }
-                disabled={createMutation.isPending}
-              >
-                Salvar
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Button
+          onClick={() => {
+            setEditing(null);
+            setOpen(true);
+          }}
+        >
+          <Plus className="mr-2 h-4 w-4" /> Novo Termo
+        </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3 mb-4">
+      <div className="grid gap-4 sm:grid-cols-3">
         <Card className="p-4 border-emerald-200 bg-emerald-50/30">
           <div className="flex items-start gap-3">
             <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
@@ -164,26 +156,18 @@ export default function Consent() {
         ) : forms && forms.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2">
             {forms.map(f => (
-              <Card key={f.id} className="h-full gap-1.5 py-2.5">
-                <CardHeader className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-md bg-amber-100 flex items-center justify-center">
-                      <FileText className="h-5 w-5 text-amber-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base">{f.title}</CardTitle>
-                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(f.createdAt), "dd/MM/yyyy")}
-                      </p>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground line-clamp-3">
-                    {f.content}
-                  </p>
-                </CardContent>
-              </Card>
+              <ConsentFormCard
+                key={f.id}
+                form={f}
+                expanded={expandedId === f.id}
+                onToggle={() =>
+                  setExpandedId(expandedId === f.id ? null : f.id)
+                }
+                onEdit={() => handleEdit(f)}
+                onDelete={() =>
+                  setDeleteTarget({ id: f.id, title: f.title })
+                }
+              />
             ))}
           </div>
         ) : (
@@ -198,48 +182,28 @@ export default function Consent() {
         )}
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold">Cuidados com os dados (LGPD)</h2>
-        <div className="grid gap-3">
-          {[
-            {
-              label: "Guardamos só o necessário (nome e telefone)",
-              done: true,
-            },
-            {
-              label: "Autorização clara no primeiro cadastro",
-              done: true,
-            },
-            { label: "Cliente pode pedir para apagar os dados dela", done: true },
-            { label: "Registro de quem entrou e o que fez", done: true },
-            { label: "Termos de autorização assinados no celular", done: true },
-            { label: "Dados protegidos o tempo todo", done: true },
-            {
-              label:
-                "Cada pessoa vê só o seu (dona, admin, profissional, recepção)",
-              done: true,
-            },
-          ].map((item, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-3 p-3 border rounded-md bg-background"
-            >
-              <div
-                className={`h-5 w-5 rounded-full flex items-center justify-center ${item.done ? "bg-emerald-100" : "bg-slate-100"}`}
-              >
-                <CheckCircle2
-                  className={`h-3.5 w-3.5 ${item.done ? "text-emerald-600" : "text-slate-400"}`}
-                />
-              </div>
-              <span
-                className={`text-sm ${item.done ? "" : "text-muted-foreground"}`}
-              >
-                {item.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <ConsentFormDialog
+        open={open}
+        onOpenChange={setOpen}
+        editing={editing}
+        isPending={createMutation.isPending || updateMutation.isPending}
+        onSubmit={handleSubmit}
+      />
+
+      <ConfirmDeleteDialog
+        open={!!deleteTarget}
+        onOpenChange={open => !open && setDeleteTarget(null)}
+        itemType="termo de autorização"
+        itemName={deleteTarget?.title ?? ""}
+        onConfirm={() => {
+          if (salon && deleteTarget) {
+            deleteMutation.mutate({
+              id: deleteTarget.id,
+              salonId: salon.id,
+            });
+          }
+        }}
+      />
     </div>
   );
 }

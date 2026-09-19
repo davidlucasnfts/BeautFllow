@@ -4,6 +4,8 @@ import {
   createConsentForm,
   getConsentFormsBySalon,
   getConsentFormById,
+  updateConsentForm,
+  deleteConsentForm,
   createConsentSignature,
   getConsentSignaturesByClient,
 } from "./queries/salon";
@@ -39,6 +41,44 @@ export const consentRouter = createRouter({
         { title: input.title }
       );
       return result;
+    }),
+
+  update: authedQuery
+    .input(
+      z.object({
+        id: z.number(),
+        salonId: z.number(),
+        title: z.string().min(1).max(255).optional(),
+        content: z.string().min(1).optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { id, salonId, ...data } = input;
+      const result = await updateConsentForm(id, salonId, data);
+      await auditAction(
+        "update",
+        "consent_form",
+        salonId,
+        ctx.user?.id,
+        id,
+        undefined,
+        data
+      );
+      return result;
+    }),
+
+  delete: authedQuery
+    .input(z.object({ id: z.number(), salonId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      await deleteConsentForm(input.id, input.salonId);
+      await auditAction(
+        "delete",
+        "consent_form",
+        input.salonId,
+        ctx.user?.id,
+        input.id
+      );
+      return { success: true };
     }),
 
   signaturesByClient: authedQuery

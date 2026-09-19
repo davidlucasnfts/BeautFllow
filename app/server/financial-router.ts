@@ -4,6 +4,8 @@ import {
   createFinancialRecord,
   getFinancialRecordsBySalon,
   getFinancialSummaryBySalon,
+  updateFinancialRecord,
+  deleteFinancialRecord,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
 
@@ -65,5 +67,53 @@ export const financialRouter = createRouter({
         { amount: String(amount), type: data.type }
       );
       return result;
+    }),
+
+  update: authedQuery
+    .input(
+      z.object({
+        id: z.number(),
+        salonId: z.number(),
+        amount: z.string().or(z.number()).optional(),
+        description: z.string().min(1).max(255).optional(),
+        paymentMethod: z
+          .enum(["pix", "credit_card", "debit_card", "cash", "other"])
+          .optional(),
+        recordDate: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { id, salonId, amount, ...data } = input;
+      const result = await updateFinancialRecord(id, salonId, {
+        ...data,
+        ...(amount !== undefined ? { amount: String(amount) } : {}),
+      });
+      await auditAction(
+        "update",
+        "financial_record",
+        salonId,
+        ctx.user?.id,
+        id,
+        undefined,
+        {
+          ...data,
+          ...(amount !== undefined ? { amount: String(amount) } : {}),
+        }
+      );
+      return result;
+    }),
+
+  delete: authedQuery
+    .input(z.object({ id: z.number(), salonId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      await deleteFinancialRecord(input.id, input.salonId);
+      await auditAction(
+        "delete",
+        "financial_record",
+        input.salonId,
+        ctx.user?.id,
+        input.id
+      );
+      return { success: true };
     }),
 });

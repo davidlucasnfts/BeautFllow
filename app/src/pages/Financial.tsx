@@ -1,26 +1,9 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -29,34 +12,57 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Plus,
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
-  Wallet,
-} from "lucide-react";
+import { Plus, DollarSign, TrendingUp, TrendingDown, Wallet, Edit3, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { maskMoneyBR, moneyBRToDot } from "@/lib/input-masks";
-import DatePicker from "@/components/DatePicker";
+import { moneyDotToBR } from "@/lib/input-masks";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
+import FinancialFormDialog, {
+  type FinancialFormValues,
+} from "@/components/financial/FinancialFormDialog";
+import FinancialRecordExpanded, {
+  type FinancialRecordForList,
+} from "@/components/financial/FinancialRecordExpanded";
+
+function formatBRL(value: string | number) {
+  return Number(value).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
+
+function formFromRecord(r: FinancialRecordForList): FinancialFormValues {
+  return {
+    clientId: r.clientId ? String(r.clientId) : "",
+    professionalId: r.professionalId ? String(r.professionalId) : "",
+    type: r.type,
+    description: r.description ?? "",
+    amount: moneyDotToBR(String(r.amount)),
+    commissionAmount: r.commissionAmount
+      ? moneyDotToBR(String(r.commissionAmount))
+      : "",
+    paymentMethod: r.paymentMethod,
+    recordDate: r.recordDate
+      ? format(new Date(r.recordDate), "yyyy-MM-dd")
+      : "",
+    notes: r.notes ?? "",
+  };
+}
 
 export default function Financial() {
   const { salon } = useSalon();
   const [month, setMonth] = useState(format(new Date(), "yyyy-MM"));
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
-    clientId: "",
-    professionalId: "",
-    type: "service" as const,
-    description: "",
-    amount: "",
-    commissionAmount: "",
-    paymentMethod: "pix" as const,
-    recordDate: format(new Date(), "yyyy-MM-dd"),
-    notes: "",
-  });
+  const [editing, setEditing] = useState<number | null>(null);
+  const [initialForm, setInitialForm] = useState<FinancialFormValues | null>(
+    null
+  );
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
 
   const utils = trpc.useUtils();
   const { data: records, isLoading } = trpc.financial.list.useQuery(
@@ -79,38 +85,81 @@ export default function Financial() {
     { enabled: !!salon }
   );
 
+  const invalidate = () => {
+    utils.financial.list.invalidate();
+    utils.financial.summary.invalidate();
+  };
+
   const createMutation = trpc.financial.create.useMutation({
     onSuccess: () => {
-      utils.financial.list.invalidate();
-      utils.financial.summary.invalidate();
+      invalidate();
       setOpen(false);
       toast.success("Registro criado");
     },
     onError: e => toast.error(e.message),
   });
 
-  function handleSubmit() {
+  const updateMutation = trpc.financial.update.useMutation({
+    onSuccess: () => {
+      invalidate();
+      setOpen(false);
+      setEditing(null);
+      toast.success("Registro atualizado");
+    },
+    onError: e => toast.error(e.message),
+  });
+
+  const deleteMutation = trpc.financial.delete.useMutation({
+    onSuccess: () => {
+      invalidate();
+      setSelectedId(null);
+      setDeleteTarget(null);
+      toast.success("Registro removido");
+    },
+    onError: e => toast.error(e.message),
+  });
+
+  function handleNew() {
+    setEditing(null);
+    setInitialForm(null);
+    setOpen(true);
+  }
+
+  function handleEdit(record: FinancialRecordForList) {
+    setEditing(record.id);
+    setInitialForm(formFromRecord(record));
+    setOpen(true);
+  }
+
+  function handleSubmit(values: FinancialFormValues) {
     if (!salon) return;
-    if (!form.recordDate) {
-      toast.error("Escolha uma data para o registro.");
-      return;
+    if (editing) {
+      // edição só altera valor, descrição, pagamento e data (contrato do backend)
+      updateMutation.mutate({
+        id: editing,
+        salonId: salon.id,
+        description: values.description,
+        amount: values.amount,
+        paymentMethod: values.paymentMethod,
+        recordDate: values.recordDate,
+      });
+    } else {
+      createMutation.mutate({
+        salonId: salon.id,
+        clientId: Number(values.clientId),
+        professionalId: values.professionalId
+          ? Number(values.professionalId)
+          : undefined,
+        type: values.type,
+        description: values.description,
+        // o dialog já converte o valor para o formato do banco
+        amount: values.amount,
+        commissionAmount: values.commissionAmount || undefined,
+        paymentMethod: values.paymentMethod,
+        recordDate: values.recordDate,
+        notes: values.notes || undefined,
+      });
     }
-    createMutation.mutate({
-      salonId: salon.id,
-      clientId: Number(form.clientId),
-      professionalId: form.professionalId
-        ? Number(form.professionalId)
-        : undefined,
-      type: form.type,
-      description: form.description,
-      amount: moneyBRToDot(form.amount),
-      commissionAmount: form.commissionAmount
-        ? moneyBRToDot(form.commissionAmount)
-        : undefined,
-      paymentMethod: form.paymentMethod,
-      recordDate: form.recordDate,
-      notes: form.notes || undefined,
-    });
   }
 
   return (
@@ -129,168 +178,14 @@ export default function Financial() {
             onChange={e => setMonth(e.target.value)}
             className="flex-1 sm:flex-none sm:w-40"
           />
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button className="shrink-0">
-                <Plus className="mr-2 h-4 w-4" /> Novo registro
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Novo registro</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label>Cliente</Label>
-                  <Select
-                    value={form.clientId}
-                    onValueChange={v => setForm({ ...form, clientId: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent className="z-[60]">
-                      {clients?.map(c => (
-                        <SelectItem key={c.id} value={String(c.id)}>
-                          {c.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Tipo</Label>
-                    <Select
-                      value={form.type}
-                      onValueChange={(v: typeof form.type) =>
-                        setForm({ ...form, type: v })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="z-[60]">
-                        <SelectItem value="service">Serviço</SelectItem>
-                        <SelectItem value="product">Produto</SelectItem>
-                        <SelectItem value="package">Pacote</SelectItem>
-                        <SelectItem value="refund">Reembolso</SelectItem>
-                        <SelectItem value="other">Outro</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Data</Label>
-                    <DatePicker
-                      value={form.recordDate}
-                      onChange={iso => setForm({ ...form, recordDate: iso })}
-                      placeholder="Selecione"
-                    />
-                  </div>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Descrição</Label>
-                  <Input
-                    value={form.description}
-                    onChange={e =>
-                      setForm({ ...form, description: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Valor (R$)</Label>
-                    <Input
-                      value={form.amount}
-                      onChange={e =>
-                        setForm({
-                          ...form,
-                          amount: maskMoneyBR(e.target.value),
-                        })
-                      }
-                      placeholder="0,00"
-                      inputMode="numeric"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Comissão (R$)</Label>
-                    <Input
-                      value={form.commissionAmount}
-                      onChange={e =>
-                        setForm({
-                          ...form,
-                          commissionAmount: maskMoneyBR(e.target.value),
-                        })
-                      }
-                      placeholder="0,00"
-                      inputMode="numeric"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Profissional</Label>
-                    <Select
-                      value={form.professionalId}
-                      onValueChange={v =>
-                        setForm({ ...form, professionalId: v })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Opcional" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[60]">
-                        {professionals?.map(p => (
-                          <SelectItem key={p.id} value={String(p.id)}>
-                            {p.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Pagamento</Label>
-                    <Select
-                      value={form.paymentMethod}
-                      onValueChange={(v: typeof form.paymentMethod) =>
-                        setForm({ ...form, paymentMethod: v })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="z-[60]">
-                        <SelectItem value="pix">Pix</SelectItem>
-                        <SelectItem value="credit_card">
-                          Cartão Crédito
-                        </SelectItem>
-                        <SelectItem value="debit_card">
-                          Cartão Débito
-                        </SelectItem>
-                        <SelectItem value="cash">Dinheiro</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Cancelar</Button>
-                </DialogClose>
-                <Button
-                  onClick={handleSubmit}
-                  disabled={createMutation.isPending}
-                >
-                  Salvar
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button className="shrink-0" onClick={handleNew}>
+            <Plus className="mr-2 h-4 w-4" /> Novo registro
+          </Button>
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card className="h-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ganho líquido</CardTitle>
             <TrendingUp className="h-4 w-4 text-emerald-500" />
@@ -298,14 +193,14 @@ export default function Financial() {
           <CardContent>
             {summary ? (
               <div className="text-2xl font-bold">
-                R$ {Number(summary.totalRevenue).toFixed(2)}
+                {formatBRL(summary.totalRevenue)}
               </div>
             ) : (
               <Skeleton className="h-8 w-24" />
             )}
           </CardContent>
         </Card>
-        <Card>
+        <Card className="h-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Reembolsos</CardTitle>
             <TrendingDown className="h-4 w-4 text-rose-500" />
@@ -313,14 +208,14 @@ export default function Financial() {
           <CardContent>
             {summary ? (
               <div className="text-2xl font-bold">
-                R$ {Number(summary.totalRefunds).toFixed(2)}
+                {formatBRL(summary.totalRefunds)}
               </div>
             ) : (
               <Skeleton className="h-8 w-24" />
             )}
           </CardContent>
         </Card>
-        <Card>
+        <Card className="h-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total Comissões
@@ -330,7 +225,7 @@ export default function Financial() {
           <CardContent>
             {summary ? (
               <div className="text-2xl font-bold">
-                R$ {Number(summary.totalCommission).toFixed(2)}
+                {formatBRL(summary.totalCommission)}
               </div>
             ) : (
               <Skeleton className="h-8 w-24" />
@@ -350,6 +245,7 @@ export default function Financial() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-24">Ações</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead>Descrição</TableHead>
                   <TableHead>Cliente</TableHead>
@@ -358,30 +254,84 @@ export default function Financial() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {records.map(r => (
-                  <TableRow key={r.id}>
-                    <TableCell>
-                      {r.recordDate
-                        ? format(new Date(r.recordDate), "dd/MM/yyyy")
-                        : "-"}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {r.description}
-                    </TableCell>
-                    <TableCell>
-                      {clients?.find(c => c.id === r.clientId)?.name ?? "-"}
-                    </TableCell>
-                    <TableCell className="capitalize">
-                      {r.paymentMethod.replace("_", " ")}
-                    </TableCell>
-                    <TableCell
-                      className={`text-right font-medium ${r.type === "refund" ? "text-rose-500" : "text-emerald-600"}`}
-                    >
-                      {r.type === "refund" ? "-" : ""}R${" "}
-                      {Number(r.amount).toFixed(2)}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {records.map(r => {
+                  const record = r as FinancialRecordForList;
+                  const expanded = selectedId === record.id;
+                  const clientName =
+                    clients?.find(c => c.id === record.clientId)?.name ?? "-";
+                  const professionalName = record.professionalId
+                    ? (professionals?.find(p => p.id === record.professionalId)
+                        ?.name ?? "-")
+                    : "-";
+                  return (
+                    <Fragment key={record.id}>
+                      <TableRow
+                        className={`cursor-pointer ${
+                          expanded ? "bg-primary/5" : "hover:bg-blue-50/50"
+                        }`}
+                        onClick={() =>
+                          setSelectedId(expanded ? null : record.id)
+                        }
+                      >
+                        <TableCell onClick={e => e.stopPropagation()}>
+                          <div className="flex flex-col gap-1">
+                            <button
+                              type="button"
+                              onClick={() => handleEdit(record)}
+                              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                            >
+                              <Edit3 className="h-3 w-3" />
+                              Editar
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setDeleteTarget({
+                                  id: record.id,
+                                  name: `${record.description ?? "Registro"} (${record.recordDate ? format(new Date(record.recordDate), "dd/MM/yyyy") : "sem data"})`,
+                                })
+                              }
+                              className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                              Excluir
+                            </button>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {record.recordDate
+                            ? format(new Date(record.recordDate), "dd/MM/yyyy")
+                            : "-"}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {record.description}
+                        </TableCell>
+                        <TableCell>{clientName}</TableCell>
+                        <TableCell className="capitalize">
+                          {record.paymentMethod.replace("_", " ")}
+                        </TableCell>
+                        <TableCell
+                          className={`text-right font-medium ${record.type === "refund" ? "text-rose-500" : "text-emerald-600"}`}
+                        >
+                          {record.type === "refund" ? "-" : ""}
+                          {formatBRL(record.amount)}
+                        </TableCell>
+                      </TableRow>
+                      {expanded && (
+                        <TableRow className="bg-primary/5 hover:bg-primary/5">
+                          <TableCell colSpan={6} className="p-0">
+                            <FinancialRecordExpanded
+                              record={record}
+                              clientName={clientName}
+                              professionalName={professionalName}
+                              onClose={() => setSelectedId(null)}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </Fragment>
+                  );
+                })}
               </TableBody>
             </Table>
           ) : (
@@ -392,6 +342,32 @@ export default function Financial() {
           )}
         </CardContent>
       </Card>
+
+      <FinancialFormDialog
+        open={open}
+        onOpenChange={setOpen}
+        editingId={editing}
+        initial={initialForm}
+        clients={clients?.map(c => ({ id: c.id, name: c.name }))}
+        professionals={professionals?.map(p => ({ id: p.id, name: p.name }))}
+        isPending={createMutation.isPending || updateMutation.isPending}
+        onSubmit={handleSubmit}
+      />
+
+      <ConfirmDeleteDialog
+        open={!!deleteTarget}
+        onOpenChange={open => !open && setDeleteTarget(null)}
+        itemType="registro financeiro"
+        itemName={deleteTarget?.name ?? ""}
+        onConfirm={() => {
+          if (salon && deleteTarget) {
+            deleteMutation.mutate({
+              id: deleteTarget.id,
+              salonId: salon.id,
+            });
+          }
+        }}
+      />
     </div>
   );
 }

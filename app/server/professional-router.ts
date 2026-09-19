@@ -5,13 +5,23 @@ import {
   getProfessionalsBySalon,
   getProfessionalById,
   updateProfessional,
+  deleteProfessional,
+  reactivateProfessional,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
 
 export const professionalRouter = createRouter({
   list: authedQuery
-    .input(z.object({ salonId: z.number() }))
-    .query(({ input }) => getProfessionalsBySalon(input.salonId)),
+    .input(
+      z.object({
+        salonId: z.number(),
+        /** true = traz também inativos (excluídos logicamente) */
+        includeInactive: z.boolean().default(false),
+      })
+    )
+    .query(({ input }) =>
+      getProfessionalsBySalon(input.salonId, input.includeInactive)
+    ),
 
   byId: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
@@ -82,5 +92,35 @@ export const professionalRouter = createRouter({
         data
       );
       return result;
+    }),
+
+  delete: authedQuery
+    .input(z.object({ id: z.number(), salonId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      await deleteProfessional(input.id, input.salonId);
+      await auditAction(
+        "delete",
+        "professional",
+        input.salonId,
+        ctx.user?.id,
+        input.id
+      );
+      return { success: true };
+    }),
+
+  reactivate: authedQuery
+    .input(z.object({ id: z.number(), salonId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      await reactivateProfessional(input.id, input.salonId);
+      await auditAction(
+        "update",
+        "professional",
+        input.salonId,
+        ctx.user?.id,
+        input.id,
+        undefined,
+        { reactivated: true }
+      );
+      return { success: true };
     }),
 });

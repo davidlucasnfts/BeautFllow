@@ -193,12 +193,17 @@ export async function createProfessional(data: InsertProfessional) {
   return db.query.professionals.findFirst({ where: eq(professionals.id, id) });
 }
 
-export async function getProfessionalsBySalon(salonId: number) {
+export async function getProfessionalsBySalon(
+  salonId: number,
+  includeInactive = false
+) {
   return getDb()
     .select()
     .from(professionals)
     .where(
-      and(eq(professionals.salonId, salonId), eq(professionals.isActive, true))
+      includeInactive
+        ? eq(professionals.salonId, salonId)
+        : and(eq(professionals.salonId, salonId), eq(professionals.isActive, true))
     )
     .orderBy(professionals.name);
 }
@@ -219,6 +224,22 @@ export async function updateProfessional(
     .set(data)
     .where(and(eq(professionals.id, id), eq(professionals.salonId, salonId)));
   return getProfessionalById(id, salonId);
+}
+
+/** Desativa um profissional (exclusão lógica — histórico de agendamentos preservado) */
+export async function deleteProfessional(id: number, salonId: number) {
+  await getDb()
+    .update(professionals)
+    .set({ isActive: false })
+    .where(and(eq(professionals.id, id), eq(professionals.salonId, salonId)));
+}
+
+/** Reativa um profissional desativado por engano (exclusão é lógica) */
+export async function reactivateProfessional(id: number, salonId: number) {
+  await getDb()
+    .update(professionals)
+    .set({ isActive: true })
+    .where(and(eq(professionals.id, id), eq(professionals.salonId, salonId)));
 }
 
 // ==========================================
@@ -368,6 +389,31 @@ export async function getFinancialSummaryBySalon(
   return result[0];
 }
 
+export async function updateFinancialRecord(
+  id: number,
+  salonId: number,
+  data: Partial<InsertFinancialRecord>
+) {
+  await getDb()
+    .update(financialRecords)
+    .set(data)
+    .where(
+      and(eq(financialRecords.id, id), eq(financialRecords.salonId, salonId))
+    );
+  return getDb().query.financialRecords.findFirst({
+    where: eq(financialRecords.id, id),
+  });
+}
+
+export async function deleteFinancialRecord(id: number, salonId: number) {
+  // Exclusao fisica (registro financeiro proprio, sem PII do cliente)
+  await getDb()
+    .delete(financialRecords)
+    .where(
+      and(eq(financialRecords.id, id), eq(financialRecords.salonId, salonId))
+    );
+}
+
 // ==========================================
 // Communications
 // ==========================================
@@ -404,6 +450,13 @@ export async function getCommunicationsBySalon(salonId: number, limit = 50) {
     .limit(limit);
 }
 
+/** Exclusão física de mensagem (histórico de comunicação, sem PII própria) */
+export async function deleteCommunication(id: number, salonId: number) {
+  await getDb()
+    .delete(communications)
+    .where(and(eq(communications.id, id), eq(communications.salonId, salonId)));
+}
+
 // ==========================================
 // Consent Forms
 // ==========================================
@@ -427,6 +480,34 @@ export async function getConsentFormById(id: number, salonId: number) {
   return getDb().query.consentForms.findFirst({
     where: and(eq(consentForms.id, id), eq(consentForms.salonId, salonId)),
   });
+}
+
+export async function updateConsentForm(
+  id: number,
+  salonId: number,
+  data: Partial<Pick<InsertConsentForm, "title" | "content">>
+) {
+  await getDb()
+    .update(consentForms)
+    .set(data)
+    .where(and(eq(consentForms.id, id), eq(consentForms.salonId, salonId)));
+  return getConsentFormById(id, salonId);
+}
+
+export async function deleteConsentForm(id: number, salonId: number) {
+  const db = getDb();
+  // apaga também as assinaturas vinculadas ao termo (sempre filtrando o tenant)
+  await db
+    .delete(consentSignatures)
+    .where(
+      and(
+        eq(consentSignatures.formId, id),
+        eq(consentSignatures.salonId, salonId)
+      )
+    );
+  await db
+    .delete(consentForms)
+    .where(and(eq(consentForms.id, id), eq(consentForms.salonId, salonId)));
 }
 
 export async function createConsentSignature(data: InsertConsentSignature) {

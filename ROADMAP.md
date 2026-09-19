@@ -2,7 +2,7 @@
 
 > **Arquivo de referência.** Para contexto rápido, leia MEMORY.md primeiro.
 
-Última atualização: 08/09/2026
+Última atualização: 19/09/2026
 
 ---
 
@@ -53,6 +53,14 @@ Ordem sugerida de ataque: 1 → 2 → 3 → 4 → 5 (o 6 acontece em paralelo co
 ---
 
 ## Registro de Alterações
+
+### 19/09/2026 — Polimento das 5 páginas pendentes (padrão design system)
+- [feat] **Financeiro:** editar e excluir lançamento (endpoints novos com audit log), ficha expansível na linha, moeda pt-BR, ações na primeira coluna
+- [feat] **Termos de Consentimento:** ver texto completo (ficha expansível), editar, excluir (remove assinaturas vinculadas; endpoints novos com audit log); checklist LGPD decorativo removido
+- [feat] **Profissionais:** ficha expansível, desativar/reativar (soft delete), busca, ícone correto no campo bio, input de horários de trabalho
+- [feat] **Comunicação:** reenviar mensagem (form pré-preenchido) e excluir (endpoint novo com audit log), ficha expansível, cards de marketing reduzidos
+- [feat] **Login/Cadastro:** ícones nos botões + toast de sucesso pós-cadastro
+- Todas as páginas do app agora estão no padrão design system (auditoria 19/09)
 
 ### 08/09/2026 — Página de Clientes: Ficha Expandida + Status Híbrido
 - [feat] Lista padrão Fila do Dia — ficha expande na linha, WhatsApp com ícone oficial, Excluir só no card aberto

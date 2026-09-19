@@ -1,7 +1,42 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 15/09/2026
-> **Sessão atual:** Agendamentos — branch `homologacao-agenda` **mesclada na `main`** (10 commits); aguardando David validar local antes de qualquer push
+> **Atualizado em:** 19/09/2026
+> **Sessão atual:** Polimento das 5 páginas pendentes concluído — **app inteiro no padrão design system**; smoke test completo é o próximo passo antes do push
+
+---
+
+## Stack (1 linha)
+React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + Supabase (PostgreSQL) + Vercel
+
+---
+
+## Última funcionalidade trabalhada
+**Polimento das 5 páginas pendentes (Financeiro, Termos, Profissionais, Comunicação, Login)** — 19/09 (na `main`)
+
+### O que mudou (19/09):
+1. Auditoria página a página contra o design system: 5 ✅ já conformes (Agendamentos, Clientes, Serviços, Dashboard, Configurações), 5 ⚠️ melhoradas nesta sessão
+2. **Financeiro:** editar/excluir lançamento (`financial.update`/`financial.delete` + audit), ficha expansível, moeda pt-BR
+3. **Termos:** ver completo/editar/excluir (`consent.update`/`consent.delete` + audit; delete remove assinaturas vinculadas), checklist decorativo removido
+4. **Profissionais:** ficha expansível, desativar/reativar (soft delete), busca, input de horários de trabalho
+5. **Comunicação:** reenviar (form pré-preenchido)/excluir (`communication.delete` + audit), ficha expansível
+6. **Login/Cadastro:** ícones + toast pós-cadastro
+7. Endpoints novos seguem padrão: Zod, filtro tenant, audit log
+
+### Débitos técnicos percebidos (não urgentes):
+- `server/queries/salon.ts` tem ~900 linhas (limite é 400) — quebrar em `queries/financial.ts`, `queries/consent.ts` etc.
+- `consent.create` aceita `serviceId` no Zod mas a tabela não tem a coluna (campo morto, nenhuma tela envia)
+- Sem FK de `consent_signatures.formId` → `consent_forms.id` no schema
+- `financial.create` exige `clientId` mas o schema permite null (despesa genérica sem cliente não é possível)
+- Decisão LGPD pendente: delete de termo apaga assinaturas (exclusão física). Se a LGPD exigir retenção, migrar para exclusão lógica (`isActive` já existe)
+
+### Próximo passo definido:
+1. David roda o **smoke test completo** (roteiro da sessão: login → profissional → serviço → cliente → agendar → concluir c/ pagamento → conferir financeiro) — agora com todas as páginas polidas
+2. Se passar: **push autorizado** → `main` remota → Vercel deploya
+3. Validar cadastro/login em produção (`studioflow-navy.vercel.app`)
+4. Depois: Fase 4 (billing Stripe/Mercado Pago + landings por segmento + preços)
+
+### Como testar local:
+`cd app && npm run dev` → `http://localhost:3000`
 
 ---
 

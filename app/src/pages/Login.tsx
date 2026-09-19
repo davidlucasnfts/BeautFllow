@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { trpc } from "@/providers/trpc";
 import { onlyText } from "@/lib/input-masks";
+import { toast } from "sonner";
+import { LogIn, UserPlus } from "lucide-react";
 export default function Login() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
@@ -21,6 +23,7 @@ export default function Login() {
 
   const registerMutation = trpc.localAuth.register.useMutation({
     onSuccess: () => {
+      toast.success("Conta criada! Faça login para continuar.");
       setMode("login");
       setError("");
       setPassword("");
@@ -99,11 +102,19 @@ export default function Login() {
               size="lg"
               disabled={isLoading}
             >
-              {isLoading
-                ? "Aguarde..."
-                : mode === "login"
-                  ? "Entrar"
-                  : "Criar conta"}
+              {isLoading ? (
+                "Aguarde..."
+              ) : mode === "login" ? (
+                <>
+                  <LogIn className="h-4 w-4" />
+                  Entrar
+                </>
+              ) : (
+                <>
+                  <UserPlus className="h-4 w-4" />
+                  Criar conta
+                </>
+              )}
             </Button>
           </form>
 

@@ -2,38 +2,23 @@ import { useState } from "react";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import {
   MessageSquare,
   Send,
   Phone,
   Mail,
-  CheckCircle2,
-  AlertTriangle,
+  RotateCcw,
+  Trash2,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
+import MessageFormDialog, {
+  type MessagePreset,
+} from "@/components/communications/MessageFormDialog";
 
 const channelIcons: Record<string, typeof MessageSquare> = {
   whatsapp: Phone,
@@ -65,6 +50,7 @@ const channelLabels: Record<string, string> = {
   sms: "SMS",
   email: "E-mail",
   in_app: "No aplicativo",
+  phone: "Telefone",
 };
 
 const statusColors: Record<string, string> = {
@@ -78,12 +64,12 @@ const statusColors: Record<string, string> = {
 export default function Communications() {
   const { salon } = useSalon();
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
-    clientId: "",
-    type: "manual" as const,
-    channel: "whatsapp" as const,
-    content: "",
-  });
+  const [preset, setPreset] = useState<MessagePreset | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: number;
+    label: string;
+  } | null>(null);
 
   const utils = trpc.useUtils();
   const { data: comms, isLoading } = trpc.communication.listBySalon.useQuery(
@@ -100,20 +86,41 @@ export default function Communications() {
     onSuccess: () => {
       utils.communication.listBySalon.invalidate();
       setOpen(false);
-      toast.success("Mensagem enviada");
+      setPreset(null);
+      toast.success(preset ? "Mensagem reenviada" : "Mensagem enviada");
     },
     onError: e => toast.error(e.message),
   });
 
-  function handleSubmit() {
+  const deleteMutation = trpc.communication.delete.useMutation({
+    onSuccess: () => {
+      utils.communication.listBySalon.invalidate();
+      setSelectedId(null);
+      setDeleteTarget(null);
+      toast.success("Mensagem excluída");
+    },
+    onError: e => toast.error(e.message),
+  });
+
+  function clientName(clientId: number) {
+    return clients?.find(cl => cl.id === clientId)?.name ?? "Cliente";
+  }
+
+  function handleSubmit(data: {
+    clientId: number;
+    channel: "whatsapp" | "sms" | "email" | "in_app";
+    type:
+      | "confirmation"
+      | "reminder"
+      | "check_in"
+      | "post_care"
+      | "reactivation"
+      | "campaign"
+      | "manual";
+    content: string;
+  }) {
     if (!salon) return;
-    createMutation.mutate({
-      salonId: salon.id,
-      clientId: Number(form.clientId),
-      type: form.type,
-      channel: form.channel,
-      content: form.content,
-    });
+    createMutation.mutate({ salonId: salon.id, ...data });
   }
 
   return (
@@ -125,169 +132,95 @@ export default function Communications() {
             Todas as mensagens enviadas para seus clientes
           </p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Send className="mr-2 h-4 w-4" /> Enviar Mensagem
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Nova Mensagem</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label>Cliente</Label>
-                <Select
-                  value={form.clientId}
-                  onValueChange={v => setForm({ ...form, clientId: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent className="z-[60]">
-                    {clients?.map(c => (
-                      <SelectItem key={c.id} value={String(c.id)}>
-                        {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Onde enviar</Label>
-                  <Select
-                    value={form.channel}
-                    onValueChange={(v: typeof form.channel) =>
-                      setForm({ ...form, channel: v })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="z-[60]">
-                      <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                      <SelectItem value="sms">SMS</SelectItem>
-                      <SelectItem value="email">E-mail</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Tipo</Label>
-                  <Select
-                    value={form.type}
-                    onValueChange={(v: typeof form.type) =>
-                      setForm({ ...form, type: v })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="z-[60]">
-                      <SelectItem value="confirmation">Confirmação</SelectItem>
-                      <SelectItem value="reminder">Lembrete</SelectItem>
-                      <SelectItem value="post_care">Pós-cuidado</SelectItem>
-                      <SelectItem value="reactivation">
-                        Trazer de volta
-                      </SelectItem>
-                      <SelectItem value="manual">Escrita por você</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <Label>Mensagem</Label>
-                <Textarea
-                  value={form.content}
-                  onChange={e => setForm({ ...form, content: e.target.value })}
-                  rows={4}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Cancelar</Button>
-              </DialogClose>
-              <Button
-                onClick={handleSubmit}
-                disabled={createMutation.isPending}
-              >
-                Enviar
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Button
+          onClick={() => {
+            setPreset(null);
+            setOpen(true);
+          }}
+        >
+          <Send className="mr-2 h-4 w-4" /> Enviar Mensagem
+        </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3 mb-4">
-        <Card className="p-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MessageSquare className="h-4 w-4" />
-            <span>
-              Mensagens automáticas prontas: confirmação, lembrete, aviso de
-              chegada e cuidados depois do serviço
-            </span>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
-            <span>
-              Clientes que estão sumidos recebem mensagem automática para voltar
-            </span>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-            <span>Mensagens pelo WhatsApp com aviso quando chegam</span>
-          </div>
-        </Card>
-      </div>
+      <p className="flex items-center gap-2 text-xs text-muted-foreground">
+        <MessageSquare className="h-3.5 w-3.5 shrink-0" />
+        Confirmações, lembretes e pós-cuidado saem sozinhas — aqui você
+        acompanha tudo e pode reenviar.
+      </p>
 
       {isLoading ? (
-        <div className="space-y-3">
+        <div className="rounded-xl border bg-card divide-y overflow-hidden">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-24 bg-muted" />
+            <Skeleton key={i} className="h-[76px] w-full rounded-none bg-muted" />
           ))}
         </div>
       ) : comms && comms.length > 0 ? (
-        <div className="space-y-3">
+        <div className="rounded-xl border bg-card divide-y overflow-hidden">
           {comms.map(c => {
             const Icon = channelIcons[c.channel] ?? MessageSquare;
+            const expanded = selectedId === c.id;
             return (
-              <Card key={c.id} className="p-4">
-                <div className="flex items-start gap-4">
+              <div
+                key={c.id}
+                className={`cursor-pointer transition-colors ${
+                  expanded ? "bg-primary/5" : "hover:bg-blue-50/50"
+                }`}
+                onClick={() => setSelectedId(expanded ? null : c.id)}
+              >
+                <div className="flex items-center gap-3 px-4 py-2.5">
+                  {/* Coluna de ações na primeira posição */}
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={e => {
+                        e.stopPropagation();
+                        setPreset({
+                          clientId: c.clientId,
+                          type: c.type,
+                          channel: c.channel,
+                          content: c.content,
+                        });
+                        setOpen(true);
+                      }}
+                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                      Reenviar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={e => {
+                        e.stopPropagation();
+                        setDeleteTarget({
+                          id: c.id,
+                          label: `${clientName(c.clientId)} — ${c.content.slice(0, 40)}${c.content.length > 40 ? "…" : ""}`,
+                        });
+                      }}
+                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Excluir
+                    </button>
+                  </div>
                   <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center shrink-0">
                     <Icon className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm">
-                          {clients?.find(cl => cl.id === c.clientId)?.name ??
-                            "Cliente"}
-                        </span>
-                        <Badge
-                          variant="secondary"
-                          className={statusColors[c.status] + " text-[10px]"}
-                        >
-                          {statusLabels[c.status] ?? c.status}
-                        </Badge>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {c.createdAt
-                          ? format(new Date(c.createdAt), "dd/MM HH:mm", {
-                              locale: ptBR,
-                            })
-                          : ""}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium truncate">
+                        {clientName(c.clientId)}
                       </span>
+                      <Badge
+                        variant="secondary"
+                        className={statusColors[c.status] + " text-[10px]"}
+                      >
+                        {statusLabels[c.status] ?? c.status}
+                      </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-1">
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
                       {c.content}
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground flex-wrap">
                       <span className="capitalize">
                         {typeLabels[c.type] ?? c.type}
                       </span>
@@ -297,10 +230,39 @@ export default function Communications() {
                       <span>
                         {c.direction === "outbound" ? "Enviada" : "Recebida"}
                       </span>
+                      <span>•</span>
+                      <span>
+                        {c.createdAt
+                          ? format(new Date(c.createdAt), "dd/MM/yyyy HH:mm", {
+                              locale: ptBR,
+                            })
+                          : ""}
+                      </span>
                     </div>
                   </div>
                 </div>
-              </Card>
+                {expanded && (
+                  <div className="px-4 pb-4">
+                    <div className="rounded-lg bg-muted/60 p-4">
+                      <p className="text-[10px] font-semibold text-slate-400 uppercase mb-1">
+                        Conteúdo da mensagem
+                      </p>
+                      <p className="text-sm text-slate-800 whitespace-pre-wrap break-words">
+                        {c.content}
+                      </p>
+                    </div>
+                    <div className="flex justify-center mt-3">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedId(null)}
+                        className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+                      >
+                        Fechar
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
@@ -310,6 +272,33 @@ export default function Communications() {
           <p>Nenhuma mensagem enviada ainda.</p>
         </div>
       )}
+
+      <MessageFormDialog
+        open={open}
+        onOpenChange={v => {
+          setOpen(v);
+          if (!v) setPreset(null);
+        }}
+        clients={clients ?? []}
+        preset={preset}
+        isPending={createMutation.isPending}
+        onSubmit={handleSubmit}
+      />
+
+      <ConfirmDeleteDialog
+        open={!!deleteTarget}
+        onOpenChange={o => !o && setDeleteTarget(null)}
+        itemType="mensagem"
+        itemName={deleteTarget?.label ?? ""}
+        onConfirm={() => {
+          if (salon && deleteTarget) {
+            deleteMutation.mutate({
+              id: deleteTarget.id,
+              salonId: salon.id,
+            });
+          }
+        }}
+      />
     </div>
   );
 }

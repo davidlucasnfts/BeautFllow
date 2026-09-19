@@ -79,6 +79,13 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Ciclo da agenda: `Agendado → (Iniciar) → Em andamento → (Concluir) → Completo`, com Cancelar até o fim (outline); removido "Confirmar"; badge "Chegou" virou "Em andamento" na cor do tema; DatePicker calendário em todos os campos de data; ações da fila do dia compactas alinhadas à direita | 08/09 |
 | Fix crítico: componentes shadcn convertidos de sintaxe Tailwind v4 para v3 (110 ocorrências, 27 arquivos) — sidebar fixa não cobre mais o conteúdo, selects/menus com max-height e origem de animação corretos | 08/09 |
 | Clientes em lista padrão Fila do Dia (Opção A aprovada via `docs/clientes-preview.html`): ficha expande na linha com borda lilás, WhatsApp ícone oficial sozinho, Editar azul, Excluir outline; grid de cards removido | 08/09 |
+| Agenda Opção 5: linha única estilo Google Calendar + chips de profissional com cor (dia/semana, mobile+desktop) + navegação central clicável + mês com contagem + alerta de pendentes (últimos 90 dias) + fix filtro na fila mobile (mockup `docs/mockups/agendamento-seletor-visao.html`) | 15/09 |
+| Agenda: botão "Hoje" removido, checkout bloqueia valor zerado, cabeçalhos S3+D2 (semana com número grande + contagem; dia com hierarquia tipográfica) — mockup `docs/mockups/agenda-cabecalhos-dia-semana.html` | 17/09 |
+| Financeiro padrão design system: editar/excluir lançamento (endpoints `financial.update`/`financial.delete` + audit), ficha expansível, moeda pt-BR, ações na primeira coluna, form extraído | 19/09 |
+| Termos de Consentimento: ver texto completo/ editar/ excluir (endpoints `consent.update`/`consent.delete` + audit, delete remove assinaturas vinculadas), checklist LGPD decorativo removido | 19/09 |
+| Profissionais padrão design system: ficha expansível, desativar/reativar (soft delete, endpoints `professional.delete`/`professional.reactivate` + audit), busca, ícone correto no campo bio, input de horários de trabalho | 19/09 |
+| Comunicação: reenviar (form pré-preenchido) / excluir mensagem (endpoint `communication.delete` + audit), ficha expansível com conteúdo, cards de marketing reduzidos a 1 hint | 19/09 |
+| Login/Cadastro: ícone nos botões principais + toast de sucesso após criar conta | 19/09 |
 
 ---
 
