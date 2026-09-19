@@ -14,8 +14,9 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 **Financeiro: filtros junto dos lançamentos + mês via DatePicker padrão** — 19/09 (na `main`)
 
 ### O que mudou (19/09, smoke test do David):
-- Busca + mês saíram do cabeçalho da página e foram para dentro do card "Registros do mês" (o "+ Novo registro" ficou no cabeçalho, padrão das outras telas)
-- Campo de mês trocou o input nativo `type="month"` (só abria no ícone) pelo `DatePicker` com `label` — campo inteiro clicável, mesmo padrão da agenda
+- **Financeiro:** filtro por período Dia/Semana/Mês (seletor igual ao da agenda; lista e cards de resumo usam o mesmo período) + correção de bug de fuso (coluna `date` exibida sem `new Date()`, que deslocava 1 dia pra trás — "01/09 aparecia como 31/08" e parecia fora de ordem) + helpers `toISODate`/`dateToBR` em `input-masks.ts`
+- Busca + período saíram do cabeçalho e foram para dentro do card "Registros do mês" (o "+ Novo registro" ficou no cabeçalho, padrão das outras telas)
+- Campo de mês trocou o input nativo `type="month"` (só abria no ícone) pelo `DatePicker` com `label` — campo inteiro clicável, mesmo padrão da agenda; troca de mês no calendário fecha o popup e aplica o filtro
 - Regra nova no `AGENTS.md`: **sempre reusar padrões existentes aprovados antes de criar do zero**
 
 ### Antes, nesta mesma sessão (19/09 — polimento das 5 páginas pendentes):
