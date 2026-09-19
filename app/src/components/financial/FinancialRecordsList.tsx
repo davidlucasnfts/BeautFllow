@@ -1,6 +1,6 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { format } from "date-fns";
-import { Edit3, Trash2, DollarSign } from "lucide-react";
+import { Edit3, Trash2, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -34,6 +34,8 @@ function formatBRL(value: string | number) {
   });
 }
 
+const PER_PAGE = 20;
+
 /** Lista de lançamentos: tabela no desktop, lista estilo Fila do Dia no mobile
  *  (tabela estoura a largura no celular e esconde o valor — padrão do app). */
 export default function FinancialRecordsList({
@@ -47,6 +49,15 @@ export default function FinancialRecordsList({
   onEdit,
   onDelete,
 }: FinancialRecordsListProps) {
+  // paginação: meses com muitos lançamentos ficam fluidos (20 por página)
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(records.length / PER_PAGE));
+  const safePage = Math.min(page, totalPages);
+  const pageRecords = records.slice(
+    (safePage - 1) * PER_PAGE,
+    safePage * PER_PAGE
+  );
+
   const clientNameOf = (id: number | null) =>
     id ? (clients.find(c => c.id === id)?.name ?? "-") : "-";
   const professionalNameOf = (id: number | null) =>
@@ -96,7 +107,7 @@ export default function FinancialRecordsList({
           <>
             {/* Mobile: lista com valor visível (padrão Fila do Dia) */}
             <div className="md:hidden divide-y rounded-lg border">
-              {records.map(r => {
+              {pageRecords.map(r => {
                 const expanded = selectedId === r.id;
                 return (
                   <Fragment key={r.id}>
@@ -168,7 +179,7 @@ export default function FinancialRecordsList({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {records.map(r => {
+                  {pageRecords.map(r => {
                     const expanded = selectedId === r.id;
                     return (
                       <Fragment key={r.id}>
@@ -218,6 +229,38 @@ export default function FinancialRecordsList({
                 </TableBody>
               </Table>
             </div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 pt-4 text-xs text-muted-foreground">
+                <button
+                  type="button"
+                  disabled={safePage === 1}
+                  onClick={() => {
+                    setPage(safePage - 1);
+                    onSelect(null);
+                  }}
+                  className="flex items-center gap-1 rounded-md border px-2.5 py-1.5 transition-colors hover:bg-slate-50 disabled:opacity-40"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                  Anterior
+                </button>
+                <span>
+                  Página {safePage} de {totalPages}
+                </span>
+                <button
+                  type="button"
+                  disabled={safePage === totalPages}
+                  onClick={() => {
+                    setPage(safePage + 1);
+                    onSelect(null);
+                  }}
+                  className="flex items-center gap-1 rounded-md border px-2.5 py-1.5 transition-colors hover:bg-slate-50 disabled:opacity-40"
+                >
+                  Próxima
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
           </>
         )}
       </CardContent>

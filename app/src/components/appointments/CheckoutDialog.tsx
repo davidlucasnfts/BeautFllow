@@ -118,7 +118,8 @@ function CheckoutForm({
         clientId: target.clientId,
         professionalId: target.professionalId ?? undefined,
         type: "service",
-        description: `${target.serviceName} — ${target.clientName}`,
+        // descrição só com o serviço — o cliente aparece em coluna própria na lista
+        description: target.serviceName,
         amount: moneyBRToDot(valor),
         paymentMethod: paymentMethod as
           | "pix"
