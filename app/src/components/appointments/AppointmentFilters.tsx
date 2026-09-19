@@ -167,7 +167,8 @@ export default function AppointmentFilters({
 
   return (
     <div className="flex w-full flex-col gap-2 md:w-auto">
-      {/* Linha 1: troca de visão + navegação central (desktop) + Novo */}
+      {/* Linha 1: visão + navegação (grupo esquerda) · Novo (direita) —
+          mesmo padrão da barra do Financeiro */}
       <div className="flex items-center gap-2">
         <div className="flex items-center border rounded-md overflow-hidden">
           <Button
@@ -198,13 +199,12 @@ export default function AppointmentFilters({
             Mês
           </Button>
         </div>
-        <div className="hidden md:flex flex-1 justify-center px-2">{nav}</div>
-        <div className="grow md:hidden" />
+        <div className="hidden md:block md:pl-1">{nav}</div>
+        <div className="grow" />
         <Button size="sm" onClick={onNew}>
           <Plus className="mr-1.5 h-4 w-4" /> Novo
         </Button>
       </div>
-
       {/* Linha 2 (mobile): navegação — a fila do dia já troca de dia com 1 toque */}
       {viewMode !== "day" && <div className="md:hidden">{nav}</div>}
 

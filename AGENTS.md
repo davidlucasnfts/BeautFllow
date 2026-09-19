@@ -225,6 +225,14 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - **Radix UI** como base de acessibilidade
 - **Lucide React** para ícones
 
+### Barra de Páginas com Lista + Período (padrão do sistema, 19/09/2026)
+Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a mesma barra:
+- **Grupo esquerda:** seletor de visão/período (Dia | Semana | Mês) + navegação (setas ‹ › + rótulo clicável com DatePicker/PeriodPicker)
+- **Grupo direita:** filtros contextuais (busca, select de serviço) + ação primária (+ Novo)
+- **Mobile:** visão + ação na 1ª linha, navegação centralizada na 2ª, filtros embaixo
+- Seletor de período "real": Dia abre grade de dias, Semana abre lista de semanas, Mês abre grade de 12 meses (estilo iOS) — implementação de referência: `app/src/components/financial/PeriodPicker.tsx`
+- Referências: mockups `docs/mockups/financeiro-seletor-periodo.html` e `docs/mockups/financeiro-barra-desktop.html`
+
 ### Botões de Ação — REGRAS OBRIGATÓRIAS
 
 #### PROIBIDO: Dropdown de 3 pontinhos (MoreHorizontal)
