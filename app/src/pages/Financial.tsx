@@ -2,9 +2,8 @@ import { useState, useMemo } from "react";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, TrendingUp, TrendingDown, Wallet, Search } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format, endOfMonth } from "date-fns";
@@ -187,33 +186,16 @@ export default function Financial() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Financeiro</h1>
           <p className="text-muted-foreground">
             Seus ganhos, comissões e gastos
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          <div className="relative flex-1 min-w-44 sm:flex-none sm:w-60">
-            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-            <Input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Buscar descrição ou cliente"
-              className="pl-8"
-            />
-          </div>
-          <Input
-            type="month"
-            value={month}
-            onChange={e => setMonth(e.target.value)}
-            className="flex-1 sm:flex-none sm:w-40"
-          />
-          <Button className="shrink-0" onClick={handleNew}>
-            <Plus className="mr-2 h-4 w-4" /> Novo registro
-          </Button>
-        </div>
+        <Button className="shrink-0" onClick={handleNew}>
+          <Plus className="mr-2 h-4 w-4" /> Novo registro
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -271,6 +253,10 @@ export default function Financial() {
         isError={isError}
         records={visibleRecords}
         searchActive={!!search.trim()}
+        search={search}
+        onSearch={setSearch}
+        month={month}
+        onMonth={setMonth}
         clients={clients ?? []}
         professionals={professionals ?? []}
         selectedId={selectedId}

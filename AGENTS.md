@@ -17,6 +17,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 
 ## Regras de código
 - **Limite de 400 linhas por arquivo.** Se ultrapassar, redistribuir em componentes/utilitários menores.
+- **REUSAR padrões existentes — nunca recriar do zero (19/09/2026).** Antes de criar qualquer componente, campo de formulário, seletor de data ou interação nova, verificar se o app já tem um padrão aprovado que faz aquilo (ex.: `DatePicker` para datas/meses, botões do design system, ficha expansível, lista estilo Fila do Dia). Reusar/estender o existente — isso garante consistência, economiza tempo e evita comportamentos fora do esperado. Ex.: campo de mês usa `DatePicker` com `label` (campo inteiro clicável), como em `AppointmentFilters.tsx` — **nunca** usar o input nativo `type="month"` (só abre clicando no ícone).
 - **Exceção:** componentes do shadcn/ui em `src/components/ui/` — são de biblioteca externa, não mexer. Exceções já aplicadas:
   - `ui/skeleton.tsx` usa `bg-muted` (não `bg-accent` — accent é cor da marca do tema, deixaria todo loading colorido)
   - **Sintaxe Tailwind v3 (09/09/2026):** os componentes vieram gerados com sintaxe v4 (`w-(--var)`, `outline-hidden`, `size-8!`) que falha silenciosamente no v3.4 do projeto — todo o `ui/` foi convertido para a forma v3 (`w-[var(--var)]`, `outline-none`, `!size-8`). Não regenerar esses arquivos a partir do CLI novo do shadcn sem revisar a sintaxe

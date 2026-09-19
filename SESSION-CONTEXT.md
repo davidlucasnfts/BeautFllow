@@ -11,9 +11,14 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 ---
 
 ## Última funcionalidade trabalhada
-**Polimento das 5 páginas pendentes (Financeiro, Termos, Profissionais, Comunicação, Login)** — 19/09 (na `main`)
+**Financeiro: filtros junto dos lançamentos + mês via DatePicker padrão** — 19/09 (na `main`)
 
-### O que mudou (19/09):
+### O que mudou (19/09, smoke test do David):
+- Busca + mês saíram do cabeçalho da página e foram para dentro do card "Registros do mês" (o "+ Novo registro" ficou no cabeçalho, padrão das outras telas)
+- Campo de mês trocou o input nativo `type="month"` (só abria no ícone) pelo `DatePicker` com `label` — campo inteiro clicável, mesmo padrão da agenda
+- Regra nova no `AGENTS.md`: **sempre reusar padrões existentes aprovados antes de criar do zero**
+
+### Antes, nesta mesma sessão (19/09 — polimento das 5 páginas pendentes):
 1. Auditoria página a página contra o design system: 5 ✅ já conformes (Agendamentos, Clientes, Serviços, Dashboard, Configurações), 5 ⚠️ melhoradas nesta sessão
 2. **Financeiro:** editar/excluir lançamento (`financial.update`/`financial.delete` + audit), ficha expansível, moeda pt-BR
 3. **Termos:** ver completo/editar/excluir (`consent.update`/`consent.delete` + audit; delete remove assinaturas vinculadas), checklist decorativo removido

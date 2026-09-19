@@ -1,6 +1,7 @@
 import { Fragment, useState } from "react";
 import { format } from "date-fns";
-import { Edit3, Trash2, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
+import { ptBR } from "date-fns/locale";
+import { Edit3, Trash2, DollarSign, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -10,7 +11,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import DatePicker from "@/components/DatePicker";
 import FinancialRecordExpanded, {
   type FinancialRecordForList,
 } from "./FinancialRecordExpanded";
@@ -21,6 +24,12 @@ interface FinancialRecordsListProps {
   records: FinancialRecordForList[];
   /** true quando a lista vazia é resultado de busca (mensagem muda) */
   searchActive?: boolean;
+  search: string;
+  onSearch: (value: string) => void;
+  /** mês em ISO (yyyy-MM) — filtro usa o DatePicker padrão do app
+   *  (campo inteiro clicável, mesmo padrão da agenda) */
+  month: string;
+  onMonth: (value: string) => void;
   clients: { id: number; name: string }[];
   professionals: { id: number; name: string }[];
   selectedId: number | null;
@@ -38,6 +47,10 @@ function formatBRL(value: string | number) {
 
 const PER_PAGE = 20;
 
+function capitalizeFirst(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 /** Lista de lançamentos: tabela no desktop, lista estilo Fila do Dia no mobile
  *  (tabela estoura a largura no celular e esconde o valor — padrão do app). */
 export default function FinancialRecordsList({
@@ -45,6 +58,10 @@ export default function FinancialRecordsList({
   isError,
   records,
   searchActive = false,
+  search,
+  onSearch,
+  month,
+  onMonth,
   clients,
   professionals,
   selectedId,
@@ -91,6 +108,32 @@ export default function FinancialRecordsList({
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Registros do mês</CardTitle>
+        {/* Filtros ficam junto dos lançamentos (a ação "+ Novo" fica no
+            cabeçalho da página, padrão das outras telas). Mês usa o DatePicker
+            padrão do app — campo inteiro clicável, sem input nativo type=month */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 min-w-40 sm:flex-none sm:w-64">
+            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <Input
+              value={search}
+              onChange={e => onSearch(e.target.value)}
+              placeholder="Buscar descrição ou cliente"
+              className="pl-8"
+            />
+          </div>
+          <div className="w-full sm:w-auto">
+            <DatePicker
+              value={`${month}-01`}
+              onChange={iso => onMonth(iso.slice(0, 7))}
+              label={capitalizeFirst(
+                format(new Date(`${month}-01T00:00:00`), "MMMM 'de' yyyy", {
+                  locale: ptBR,
+                })
+              )}
+              className="w-full sm:w-44"
+            />
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
