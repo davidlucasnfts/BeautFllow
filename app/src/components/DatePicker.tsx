@@ -16,6 +16,10 @@ interface DatePickerProps {
   /** Data em ISO (yyyy-mm-dd) ou "" */
   value: string;
   onChange: (iso: string) => void;
+  /** Chamado quando o mês visualizado do calendário muda (dropdown de mês/ano
+   *  ou setas) — sem precisar clicar num dia. Útil em filtros por mês, onde a
+   *  troca de mês já deve aplicar. Ao clicar num dia, onChange dispara junto. */
+  onMonthChange?: (iso: string) => void;
   placeholder?: string;
   /** Quando informado, exibe esse rótulo (com ChevronDown) no lugar da data —
    * ex.: "Setembro de 2026" ou "14 – 20 set." (padrão Google Calendar) */
@@ -30,6 +34,7 @@ interface DatePickerProps {
 export default function DatePicker({
   value,
   onChange,
+  onMonthChange,
   placeholder = "Selecione",
   label,
   disabled,
@@ -84,6 +89,9 @@ export default function DatePicker({
               setOpen(false);
             }
           }}
+          onMonthChange={monthDate =>
+            onMonthChange?.(format(monthDate, "yyyy-MM-dd"))
+          }
           locale={ptBR}
           captionLayout="dropdown"
           fromDate={start}
