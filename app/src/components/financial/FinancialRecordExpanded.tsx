@@ -1,5 +1,5 @@
-import { format } from "date-fns";
 import { ChevronDown } from "lucide-react";
+import { dateToBR } from "@/lib/input-masks";
 import type { ReactNode } from "react";
 import type {
   FinancialRecordType,
@@ -78,11 +78,7 @@ export default function FinancialRecordExpanded({
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <Detail
           label="Data"
-          value={
-            record.recordDate
-              ? format(new Date(record.recordDate), "dd/MM/yyyy")
-              : "-"
-          }
+          value={record.recordDate ? dateToBR(record.recordDate) : "-"}
         />
         <Detail label="Tipo" value={typeLabels[record.type]} />
         <Detail label="Cliente" value={clientName} />

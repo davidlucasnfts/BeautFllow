@@ -1,7 +1,17 @@
 import { Fragment, useState } from "react";
-import { format } from "date-fns";
+import { format, startOfWeek, endOfWeek, startOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Edit3, Trash2, DollarSign, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import {
+  Edit3,
+  Trash2,
+  DollarSign,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  CalendarDays,
+  CalendarRange,
+  Calendar,
+} from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,9 +24,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import DatePicker from "@/components/DatePicker";
+import { dateToBR } from "@/lib/input-masks";
 import FinancialRecordExpanded, {
   type FinancialRecordForList,
 } from "./FinancialRecordExpanded";
+
+export type FinancialPeriod = "day" | "week" | "month";
 
 interface FinancialRecordsListProps {
   isLoading: boolean;
@@ -26,10 +39,12 @@ interface FinancialRecordsListProps {
   searchActive?: boolean;
   search: string;
   onSearch: (value: string) => void;
-  /** mês em ISO (yyyy-MM) — filtro usa o DatePicker padrão do app
-   *  (campo inteiro clicável, mesmo padrão da agenda) */
-  month: string;
-  onMonth: (value: string) => void;
+  /** período do filtro (dia/semana/mês) — mesmo padrão de visão da agenda */
+  period: FinancialPeriod;
+  onPeriod: (period: FinancialPeriod) => void;
+  /** dia de referência do período (hoje por padrão) */
+  anchor: Date;
+  onAnchor: (date: Date) => void;
   clients: { id: number; name: string }[];
   professionals: { id: number; name: string }[];
   selectedId: number | null;
@@ -51,6 +66,58 @@ function capitalizeFirst(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+/** Seletor de data do período — mesmo padrão do centro da agenda: no Dia o
+ *  rótulo é a data, na Semana é o intervalo (14/09 – 20/09) e no Mês o nome
+ *  do mês. Clicar num dia pula pro período que contém aquele dia. */
+function PeriodPicker({
+  period,
+  anchor,
+  onAnchor,
+}: {
+  period: FinancialPeriod;
+  anchor: Date;
+  onAnchor: (date: Date) => void;
+}) {
+  const weekStart = startOfWeek(anchor, { weekStartsOn: 1 });
+  const weekEnd = endOfWeek(anchor, { weekStartsOn: 1 });
+
+  if (period === "day") {
+    return (
+      <DatePicker
+        value={format(anchor, "yyyy-MM-dd")}
+        onChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
+        label={format(anchor, "dd/MM/yyyy")}
+        className="w-[128px]"
+      />
+    );
+  }
+
+  if (period === "week") {
+    return (
+      <DatePicker
+        value={format(weekStart, "yyyy-MM-dd")}
+        onChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
+        hideSelectedDay
+        label={`${format(weekStart, "dd/MM")} – ${format(weekEnd, "dd/MM")}`}
+        className="w-[150px]"
+      />
+    );
+  }
+
+  return (
+    <DatePicker
+      value={format(startOfMonth(anchor), "yyyy-MM-dd")}
+      onChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
+      onMonthChange={iso => onAnchor(new Date(`${iso}T00:00:00`))}
+      hideSelectedDay
+      label={capitalizeFirst(
+        format(anchor, "MMMM 'de' yyyy", { locale: ptBR })
+      )}
+      className="w-[180px]"
+    />
+  );
+}
+
 /** Lista de lançamentos: tabela no desktop, lista estilo Fila do Dia no mobile
  *  (tabela estoura a largura no celular e esconde o valor — padrão do app). */
 export default function FinancialRecordsList({
@@ -60,8 +127,10 @@ export default function FinancialRecordsList({
   searchActive = false,
   search,
   onSearch,
-  month,
-  onMonth,
+  period,
+  onPeriod,
+  anchor,
+  onAnchor,
   clients,
   professionals,
   selectedId,
@@ -107,11 +176,61 @@ export default function FinancialRecordsList({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Registros do mês</CardTitle>
+        <CardTitle className="text-base">
+          {period === "day"
+            ? "Registros do dia"
+            : period === "week"
+              ? "Registros da semana"
+              : "Registros do mês"}
+        </CardTitle>
         {/* Filtros ficam junto dos lançamentos (a ação "+ Novo" fica no
-            cabeçalho da página, padrão das outras telas). Mês usa o DatePicker
-            padrão do app — campo inteiro clicável, sem input nativo type=month */}
+            cabeçalho da página, padrão das outras telas). Período (dia/semana/
+            mês) e DatePicker seguem o mesmo padrão da agenda; busca filtra a
+            lista do período por descrição ou cliente */}
         <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center border rounded-md overflow-hidden">
+            <button
+              type="button"
+              onClick={() => onPeriod("day")}
+              className={`flex items-center h-8 px-2.5 text-xs font-medium transition-colors ${
+                period === "day"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background hover:bg-accent"
+              }`}
+            >
+              <CalendarDays className="h-3.5 w-3.5 mr-1" />
+              Dia
+            </button>
+            <button
+              type="button"
+              onClick={() => onPeriod("week")}
+              className={`flex items-center h-8 px-2.5 text-xs font-medium transition-colors ${
+                period === "week"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background hover:bg-accent"
+              }`}
+            >
+              <CalendarRange className="h-3.5 w-3.5 mr-1" />
+              Semana
+            </button>
+            <button
+              type="button"
+              onClick={() => onPeriod("month")}
+              className={`flex items-center h-8 px-2.5 text-xs font-medium transition-colors ${
+                period === "month"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background hover:bg-accent"
+              }`}
+            >
+              <Calendar className="h-3.5 w-3.5 mr-1" />
+              Mês
+            </button>
+          </div>
+          <PeriodPicker
+            period={period}
+            anchor={anchor}
+            onAnchor={onAnchor}
+          />
           <div className="relative flex-1 min-w-40 sm:flex-none sm:w-64">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <Input
@@ -119,20 +238,6 @@ export default function FinancialRecordsList({
               onChange={e => onSearch(e.target.value)}
               placeholder="Buscar descrição ou cliente"
               className="pl-8"
-            />
-          </div>
-          <div className="w-full sm:w-auto">
-            <DatePicker
-              value={`${month}-01`}
-              onChange={iso => onMonth(iso.slice(0, 7))}
-              onMonthChange={iso => onMonth(iso.slice(0, 7))}
-              hideSelectedDay
-              label={capitalizeFirst(
-                format(new Date(`${month}-01T00:00:00`), "MMMM 'de' yyyy", {
-                  locale: ptBR,
-                })
-              )}
-              className="w-full sm:w-44"
             />
           </div>
         </div>
@@ -152,7 +257,11 @@ export default function FinancialRecordsList({
             <p>
               {searchActive
                 ? "Nenhum resultado para a busca."
-                : "Nenhum registro neste mês."}
+                : period === "day"
+                  ? "Nenhum registro neste dia."
+                  : period === "week"
+                    ? "Nenhum registro nesta semana."
+                    : "Nenhum registro neste mês."}
             </p>
           </div>
         ) : (
@@ -183,9 +292,7 @@ export default function FinancialRecordsList({
                           {r.description ?? "Sem descrição"}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {r.recordDate
-                            ? format(new Date(r.recordDate), "dd/MM/yyyy")
-                            : "Sem data"}{" "}
+                          {r.recordDate ? dateToBR(r.recordDate) : "Sem data"}{" "}
                           · {r.paymentMethod.replace("_", " ")}
                         </p>
                       </div>
@@ -243,9 +350,7 @@ export default function FinancialRecordsList({
                         >
                           <TableCell>{actions(r)}</TableCell>
                           <TableCell>
-                            {r.recordDate
-                              ? format(new Date(r.recordDate), "dd/MM/yyyy")
-                              : "-"}
+                            {r.recordDate ? dateToBR(r.recordDate) : "-"}
                           </TableCell>
                           <TableCell className="font-medium">
                             {r.description}

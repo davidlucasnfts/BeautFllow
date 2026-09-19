@@ -362,13 +362,14 @@ export async function getFinancialRecordsBySalon(
 
 export async function getFinancialSummaryBySalon(
   salonId: number,
-  month?: string
+  fromDate?: string,
+  toDate?: string
 ) {
-  // month format: YYYY-MM
-  let dateCondition = sql`1=1`;
-  if (month) {
-    dateCondition = sql`TO_CHAR(${financialRecords.recordDate}, 'YYYY-MM') = ${month}`;
-  }
+  // intervalo de datas (yyyy-mm-dd): mês, semana ou dia conforme a tela pedir
+  const conditions = [eq(financialRecords.salonId, salonId)];
+  if (fromDate)
+    conditions.push(sql`${financialRecords.recordDate} >= ${fromDate}`);
+  if (toDate) conditions.push(sql`${financialRecords.recordDate} <= ${toDate}`);
 
   const result = await getDb()
     .select({
@@ -378,13 +379,7 @@ export async function getFinancialSummaryBySalon(
       count: sql<number>`COUNT(*)`,
     })
     .from(financialRecords)
-    .where(
-      and(
-        eq(financialRecords.salonId, salonId),
-        // Filtro isPaid removido - nao existe no schema
-        dateCondition
-      )
-    );
+    .where(and(...conditions));
 
   return result[0];
 }

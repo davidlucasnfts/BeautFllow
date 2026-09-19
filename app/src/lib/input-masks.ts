@@ -65,6 +65,22 @@ export function isoToDateBR(value: string): string {
   return m ? `${m[3]}/${m[2]}/${m[1]}` : "";
 }
 
+/** Normaliza o tipo `string | Date` das colunas `date` do Drizzle para
+ *  aaaa-mm-dd SEM conversão de fuso (new Date("2026-09-01") parseia como UTC
+ *  e desloca 1 dia no Brasil). */
+export function toISODate(value: string | Date): string {
+  if (typeof value === "string") return value.slice(0, 10);
+  const y = value.getFullYear();
+  const m = String(value.getMonth() + 1).padStart(2, "0");
+  const d = String(value.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+/** `string | Date` (coluna date) → dd/mm/aaaa pra exibição. */
+export function dateToBR(value: string | Date): string {
+  return isoToDateBR(toISODate(value));
+}
+
 /**
  * Máscara de dinheiro BR: digita-se só os números e o valor vai
  * entrando dos centavos para o real. Ex: "2500" → "25,00".

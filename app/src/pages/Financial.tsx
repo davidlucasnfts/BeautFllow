@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { format, endOfMonth } from "date-fns";
-import { moneyDotToBR } from "@/lib/input-masks";
+import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns";
+import { moneyDotToBR, dateToBR, toISODate } from "@/lib/input-masks";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import FinancialFormDialog, {
   type FinancialFormValues,
@@ -33,16 +33,18 @@ function formFromRecord(r: FinancialRecordForList): FinancialFormValues {
       ? moneyDotToBR(String(r.commissionAmount))
       : "",
     paymentMethod: r.paymentMethod,
-    recordDate: r.recordDate
-      ? format(new Date(r.recordDate), "yyyy-MM-dd")
-      : "",
+    // recordDate vem do banco como "yyyy-mm-dd" (coluna date) — normalizar
+    // sem new Date(): o parse UTC desloca 1 dia pra trás no fuso do Brasil
+    recordDate: toISODate(r.recordDate),
     notes: r.notes ?? "",
   };
 }
 
 export default function Financial() {
   const { salon } = useSalon();
-  const [month, setMonth] = useState(format(new Date(), "yyyy-MM"));
+  // período do filtro: o dono quer saber quanto entrou no dia, na semana ou no mês
+  const [period, setPeriod] = useState<"day" | "week" | "month">("month");
+  const [anchor, setAnchor] = useState(new Date());
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<number | null>(null);
@@ -56,20 +58,31 @@ export default function Financial() {
   } | null>(null);
 
   const utils = trpc.useUtils();
-  // fim real do mês (mês + "-31" quebra em meses de 30 dias → data inválida,
-  // a query falhava em silêncio e a lista aparecia vazia)
-  const monthEnd = format(
-    endOfMonth(new Date(`${month}-01T00:00:00`)),
-    "yyyy-MM-dd"
-  );
+  // intervalo de datas do período escolhido (lista e resumo usam o mesmo range)
+  const range = useMemo(() => {
+    if (period === "day") {
+      const iso = format(anchor, "yyyy-MM-dd");
+      return { fromDate: iso, toDate: iso };
+    }
+    if (period === "week") {
+      return {
+        fromDate: format(startOfWeek(anchor, { weekStartsOn: 1 }), "yyyy-MM-dd"),
+        toDate: format(endOfWeek(anchor, { weekStartsOn: 1 }), "yyyy-MM-dd"),
+      };
+    }
+    return {
+      fromDate: format(startOfMonth(anchor), "yyyy-MM-dd"),
+      toDate: format(endOfMonth(anchor), "yyyy-MM-dd"),
+    };
+  }, [period, anchor]);
 
   const { data: records, isLoading, isError } = trpc.financial.list.useQuery(
-    { salonId: salon?.id ?? 0, fromDate: `${month}-01`, toDate: monthEnd },
+    { salonId: salon?.id ?? 0, ...range },
     { enabled: !!salon }
   );
 
   const { data: summary } = trpc.financial.summary.useQuery(
-    { salonId: salon?.id ?? 0, month },
+    { salonId: salon?.id ?? 0, ...range },
     { enabled: !!salon }
   );
 
@@ -149,7 +162,7 @@ export default function Financial() {
   function handleDelete(record: FinancialRecordForList) {
     setDeleteTarget({
       id: record.id,
-      name: `${record.description ?? "Registro"} (${record.recordDate ? format(new Date(record.recordDate), "dd/MM/yyyy") : "sem data"})`,
+      name: `${record.description ?? "Registro"} (${record.recordDate ? dateToBR(record.recordDate) : "sem data"})`,
     });
   }
 
@@ -255,8 +268,10 @@ export default function Financial() {
         searchActive={!!search.trim()}
         search={search}
         onSearch={setSearch}
-        month={month}
-        onMonth={setMonth}
+        period={period}
+        onPeriod={setPeriod}
+        anchor={anchor}
+        onAnchor={setAnchor}
         clients={clients ?? []}
         professionals={professionals ?? []}
         selectedId={selectedId}

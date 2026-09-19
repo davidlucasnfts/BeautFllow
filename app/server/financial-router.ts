@@ -23,9 +23,15 @@ export const financialRouter = createRouter({
     ),
 
   summary: authedQuery
-    .input(z.object({ salonId: z.number(), month: z.string().optional() }))
+    .input(
+      z.object({
+        salonId: z.number(),
+        fromDate: z.string().optional(),
+        toDate: z.string().optional(),
+      })
+    )
     .query(({ input }) =>
-      getFinancialSummaryBySalon(input.salonId, input.month)
+      getFinancialSummaryBySalon(input.salonId, input.fromDate, input.toDate)
     ),
 
   create: authedQuery
