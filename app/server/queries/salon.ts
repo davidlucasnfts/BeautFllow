@@ -615,6 +615,7 @@ export async function getDashboardMetrics(salonId: number, month: string) {
     pendingConsents,
     monthlyRevenue,
     prevMonthRevenue,
+    revenueDaily,
   ] = await Promise.all([
     // Agendamentos hoje
     db
@@ -764,6 +765,20 @@ export async function getDashboardMetrics(salonId: number, month: string) {
           sql`TO_CHAR(${financialRecords.recordDate}, 'YYYY-MM') = ${prevMonthStr}`
         )
       ),
+    // Receita por dia (mes atual) — alimenta o sparkline real do KPI
+    db
+      .select({
+        total: sql<number>`COALESCE(SUM(${financialRecords.amount}), 0)`,
+      })
+      .from(financialRecords)
+      .where(
+        and(
+          eq(financialRecords.salonId, salonId),
+          sql`TO_CHAR(${financialRecords.recordDate}, 'YYYY-MM') = ${month}`
+        )
+      )
+      .groupBy(financialRecords.recordDate)
+      .orderBy(financialRecords.recordDate),
   ]);
 
   const totalAppointments =
@@ -802,6 +817,7 @@ export async function getDashboardMetrics(salonId: number, month: string) {
     pendingConsents: Number(pendingConsents[0]?.count ?? 0),
     monthlyRevenue: revenue,
     revenueGrowth: Math.round(revenueGrowth * 10) / 10,
+    revenueByDay: revenueDaily.map(r => Number(r.total)),
   };
 }
 

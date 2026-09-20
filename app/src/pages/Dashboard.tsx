@@ -59,13 +59,8 @@ export default function Dashboard() {
     ? [metrics.newClientsPrevMonth || 0, metrics.newClientsThisMonth || 0]
     : [];
 
-  const sparkRevenue = metrics
-    ? [
-        metrics.monthlyRevenue * 0.7,
-        metrics.monthlyRevenue * 0.85,
-        metrics.monthlyRevenue,
-      ]
-    : [];
+  // Sparkline real: receita somada por dia no mes corrente (vem do backend)
+  const sparkRevenue = metrics?.revenueByDay ?? [];
 
   return (
     <div className="space-y-6">
@@ -310,18 +305,18 @@ export default function Dashboard() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm truncate">
+                    <p className="text-sm font-medium truncate">
+                      {activity.clientName}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
                       {activity.status === "completed"
                         ? "Atendimento concluído"
                         : activity.status === "cancelled"
                           ? "Agendamento cancelado"
                           : activity.status === "no_show"
                             ? "Cliente faltou"
-                            : "Novo agendamento"}{" "}
-                      — {activity.clientName}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {activity.serviceName}
+                            : "Novo agendamento"}
+                      {activity.serviceName ? ` • ${activity.serviceName}` : ""}
                     </p>
                   </div>
                   <span className="text-[10px] text-muted-foreground shrink-0">
