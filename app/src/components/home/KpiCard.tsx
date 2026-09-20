@@ -58,7 +58,7 @@ export function KpiCard({
 }) {
   return (
     <Card className="flex h-full flex-col gap-2 py-4 sm:gap-6 sm:py-6">
-      <CardHeader className="flex min-h-7 flex-row items-start justify-between space-y-0 p-4 pb-2 sm:min-h-8 sm:p-6 sm:pb-2">
+      <CardHeader className="flex min-h-[28px] flex-row items-start justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
         </CardTitle>
