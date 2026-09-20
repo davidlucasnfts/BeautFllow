@@ -41,6 +41,7 @@ export function KpiCard({
   title,
   value,
   icon: Icon,
+  iconClassName,
   trend,
   trendValue,
   isLoading,
@@ -49,6 +50,7 @@ export function KpiCard({
   title: string;
   value: string | number;
   icon: React.ElementType;
+  iconClassName?: string;
   trend?: "up" | "down" | "neutral";
   trendValue?: string;
   isLoading: boolean;
@@ -60,7 +62,9 @@ export function KpiCard({
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
         </CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
+        <Icon
+          className={`h-4 w-4 ${iconClassName ?? "text-muted-foreground"}`}
+        />
       </CardHeader>
       <CardContent>
         {isLoading ? (

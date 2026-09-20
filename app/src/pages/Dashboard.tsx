@@ -120,6 +120,7 @@ export default function Dashboard() {
           title="Atendimentos hoje"
           value={metrics?.appointmentsToday ?? 0}
           icon={CalendarDays}
+          iconClassName="text-blue-600"
           trendValue={
             metrics ? `${metrics.appointmentsYesterday} ontem` : undefined
           }
@@ -129,6 +130,7 @@ export default function Dashboard() {
           title={`Total de ${segmentLabel("client").toLowerCase()}s`}
           value={metrics?.clientsTotal ?? 0}
           icon={Users}
+          iconClassName="text-violet-600"
           trend={
             metrics &&
             metrics.newClientsThisMonth > (metrics.newClientsPrevMonth || 0)
@@ -149,6 +151,7 @@ export default function Dashboard() {
               : "R$ 0,00"
           }
           icon={DollarSign}
+          iconClassName="text-emerald-600"
           trend={
             metrics && metrics.revenueGrowth > 0
               ? "up"
@@ -168,6 +171,7 @@ export default function Dashboard() {
           title="Clientes que faltaram"
           value={`${metrics?.noShowRate ?? 0}%`}
           icon={AlertCircle}
+          iconClassName="text-amber-600"
           trend={metrics && metrics.noShowRate > 15 ? "down" : "up"}
           trendValue={
             metrics && metrics.noShowRate > 15
@@ -178,12 +182,14 @@ export default function Dashboard() {
         />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
         {/* Agendamentos de hoje */}
-        <TodayAppointmentsBoard />
+        <div className="lg:col-span-3">
+          <TodayAppointmentsBoard />
+        </div>
 
         {/* Status dos Agendamentos */}
-        <Card className="h-full">
+        <Card className="h-full lg:col-span-3">
           <CardHeader>
             <CardTitle className="text-base font-serif">
               Agendamentos do mês
@@ -236,7 +242,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Próximos Agendamentos */}
-        <Card className="h-full">
+        <Card className="h-full lg:col-span-6">
           <CardHeader>
             <CardTitle className="text-base font-serif">
               Próximos atendimentos
@@ -288,9 +294,12 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card>
+      </div>
 
+      {/* Atividades Recentes + Aniversariantes + Dicas */}
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
         {/* Atividades Recentes */}
-        <Card className="h-full">
+        <Card className="h-full lg:col-span-8">
           <CardHeader>
             <CardTitle className="text-base font-serif">
               Atividades Recentes
@@ -346,13 +355,12 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card>
-      </div>
+        <div className="lg:col-span-4">
+          <BirthdayWidget />
+        </div>
 
-      {/* Aniversariantes + Dicas para clientes voltarem */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        <BirthdayWidget />
-
-        <Card className="lg:col-span-2">
+        {/* Dicas para clientes voltarem */}
+        <Card className="lg:col-span-12">
           <CardHeader>
             <CardTitle className="text-base font-serif">
               Dicas para seus clientes voltarem
