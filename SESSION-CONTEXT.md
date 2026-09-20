@@ -25,7 +25,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 - **Clientes:** limite da lista 100 → 1000 (cliente 101+ sumia da tela e da busca); data de nascimento limpável na edição (grava NULL); idade corrigida (perdia 1 dia no fuso); botão WhatsApp com texto
 - **Comunicações/Termos:** horário das mensagens formatado no servidor com fuso BR (estava 3h atrasado); paginação "Carregar mais mensagens" (+50)
 - **Geral:** `isError` tratado nas 5 páginas de listagem; Settings sem `type="number"`; comissão exibida como "10%"; `MessageFormDialog` valida cliente selecionado
-- **Pendentes de decisão:** M6 (recálculo de segmentos de clientes roda 3x no Dashboard — mitigado com throttle de 60s; refactor pendente) e B5 (sparklines do Dashboard usam dados simulados) — avaliar com David
+- **Pendentes de decisão:** M6 (recálculo de segmentos de clientes roda 3x no Dashboard — mitigado com throttle de 60s; refactor pendente) — avaliar com David. ~~B5~~ resolvido em `fbb0a90`: sparkline de ganhos agora usa receita real por dia (`revenueByDay` no metrics) e Atividades Recentes mostra o nome do cliente sem truncar
 - **Hotfix 19/09 (`267304c`):** erro 500 do `customer.list` (cast `::date` no monthStart — regressão do C1, o type-check não pega erro de SQL); botão "Ver agenda" do Dashboard truncado no desktop (header do card em coluna); lentidão de carregamento — `refreshClientSegments` tinha throttle nenhum e UPDATEs sequenciais ao Supabase remoto em toda `customer.list` (7 telas) → throttle 60s/salão + invalidação nas mutations + UPDATEs paralelos
 
 ### Antes, nesta mesma sessão (19/09 — polimento das 5 páginas pendentes):
