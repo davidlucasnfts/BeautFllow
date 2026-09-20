@@ -58,7 +58,7 @@ export function KpiCard({
 }) {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
         </CardTitle>
@@ -66,11 +66,11 @@ export function KpiCard({
           className={`h-4 w-4 ${iconClassName ?? "text-muted-foreground"}`}
         />
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
         {isLoading ? (
           <Skeleton className="h-8 w-20" />
         ) : (
-          <div className="flex flex-wrap items-end justify-between gap-2">
+          <div className="flex flex-wrap items-end justify-between gap-x-2 gap-y-1.5">
             <div className="min-w-0">
               <div className="text-2xl font-bold whitespace-nowrap">
                 {value}
