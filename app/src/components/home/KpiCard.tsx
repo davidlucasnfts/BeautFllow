@@ -13,8 +13,8 @@ export function Sparkline({
   const max = Math.max(...data, 1);
   const min = Math.min(...data, 0);
   const range = max - min || 1;
-  const width = 80;
-  const height = 28;
+  const width = 64;
+  const height = 22;
   const points = data
     .map((v, i) => {
       const x = (i / (data.length - 1 || 1)) * width;
@@ -72,7 +72,7 @@ export function KpiCard({
         ) : (
           <div className="flex flex-wrap items-end justify-between gap-x-2 gap-y-1.5">
             <div className="min-w-0">
-              <div className="text-2xl font-bold whitespace-nowrap">
+              <div className="text-xl font-bold whitespace-nowrap sm:text-2xl">
                 {value}
               </div>
               {trend && trendValue && (
