@@ -8,6 +8,7 @@ import {
   deleteClient,
   searchClients,
   refreshClientSegments,
+  invalidateClientSegments,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
 
@@ -47,6 +48,7 @@ export const customerRouter = createRouter({
         birthDate: data.birthDate || null,
         segment: "new",
       });
+      invalidateClientSegments(salonId);
       await auditAction(
         "create",
         "client",
@@ -86,6 +88,7 @@ export const customerRouter = createRouter({
           : {}),
         ...(segmentManual !== undefined ? { segmentManual } : {}),
       });
+      invalidateClientSegments(salonId);
       await auditAction(
         "update",
         "client",
@@ -102,6 +105,7 @@ export const customerRouter = createRouter({
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
       await deleteClient(input.id, input.salonId);
+      invalidateClientSegments(input.salonId);
       await auditAction(
         "delete",
         "client",

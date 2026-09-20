@@ -860,8 +860,24 @@ export async function getClientByPhone(salonId: number, phone: string) {
  * Recalcula lastVisitAt/totalVisits/totalSpent e o segmento automático
  * de todos os clientes do salão. Clientes com segmentManual = true só
  * têm os totais atualizados — o status escolhido pelo dono não mexe.
+ *
+ * Tem throttle de 60s por salão: o recálculo é chamado em toda
+ * customer.list (várias telas) e cada UPDATE era uma ida e volta
+ * sequencial ao banco remoto — era o principal gargalo de carregamento.
+ * Mutações de cliente invalidam o throttle (invalidateClientSegments).
  */
+const SEGMENT_REFRESH_TTL_MS = 60_000;
+const segmentRefreshAt = new Map<number, number>();
+
+export function invalidateClientSegments(salonId: number) {
+  segmentRefreshAt.delete(salonId);
+}
+
 export async function refreshClientSegments(salonId: number) {
+  const last = segmentRefreshAt.get(salonId);
+  if (last && Date.now() - last < SEGMENT_REFRESH_TTL_MS) return;
+  segmentRefreshAt.set(salonId, Date.now());
+
   const db = getDb();
   const [settingsRow, clientRows] = await Promise.all([
     db.query.salons.findFirst({
@@ -877,7 +893,7 @@ export async function refreshClientSegments(salonId: number) {
   // Agrega atendimentos concluídos por cliente (join com services p/ valor)
   const now = new Date();
   // início do mês no fuso de SP, calculado no SQL (servidor roda em UTC)
-  const monthStart = sql<string>`TO_CHAR(NOW() AT TIME ZONE 'America/Sao_Paulo', 'YYYY-MM') || '-01'`;
+  const monthStart = sql<string>`(TO_CHAR(NOW() AT TIME ZONE 'America/Sao_Paulo', 'YYYY-MM') || '-01')::date`;
   const rows = await db
     .select({
       clientId: appointments.clientId,
@@ -896,6 +912,8 @@ export async function refreshClientSegments(salonId: number) {
 
   const stats = new Map(rows.map(r => [r.clientId, r]));
 
+  const pendingUpdates: { id: number; data: Partial<typeof clients.$inferInsert> }[] =
+    [];
   for (const client of clientRows) {
     const s = stats.get(client.id);
     const lastVisitAt = s?.lastVisit ? new Date(s.lastVisit) : null;
@@ -929,10 +947,17 @@ export async function refreshClientSegments(salonId: number) {
       String(totalSpent) !== String(client.totalSpent) ||
       (lastVisitAt?.getTime() ?? null) !== (client.lastVisitAt?.getTime() ?? null)
     ) {
-      await db
-        .update(clients)
-        .set({ segment, totalVisits, totalSpent, lastVisitAt })
-        .where(eq(clients.id, client.id));
+      pendingUpdates.push({
+        id: client.id,
+        data: { segment, totalVisits, totalSpent, lastVisitAt },
+      });
     }
   }
+
+  // UPDATEs em paralelo (antes eram sequenciais — N idas e voltas ao banco)
+  await Promise.all(
+    pendingUpdates.map(u =>
+      db.update(clients).set(u.data).where(eq(clients.id, u.id))
+    )
+  );
 }

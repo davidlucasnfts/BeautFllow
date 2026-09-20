@@ -45,7 +45,7 @@ export default function TodayAppointmentsBoard() {
 
   return (
     <Card className="h-full flex flex-col">
-      <CardHeader className="p-4 flex flex-row items-center justify-between gap-2 space-y-0">
+      <CardHeader className="p-4 flex flex-col items-start gap-2 space-y-0">
         <CardTitle className="text-base font-serif">
           Agendamentos de hoje
         </CardTitle>
@@ -53,7 +53,7 @@ export default function TodayAppointmentsBoard() {
           type="button"
           variant="outline"
           size="sm"
-          className="h-8 gap-1.5 text-xs shrink-0"
+          className="h-8 gap-1.5 text-xs"
           onClick={() => navigate("/appointments")}
         >
           <CalendarDays className="h-3.5 w-3.5" />
