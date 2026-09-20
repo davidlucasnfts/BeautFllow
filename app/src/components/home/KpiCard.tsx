@@ -57,7 +57,7 @@ export function KpiCard({
   sparklineData?: number[];
 }) {
   return (
-    <Card>
+    <Card className="flex h-full flex-col">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
@@ -66,7 +66,7 @@ export function KpiCard({
           className={`h-4 w-4 ${iconClassName ?? "text-muted-foreground"}`}
         />
       </CardHeader>
-      <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+      <CardContent className="flex flex-1 flex-col justify-center p-4 pt-0 sm:p-6 sm:pt-0">
         {isLoading ? (
           <Skeleton className="h-8 w-20" />
         ) : (
