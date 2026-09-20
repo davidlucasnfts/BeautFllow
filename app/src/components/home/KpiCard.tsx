@@ -57,7 +57,7 @@ export function KpiCard({
   sparklineData?: number[];
 }) {
   return (
-    <Card className="flex h-full flex-col">
+    <Card className="flex h-full flex-col gap-2 py-4 sm:gap-6 sm:py-6">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
