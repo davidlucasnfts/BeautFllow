@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 
@@ -58,19 +58,19 @@ export function KpiCard({
 }) {
   return (
     <Card className="flex h-full flex-col gap-2 py-4 sm:gap-6 sm:py-6">
-      <CardHeader className="flex min-h-[28px] flex-row items-start justify-between space-y-0 p-4 pb-2 sm:p-6 sm:pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {title}
-        </CardTitle>
-        <Icon
-          className={`h-4 w-4 ${iconClassName ?? "text-muted-foreground"}`}
-        />
-      </CardHeader>
-      <CardContent className="flex flex-1 flex-col justify-start p-4 pt-0 sm:p-6 sm:pt-0">
+      <CardContent className="flex flex-1 flex-col p-4 pt-2 sm:p-6 sm:pt-3">
+        {/* header manual (sem CardHeader do shadcn) — altura fixa de 2 linhas
+            de titulo para os numeros dos 4 cards ficarem na mesma altura */}
+        <div className="flex min-h-[28px] items-start justify-between gap-2">
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+          <Icon
+            className={`h-4 w-4 shrink-0 ${iconClassName ?? "text-muted-foreground"}`}
+          />
+        </div>
         {isLoading ? (
-          <Skeleton className="h-8 w-20" />
+          <Skeleton className="mt-2 h-8 w-20" />
         ) : (
-          <div className="flex flex-wrap items-end justify-between gap-x-2 gap-y-1.5">
+          <div className="mt-2 flex flex-wrap items-end justify-between gap-x-2 gap-y-1.5">
             <div className="min-w-0">
               <div className="text-xl font-bold whitespace-nowrap sm:text-2xl">
                 {value}
