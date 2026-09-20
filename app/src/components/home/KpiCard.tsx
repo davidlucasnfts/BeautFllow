@@ -70,7 +70,7 @@ export function KpiCard({
         {isLoading ? (
           <Skeleton className="h-8 w-20" />
         ) : (
-          <div className="flex flex-wrap items-end justify-between gap-x-2">
+          <div className="flex flex-wrap items-end justify-between gap-2">
             <div className="min-w-0">
               <div className="text-2xl font-bold whitespace-nowrap">
                 {value}
