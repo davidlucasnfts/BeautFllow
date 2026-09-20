@@ -161,7 +161,7 @@ export default function Dashboard() {
           }
           trendValue={
             metrics
-              ? `${metrics.revenueGrowth > 0 ? "+" : ""}${metrics.revenueGrowth}% comparado ao mês passado`
+              ? `${metrics.revenueGrowth > 0 ? "+" : ""}${metrics.revenueGrowth}% vs mês passado`
               : undefined
           }
           isLoading={isLoading}
@@ -305,7 +305,7 @@ export default function Dashboard() {
               Atividades Recentes
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 max-h-[320px] overflow-y-auto">
+          <CardContent className="max-h-[320px] overflow-y-auto space-y-3 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
             {isLoading ? (
               <Skeleton className="h-32 w-full bg-muted" />
             ) : metrics?.recentActivity && metrics.recentActivity.length > 0 ? (
