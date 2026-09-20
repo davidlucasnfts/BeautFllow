@@ -1,6 +1,8 @@
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
+import { useNavigate } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   CalendarDays,
   Users,
@@ -11,6 +13,7 @@ import {
   XCircle,
   Clock,
   ShieldAlert,
+  Plus,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +27,7 @@ import TodayAppointmentsBoard from "@/components/home/TodayAppointmentsBoard";
 
 export default function Dashboard() {
   const { salon } = useSalon();
+  const navigate = useNavigate();
   const month = format(new Date(), "yyyy-MM");
 
   const { data: metrics, isLoading } = trpc.dashboard.metrics.useQuery(
@@ -46,15 +50,6 @@ export default function Dashboard() {
   const segmentLabel = (key: Parameters<typeof getSegmentLabel>[1]) =>
     getSegmentLabel(salon.segment, key);
 
-  const sparkAppointments = metrics
-    ? [
-        metrics.appointmentsPrevMonth?.completed || 0,
-        metrics.appointmentsPrevMonth?.scheduled || 0,
-        metrics.appointmentsMonth?.completed || 0,
-        metrics.appointmentsMonth?.scheduled || 0,
-      ]
-    : [];
-
   const sparkClients = metrics
     ? [metrics.newClientsPrevMonth || 0, metrics.newClientsThisMonth || 0]
     : [];
@@ -64,13 +59,20 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-serif font-bold tracking-tight">Resumo</h1>
-        <p className="text-muted-foreground">
-          Visão geral do desempenho {segmentLabel("segmentArticle")}{" "}
-          {segmentLabel("segmentName").toLowerCase()} em{" "}
-          {format(new Date(), "MMMM yyyy", { locale: ptBR })}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-serif font-bold tracking-tight">Resumo</h1>
+          <p className="text-muted-foreground">
+            Visão geral do desempenho {segmentLabel("segmentArticle")}{" "}
+            {segmentLabel("segmentName").toLowerCase()} em{" "}
+            {format(new Date(), "MMMM yyyy", { locale: ptBR })}
+          </p>
+        </div>
+        <Button onClick={() => navigate("/appointments")} className="shrink-0">
+          <Plus className="mr-2 h-4 w-4" />
+          <span className="hidden sm:inline">Novo agendamento</span>
+          <span className="sm:hidden">Novo</span>
+        </Button>
       </div>
 
       {/* Link público de agendamento */}
@@ -88,6 +90,14 @@ export default function Dashboard() {
               autorização de uso dos dados (LGPD)
             </p>
           </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="shrink-0 border-amber-300 bg-white text-amber-900 hover:bg-amber-100"
+            onClick={() => navigate("/consent")}
+          >
+            Resolver
+          </Button>
         </div>
       )}
 
@@ -105,13 +115,15 @@ export default function Dashboard() {
       )}
 
       {/* KPIs */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <KpiCard
           title="Atendimentos hoje"
           value={metrics?.appointmentsToday ?? 0}
           icon={CalendarDays}
+          trendValue={
+            metrics ? `${metrics.appointmentsYesterday} ontem` : undefined
+          }
           isLoading={isLoading}
-          sparklineData={sparkAppointments}
         />
         <KpiCard
           title={`Total de ${segmentLabel("client").toLowerCase()}s`}

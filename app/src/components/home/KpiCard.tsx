@@ -13,8 +13,8 @@ export function Sparkline({
   const max = Math.max(...data, 1);
   const min = Math.min(...data, 0);
   const range = max - min || 1;
-  const width = 120;
-  const height = 40;
+  const width = 80;
+  const height = 28;
   const points = data
     .map((v, i) => {
       const x = (i / (data.length - 1 || 1)) * width;
@@ -66,12 +66,14 @@ export function KpiCard({
         {isLoading ? (
           <Skeleton className="h-8 w-20" />
         ) : (
-          <div className="flex items-end justify-between">
-            <div>
-              <div className="text-2xl font-bold">{value}</div>
+          <div className="flex flex-wrap items-end justify-between gap-x-2">
+            <div className="min-w-0">
+              <div className="text-2xl font-bold whitespace-nowrap">
+                {value}
+              </div>
               {trend && trendValue && (
                 <div
-                  className={`flex items-center gap-1 text-xs mt-1 ${
+                  className={`flex items-center gap-1 text-xs mt-1 whitespace-nowrap ${
                     trend === "up"
                       ? "text-emerald-600"
                       : trend === "down"

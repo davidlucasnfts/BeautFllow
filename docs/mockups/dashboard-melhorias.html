@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — Proposta de melhorias</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: ui-sans-serif, system-ui, sans-serif; background:#f8fafc; }
+  .font-serif { font-family: Georgia, 'Times New Roman', serif; }
+  .phone { width: 400px; border: 8px solid #1e293b; border-radius: 28px; overflow: hidden; background: white; }
+  .spark { stroke:#8b5cf6; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .tab-btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; color:#475569; cursor:pointer; }
+  .tab-btn.active { background:#7c3aed; color:white; }
+  .view { display:none; }
+  .view.active { display:block; }
+</style>
+</head>
+<body class="p-6">
+
+<h1 class="text-2xl font-serif font-bold mb-1">Dashboard — proposta de melhorias</h1>
+<p class="text-sm text-slate-500 mb-4">Visualização externa (mockup). <strong>Atual</strong> vs <strong>Proposta</strong>. Navegue pelas abas.</p>
+
+<div class="flex gap-2 mb-6 bg-white rounded-lg p-1 w-fit shadow-sm">
+  <button class="tab-btn active" onclick="show('mobile')">Mobile — proposta completa</button>
+  <button class="tab-btn" onclick="switchCmp()">Mobile — antes/depois por item</button>
+  <button class="tab-btn" onclick="show('desktop')">Desktop — proposta</button>
+</div>
+
+<!-- ===================== MOBILE PROPOSTA ===================== -->
+<div id="view-mobile" class="view active">
+  <div class="flex gap-8 flex-wrap">
+
+    <!-- TELA MOBILE PROPOSTA -->
+    <div>
+      <p class="text-xs font-bold text-violet-700 mb-2 uppercase tracking-wide">Proposta — mobile</p>
+      <div class="phone">
+        <div class="bg-white border-b p-4 flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-serif font-bold">Resumo</h2>
+            <p class="text-xs text-slate-500">Visão geral em setembro 2026</p>
+          </div>
+          <!-- MELHORIA 1: ação principal no header -->
+          <button class="bg-violet-600 text-white text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5 whitespace-nowrap">
+            ＋ Novo
+          </button>
+        </div>
+
+        <div class="p-4 space-y-3">
+          <!-- MELHORIA 2: banner compacto com ação de compartilhar -->
+          <div class="rounded-xl border border-violet-200 bg-violet-50 p-3">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">🔗</span>
+              <div class="min-w-0 flex-1">
+                <p class="text-xs font-semibold">Seu link de agendamento online</p>
+                <p class="text-[10px] text-slate-500 truncate">/agendar/testeflow</p>
+              </div>
+              <button class="bg-white border rounded-lg px-2.5 py-1.5 text-[11px] font-medium">Copiar</button>
+              <button class="bg-green-600 text-white rounded-lg px-2.5 py-1.5 text-[11px] font-medium">WhatsApp</button>
+            </div>
+          </div>
+
+          <!-- MELHORIA 3: alerta LGPD com ação -->
+          <div class="flex items-center gap-2 p-3 rounded-lg border border-amber-200 bg-amber-50">
+            <span>🛡️</span>
+            <p class="text-xs text-amber-800 flex-1"><strong>2 clientes</strong> não assinaram a autorização (LGPD)</p>
+            <button class="text-xs font-semibold text-amber-900 border border-amber-300 bg-white rounded-lg px-2.5 py-1 whitespace-nowrap">Resolver</button>
+          </div>
+
+          <!-- MELHORIA 4: KPIs em 2 colunas no mobile -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="border rounded-xl p-3">
+              <div class="flex justify-between items-center text-slate-500">
+                <p class="text-[11px]">Atendimentos hoje</p><span class="text-xs">📅</span>
+              </div>
+              <p class="text-2xl font-bold mt-1">0</p>
+              <p class="text-[10px] text-slate-400">7 ontem</p>
+            </div>
+            <div class="border rounded-xl p-3">
+              <div class="flex justify-between items-center text-slate-500">
+                <p class="text-[11px]">Total de clientes</p><span class="text-xs">👥</span>
+              </div>
+              <p class="text-2xl font-bold mt-1">2</p>
+              <p class="text-[10px] text-emerald-600">↗ +2 este mês</p>
+            </div>
+            <div class="border rounded-xl p-3">
+              <div class="flex justify-between items-center text-slate-500">
+                <p class="text-[11px]">Ganhos do mês</p><span class="text-xs">💲</span>
+              </div>
+              <p class="text-xl font-bold mt-1">R$ 350,00</p>
+              <svg width="90" height="26" class="mt-1"><polyline class="spark" points="0,20 30,4 60,14 90,18"/></svg>
+            </div>
+            <div class="border rounded-xl p-3">
+              <div class="flex justify-between items-center text-slate-500">
+                <p class="text-[11px]">Clientes que faltaram</p><span class="text-xs">🕐</span>
+              </div>
+              <p class="text-2xl font-bold mt-1">0%</p>
+              <p class="text-[10px] text-emerald-600">↗ Dentro do esperado</p>
+            </div>
+          </div>
+
+          <!-- cards do meio: sem mudança estrutural -->
+          <div class="border rounded-xl p-4">
+            <p class="text-sm font-serif font-bold">Agendamentos de hoje</p>
+            <p class="text-xs text-slate-500 text-center py-8">Nenhum agendamento hoje.</p>
+          </div>
+          <div class="border rounded-xl p-4">
+            <p class="text-sm font-serif font-bold">Agendamentos do mês</p>
+            <div class="text-xs mt-3 space-y-2">
+              <div class="flex justify-between"><span>📋 Agendados</span><b>4</b></div>
+              <div class="flex justify-between"><span>✅ Completados</span><b>7</b></div>
+              <div class="flex justify-between"><span>✖️ Cancelados</span><b>1</b></div>
+              <div class="flex justify-between"><span>🕐 Faltou</span><b>0</b></div>
+            </div>
+          </div>
+          <div class="border rounded-xl p-4">
+            <p class="text-sm font-serif font-bold">Próximos atendimentos</p>
+            <div class="flex items-center gap-3 mt-3">
+              <div class="w-11 h-11 rounded-lg bg-violet-100 text-violet-700 flex flex-col items-center justify-center text-[10px] font-bold">21<span class="uppercase">set</span></div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium truncate">lucas rodrigues</p>
+                <p class="text-[11px] text-slate-500 truncate">Corte de cabelo • David</p>
+              </div>
+              <span class="text-[10px] bg-amber-100 text-amber-700 rounded-full px-2 py-1">🕐 07:00</span>
+            </div>
+          </div>
+          <div class="border rounded-xl p-4">
+            <p class="text-sm font-serif font-bold">Atividades Recentes</p>
+            <div class="mt-3 space-y-3 text-xs">
+              <div class="flex gap-2"><span>📅</span><div class="flex-1 min-w-0"><p class="font-medium">lucas rodrigues</p><p class="text-slate-500">Novo agendamento • Corte de cabelo</p></div><span class="text-slate-400">21/09</span></div>
+              <div class="flex gap-2"><span>📅</span><div class="flex-1 min-w-0"><p class="font-medium">debora</p><p class="text-slate-500">Novo agendamento • Corte de cabelo</p></div><span class="text-slate-400">17/09</span></div>
+              <div class="flex gap-2"><span>✅</span><div class="flex-1 min-w-0"><p class="font-medium">debora</p><p class="text-slate-500">Atendimento concluído • Corte de cabelo</p></div><span class="text-slate-400">15/09</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEGENDA -->
+    <div class="max-w-sm">
+      <p class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">O que mudou</p>
+      <ol class="text-sm text-slate-700 space-y-3 list-decimal list-inside">
+        <li><strong>Ação principal no header:</strong> botão "＋ Novo" (novo agendamento) — o dono agenda sem sair do Início.</li>
+        <li><strong>Banner do link compacto:</strong> mesma linha, com ação "WhatsApp" pra enviar o link direto pros clientes. Texto <code>studioflow.app.br/agendar/testeflow</code> em vez de localhost.</li>
+        <li><strong>Alerta LGPD com botão "Resolver":</strong> leva direto pra tela de Termos (ou filtro de pendentes).</li>
+        <li><strong>KPIs em 2 colunas no mobile:</strong> metade do scroll. "Atendimentos hoje" ganha comparação "X ontem" (no lugar do zigue-zague sem sentido). Gráfico real fica só em Ganhos.</li>
+      </ol>
+      <p class="text-xs text-slate-400 mt-4">Itens 5 e 6 (Aniversariantes, Dicas) ficam como estão — sem ganho real de mudança agora.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== COMPARAÇÃO ITEM A ITEM ===================== -->
+<div id="view-cmp" class="view">
+  <div id="cmp-body" class="flex gap-8 flex-wrap items-start"></div>
+  <div class="flex gap-2 mt-4">
+    <button class="tab-btn" onclick="cmpSet(-1)">← Anterior</button>
+    <button class="tab-btn" onclick="cmpSet(1)">Próximo →</button>
+  </div>
+</div>
+
+<!-- ===================== DESKTOP ===================== -->
+<div id="view-desktop" class="view">
+  <p class="text-xs font-bold text-violet-700 mb-2 uppercase tracking-wide">Proposta — desktop (largura total)</p>
+  <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
+    <div class="p-6 border-b flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-serif font-bold">Resumo</h2>
+        <p class="text-sm text-slate-500">Visão geral do desempenho da estética em setembro 2026</p>
+      </div>
+      <button class="bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-1.5">
+        ＋ Novo agendamento
+      </button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="flex gap-4">
+        <div class="flex-1 rounded-xl border border-violet-200 bg-violet-50 p-3 flex items-center gap-3">
+          <span class="text-xl">🔗</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-semibold">Seu link de agendamento online</p>
+            <p class="text-[11px] text-slate-500 truncate">studioflow.app.br/agendar/testeflow</p>
+          </div>
+          <button class="bg-white border rounded-lg px-3 py-1.5 text-xs font-medium">Copiar link</button>
+          <button class="bg-green-600 text-white rounded-lg px-3 py-1.5 text-xs font-medium">Enviar por WhatsApp</button>
+        </div>
+        <div class="flex items-center gap-2 p-3 rounded-lg border border-amber-200 bg-amber-50 w-96">
+          <span>🛡️</span>
+          <p class="text-xs text-amber-800 flex-1"><strong>2 clientes</strong> não assinaram a autorização (LGPD)</p>
+          <button class="text-xs font-semibold text-amber-900 border border-amber-300 bg-white rounded-lg px-2.5 py-1">Resolver</button>
+        </div>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div class="border rounded-xl p-4">
+          <div class="flex justify-between text-slate-500 text-xs"><p>Atendimentos hoje</p><span>📅</span></div>
+          <p class="text-3xl font-bold mt-1">0</p>
+          <p class="text-[11px] text-slate-400 mt-1">7 ontem</p>
+        </div>
+        <div class="border rounded-xl p-4">
+          <div class="flex justify-between text-slate-500 text-xs"><p>Total de clientes</p><span>👥</span></div>
+          <p class="text-3xl font-bold mt-1">2</p>
+          <p class="text-[11px] text-emerald-600 mt-1">↗ +2 este mês</p>
+        </div>
+        <div class="border rounded-xl p-4">
+          <div class="flex justify-between text-slate-500 text-xs"><p>Ganhos do mês</p><span>💲</span></div>
+          <div class="flex items-end justify-between mt-1">
+            <div>
+              <p class="text-2xl font-bold">R$ 350,00</p>
+              <p class="text-[11px] text-slate-500">0% vs mês passado</p>
+            </div>
+            <svg width="110" height="36"><polyline class="spark" points="0,28 35,6 70,18 110,24"/></svg>
+          </div>
+        </div>
+        <div class="border rounded-xl p-4">
+          <div class="flex justify-between text-slate-500 text-xs"><p>Clientes que faltaram</p><span>🕐</span></div>
+          <p class="text-3xl font-bold mt-1">0%</p>
+          <p class="text-[11px] text-emerald-600 mt-1">↗ Dentro do esperado</p>
+        </div>
+      </div>
+      <p class="text-xs text-slate-400">Cards do meio e rodapé (Agendamentos de hoje / do mês / Próximos / Atividades / Aniversariantes / Dicas) permanecem iguais ao atual.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i === 0));
+}
+
+// ---------- comparador antes/depois ----------
+const cmpItems = [
+  {
+    title: '1. Header — ação principal',
+    antes: '<div class="border rounded-xl p-4 bg-white"><h2 class="text-xl font-serif font-bold">Resumo</h2><p class="text-xs text-slate-500">Visão geral do desempenho da estética em setembro 2026</p><p class="text-[11px] text-red-500 mt-2">✗ sem nenhuma ação — para agendar, dono precisa ir na aba Agendamento</p></div>',
+    depois: '<div class="border-2 border-violet-400 rounded-xl p-4 bg-white"><div class="flex items-center justify-between"><div><h2 class="text-xl font-serif font-bold">Resumo</h2><p class="text-xs text-slate-500">Visão geral em setembro 2026</p></div><button class="bg-violet-600 text-white text-xs font-semibold px-3 py-2 rounded-lg">＋ Novo</button></div><p class="text-[11px] text-emerald-600 mt-2">✓ agenda sem sair do Início</p></div>'
+  },
+  {
+    title: '2. Banner do link público',
+    antes: '<div class="rounded-xl border border-violet-200 bg-violet-50 p-3"><p class="text-xs font-semibold">Seu link de agendamento online</p><p class="text-[10px] text-slate-500">http://localhost:3000/agendar/testeflow</p><button class="bg-white border rounded-lg w-full py-2 text-xs font-medium mt-2">📋 Copiar link</button><p class="text-[11px] text-red-500 mt-2">✗ URL crua de localhost + botão ocupa linha inteira</p></div>',
+    depois: '<div class="rounded-xl border-2 border-violet-400 bg-violet-50 p-3"><div class="flex items-center gap-2"><span>🔗</span><div class="flex-1 min-w-0"><p class="text-xs font-semibold">Seu link de agendamento online</p><p class="text-[10px] text-slate-500 truncate">studioflow.app.br/agendar/testeflow</p></div><button class="bg-white border rounded-lg px-2.5 py-1.5 text-[11px] font-medium">Copiar</button><button class="bg-green-600 text-white rounded-lg px-2.5 py-1.5 text-[11px] font-medium">WhatsApp</button></div><p class="text-[11px] text-emerald-600 mt-2">✓ link limpo + envio direto pro cliente</p></div>'
+  },
+  {
+    title: '3. Alerta LGPD',
+    antes: '<div class="flex items-center gap-2 p-3 rounded-lg border border-amber-200 bg-amber-50"><span>🛡️</span><p class="text-xs text-amber-800">2 clientes não assinaram a autorização de uso dos dados (LGPD)</p></div><p class="text-[11px] text-red-500 mt-2">✗ avisa mas não leva a lugar nenhum</p>',
+    depois: '<div class="flex items-center gap-2 p-3 rounded-lg border-2 border-amber-400 bg-amber-50"><span>🛡️</span><p class="text-xs text-amber-800 flex-1"><strong>2 clientes</strong> não assinaram (LGPD)</p><button class="text-xs font-semibold text-amber-900 border border-amber-300 bg-white rounded-lg px-2.5 py-1">Resolver</button></div><p class="text-[11px] text-emerald-600 mt-2">✓ 1 clique vai pra tela de Termos resolver</p>'
+  },
+  {
+    title: '4. Cards de KPI (mobile)',
+    antes: '<div class="border rounded-xl p-4 bg-white w-64"><div class="flex justify-between text-slate-500 text-xs"><p>Atendimentos hoje</p><span>📅</span></div><p class="text-3xl font-bold mt-1">0</p><svg width="120" height="40" class="ml-auto -mt-6"><polyline class="spark" points="0,30 40,30 80,4 120,20"/></svg><p class="text-[11px] text-red-500 mt-2">✗ 1 card por linha = scroll longo; zigue-zague não significa nada</p></div>',
+    depois: '<div class="grid grid-cols-2 gap-3 w-64"><div class="border-2 border-violet-400 rounded-xl p-3 bg-white"><div class="flex justify-between text-slate-500 text-[11px]"><p>Atend. hoje</p><span>📅</span></div><p class="text-2xl font-bold mt-1">0</p><p class="text-[10px] text-slate-400">7 ontem</p></div><div class="border-2 border-violet-400 rounded-xl p-3 bg-white"><div class="flex justify-between text-slate-500 text-[11px]"><p>Ganhos do mês</p><span>💲</span></div><p class="text-lg font-bold mt-1">R$ 350</p><svg width="80" height="20"><polyline class="spark" points="0,15 27,3 53,10 80,14"/></svg></div></div><p class="text-[11px] text-emerald-600 mt-2">✓ 2 por linha, metade do scroll; "X ontem" no lugar do gráfico falso</p>'
+  }
+];
+let cmpIdx = 0;
+function cmpRender() {
+  const it = cmpItems[cmpIdx];
+  document.getElementById('cmp-body').innerHTML =
+    '<div class="w-full"><p class="text-sm font-bold mb-3">' + it.title + ' — ' + (cmpIdx+1) + '/' + cmpItems.length + '</p>' +
+    '<div class="flex gap-6 flex-wrap"><div class="w-72"><p class="text-[11px] font-bold text-red-400 uppercase mb-1">Atual</p>' + it.antes + '</div>' +
+    '<div class="w-72"><p class="text-[11px] font-bold text-emerald-500 uppercase mb-1">Proposta</p>' + it.depois + '</div></div></div>';
+}
+function cmpSet(d) { cmpIdx = (cmpIdx + d + cmpItems.length) % cmpItems.length; cmpRender(); }
+function switchCmp() { show('cmp'); cmpRender(); }
+</script>
+</body>
+</html>

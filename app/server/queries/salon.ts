@@ -602,9 +602,12 @@ export async function getDashboardMetrics(salonId: number, month: string) {
   const today = await todaySaoPaulo(db);
   const [ty, tm] = today.split("-").map(Number);
   const prevMonthStr = `${tm === 1 ? ty - 1 : ty}-${String(tm === 1 ? 12 : tm - 1).padStart(2, "0")}`;
+  // ontem em SP, calculado no SQL (mesmo fuso do "hoje")
+  const yesterdaySql = sql`(TO_CHAR(NOW() AT TIME ZONE 'America/Sao_Paulo', 'YYYY-MM-DD'))::date - 1`;
 
   const [
     appointmentsToday,
+    appointmentsYesterday,
     appointmentsMonth,
     appointmentsPrevMonth,
     clientsTotal,
@@ -625,6 +628,16 @@ export async function getDashboardMetrics(salonId: number, month: string) {
         and(
           eq(appointments.salonId, salonId),
           sql`${appointments.appointmentDate} = ${today}`
+        )
+      ),
+    // Agendamentos ontem (comparativo do KPI "Atendimentos hoje")
+    db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(appointments)
+      .where(
+        and(
+          eq(appointments.salonId, salonId),
+          sql`${appointments.appointmentDate} = ${yesterdaySql}`
         )
       ),
     // Agendamentos mes atual
@@ -796,6 +809,7 @@ export async function getDashboardMetrics(salonId: number, month: string) {
 
   return {
     appointmentsToday: Number(appointmentsToday[0]?.count ?? 0),
+    appointmentsYesterday: Number(appointmentsYesterday[0]?.count ?? 0),
     appointmentsMonth: {
       scheduled: Number(appointmentsMonth[0]?.scheduled ?? 0),
       completed: Number(appointmentsMonth[0]?.completed ?? 0),
