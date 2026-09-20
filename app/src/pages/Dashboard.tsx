@@ -121,6 +121,7 @@ export default function Dashboard() {
           value={metrics?.appointmentsToday ?? 0}
           icon={CalendarDays}
           iconClassName="text-blue-600"
+          trend="neutral"
           trendValue={
             metrics ? `${metrics.appointmentsYesterday} ontem` : undefined
           }

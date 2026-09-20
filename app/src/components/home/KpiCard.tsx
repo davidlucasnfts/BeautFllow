@@ -77,7 +77,7 @@ export function KpiCard({
               </div>
               {trend && trendValue && (
                 <div
-                  className={`flex items-center gap-1 text-xs mt-1 whitespace-nowrap ${
+                  className={`mt-4 flex items-center gap-1 text-xs whitespace-nowrap ${
                     trend === "up"
                       ? "text-emerald-600"
                       : trend === "down"
