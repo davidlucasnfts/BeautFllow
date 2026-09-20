@@ -114,8 +114,8 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* KPIs */}
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      {/* KPIs — auto-rows-fr: mesma altura nas duas linhas do mobile */}
+      <div className="grid auto-rows-fr gap-4 grid-cols-2 lg:grid-cols-4">
         <KpiCard
           title="Atendimentos hoje"
           value={metrics?.appointmentsToday ?? 0}
