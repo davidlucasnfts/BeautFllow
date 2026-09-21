@@ -523,18 +523,12 @@ export async function updateConsentForm(
 }
 
 export async function deleteConsentForm(id: number, salonId: number) {
-  const db = getDb();
-  // apaga também as assinaturas vinculadas ao termo (sempre filtrando o tenant)
-  await db
-    .delete(consentSignatures)
-    .where(
-      and(
-        eq(consentSignatures.formId, id),
-        eq(consentSignatures.salonId, salonId)
-      )
-    );
-  await db
-    .delete(consentForms)
+  // Soft-delete (decisão LGPD 20/09): o termo e as assinaturas ficam no
+  // histórico — só some das listagens (todas filtram isActive = true).
+  // Antes apagava as assinaturas em cascata (exclusão física).
+  await getDb()
+    .update(consentForms)
+    .set({ isActive: false })
     .where(and(eq(consentForms.id, id), eq(consentForms.salonId, salonId)));
 }
 

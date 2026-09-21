@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { createRouter, authedQuery } from "./middleware";
 import {
   createConsentForm,
@@ -100,6 +101,14 @@ export const consentRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      // trava server-side: termo inativo (excluído, histórico LGPD) não aceita assinatura
+      const form = await getConsentFormById(input.formId, input.salonId);
+      if (!form || !form.isActive) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Termo não encontrado.",
+        });
+      }
       const result = await createConsentSignature(input);
       await auditAction(
         "create",

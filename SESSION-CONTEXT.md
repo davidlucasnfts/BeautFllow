@@ -28,6 +28,8 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 - **Pendentes de decisão:** M6 (recálculo de segmentos de clientes roda 3x no Dashboard — mitigado com throttle de 60s; refactor pendente) — avaliar com David. ~~B5~~ resolvido em `fbb0a90`: sparkline de ganhos agora usa receita real por dia (`revenueByDay` no metrics) e Atividades Recentes mostra o nome do cliente sem truncar
 - **Hotfix 19/09 (`267304c`):** erro 500 do `customer.list` (cast `::date` no monthStart — regressão do C1, o type-check não pega erro de SQL); botão "Ver agenda" do Dashboard truncado no desktop (header do card em coluna); lentidão de carregamento — `refreshClientSegments` tinha throttle nenhum e UPDATEs sequenciais ao Supabase remoto em toda `customer.list` (7 telas) → throttle 60s/salão + invalidação nas mutations + UPDATEs paralelos
 - **Dashboard 20/09 (`26a93ca` + `e69ec94`):** proposta aprovada via mockups — ação "＋ Novo agendamento" no header; banner do link com Copiar + WhatsApp; alerta LGPD com botão "Resolver" → /consent; KPIs em 2 colunas no mobile; "Atendimentos hoje" mostra "X ontem" (metrics ganhou `appointmentsYesterday`); boards do desktop em grade 12 colunas (Próximos = 6, Atividades = 8, Dicas = 12); ícones dos KPIs coloridos (Lucide + `iconClassName`, emoji dos mockups era placeholder); página pública de agendamento **validada de ponta a ponta pelo David** (cliente final agendou com sucesso)
+- **Booking extraído + testes (20/09):** lógica de agendamento (slots, overlap, profissional livre, freeSlots) saiu do `public-router.ts` para `server/lib/booking.ts` (funções puras) com ~25 testes unitários (`server/lib/__tests__/booking.test.ts`) — protege o caminho do dinheiro contra regressão; suíte subiu de 65 → 86 testes
+- **Decisões do David (20/09):** ① Mensagens/Comunicação = automatizar depois (só registrado, sem código agora); ② Termos LGPD = manter histórico → `deleteConsentForm` virou **soft delete** (`isActive = false`), exclusão física de assinaturas removida; listagens já filtram ativos; mutation `sign` trava server-side (`NOT_FOUND`) se o termo estiver inativo
 
 ### Antes, nesta mesma sessão (19/09 — polimento das 5 páginas pendentes):
 1. Auditoria página a página contra o design system: 5 ✅ já conformes (Agendamentos, Clientes, Serviços, Dashboard, Configurações), 5 ⚠️ melhoradas nesta sessão
@@ -43,7 +45,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 - `consent.create` aceita `serviceId` no Zod mas a tabela não tem a coluna (campo morto, nenhuma tela envia)
 - Sem FK de `consent_signatures.formId` → `consent_forms.id` no schema
 - `financial.create` exige `clientId` mas o schema permite null (despesa genérica sem cliente não é possível)
-- Decisão LGPD pendente: delete de termo apaga assinaturas (exclusão física). Se a LGPD exigir retenção, migrar para exclusão lógica (`isActive` já existe)
+- ~~Decisão LGPD pendente: delete de termo apaga assinaturas (exclusão física). Se a LGPD exigir retenção, migrar para exclusão lógica (`isActive` já existe)~~ → **resolvido 20/09:** soft delete implementado (ver histórico acima)
 
 ### Próximo passo definido:
 1. David roda o **smoke test completo** (roteiro da sessão: login → profissional → serviço → cliente → agendar → concluir c/ pagamento → conferir financeiro) — agora com todas as páginas polidas
