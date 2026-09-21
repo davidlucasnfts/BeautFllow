@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import * as Sentry from "@sentry/react";
+import { Toaster } from "sonner";
 import "./index.css";
 import { TRPCProvider } from "@/providers/trpc";
 import { SalonProvider } from "@/providers/salon";
@@ -24,6 +25,7 @@ createRoot(rootElement).render(
       <TRPCProvider>
         <SalonProvider>
           <App />
+          <Toaster richColors />
         </SalonProvider>
       </TRPCProvider>
     </BrowserRouter>
