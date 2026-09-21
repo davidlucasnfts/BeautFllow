@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock } from "lucide-react";
 import { toast } from "sonner";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function AccountCard() {
   const { user } = useAuth();
@@ -60,8 +61,7 @@ export default function AccountCard() {
 
         <div className="grid gap-2">
           <Label>Senha atual</Label>
-          <Input
-            type="password"
+          <PasswordInput
             value={currentPassword}
             onChange={e => setCurrentPassword(e.target.value)}
             placeholder="Sua senha atual"
@@ -72,8 +72,7 @@ export default function AccountCard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="grid gap-2">
             <Label>Nova senha</Label>
-            <Input
-              type="password"
+            <PasswordInput
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
               placeholder="Mínimo 8 caracteres"
@@ -82,8 +81,7 @@ export default function AccountCard() {
           </div>
           <div className="grid gap-2">
             <Label>Confirmar nova senha</Label>
-            <Input
-              type="password"
+            <PasswordInput
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
               placeholder="Repita a nova senha"

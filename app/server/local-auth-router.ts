@@ -1,10 +1,11 @@
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import * as jose from "jose";
+import crypto from "node:crypto";
 import { createRouter, publicQuery, authedQuery } from "./middleware";
 import { getDb } from "./queries/connection";
-import { localUsers } from "@db/schema";
-import { eq } from "drizzle-orm";
+import { localUsers, passwordResetTokens } from "@db/schema";
+import { eq, and, isNull, desc } from "drizzle-orm";
 import { env } from "./lib/env";
 import { TRPCError } from "@trpc/server";
 import * as cookie from "cookie";
@@ -209,8 +210,119 @@ export const localAuthRouter = createRouter({
       return { success: true };
     }),
 
+  requestPasswordReset: publicQuery
+    .input(z.object({ email: z.string().email() }))
+    .mutation(async ({ ctx, input }) => {
+      const db = getDb();
+      const [user] = await db
+        .select()
+        .from(localUsers)
+        .where(eq(localUsers.email, input.email))
+        .limit(1);
+
+      // Resposta genérica: não revela se o e-mail existe no cadastro
+      const genericResponse = {
+        success: true as const,
+        message: "Se este e-mail estiver cadastrado, enviamos o link de recuperação.",
+      };
+      if (!user) return genericResponse;
+
+      const token = crypto.randomBytes(32).toString("hex");
+      const tokenHash = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+      await db.insert(passwordResetTokens).values({
+        userId: user.id,
+        tokenHash,
+        expiresAt,
+      });
+
+      const origin =
+        ctx.req.headers.get("origin") ||
+        env.corsOrigin ||
+        "http://localhost:3000";
+      const link = `${origin}/redefinir-senha?token=${token}`;
+
+      if (env.resendApiKey) {
+        const { Resend } = await import("resend");
+        const resend = new Resend(env.resendApiKey);
+        const { error } = await resend.emails.send({
+          from: env.resendFrom,
+          to: user.email,
+          subject: "Recuperação de senha — StudioFlow",
+          text: `Você solicitou a recuperação de senha do StudioFlow.\n\nAbra este link para redefinir sua senha (válido por 1 hora):\n${link}\n\nSe não foi você, ignore este e-mail.`,
+        });
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Não foi possível enviar o e-mail. Tente novamente.",
+          });
+        }
+      } else if (!env.isProduction) {
+        // Dev sem serviço de e-mail configurado: o link fica no terminal
+        console.log(`[password-reset] Link de recuperação: ${link}`);
+      } else {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Serviço de e-mail não configurado.",
+        });
+      }
+
+      return genericResponse;
+    }),
+
+  resetPassword: publicQuery
+    .input(
+      z.object({
+        token: z.string().min(10),
+        newPassword: z.string().min(8),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const tokenHash = crypto
+        .createHash("sha256")
+        .update(input.token)
+        .digest("hex");
+
+      const db = getDb();
+      const [row] = await db
+        .select()
+        .from(passwordResetTokens)
+        .where(
+          and(
+            eq(passwordResetTokens.tokenHash, tokenHash),
+            isNull(passwordResetTokens.usedAt)
+          )
+        )
+        .orderBy(desc(passwordResetTokens.createdAt))
+        .limit(1);
+
+      if (!row || row.expiresAt < new Date()) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Link expirado ou inválido. Solicite um novo.",
+        });
+      }
+
+      const passwordHash = await bcrypt.hash(input.newPassword, 12);
+      await db
+        .update(localUsers)
+        .set({ passwordHash })
+        .where(eq(localUsers.id, row.userId));
+      await db
+        .update(passwordResetTokens)
+        .set({ usedAt: new Date() })
+        .where(eq(passwordResetTokens.id, row.id));
+
+      return { success: true };
+    }),
+
   me: publicQuery.query(async ({ ctx }) => {
-    const cookies = ctx.req.headers.get("cookie") || "";    const match = cookies.match(new RegExp(`${Session.cookieName}=([^;]+)`));
+    const cookies = ctx.req.headers.get("cookie") || "";
+    const match = cookies.match(new RegExp(`${Session.cookieName}=([^;]+)`));
     const token = match?.[1];
 
     if (!token) return null;

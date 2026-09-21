@@ -13,4 +13,9 @@ export const env = {
   corsOrigin: process.env.CORS_ORIGIN ?? "",
   isProduction: process.env.NODE_ENV === "production",
   databaseUrl: required("DATABASE_URL"),
+  // Recuperação de senha (Resend). Sem chave, o fluxo funciona em dev
+  // logando o link no terminal; em produção é obrigatória.
+  resendApiKey: process.env.RESEND_API_KEY ?? "",
+  resendFrom:
+    process.env.RESEND_FROM ?? "StudioFlow <onboarding@resend.dev>",
 };

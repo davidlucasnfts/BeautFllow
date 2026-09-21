@@ -13,6 +13,7 @@ import Consent from "./pages/Consent";
 import Settings from "./pages/Settings";
 import Proposal from "./pages/Proposal";
 import PublicBooking from "./pages/PublicBooking";
+import ResetPassword from "./pages/ResetPassword";
 import AuthLayout from "./components/AuthLayout";
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/proposta" element={<Proposal />} />
       <Route path="/agendar/:slug" element={<PublicBooking />} />
+      <Route path="/redefinir-senha" element={<ResetPassword />} />
       <Route
         path="/dashboard"
         element={
