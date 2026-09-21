@@ -62,10 +62,32 @@ const ipLimiter = rateLimiter({
     c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "unknown",
 });
 
+// Resposta em formato de erro tRPC (batch) para o cliente exibir a mensagem
+// amigável em vez de "Unexpected token... is not valid JSON"
+const tooManyRequests = (c: {
+  json: (body: unknown, status?: number) => Response;
+}) =>
+  c.json(
+    [
+      {
+        error: {
+          json: {
+            message: "Muitas tentativas. Aguarde 1 minuto e tente novamente.",
+            code: -32000,
+            data: { code: "TOO_MANY_REQUESTS", httpStatus: 429 },
+          },
+        },
+        ok: false,
+      },
+    ],
+    429
+  );
+
 const authLimiter = rateLimiter({
   windowMs: 60 * 1000,
-  limit: 5,
+  limit: 20,
   standardHeaders: "draft-6",
+  handler: tooManyRequests,
   keyGenerator: c => {
     const auth = c.req.header("authorization") || "";
     return auth.slice(0, 50) || c.req.header("x-forwarded-for") || "unknown";
