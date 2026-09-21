@@ -79767,6 +79767,34 @@ var localAuthRouter = createRouter({
       }
     };
   }),
+  changePassword: authedQuery.input(
+    external_exports.object({
+      currentPassword: external_exports.string().min(1),
+      newPassword: external_exports.string().min(8)
+    })
+  ).mutation(async ({ ctx, input }) => {
+    const db = getDb();
+    const [user] = await db.select().from(localUsers).where(eq(localUsers.id, ctx.user.id)).limit(1);
+    if (!user) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Sess\xE3o inv\xE1lida. Fa\xE7a login novamente."
+      });
+    }
+    const valid = await bcryptjs_default.compare(
+      input.currentPassword,
+      user.passwordHash
+    );
+    if (!valid) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Senha atual incorreta"
+      });
+    }
+    const passwordHash = await bcryptjs_default.hash(input.newPassword, 12);
+    await db.update(localUsers).set({ passwordHash }).where(eq(localUsers.id, user.id));
+    return { success: true };
+  }),
   me: publicQuery.query(async ({ ctx }) => {
     const cookies = ctx.req.headers.get("cookie") || "";
     const match2 = cookies.match(new RegExp(`${Session.cookieName}=([^;]+)`));
@@ -80066,14 +80094,7 @@ async function updateConsentForm(id, salonId, data) {
   return getConsentFormById(id, salonId);
 }
 async function deleteConsentForm(id, salonId) {
-  const db = getDb();
-  await db.delete(consentSignatures).where(
-    and(
-      eq(consentSignatures.formId, id),
-      eq(consentSignatures.salonId, salonId)
-    )
-  );
-  await db.delete(consentForms).where(and(eq(consentForms.id, id), eq(consentForms.salonId, salonId)));
+  await getDb().update(consentForms).set({ isActive: false }).where(and(eq(consentForms.id, id), eq(consentForms.salonId, salonId)));
 }
 async function createConsentSignature(data) {
   const db = getDb();
@@ -80449,6 +80470,10 @@ var salonRouter = createRouter({
     external_exports.object({
       id: external_exports.number(),
       name: external_exports.string().min(2).max(255).optional(),
+      slug: external_exports.string().min(2).max(255).regex(
+        /^[a-z0-9-]+$/,
+        "Link inv\xE1lido: use letras min\xFAsculas, n\xFAmeros e h\xEDfen"
+      ).optional(),
       segment: salonSegmentSchema.optional(),
       phone: external_exports.string().optional(),
       email: external_exports.string().email().optional(),
@@ -80457,7 +80482,20 @@ var salonRouter = createRouter({
       state: external_exports.string().optional()
     })
   ).mutation(async ({ input }) => {
-    return updateSalon(input.id, input);
+    const { id, slug, ...rest } = input;
+    if (slug) {
+      const current = await getSalonById(id);
+      if (current && current.slug !== slug) {
+        const taken = await getSalonBySlug(slug);
+        if (taken) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Este link j\xE1 est\xE1 em uso por outro neg\xF3cio."
+          });
+        }
+      }
+    }
+    return updateSalon(id, { ...rest, ...slug ? { slug } : {} });
   })
 });
 
@@ -81093,6 +81131,13 @@ var consentRouter = createRouter({
       userAgent: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    const form = await getConsentFormById(input.formId, input.salonId);
+    if (!form || !form.isActive) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Termo n\xE3o encontrado."
+      });
+    }
     const result = await createConsentSignature(input);
     await auditAction(
       "create",
@@ -81112,7 +81157,7 @@ var dashboardRouter = createRouter({
   metrics: authedQuery.input(external_exports.object({ salonId: external_exports.number(), month: external_exports.string() })).query(({ input }) => getDashboardMetrics(input.salonId, input.month))
 });
 
-// server/public-router.ts
+// server/lib/booking.ts
 function addMinutes(hhmm, minutes) {
   const [h, m] = hhmm.split(":").map(Number);
   const total = (h * 60 + m + minutes) % (24 * 60);
@@ -81144,6 +81189,38 @@ function generateSlots(dayStart, dayEnd, stepMinutes) {
   }
   return slots;
 }
+var IGNORED_STATUSES = ["cancelled", "no_show"];
+function intervalsOverlap(startA, endA, startB, endB) {
+  return startA < endB && endA > startB;
+}
+function isProfessionalFree(professionalId, appointments2, startTime, endTime) {
+  return !appointments2.some((a) => {
+    if (IGNORED_STATUSES.includes(a.status))
+      return false;
+    if (a.professionalId !== professionalId || !a.endTime) return false;
+    return intervalsOverlap(a.startTime, a.endTime, startTime, endTime);
+  });
+}
+function findFreeProfessional(professionals2, appointments2, startTime, endTime) {
+  return professionals2.find(
+    (p) => isProfessionalFree(p.id, appointments2, startTime, endTime)
+  ) ?? null;
+}
+function freeSlotsForAnyone(professionals2, appointments2, schedule, durationMinutes) {
+  if (professionals2.length === 0) return [];
+  return generateSlots(
+    schedule.dayStart,
+    schedule.dayEnd,
+    schedule.slotMinutes
+  ).filter((slot) => {
+    const slotEnd = addMinutes(slot, durationMinutes);
+    return professionals2.some(
+      (p) => isProfessionalFree(p.id, appointments2, slot, slotEnd)
+    );
+  });
+}
+
+// server/public-router.ts
 var phoneSchema = external_exports.string().regex(/^\(\d{2}\) \d{4,5}-\d{4}$/, {
   message: "Telefone inv\xE1lido. Use o formato (99) 99999-9999."
 });
@@ -81217,21 +81294,12 @@ var publicRouter = createRouter({
     });
     let freeSlots;
     if (!input.professionalId && professionals2.length > 0) {
-      const duration3 = service.durationMinutes;
-      freeSlots = generateSlots(
-        schedule.dayStart,
-        schedule.dayEnd,
-        schedule.slotMinutes
-      ).filter((slot) => {
-        const slotEnd = addMinutes(slot, duration3);
-        return professionals2.some(
-          (p) => !dayAppointments.some((a) => {
-            if (a.status === "cancelled" || a.status === "no_show") return false;
-            if (a.professionalId !== p.id || !a.endTime) return false;
-            return a.startTime < slotEnd && a.endTime > slot;
-          })
-        );
-      });
+      freeSlots = freeSlotsForAnyone(
+        professionals2,
+        dayAppointments,
+        schedule,
+        service.durationMinutes
+      );
     }
     return {
       slotMinutes: schedule.slotMinutes,
@@ -81297,9 +81365,9 @@ var publicRouter = createRouter({
     let assignedProfessionalId = input.professionalId ?? null;
     if (input.professionalId) {
       const conflict = dayAppointments.find((a) => {
-        if (a.status === "cancelled" || a.status === "no_show") return false;
-        if (a.professionalId !== input.professionalId || !a.endTime)
+        if (a.status === "cancelled" || a.status === "no_show" || !a.endTime)
           return false;
+        if (a.professionalId !== input.professionalId) return false;
         return a.startTime < newEnd && a.endTime > input.startTime;
       });
       if (conflict) {
@@ -81309,12 +81377,11 @@ var publicRouter = createRouter({
         });
       }
     } else if (professionals2.length > 0) {
-      const free = professionals2.find(
-        (p) => !dayAppointments.some((a) => {
-          if (a.status === "cancelled" || a.status === "no_show") return false;
-          if (a.professionalId !== p.id || !a.endTime) return false;
-          return a.startTime < newEnd && a.endTime > input.startTime;
-        })
+      const free = findFreeProfessional(
+        professionals2,
+        dayAppointments,
+        input.startTime,
+        newEnd
       );
       if (!free) {
         throw new TRPCError({

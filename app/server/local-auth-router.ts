@@ -1,7 +1,7 @@
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import * as jose from "jose";
-import { createRouter, publicQuery } from "./middleware";
+import { createRouter, publicQuery, authedQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { localUsers } from "@db/schema";
 import { eq } from "drizzle-orm";
@@ -167,9 +167,50 @@ export const localAuthRouter = createRouter({
       };
     }),
 
+  changePassword: authedQuery
+    .input(
+      z.object({
+        currentPassword: z.string().min(1),
+        newPassword: z.string().min(8),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const db = getDb();
+      const [user] = await db
+        .select()
+        .from(localUsers)
+        .where(eq(localUsers.id, ctx.user.id))
+        .limit(1);
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Sessão inválida. Faça login novamente.",
+        });
+      }
+
+      const valid = await bcrypt.compare(
+        input.currentPassword,
+        user.passwordHash
+      );
+      if (!valid) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Senha atual incorreta",
+        });
+      }
+
+      const passwordHash = await bcrypt.hash(input.newPassword, 12);
+      await db
+        .update(localUsers)
+        .set({ passwordHash })
+        .where(eq(localUsers.id, user.id));
+
+      return { success: true };
+    }),
+
   me: publicQuery.query(async ({ ctx }) => {
-    const cookies = ctx.req.headers.get("cookie") || "";
-    const match = cookies.match(new RegExp(`${Session.cookieName}=([^;]+)`));
+    const cookies = ctx.req.headers.get("cookie") || "";    const match = cookies.match(new RegExp(`${Session.cookieName}=([^;]+)`));
     const token = match?.[1];
 
     if (!token) return null;

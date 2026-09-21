@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createRouter, authedQuery } from "./middleware";
+import { TRPCError } from "@trpc/server";
 import {
   parseScheduleSettings,
   parseThemeSettings,
@@ -10,6 +11,7 @@ import {
   createSalon,
   getSalonsByUser,
   getSalonById,
+  getSalonBySlug,
   addUserToSalon,
   updateSalon,
 } from "./queries/salon";
@@ -104,6 +106,15 @@ export const salonRouter = createRouter({
       z.object({
         id: z.number(),
         name: z.string().min(2).max(255).optional(),
+        slug: z
+          .string()
+          .min(2)
+          .max(255)
+          .regex(
+            /^[a-z0-9-]+$/,
+            "Link inválido: use letras minúsculas, números e hífen"
+          )
+          .optional(),
         segment: salonSegmentSchema.optional(),
         phone: z.string().optional(),
         email: z.string().email().optional(),
@@ -113,6 +124,19 @@ export const salonRouter = createRouter({
       })
     )
     .mutation(async ({ input }) => {
-      return updateSalon(input.id, input);
+      const { id, slug, ...rest } = input;
+      if (slug) {
+        const current = await getSalonById(id);
+        if (current && current.slug !== slug) {
+          const taken = await getSalonBySlug(slug);
+          if (taken) {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Este link já está em uso por outro negócio.",
+            });
+          }
+        }
+      }
+      return updateSalon(id, { ...rest, ...(slug ? { slug } : {}) });
     }),
 });

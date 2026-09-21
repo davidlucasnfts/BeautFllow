@@ -20,6 +20,11 @@ export type SalonContextType = {
   schedule: ScheduleSettings;
   theme?: string | null;
   clientStatus: ClientStatusSettings;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
 };
 
 export const SalonContext = createContext<{

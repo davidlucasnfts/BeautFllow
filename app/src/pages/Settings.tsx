@@ -26,6 +26,8 @@ import {
 } from "@contracts/segment-palettes";
 import { generateTimeSlots } from "@/lib/time-slots";
 import { onlyDigits } from "@/lib/input-masks";
+import SalonProfileCard from "@/components/settings/SalonProfileCard";
+import AccountCard from "@/components/settings/AccountCard";
 
 const START_OPTIONS = generateTimeSlots("05:00", "12:00", 30);
 const END_OPTIONS = generateTimeSlots("12:00", "23:30", 30);
@@ -92,6 +94,8 @@ export default function Settings() {
           Ajuste o funcionamento do seu estabelecimento
         </p>
       </div>
+
+      <SalonProfileCard />
 
       <Card className="max-w-xl">
         <CardHeader className="pb-3">
@@ -345,6 +349,8 @@ export default function Settings() {
           </div>
         </CardContent>
       </Card>
+
+      <AccountCard />
     </div>
   );
 }
