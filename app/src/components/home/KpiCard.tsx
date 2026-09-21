@@ -62,7 +62,9 @@ export function KpiCard({
         {/* header manual (sem CardHeader do shadcn) — altura fixa de 2 linhas
             de titulo para os numeros dos 4 cards ficarem na mesma altura */}
         <div className="flex min-h-[28px] items-start justify-between gap-2">
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+          <p className="text-sm font-medium leading-none text-muted-foreground">
+            {title}
+          </p>
           <Icon
             className={`h-4 w-4 shrink-0 ${iconClassName ?? "text-muted-foreground"}`}
           />
