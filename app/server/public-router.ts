@@ -13,45 +13,13 @@ import {
   createAppointment,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
-
-function addMinutes(hhmm: string, minutes: number): string {
-  const [h, m] = hhmm.split(":").map(Number);
-  const total = (h * 60 + m + minutes) % (24 * 60);
-  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(
-    total % 60
-  ).padStart(2, "0")}`;
-}
-
-function floorToSlot(hhmm: string, stepMinutes: number = 30): string {
-  const [h, m] = hhmm.split(":").map(Number);
-  const total = h * 60 + m;
-  const floored = total - (total % stepMinutes);
-  return `${String(Math.floor(floored / 60)).padStart(2, "0")}:${String(
-    floored % 60
-  ).padStart(2, "0")}`;
-}
-
-/** Grade de horários candidatos do dia (mesma regra do frontend) */
-function generateSlots(
-  dayStart: string,
-  dayEnd: string,
-  stepMinutes: number
-): string[] {
-  const [sh, sm] = dayStart.split(":").map(Number);
-  const [eh, em] = dayEnd.split(":").map(Number);
-  const slots: string[] = [];
-  let t = sh * 60 + sm;
-  const end = eh * 60 + em;
-  while (t < end) {
-    slots.push(
-      `${String(Math.floor(t / 60)).padStart(2, "0")}:${String(
-        t % 60
-      ).padStart(2, "0")}`
-    );
-    t += stepMinutes;
-  }
-  return slots;
-}
+import {
+  addMinutes,
+  floorToSlot,
+  freeSlotsForAnyone,
+  findFreeProfessional,
+  type BusyAppointment,
+} from "./lib/booking";
 
 const phoneSchema = z.string().regex(/^\(\d{2}\) \d{4,5}-\d{4}$/, {
   message: "Telefone inválido. Use o formato (99) 99999-9999.",
@@ -143,21 +111,12 @@ export const publicRouter = createRouter({
       // escolhem profissional e clientes que não escolhem
       let freeSlots: string[] | undefined;
       if (!input.professionalId && professionals.length > 0) {
-        const duration = service.durationMinutes;
-        freeSlots = generateSlots(
-          schedule.dayStart,
-          schedule.dayEnd,
-          schedule.slotMinutes
-        ).filter(slot => {
-          const slotEnd = addMinutes(slot, duration);
-          return professionals.some(p =>
-            !dayAppointments.some(a => {
-              if (a.status === "cancelled" || a.status === "no_show") return false;
-              if (a.professionalId !== p.id || !a.endTime) return false;
-              return a.startTime < slotEnd && a.endTime > slot;
-            })
-          );
-        });
+        freeSlots = freeSlotsForAnyone(
+          professionals,
+          dayAppointments as BusyAppointment[],
+          schedule,
+          service.durationMinutes
+        );
       }
 
       return {
@@ -241,9 +200,13 @@ export const publicRouter = createRouter({
       let assignedProfessionalId = input.professionalId ?? null;
       if (input.professionalId) {
         const conflict = dayAppointments.find(a => {
-          if (a.status === "cancelled" || a.status === "no_show") return false;
-          if (a.professionalId !== input.professionalId || !a.endTime)
+          if (
+            a.status === "cancelled" ||
+            a.status === "no_show" ||
+            !a.endTime
+          )
             return false;
+          if (a.professionalId !== input.professionalId) return false;
           return a.startTime < newEnd && a.endTime > input.startTime;
         });
         if (conflict) {
@@ -253,12 +216,11 @@ export const publicRouter = createRouter({
           });
         }
       } else if (professionals.length > 0) {
-        const free = professionals.find(p =>
-          !dayAppointments.some(a => {
-            if (a.status === "cancelled" || a.status === "no_show") return false;
-            if (a.professionalId !== p.id || !a.endTime) return false;
-            return a.startTime < newEnd && a.endTime > input.startTime;
-          })
+        const free = findFreeProfessional(
+          professionals,
+          dayAppointments as BusyAppointment[],
+          input.startTime,
+          newEnd
         );
         if (!free) {
           throw new TRPCError({
