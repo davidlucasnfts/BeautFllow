@@ -79826,7 +79826,7 @@ async function createClient(data) {
   const [{ id }] = await db.insert(clients).values(data).returning();
   return db.query.clients.findFirst({ where: eq(clients.id, id) });
 }
-async function getClientsBySalon(salonId, limit = 100) {
+async function getClientsBySalon(salonId, limit = 1e3) {
   return getDb().select().from(clients).where(and(eq(clients.salonId, salonId), eq(clients.lgpdAnonymized, false))).orderBy(desc(clients.createdAt)).limit(limit);
 }
 async function getClientById(id, salonId) {
@@ -79885,9 +79885,9 @@ async function createProfessional(data) {
   const [{ id }] = await db.insert(professionals).values(data).returning();
   return db.query.professionals.findFirst({ where: eq(professionals.id, id) });
 }
-async function getProfessionalsBySalon(salonId) {
+async function getProfessionalsBySalon(salonId, includeInactive = false) {
   return getDb().select().from(professionals).where(
-    and(eq(professionals.salonId, salonId), eq(professionals.isActive, true))
+    includeInactive ? eq(professionals.salonId, salonId) : and(eq(professionals.salonId, salonId), eq(professionals.isActive, true))
   ).orderBy(professionals.name);
 }
 async function getProfessionalById(id, salonId) {
@@ -79898,6 +79898,12 @@ async function getProfessionalById(id, salonId) {
 async function updateProfessional(id, salonId, data) {
   await getDb().update(professionals).set(data).where(and(eq(professionals.id, id), eq(professionals.salonId, salonId)));
   return getProfessionalById(id, salonId);
+}
+async function deleteProfessional(id, salonId) {
+  await getDb().update(professionals).set({ isActive: false }).where(and(eq(professionals.id, id), eq(professionals.salonId, salonId)));
+}
+async function reactivateProfessional(id, salonId) {
+  await getDb().update(professionals).set({ isActive: true }).where(and(eq(professionals.id, id), eq(professionals.salonId, salonId)));
 }
 async function createAppointment(data) {
   const db = getDb();
@@ -79961,24 +79967,36 @@ async function getFinancialRecordsBySalon(salonId, fromDate, toDate) {
   if (toDate) conditions.push(sql`${financialRecords.recordDate} <= ${toDate}`);
   return getDb().select().from(financialRecords).where(and(...conditions)).orderBy(desc(financialRecords.recordDate));
 }
-async function getFinancialSummaryBySalon(salonId, month) {
-  let dateCondition = sql`1=1`;
-  if (month) {
-    dateCondition = sql`TO_CHAR(${financialRecords.recordDate}, 'YYYY-MM') = ${month}`;
-  }
-  const result = await getDb().select({
+async function getFinancialSummaryBySalon(salonId, fromDate, toDate) {
+  const conditions = [eq(financialRecords.salonId, salonId)];
+  if (fromDate)
+    conditions.push(sql`${financialRecords.recordDate} >= ${fromDate}`);
+  if (toDate) conditions.push(sql`${financialRecords.recordDate} <= ${toDate}`);
+  const [row] = await getDb().select({
     totalRevenue: sql`COALESCE(SUM(CASE WHEN ${financialRecords.type} != 'refund' THEN ${financialRecords.amount} ELSE 0 END), 0)`,
     totalRefunds: sql`COALESCE(SUM(CASE WHEN ${financialRecords.type} = 'refund' THEN ABS(${financialRecords.amount}) ELSE 0 END), 0)`,
     totalCommission: sql`COALESCE(SUM(${financialRecords.commissionAmount}), 0)`,
     count: sql`COUNT(*)`
-  }).from(financialRecords).where(
-    and(
-      eq(financialRecords.salonId, salonId),
-      // Filtro isPaid removido - nao existe no schema
-      dateCondition
-    )
+  }).from(financialRecords).where(and(...conditions));
+  return {
+    totalRevenue: Number(row?.totalRevenue ?? 0),
+    totalRefunds: Number(row?.totalRefunds ?? 0),
+    totalCommission: Number(row?.totalCommission ?? 0),
+    count: Number(row?.count ?? 0)
+  };
+}
+async function updateFinancialRecord(id, salonId, data) {
+  await getDb().update(financialRecords).set(data).where(
+    and(eq(financialRecords.id, id), eq(financialRecords.salonId, salonId))
   );
-  return result[0];
+  return getDb().query.financialRecords.findFirst({
+    where: eq(financialRecords.id, id)
+  });
+}
+async function deleteFinancialRecord(id, salonId) {
+  await getDb().delete(financialRecords).where(
+    and(eq(financialRecords.id, id), eq(financialRecords.salonId, salonId))
+  );
 }
 async function createCommunication(data) {
   const db = getDb();
@@ -79996,7 +80014,27 @@ async function getCommunicationsByClient(clientId, salonId) {
   ).orderBy(desc(communications.createdAt));
 }
 async function getCommunicationsBySalon(salonId, limit = 50) {
-  return getDb().select().from(communications).where(eq(communications.salonId, salonId)).orderBy(desc(communications.createdAt)).limit(limit);
+  return getDb().select({
+    id: communications.id,
+    salonId: communications.salonId,
+    clientId: communications.clientId,
+    appointmentId: communications.appointmentId,
+    type: communications.type,
+    channel: communications.channel,
+    direction: communications.direction,
+    content: communications.content,
+    status: communications.status,
+    sentAt: communications.sentAt,
+    deliveredAt: communications.deliveredAt,
+    readAt: communications.readAt,
+    externalId: communications.externalId,
+    errorMessage: communications.errorMessage,
+    // timestamp gravado em UTC — formatar no servidor com o fuso do Brasil
+    createdAt: sql`TO_CHAR(${communications.createdAt} AT TIME ZONE 'America/Sao_Paulo', 'DD/MM/YYYY HH24:MI')`
+  }).from(communications).where(eq(communications.salonId, salonId)).orderBy(desc(communications.createdAt)).limit(limit);
+}
+async function deleteCommunication(id, salonId) {
+  await getDb().delete(communications).where(and(eq(communications.id, id), eq(communications.salonId, salonId)));
 }
 async function createConsentForm(data) {
   const db = getDb();
@@ -80004,7 +80042,17 @@ async function createConsentForm(data) {
   return db.query.consentForms.findFirst({ where: eq(consentForms.id, id) });
 }
 async function getConsentFormsBySalon(salonId) {
-  return getDb().select().from(consentForms).where(
+  return getDb().select({
+    id: consentForms.id,
+    salonId: consentForms.salonId,
+    title: consentForms.title,
+    content: consentForms.content,
+    isRequired: consentForms.isRequired,
+    isActive: consentForms.isActive,
+    // timestamp gravado em UTC — formatar no servidor com o fuso do Brasil
+    createdAt: sql`TO_CHAR(${consentForms.createdAt} AT TIME ZONE 'America/Sao_Paulo', 'DD/MM/YYYY')`,
+    updatedAt: consentForms.updatedAt
+  }).from(consentForms).where(
     and(eq(consentForms.salonId, salonId), eq(consentForms.isActive, true))
   ).orderBy(consentForms.title);
 }
@@ -80012,6 +80060,20 @@ async function getConsentFormById(id, salonId) {
   return getDb().query.consentForms.findFirst({
     where: and(eq(consentForms.id, id), eq(consentForms.salonId, salonId))
   });
+}
+async function updateConsentForm(id, salonId, data) {
+  await getDb().update(consentForms).set(data).where(and(eq(consentForms.id, id), eq(consentForms.salonId, salonId)));
+  return getConsentFormById(id, salonId);
+}
+async function deleteConsentForm(id, salonId) {
+  const db = getDb();
+  await db.delete(consentSignatures).where(
+    and(
+      eq(consentSignatures.formId, id),
+      eq(consentSignatures.salonId, salonId)
+    )
+  );
+  await db.delete(consentForms).where(and(eq(consentForms.id, id), eq(consentForms.salonId, salonId)));
 }
 async function createConsentSignature(data) {
   const db = getDb();
@@ -80028,18 +80090,21 @@ async function getConsentSignaturesByClient(clientId, salonId) {
     )
   ).orderBy(desc(consentSignatures.signedAt));
 }
+async function todaySaoPaulo(db) {
+  const [row] = await db.select({
+    today: sql`TO_CHAR(NOW() AT TIME ZONE 'America/Sao_Paulo', 'YYYY-MM-DD')`
+  }).from(salons).limit(1);
+  return row.today;
+}
 async function getDashboardMetrics(salonId, month) {
   const db = getDb();
-  const today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
-  const currentDate = /* @__PURE__ */ new Date();
-  const prevMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() - 1,
-    1
-  );
-  const prevMonthStr = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
+  const today = await todaySaoPaulo(db);
+  const [ty, tm] = today.split("-").map(Number);
+  const prevMonthStr = `${tm === 1 ? ty - 1 : ty}-${String(tm === 1 ? 12 : tm - 1).padStart(2, "0")}`;
+  const yesterdaySql = sql`(TO_CHAR(NOW() AT TIME ZONE 'America/Sao_Paulo', 'YYYY-MM-DD'))::date - 1`;
   const [
     appointmentsToday,
+    appointmentsYesterday,
     appointmentsMonth,
     appointmentsPrevMonth,
     clientsTotal,
@@ -80049,13 +80114,21 @@ async function getDashboardMetrics(salonId, month) {
     recentActivity,
     pendingConsents,
     monthlyRevenue,
-    prevMonthRevenue
+    prevMonthRevenue,
+    revenueDaily
   ] = await Promise.all([
     // Agendamentos hoje
     db.select({ count: sql`COUNT(*)` }).from(appointments).where(
       and(
         eq(appointments.salonId, salonId),
         sql`${appointments.appointmentDate} = ${today}`
+      )
+    ),
+    // Agendamentos ontem (comparativo do KPI "Atendimentos hoje")
+    db.select({ count: sql`COUNT(*)` }).from(appointments).where(
+      and(
+        eq(appointments.salonId, salonId),
+        sql`${appointments.appointmentDate} = ${yesterdaySql}`
       )
     ),
     // Agendamentos mes atual
@@ -80156,37 +80229,48 @@ async function getDashboardMetrics(salonId, month) {
         eq(financialRecords.salonId, salonId),
         sql`TO_CHAR(${financialRecords.recordDate}, 'YYYY-MM') = ${prevMonthStr}`
       )
-    )
+    ),
+    // Receita por dia (mes atual) — alimenta o sparkline real do KPI
+    db.select({
+      total: sql`COALESCE(SUM(${financialRecords.amount}), 0)`
+    }).from(financialRecords).where(
+      and(
+        eq(financialRecords.salonId, salonId),
+        sql`TO_CHAR(${financialRecords.recordDate}, 'YYYY-MM') = ${month}`
+      )
+    ).groupBy(financialRecords.recordDate).orderBy(financialRecords.recordDate)
   ]);
-  const totalAppointments = (appointmentsMonth[0]?.scheduled || 0) + (appointmentsMonth[0]?.completed || 0);
-  const noShows = appointmentsMonth[0]?.noShow || 0;
+  const totalAppointments = Number(appointmentsMonth[0]?.scheduled ?? 0) + Number(appointmentsMonth[0]?.completed ?? 0);
+  const noShows = Number(appointmentsMonth[0]?.noShow ?? 0);
   const nsRate = totalAppointments > 0 ? noShows / totalAppointments * 100 : 0;
-  const revenue = monthlyRevenue[0]?.total || 0;
-  const prevRevenue = prevMonthRevenue[0]?.total || 0;
+  const revenue = Number(monthlyRevenue[0]?.total ?? 0);
+  const prevRevenue = Number(prevMonthRevenue[0]?.total ?? 0);
   const revenueGrowth = prevRevenue > 0 ? (revenue - prevRevenue) / prevRevenue * 100 : 0;
   return {
-    appointmentsToday: appointmentsToday[0]?.count || 0,
+    appointmentsToday: Number(appointmentsToday[0]?.count ?? 0),
+    appointmentsYesterday: Number(appointmentsYesterday[0]?.count ?? 0),
     appointmentsMonth: {
-      scheduled: appointmentsMonth[0]?.scheduled || 0,
-      completed: appointmentsMonth[0]?.completed || 0,
-      cancelled: appointmentsMonth[0]?.cancelled || 0,
-      noShow: appointmentsMonth[0]?.noShow || 0
+      scheduled: Number(appointmentsMonth[0]?.scheduled ?? 0),
+      completed: Number(appointmentsMonth[0]?.completed ?? 0),
+      cancelled: Number(appointmentsMonth[0]?.cancelled ?? 0),
+      noShow: Number(appointmentsMonth[0]?.noShow ?? 0)
     },
     appointmentsPrevMonth: {
-      scheduled: appointmentsPrevMonth[0]?.scheduled || 0,
-      completed: appointmentsPrevMonth[0]?.completed || 0,
-      cancelled: appointmentsPrevMonth[0]?.cancelled || 0,
-      noShow: appointmentsPrevMonth[0]?.noShow || 0
+      scheduled: Number(appointmentsPrevMonth[0]?.scheduled ?? 0),
+      completed: Number(appointmentsPrevMonth[0]?.completed ?? 0),
+      cancelled: Number(appointmentsPrevMonth[0]?.cancelled ?? 0),
+      noShow: Number(appointmentsPrevMonth[0]?.noShow ?? 0)
     },
-    clientsTotal: clientsTotal[0]?.count || 0,
-    newClientsThisMonth: newClientsThisMonth[0]?.count || 0,
-    newClientsPrevMonth: newClientsPrevMonth[0]?.count || 0,
+    clientsTotal: Number(clientsTotal[0]?.count ?? 0),
+    newClientsThisMonth: Number(newClientsThisMonth[0]?.count ?? 0),
+    newClientsPrevMonth: Number(newClientsPrevMonth[0]?.count ?? 0),
     noShowRate: Math.round(nsRate * 10) / 10,
     upcomingAppointments,
     recentActivity,
-    pendingConsents: pendingConsents[0]?.count || 0,
+    pendingConsents: Number(pendingConsents[0]?.count ?? 0),
     monthlyRevenue: revenue,
-    revenueGrowth: Math.round(revenueGrowth * 10) / 10
+    revenueGrowth: Math.round(revenueGrowth * 10) / 10,
+    revenueByDay: revenueDaily.map((r) => Number(r.total))
   };
 }
 async function getSalonBySlug(slug) {
@@ -80220,7 +80304,15 @@ async function getClientByPhone(salonId, phone) {
     )
   });
 }
+var SEGMENT_REFRESH_TTL_MS = 6e4;
+var segmentRefreshAt = /* @__PURE__ */ new Map();
+function invalidateClientSegments(salonId) {
+  segmentRefreshAt.delete(salonId);
+}
 async function refreshClientSegments(salonId) {
+  const last = segmentRefreshAt.get(salonId);
+  if (last && Date.now() - last < SEGMENT_REFRESH_TTL_MS) return;
+  segmentRefreshAt.set(salonId, Date.now());
   const db = getDb();
   const [settingsRow, clientRows] = await Promise.all([
     db.query.salons.findFirst({
@@ -80233,7 +80325,7 @@ async function refreshClientSegments(salonId) {
   ]);
   const cfg = parseClientStatusSettings(settingsRow?.settings);
   const now = /* @__PURE__ */ new Date();
-  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+  const monthStart = sql`(TO_CHAR(NOW() AT TIME ZONE 'America/Sao_Paulo', 'YYYY-MM') || '-01')::date`;
   const rows = await db.select({
     clientId: appointments.clientId,
     lastVisit: sql`max(${appointments.appointmentDate})`,
@@ -80245,6 +80337,7 @@ async function refreshClientSegments(salonId) {
     and(eq(appointments.salonId, salonId), eq(appointments.status, "completed"))
   ).groupBy(appointments.clientId);
   const stats = new Map(rows.map((r) => [r.clientId, r]));
+  const pendingUpdates = [];
   for (const client of clientRows) {
     const s = stats.get(client.id);
     const lastVisitAt = s?.lastVisit ? new Date(s.lastVisit) : null;
@@ -80266,9 +80359,17 @@ async function refreshClientSegments(salonId) {
       }
     }
     if (segment !== client.segment || totalVisits !== client.totalVisits || String(totalSpent) !== String(client.totalSpent) || (lastVisitAt?.getTime() ?? null) !== (client.lastVisitAt?.getTime() ?? null)) {
-      await db.update(clients).set({ segment, totalVisits, totalSpent, lastVisitAt }).where(eq(clients.id, client.id));
+      pendingUpdates.push({
+        id: client.id,
+        data: { segment, totalVisits, totalSpent, lastVisitAt }
+      });
     }
   }
+  await Promise.all(
+    pendingUpdates.map(
+      (u) => db.update(clients).set(u.data).where(eq(clients.id, u.id))
+    )
+  );
 }
 
 // server/salon-router.ts
@@ -80381,7 +80482,7 @@ function auditAction(action, entityType, salonId, userId, entityId, oldValue, ne
 
 // server/client-router.ts
 var customerRouter = createRouter({
-  list: authedQuery.input(external_exports.object({ salonId: external_exports.number(), limit: external_exports.number().default(100) })).query(async ({ input }) => {
+  list: authedQuery.input(external_exports.object({ salonId: external_exports.number(), limit: external_exports.number().default(1e3) })).query(async ({ input }) => {
     await refreshClientSegments(input.salonId);
     return getClientsBySalon(input.salonId, input.limit);
   }),
@@ -80404,6 +80505,7 @@ var customerRouter = createRouter({
       birthDate: data.birthDate || null,
       segment: "new"
     });
+    invalidateClientSegments(salonId);
     await auditAction(
       "create",
       "client",
@@ -80421,7 +80523,8 @@ var customerRouter = createRouter({
       salonId: external_exports.number(),
       name: external_exports.string().min(1).max(255).optional(),
       phone: external_exports.string().min(1).max(50).optional(),
-      birthDate: external_exports.string().optional(),
+      /** "" (campo limpo no form) grava NULL no banco — data é nullable */
+      birthDate: external_exports.string().nullable().optional(),
       notes: external_exports.string().optional(),
       tags: external_exports.string().optional(),
       segment: external_exports.enum(["new", "active", "vip", "at_risk", "inactive"]).optional(),
@@ -80432,9 +80535,10 @@ var customerRouter = createRouter({
     const { id, salonId, birthDate, segmentManual, ...data } = input;
     const result = await updateClient(id, salonId, {
       ...data,
-      birthDate: birthDate || void 0,
+      ...birthDate !== void 0 ? { birthDate: birthDate === "" ? null : birthDate } : {},
       ...segmentManual !== void 0 ? { segmentManual } : {}
     });
+    invalidateClientSegments(salonId);
     await auditAction(
       "update",
       "client",
@@ -80448,6 +80552,7 @@ var customerRouter = createRouter({
   }),
   delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
     await deleteClient(input.id, input.salonId);
+    invalidateClientSegments(input.salonId);
     await auditAction(
       "delete",
       "client",
@@ -80561,7 +80666,15 @@ var serviceRouter = createRouter({
 
 // server/professional-router.ts
 var professionalRouter = createRouter({
-  list: authedQuery.input(external_exports.object({ salonId: external_exports.number() })).query(({ input }) => getProfessionalsBySalon(input.salonId)),
+  list: authedQuery.input(
+    external_exports.object({
+      salonId: external_exports.number(),
+      /** true = traz também inativos (excluídos logicamente) */
+      includeInactive: external_exports.boolean().default(false)
+    })
+  ).query(
+    ({ input }) => getProfessionalsBySalon(input.salonId, input.includeInactive)
+  ),
   byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(({ input }) => getProfessionalById(input.id, input.salonId)),
   create: authedQuery.input(
     external_exports.object({
@@ -80621,6 +80734,30 @@ var professionalRouter = createRouter({
       data
     );
     return result;
+  }),
+  delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await deleteProfessional(input.id, input.salonId);
+    await auditAction(
+      "delete",
+      "professional",
+      input.salonId,
+      ctx.user?.id,
+      input.id
+    );
+    return { success: true };
+  }),
+  reactivate: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await reactivateProfessional(input.id, input.salonId);
+    await auditAction(
+      "update",
+      "professional",
+      input.salonId,
+      ctx.user?.id,
+      input.id,
+      void 0,
+      { reactivated: true }
+    );
+    return { success: true };
   })
 });
 
@@ -80747,8 +80884,14 @@ var financialRouter = createRouter({
   ).query(
     ({ input }) => getFinancialRecordsBySalon(input.salonId, input.fromDate, input.toDate)
   ),
-  summary: authedQuery.input(external_exports.object({ salonId: external_exports.number(), month: external_exports.string().optional() })).query(
-    ({ input }) => getFinancialSummaryBySalon(input.salonId, input.month)
+  summary: authedQuery.input(
+    external_exports.object({
+      salonId: external_exports.number(),
+      fromDate: external_exports.string().optional(),
+      toDate: external_exports.string().optional()
+    })
+  ).query(
+    ({ input }) => getFinancialSummaryBySalon(input.salonId, input.fromDate, input.toDate)
   ),
   create: authedQuery.input(
     external_exports.object({
@@ -80783,6 +80926,46 @@ var financialRouter = createRouter({
       { amount: String(amount), type: data.type }
     );
     return result;
+  }),
+  update: authedQuery.input(
+    external_exports.object({
+      id: external_exports.number(),
+      salonId: external_exports.number(),
+      amount: external_exports.string().or(external_exports.number()).optional(),
+      description: external_exports.string().min(1).max(255).optional(),
+      paymentMethod: external_exports.enum(["pix", "credit_card", "debit_card", "cash", "other"]).optional(),
+      recordDate: external_exports.string().optional()
+    })
+  ).mutation(async ({ input, ctx }) => {
+    const { id, salonId, amount, ...data } = input;
+    const result = await updateFinancialRecord(id, salonId, {
+      ...data,
+      ...amount !== void 0 ? { amount: String(amount) } : {}
+    });
+    await auditAction(
+      "update",
+      "financial_record",
+      salonId,
+      ctx.user?.id,
+      id,
+      void 0,
+      {
+        ...data,
+        ...amount !== void 0 ? { amount: String(amount) } : {}
+      }
+    );
+    return result;
+  }),
+  delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await deleteFinancialRecord(input.id, input.salonId);
+    await auditAction(
+      "delete",
+      "financial_record",
+      input.salonId,
+      ctx.user?.id,
+      input.id
+    );
+    return { success: true };
   })
 });
 
@@ -80826,6 +81009,17 @@ var communicationRouter = createRouter({
       { clientId: input.clientId, type: input.type }
     );
     return result;
+  }),
+  delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await deleteCommunication(input.id, input.salonId);
+    await auditAction(
+      "delete",
+      "communication",
+      input.salonId,
+      ctx.user?.id,
+      input.id
+    );
+    return { success: true };
   })
 });
 
@@ -80852,6 +81046,38 @@ var consentRouter = createRouter({
       { title: input.title }
     );
     return result;
+  }),
+  update: authedQuery.input(
+    external_exports.object({
+      id: external_exports.number(),
+      salonId: external_exports.number(),
+      title: external_exports.string().min(1).max(255).optional(),
+      content: external_exports.string().min(1).optional()
+    })
+  ).mutation(async ({ input, ctx }) => {
+    const { id, salonId, ...data } = input;
+    const result = await updateConsentForm(id, salonId, data);
+    await auditAction(
+      "update",
+      "consent_form",
+      salonId,
+      ctx.user?.id,
+      id,
+      void 0,
+      data
+    );
+    return result;
+  }),
+  delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await deleteConsentForm(input.id, input.salonId);
+    await auditAction(
+      "delete",
+      "consent_form",
+      input.salonId,
+      ctx.user?.id,
+      input.id
+    );
+    return { success: true };
   }),
   signaturesByClient: authedQuery.input(external_exports.object({ clientId: external_exports.number(), salonId: external_exports.number() })).query(
     ({ input }) => getConsentSignaturesByClient(input.clientId, input.salonId)
@@ -80901,6 +81127,22 @@ function floorToSlot(hhmm, stepMinutes = 30) {
   return `${String(Math.floor(floored / 60)).padStart(2, "0")}:${String(
     floored % 60
   ).padStart(2, "0")}`;
+}
+function generateSlots(dayStart, dayEnd, stepMinutes) {
+  const [sh, sm] = dayStart.split(":").map(Number);
+  const [eh, em] = dayEnd.split(":").map(Number);
+  const slots = [];
+  let t2 = sh * 60 + sm;
+  const end = eh * 60 + em;
+  while (t2 < end) {
+    slots.push(
+      `${String(Math.floor(t2 / 60)).padStart(2, "0")}:${String(
+        t2 % 60
+      ).padStart(2, "0")}`
+    );
+    t2 += stepMinutes;
+  }
+  return slots;
 }
 var phoneSchema = external_exports.string().regex(/^\(\d{2}\) \d{4,5}-\d{4}$/, {
   message: "Telefone inv\xE1lido. Use o formato (99) 99999-9999."
@@ -80959,11 +81201,10 @@ var publicRouter = createRouter({
       });
     }
     const schedule = parseScheduleSettings(salon.settings);
-    const dayAppointments = await getAppointmentsBySalon(
-      salon.id,
-      input.date,
-      input.date
-    );
+    const [dayAppointments, professionals2] = await Promise.all([
+      getAppointmentsBySalon(salon.id, input.date, input.date),
+      getPublicProfessionals(salon.id)
+    ]);
     const busyIntervals = dayAppointments.filter((a) => {
       if (a.status === "cancelled" || a.status === "no_show" || !a.endTime)
         return false;
@@ -80974,11 +81215,30 @@ var publicRouter = createRouter({
         { start: floorToSlot(a.startTime, schedule.slotMinutes), end: a.endTime }
       ];
     });
+    let freeSlots;
+    if (!input.professionalId && professionals2.length > 0) {
+      const duration3 = service.durationMinutes;
+      freeSlots = generateSlots(
+        schedule.dayStart,
+        schedule.dayEnd,
+        schedule.slotMinutes
+      ).filter((slot) => {
+        const slotEnd = addMinutes(slot, duration3);
+        return professionals2.some(
+          (p) => !dayAppointments.some((a) => {
+            if (a.status === "cancelled" || a.status === "no_show") return false;
+            if (a.professionalId !== p.id || !a.endTime) return false;
+            return a.startTime < slotEnd && a.endTime > slot;
+          })
+        );
+      });
+    }
     return {
       slotMinutes: schedule.slotMinutes,
       dayStart: schedule.dayStart,
       dayEnd: schedule.dayEnd,
-      busyIntervals
+      busyIntervals,
+      freeSlots
     };
   }),
   // Cria o agendamento vindo do link público
@@ -81011,14 +81271,12 @@ var publicRouter = createRouter({
         message: "Servi\xE7o n\xE3o encontrado."
       });
     }
-    if (input.professionalId) {
-      const professionals2 = await getPublicProfessionals(salon.id);
-      if (!professionals2.find((p) => p.id === input.professionalId)) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Profissional n\xE3o encontrado."
-        });
-      }
+    const professionals2 = await getPublicProfessionals(salon.id);
+    if (input.professionalId && !professionals2.find((p) => p.id === input.professionalId)) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Profissional n\xE3o encontrado."
+      });
     }
     const nowBR = new Date(
       (/* @__PURE__ */ new Date()).toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
@@ -81036,17 +81294,35 @@ var publicRouter = createRouter({
       input.date,
       input.date
     );
-    const conflict = dayAppointments.find((a) => {
-      if (a.status === "cancelled" || a.status === "no_show") return false;
-      const sameProfessional = input.professionalId ? a.professionalId === input.professionalId : a.professionalId === null;
-      if (!sameProfessional || !a.endTime) return false;
-      return a.startTime < newEnd && a.endTime > input.startTime;
-    });
-    if (conflict) {
-      throw new TRPCError({
-        code: "CONFLICT",
-        message: "Esse hor\xE1rio j\xE1 est\xE1 ocupado. Escolha outro hor\xE1rio."
+    let assignedProfessionalId = input.professionalId ?? null;
+    if (input.professionalId) {
+      const conflict = dayAppointments.find((a) => {
+        if (a.status === "cancelled" || a.status === "no_show") return false;
+        if (a.professionalId !== input.professionalId || !a.endTime)
+          return false;
+        return a.startTime < newEnd && a.endTime > input.startTime;
       });
+      if (conflict) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Esse hor\xE1rio j\xE1 est\xE1 ocupado. Escolha outro hor\xE1rio."
+        });
+      }
+    } else if (professionals2.length > 0) {
+      const free = professionals2.find(
+        (p) => !dayAppointments.some((a) => {
+          if (a.status === "cancelled" || a.status === "no_show") return false;
+          if (a.professionalId !== p.id || !a.endTime) return false;
+          return a.startTime < newEnd && a.endTime > input.startTime;
+        })
+      );
+      if (!free) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Esse hor\xE1rio j\xE1 est\xE1 ocupado. Escolha outro hor\xE1rio."
+        });
+      }
+      assignedProfessionalId = free.id;
     }
     let client = await getClientByPhone(salon.id, input.phone);
     if (!client) {
@@ -81066,7 +81342,7 @@ var publicRouter = createRouter({
       salonId: salon.id,
       clientId: client.id,
       serviceId: service.id,
-      professionalId: input.professionalId ?? null,
+      professionalId: assignedProfessionalId,
       appointmentDate: input.date,
       startTime: input.startTime,
       endTime: addMinutes(input.startTime, service.durationMinutes),
