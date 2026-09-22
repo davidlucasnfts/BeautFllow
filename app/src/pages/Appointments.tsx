@@ -20,7 +20,11 @@ import CheckoutDialog, {
 } from "@/components/appointments/CheckoutDialog";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import { useAppointmentForm } from "@/components/appointments/useAppointmentForm";
-import { generateTimeSlots, filterAvailableSlots } from "@/lib/time-slots";
+import {
+  generateTimeSlots,
+  filterAvailableSlots,
+  pastCutoffForDate,
+} from "@/lib/time-slots";
 import type {
   ViewMode,
   CalendarAppointment,
@@ -143,7 +147,13 @@ export default function Appointments() {
     ),
     busyIntervals,
     formService?.durationMinutes ?? 30
-  );
+  ).filter(slot => {
+    // se a data for hoje, esconde horários que já passaram
+    const cutoff = form.appointmentDate
+      ? pastCutoffForDate(form.appointmentDate)
+      : null;
+    return !cutoff || slot >= cutoff;
+  });
 
   const createMutation = trpc.appointment.create.useMutation({
     onSuccess: () => {

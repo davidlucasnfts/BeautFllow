@@ -1,4 +1,5 @@
 import { Schedule } from "@contracts/constants";
+import { dateBRToISO } from "./input-masks";
 
 function toMinutes(hhmm: string): number {
   const [h, m] = hhmm.split(":").map(Number);
@@ -52,4 +53,22 @@ export function filterAvailableSlots(
         toMinutes(busy.start) < slotEnd && toMinutes(busy.end) > toMinutes(slot)
     );
   });
+}
+
+/** Horário mínimo selecionável para uma data. Se a data for hoje (fuso de
+ *  Brasília), retorna o horário atual "HH:mm" — slots antes dele já passaram
+ *  e não devem aparecer. Para qualquer outra data, retorna null (sem corte). */
+export function pastCutoffForDate(isoDate: string): string | null {
+  const nowBR = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
+  );
+  const todayBR = dateBRToISO(
+    nowBR.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+  );
+  if (isoDate !== todayBR) return null;
+  return nowBR.toTimeString().slice(0, 5);
 }
