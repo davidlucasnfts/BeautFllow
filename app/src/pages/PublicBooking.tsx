@@ -332,6 +332,7 @@ export default function PublicBooking() {
                     }}
                     placeholder="Escolha a data"
                     fromDate={new Date()}
+                    minDate={new Date()}
                   />
                 </div>
                 <div className="grid gap-2">

@@ -87025,6 +87025,18 @@ var appointmentRouter = createRouter({
     })
   ).mutation(async ({ input, ctx }) => {
     const { salonId, ...data } = input;
+    const nowBR = new Date(
+      (/* @__PURE__ */ new Date()).toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
+    );
+    const requestedStart = /* @__PURE__ */ new Date(
+      `${data.appointmentDate}T${data.startTime}:00`
+    );
+    if (requestedStart < nowBR) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Esse hor\xE1rio j\xE1 passou. Escolha uma data futura."
+      });
+    }
     const result = await createAppointment({
       salonId,
       ...data,

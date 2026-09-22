@@ -120,6 +120,7 @@ export default function AppointmentDialog({
                 value={form.appointmentDate}
                 onChange={iso => onFieldChange("appointmentDate", iso)}
                 placeholder="Escolha a data"
+                minDate={new Date()}
               />
             </div>
             <div className="grid gap-2">

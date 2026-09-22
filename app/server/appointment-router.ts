@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { createRouter, authedQuery } from "./middleware";
 import {
   createAppointment,
@@ -75,6 +76,21 @@ export const appointmentRouter = createRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const { salonId, ...data } = input;
+
+      // Não permite agendar no passado (comparando em horário de Brasília)
+      const nowBR = new Date(
+        new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
+      );
+      const requestedStart = new Date(
+        `${data.appointmentDate}T${data.startTime}:00`
+      );
+      if (requestedStart < nowBR) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Esse horário já passou. Escolha uma data futura.",
+        });
+      }
+
       const result = await createAppointment({
         salonId,
         ...data,

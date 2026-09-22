@@ -31,6 +31,9 @@ interface DatePickerProps {
   disabled?: boolean;
   fromDate?: Date;
   toDate?: Date;
+  /** Data mínima selecionável — dias anteriores ficam desabilitados no
+   *  calendário (ex.: impede escolher datas passadas). */
+  minDate?: Date;
   className?: string;
 }
 
@@ -45,6 +48,7 @@ export default function DatePicker({
   disabled,
   fromDate,
   toDate,
+  minDate,
   className,
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
@@ -105,6 +109,7 @@ export default function DatePicker({
           captionLayout="dropdown"
           fromDate={start}
           toDate={end}
+          disabled={minDate ? { before: minDate } : undefined}
           formatters={{
             formatMonthDropdown: date =>
               date.toLocaleString("pt-BR", { month: "short" }),
