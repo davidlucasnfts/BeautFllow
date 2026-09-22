@@ -5,6 +5,8 @@
 ## Perfil do desenvolvedor
 David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code como ferramenta principal de desenvolvimento. Tem visão de produto e negócio, mas não escreve código manualmente. Quer projetos escaláveis e profissionais. Prefere entender o "porquê" além do "como".
 
+> **Toda ação manual do David deve vir com instrução didática completa e na hora — formato obrigatório na seção 17 do `MestreProjects.md` (padrão para todos os projetos).**
+
 ## Idioma e estilo de resposta
 - **Sempre em português** — perguntas, respostas, confirmações, tudo
 - **Modo direto:** resultado primeiro, sem rodeios, sem narração do processo
@@ -133,6 +135,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 003 | Duplicar informação de segurança | 10/05/2026 | Expandir arquivo existente, nunca criar duplicata |
 | 004 | Salvar no `MestreProjects.md` em vez de `AGENTS.md` | 11/05/2026 | Só salvar no global quando David disser "para todos os projetos" |
 | 005 | Criar schema_safe.sql manual em vez de migrations | 12/05/2026 | Usar `supabase/migrations/NNN-descricao.sql`, gerar schema_safe.sql juntando |
+| 006 | Trocar `truncate` por `break-words` sem largura mínima (texto esmagou a 1 caractere no tablet) | 22/09/2026 | `break-words` SEMPRE junto de `basis-XX` + container `flex-wrap` (regra "Listagens" no MestreProjects.md) |
 | 006 | Excluir registro sem confirmação (clique sem querer apagou cliente) | 06/09/2026 | **SEMPRE** AlertDialog de confirmação antes de qualquer delete, mostrando o nome do item. Nunca chamar mutation de delete direto no clique do botão |
 | 007 | Placeholder longo quebrou a caixa do Select em 2 linhas | 06/09/2026 | **SEMPRE** placeholder curto + `truncate` no `SelectValue`. Reler regras de front end do AGENTS.md ANTES de criar campo novo |
 | 008 | Espaço vazio grande no card de listagem | 06/09/2026 | O Card shadcn base vem com `py-6 gap-6` — em cards de listagem SEMPRE sobrescrever com `gap-1.5 py-2.5` no Card (tailwind-merge derruba o default) + header `p-4`. Ajustar só o CardHeader NÃO resolve |
@@ -263,6 +266,13 @@ Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a 
 - **Hover azul**: `hover:bg-blue-50/50` em todas as linhas
 - **Clique na linha** → abre preview/detalhes
 - Botões usam `stopPropagation`
+
+### Listagens — Nome de Pessoa NUNCA Truncado
+- **PROIBIDO `truncate` em nome** de cliente/profissional/usuário → usar `break-words`
+- **Sempre com largura mínima** na coluna de texto (`basis-32`/`basis-44`) — `break-words` sozinho esmaga o texto a 1 caractere em tela estreita
+- **Item com `flex-wrap`** (`flex-wrap items-center gap-x-3 gap-y-1`) → badge/botões descem para a linha de baixo em vez de espremer o nome
+- `truncate` permitido só em: e-mail, telefone, URL, texto de mensagem (preview)
+- Detalhe e porquê: seção "Listagens" do `MestreProjects.md`
 
 ### Modal/Dialog
 - Cancelar: `variant="outline"`
