@@ -136,6 +136,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 004 | Salvar no `MestreProjects.md` em vez de `AGENTS.md` | 11/05/2026 | Só salvar no global quando David disser "para todos os projetos" |
 | 005 | Criar schema_safe.sql manual em vez de migrations | 12/05/2026 | Usar `supabase/migrations/NNN-descricao.sql`, gerar schema_safe.sql juntando |
 | 006 | Trocar `truncate` por `break-words` sem largura mínima (texto esmagou a 1 caractere no tablet) | 22/09/2026 | `break-words` SEMPRE junto de `basis-XX` + container `flex-wrap` (regra "Listagens" no MestreProjects.md) |
+| 007 | Achar que `fromDate` do DatePicker bloqueia dias passados (só restringe navegação — dia de ontem continuava clicável) | 22/09/2026 | Data passada exige `minDate`/`disabled={{before}}` + trava no backend (regra "Agendamentos" no MestreProjects.md) |
 | 006 | Excluir registro sem confirmação (clique sem querer apagou cliente) | 06/09/2026 | **SEMPRE** AlertDialog de confirmação antes de qualquer delete, mostrando o nome do item. Nunca chamar mutation de delete direto no clique do botão |
 | 007 | Placeholder longo quebrou a caixa do Select em 2 linhas | 06/09/2026 | **SEMPRE** placeholder curto + `truncate` no `SelectValue`. Reler regras de front end do AGENTS.md ANTES de criar campo novo |
 | 008 | Espaço vazio grande no card de listagem | 06/09/2026 | O Card shadcn base vem com `py-6 gap-6` — em cards de listagem SEMPRE sobrescrever com `gap-1.5 py-2.5` no Card (tailwind-merge derruba o default) + header `p-4`. Ajustar só o CardHeader NÃO resolve |
@@ -273,6 +274,13 @@ Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a 
 - **Item com `flex-wrap`** (`flex-wrap items-center gap-x-3 gap-y-1`) → badge/botões descem para a linha de baixo em vez de espremer o nome
 - `truncate` permitido só em: e-mail, telefone, URL, texto de mensagem (preview)
 - Detalhe e porquê: seção "Listagens" do `MestreProjects.md`
+
+### Agendamentos — Datas e Horários
+- **Data passada nunca selecionável** → DatePicker com `minDate={new Date()}` (`fromDate` sozinho NÃO desabilita dias clicáveis — só restringe navegação)
+- **Horários passados de hoje nunca exibidos** → helper `pastCutoffForDate` em `@/lib/time-slots` (reutilizar nas duas agendas, não duplicar)
+- **Sempre trava no backend** na criação: rejeitar data/horário passado (comparação em `America/Sao_Paulo`, nunca fuso do servidor)
+- **Não travar** update de status de agendamentos antigos (concluir/cancelar ontem é legítimo)
+- Detalhe e porquê: seção "Agendamentos" do `MestreProjects.md`
 
 ### Modal/Dialog
 - Cancelar: `variant="outline"`
