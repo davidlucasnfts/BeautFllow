@@ -359,7 +359,7 @@ export default function Clients() {
                     {client.name.trim().charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">{client.name}</p>
+                    <p className="text-sm font-medium break-words">{client.name}</p>
                     <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                       <Badge
                         variant="secondary"

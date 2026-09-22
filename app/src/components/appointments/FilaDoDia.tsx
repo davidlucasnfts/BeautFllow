@@ -155,13 +155,13 @@ export default function FilaDoDia({
                   </div>
                   <div className="min-w-0 flex-1">
                     <p
-                      className={`text-sm font-medium truncate ${
+                      className={`text-sm font-medium break-words ${
                         cancelled ? "line-through" : ""
                       }`}
                     >
                       {client?.name ?? "Cliente"}
                     </p>
-                    <p className="text-xs text-muted-foreground truncate">
+                    <p className="text-xs text-muted-foreground break-words">
                       {service?.name ?? "Serviço"}
                     </p>
                   </div>

@@ -275,10 +275,10 @@ export default function Dashboard() {
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">
+                    <p className="text-sm font-medium break-words">
                       {appt.clientName}
                     </p>
-                    <p className="text-xs text-muted-foreground truncate">
+                    <p className="text-xs text-muted-foreground break-words">
                       {appt.serviceName} • {appt.professionalName}
                     </p>
                   </div>
@@ -327,10 +327,10 @@ export default function Dashboard() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">
+                    <p className="text-sm font-medium break-words">
                       {activity.clientName}
                     </p>
-                    <p className="text-xs text-muted-foreground truncate">
+                    <p className="text-xs text-muted-foreground break-words">
                       {activity.status === "completed"
                         ? "Atendimento concluído"
                         : activity.status === "cancelled"

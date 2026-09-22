@@ -218,7 +218,7 @@ export default function Communications() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium truncate">
+                      <span className="text-sm font-medium break-words">
                         {clientName(c.clientId)}
                       </span>
                       <Badge

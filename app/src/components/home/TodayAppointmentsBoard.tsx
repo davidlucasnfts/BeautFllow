@@ -84,10 +84,10 @@ export default function TodayAppointmentsBoard() {
                     {appt.startTime?.slice(0, 5)}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">
+                    <p className="text-sm font-medium break-words">
                       {client?.name ?? "Cliente"}
                     </p>
-                    <p className="text-xs text-muted-foreground truncate">
+                    <p className="text-xs text-muted-foreground break-words">
                       {service?.name ?? "Serviço"}
                     </p>
                   </div>

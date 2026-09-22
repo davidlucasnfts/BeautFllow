@@ -77,7 +77,7 @@ export function BirthdayWidget() {
                 <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10 text-primary text-sm font-semibold shrink-0">
                   {Number(client.birthDate.slice(8, 10))}
                 </span>
-                <span className="text-sm font-medium truncate">
+                <span className="text-sm font-medium break-words">
                   {client.name}
                 </span>
               </li>
