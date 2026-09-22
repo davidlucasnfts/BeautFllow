@@ -178,7 +178,7 @@ export default function Communications() {
                 }`}
                 onClick={() => setSelectedId(expanded ? null : c.id)}
               >
-                <div className="flex items-center gap-3 px-4 py-2.5">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5">
                   {/* Coluna de ações na primeira posição */}
                   <div className="flex flex-col gap-1 shrink-0">
                     <button
@@ -216,7 +216,7 @@ export default function Communications() {
                   <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center shrink-0">
                     <Icon className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 basis-44">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium break-words">
                         {clientName(c.clientId)}

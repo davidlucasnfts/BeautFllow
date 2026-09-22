@@ -257,7 +257,7 @@ export default function Dashboard() {
               metrics.upcomingAppointments.map(appt => (
                 <div
                   key={appt.id}
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                  className="flex flex-wrap items-center gap-x-3 gap-y-1 p-2 rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex flex-col items-center justify-center w-12 h-12 rounded-lg bg-primary/10 text-primary shrink-0">
                     <span className="text-xs font-medium">
@@ -274,7 +274,7 @@ export default function Dashboard() {
                       )}
                     </span>
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 basis-32">
                     <p className="text-sm font-medium break-words">
                       {appt.clientName}
                     </p>
@@ -313,7 +313,7 @@ export default function Dashboard() {
               metrics.recentActivity.map(activity => (
                 <div
                   key={activity.id}
-                  className="flex items-start gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                  className="flex flex-wrap items-start gap-x-3 gap-y-1 p-2 rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div className="mt-0.5">
                     {activity.status === "completed" ? (
@@ -326,7 +326,7 @@ export default function Dashboard() {
                       <CalendarDays className="h-4 w-4 text-blue-500" />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 basis-32">
                     <p className="text-sm font-medium break-words">
                       {activity.clientName}
                     </p>

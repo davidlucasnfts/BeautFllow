@@ -77,13 +77,13 @@ export default function TodayAppointmentsBoard() {
                   key={appt.id}
                   type="button"
                   onClick={() => navigate("/appointments")}
-                  className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-blue-50/50"
+                  className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-lg p-2 text-left transition-colors hover:bg-blue-50/50"
                 >
                   <div className="flex w-12 shrink-0 items-center justify-center gap-1 text-xs font-semibold text-primary">
                     <Clock className="h-3 w-3" />
                     {appt.startTime?.slice(0, 5)}
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 basis-32">
                     <p className="text-sm font-medium break-words">
                       {client?.name ?? "Cliente"}
                     </p>

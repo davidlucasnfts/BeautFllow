@@ -348,7 +348,7 @@ export default function Clients() {
                 }`}
                 onClick={() => setSelectedId(expanded ? null : client.id)}
               >
-                <div className="flex items-center gap-3 px-4 py-2.5">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5">
                   <div
                     className="h-9 w-9 rounded-full flex items-center justify-center shrink-0 text-sm font-bold"
                     style={{
@@ -358,7 +358,7 @@ export default function Clients() {
                   >
                     {client.name.trim().charAt(0).toUpperCase()}
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 basis-44">
                     <p className="text-sm font-medium break-words">{client.name}</p>
                     <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                       <Badge

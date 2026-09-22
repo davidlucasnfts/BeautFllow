@@ -144,7 +144,7 @@ export default function FilaDoDia({
                       setExpandedId(expanded ? null : appt.id);
                     }
                   }}
-                  className={`flex w-full cursor-pointer items-center gap-3 p-3 text-left transition-colors hover:bg-blue-50/50 ${
+                  className={`flex w-full cursor-pointer flex-wrap items-center gap-x-3 gap-y-1 p-3 text-left transition-colors hover:bg-blue-50/50 ${
                     cancelled ? "opacity-60" : ""
                   }`}
                 >
@@ -153,7 +153,7 @@ export default function FilaDoDia({
                       {appt.startTime?.slice(0, 5)}
                     </span>
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 basis-32">
                     <p
                       className={`text-sm font-medium break-words ${
                         cancelled ? "line-through" : ""
