@@ -103,29 +103,25 @@ export function InstallAppBanner() {
   if (!visible) return null;
 
   return (
-    <div className="flex items-start gap-3 p-4 rounded-lg border border-blue-200 bg-blue-50 text-blue-900">
-      <Smartphone className="h-5 w-5 shrink-0 mt-0.5" />
+    <div className="flex items-start gap-3 p-4 rounded-lg border border-primary/30 bg-primary/10">
+      <Smartphone className="h-5 w-5 shrink-0 mt-0.5 text-primary" />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium">
           Instale o StudioFlow{" "}
           {isMobile() ? "no seu celular" : "no seu computador"}
         </p>
-        <p className="text-xs text-blue-800/80 mt-0.5">
+        <p className="text-xs text-muted-foreground mt-0.5">
           Acesse como um aplicativo, em tela cheia, sem precisar abrir o
           navegador.
         </p>
 
         {deferredPrompt ? (
-          <Button
-            size="sm"
-            className="mt-2 bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={install}
-          >
+          <Button size="sm" className="mt-2" onClick={install}>
             <Download className="mr-2 h-4 w-4" />
             Instalar agora
           </Button>
         ) : isIos() && !isIosSafari() ? (
-          <div className="mt-2 text-xs text-blue-800/90 space-y-1">
+          <div className="mt-2 text-xs text-muted-foreground space-y-1">
             <p>
               No iPhone, só o <strong>Safari</strong> instala aplicativos.
             </p>
@@ -144,7 +140,7 @@ export function InstallAppBanner() {
             </ol>
           </div>
         ) : isIos() ? (
-          <ol className="mt-2 text-xs text-blue-800/90 space-y-1 list-decimal list-inside">
+          <ol className="mt-2 text-xs text-muted-foreground space-y-1 list-decimal list-inside">
             <li>
               Toque no botão{" "}
               <Share className="inline h-3.5 w-3.5 -mt-0.5" /> Compartilhar do
@@ -160,7 +156,7 @@ export function InstallAppBanner() {
             </li>
           </ol>
         ) : isFirefox() ? (
-          <div className="mt-2 text-xs text-blue-800/90 space-y-1">
+          <div className="mt-2 text-xs text-muted-foreground space-y-1">
             <p>
               O Firefox não instala aplicativos (PWA) — essa função ainda não
               existe nele.
@@ -172,7 +168,7 @@ export function InstallAppBanner() {
             </p>
           </div>
         ) : (
-          <ol className="mt-2 text-xs text-blue-800/90 space-y-1 list-decimal list-inside">
+          <ol className="mt-2 text-xs text-muted-foreground space-y-1 list-decimal list-inside">
             <li>
               Toque nos <strong>3 pontinhos</strong> (menu) no canto superior
               do navegador
@@ -191,7 +187,7 @@ export function InstallAppBanner() {
       <button
         type="button"
         aria-label="Dispensar"
-        className="shrink-0 p-1 rounded-md text-blue-700 hover:bg-blue-100 transition-colors"
+        className="shrink-0 p-1 rounded-md text-muted-foreground hover:bg-primary/20 transition-colors"
         onClick={dismiss}
       >
         <X className="h-4 w-4" />

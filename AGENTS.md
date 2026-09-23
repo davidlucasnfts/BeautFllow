@@ -141,6 +141,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 007 | Placeholder longo quebrou a caixa do Select em 2 linhas | 06/09/2026 | **SEMPRE** placeholder curto + `truncate` no `SelectValue`. Reler regras de front end do AGENTS.md ANTES de criar campo novo |
 | 008 | Espaço vazio grande no card de listagem | 06/09/2026 | O Card shadcn base vem com `py-6 gap-6` — em cards de listagem SEMPRE sobrescrever com `gap-1.5 py-2.5` no Card (tailwind-merge derruba o default) + header `p-4`. Ajustar só o CardHeader NÃO resolve |
 | 009 | Botão ícone-sozinho entregue em funcionalidade nova (WhatsApp na Fila do dia) | 07/09/2026 | ANTES de criar tela nova, reler a seção "Botões de Ação" do AGENTS.md: texto+ícone SEMPRE, inclusive em ações por linha (usar botão compacto `px-2 py-1 text-[11px]`), cores semânticas com fundo |
+| 010 | Cor fixa (`bg-blue-50`/`text-blue-900`) em componente interno — quebrou o tema por estabelecimento (banner PWA ficou azul num salão rosa) | 22/09/2026 | Dentro do app autenticado SEMPRE classes de tema (`bg-primary`, `text-foreground`, `text-muted-foreground`); cor fixa só em landing/auth e semânticas (sucesso/perigo/aviso). Ver regra "Cores do Projeto" no AGENTS.md |
 
 ### Checklist Obrigatório (executar antes de QUALQUER ação)
 
@@ -351,6 +352,8 @@ Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a 
 | Texto secundário | `slate-500` |
 | Fundo página | `slate-50` |
 | Fundo card | `white` |
+
+> **⚠️ REGRA CRÍTICA — Tema por estabelecimento:** dentro do app autenticado (Dashboard, páginas internas), o `AuthLayout` aplica o tema do salão (`getThemeCssVars` — rosa p/ salão, preto-dourado p/ barbearia, lilás p/ estética) sobrescrevendo `--primary` etc. **NUNCA usar cor fixa** (`blue-600`, `bg-blue-50`, `text-blue-900`...) em componente interno — usar sempre classes de tema: `bg-primary`, `text-primary`, `bg-primary/10`, `border-primary/30`, `text-foreground`, `text-muted-foreground`. Cor fixa só em: landing pública (que tem paleta própria por segmento), páginas de auth, e semânticas (sucesso/perigo/aviso).
 
 ---
 
