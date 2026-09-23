@@ -9,8 +9,9 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const DISMISS_KEY = "studioflow_install_banner_dismissed";
-// Dispensado, o banner reaparece depois deste período (não some pra sempre)
-const DISMISS_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+// Dispensado, o banner reaparece após este período — insiste até a pessoa
+// instalar (depois de instalado, some de vez; em outro aparelho o ciclo recomeça)
+const DISMISS_COOLDOWN_MS = 20 * 60 * 1000;
 
 function wasDismissedRecently(): boolean {
   const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || 0);
@@ -53,8 +54,8 @@ function isMobile(): boolean {
  *   orienta abrir no Safari primeiro (só o Safari instala no iOS).
  * - Firefox: não suporta instalação PWA — o guia explica a limitação e
  *   recomenda o Chrome para ter o app completo.
- * - Some quando já instalado ou dispensado; dispensado, reaparece após 7
- *   dias (cooldown em localStorage).
+ * - Some quando já instalado ou dispensado; dispensado, reaparece após 20
+ *   minutos (cooldown em localStorage) — em cada aparelho o ciclo é independente.
  */
 export function InstallAppBanner() {
   const [visible, setVisible] = useState(false);
