@@ -23,6 +23,7 @@ import { getSegmentLabel } from "@contracts/segment-labels";
 import { BirthdayWidget } from "@/components/home/BirthdayWidget";
 import { KpiCard } from "@/components/home/KpiCard";
 import { PublicLinkBanner } from "@/components/home/PublicLinkBanner";
+import { InstallAppBanner } from "@/components/home/InstallAppBanner";
 import TodayAppointmentsBoard from "@/components/home/TodayAppointmentsBoard";
 
 export default function Dashboard() {
@@ -77,6 +78,9 @@ export default function Dashboard() {
 
       {/* Link público de agendamento */}
       {salon && <PublicLinkBanner slug={salon.slug} />}
+
+      {/* Banner de instalação do app (PWA) */}
+      <InstallAppBanner />
 
       {/* Alertas */}
       {metrics && metrics.pendingConsents > 0 && (
