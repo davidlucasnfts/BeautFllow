@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 19/09/2026
-> **Sessão atual:** Polimento das 5 páginas pendentes concluído — **app inteiro no padrão design system**; smoke test completo é o próximo passo antes do push
+> **Atualizado em:** 22/09/2026
+> **Sessão atual:** PWA implementado (app instalável iOS/Android com guia) — commit local, aguardando push autorizado
 
 ---
 
@@ -32,6 +32,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 - **Decisões do David (20/09):** ① Mensagens/Comunicação = automatizar depois (só registrado, sem código agora); ② Termos LGPD = manter histórico → `deleteConsentForm` virou **soft delete** (`isActive = false`), exclusão física de assinaturas removida; listagens já filtram ativos; mutation `sign` trava server-side (`NOT_FOUND`) se o termo estiver inativo
 - **Configurações completada (21/09):** auditoria achou `salon.update` e `logoUrl` sem tela — implementado ① card "Dados do estabelecimento" (nome, telefone, e-mail, endereço, cidade, UF + **link público editável** com validação de slug único no backend, `CONFLICT` se ocupado) e ② card "Minha conta" com **trocar senha** (`localAuth.changePassword` — valida senha atual com bcrypt, nova mín. 8). `SalonContextType` ganhou phone/email/address/city/state. Logo (upload) ficou de fora — exige bucket no Supabase (ação manual)
 - **Esqueci a senha + olhinho (21/09):** fluxo completo de recuperação — `requestPasswordReset` (token SHA-256 no banco, expira 1h, uso único, resposta genérica não revela cadastro; e-mail via **Resend**, sem chave em dev o link vai pro terminal) + `resetPassword` + página `/redefinir-senha`. Migration `008-password-reset-tokens.sql` **já aplicada no banco**. Componente `PasswordInput` (olhinho) no login, cadastro, trocar senha e redefinir senha. Testado e2e de ponta a ponta contra o banco real (registrar → pedir reset → capturar link do terminal → resetar → login nova passa / antiga falha / reuso do token falha)
+- **PWA — app instalável (22/09):** `vite-plugin-pwa` (registerType autoUpdate, generateSW, API em NetworkOnly — **sem promessa de uso offline**, app depende da API). Ícones 192/512/maskable + apple-touch-icon gerados do `favicon.svg` (fundo blue-600 #2563eb). Meta Apple + theme-color no `index.html`. Componente `InstallAppBanner` no Dashboard: Android/Chrome captura `beforeinstallprompt` → botão "Instalar agora" (prompt nativo); iPhone/iPad mostra passo a passo (Compartilhar → Adicionar à Tela de Início); some quando instalado (`display-mode: standalone`) ou dispensado (localStorage). Só aparece em dispositivos móveis. Check + 86 testes + build OK
 - **Ações manuais pendentes (David):** ① criar conta no Resend (free) e configurar `RESEND_API_KEY` na Vercel — sem ela, em produção o "Esqueci a senha" responde erro; ② quando quiser o logo: criar bucket no Supabase Storage
 
 ### Antes, nesta mesma sessão (19/09 — polimento das 5 páginas pendentes):
@@ -196,6 +197,7 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [ ] **Testar cadastro/login em `https://studioflow-navy.vercel.app`** após o push destas correções
 - [x] **Deletar o projeto Vercel antigo (`beaut-flow`)** — deletado por David no painel Vercel em 06/09
 - [ ] **Foto do estabelecimento no perfil** (coluna `logoUrl` já existe no banco) — falta criar bucket no Supabase Storage e implementar o upload na aba Configurações
+- [ ] **Testar instalação do PWA em celular real** (David): Android/Chrome → banner "Instalar agora" no Dashboard; iPhone/Safari → seguir o passo a passo do banner. Só funciona em produção (HTTPS) após o push
 - [ ] Renomear repositório GitHub `BeautFllow` → `studioflow` (opcional)
 - [ ] Comprar domínio `studioflow.com.br` e configurar na Vercel (quando preparar para vender)
 - [ ] Adicionar `SENTRY_DSN` e `VITE_SENTRY_DSN` na Vercel (opcional — só se quiser usar)
