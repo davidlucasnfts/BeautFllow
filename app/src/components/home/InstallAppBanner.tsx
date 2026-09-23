@@ -22,17 +22,31 @@ function isIos(): boolean {
   return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
 }
 
+// No iOS, todos os navegadores são obrigados pela Apple a usar o motor do
+// Safari — só o Safari propriamente dispara essas instruções corretamente
+function isIosSafari(): boolean {
+  return isIos() && /safari/i.test(window.navigator.userAgent) &&
+    !/crios|fxios|edgios|opios/i.test(window.navigator.userAgent);
+}
+
+function isFirefox(): boolean {
+  return /firefox/i.test(window.navigator.userAgent);
+}
+
 function isMobile(): boolean {
   return /android|iphone|ipad|ipod/i.test(window.navigator.userAgent);
 }
 
 /**
- * Banner de instalação do PWA.
- * - Android/Chrome: usa beforeinstallprompt (botão "Instalar agora") quando o
- *   Chrome dispara o evento; se não disparar (regra do Chrome), mostra o guia
- *   manual pelo menu do navegador.
- * - iPhone/iPad (Safari não dispara o evento): passo a passo manual.
- * - Some quando já instalado ou quando o usuário dispensa (localStorage).
+ * Banner de instalação do PWA (cobertura multi-navegador).
+ * - Navegadores Chromium (Chrome, Edge, Samsung Internet, Brave, Opera —
+ *   Android e desktop): usa beforeinstallprompt (botão "Instalar agora")
+ *   quando o navegador dispara o evento; se não disparar, guia manual.
+ * - iPhone/iPad: passo a passo do Safari; se estiver em outro navegador,
+ *   orienta abrir no Safari primeiro (só o Safari instala no iOS).
+ * - Firefox: não suporta instalação PWA — o guia explica a limitação e
+ *   recomenda o Chrome para ter o app completo.
+ * - Some quando já instalado ou dispensado (localStorage).
  */
 export function InstallAppBanner() {
   const [visible, setVisible] = useState(false);
@@ -41,7 +55,6 @@ export function InstallAppBanner() {
 
   useEffect(() => {
     if (isInstalled() || localStorage.getItem(DISMISS_KEY)) return;
-    if (!isMobile()) return;
 
     const onBeforeInstall = (e: Event) => {
       e.preventDefault();
@@ -50,13 +63,18 @@ export function InstallAppBanner() {
     };
     window.addEventListener("beforeinstallprompt", onBeforeInstall);
 
-    // Android e iOS nem sempre disparam o evento — mostra o guia manual como
-    // fallback (se o evento chegar depois, o botão nativo substitui o guia)
-    const timer = setTimeout(() => setVisible(true), 2500);
+    // Navegadores nem sempre disparam o evento — no mobile mostra o guia
+    // manual como fallback (se o evento chegar depois, o botão nativo
+    // substitui o guia). No desktop sem evento, não mostra nada — evita
+    // instrução errada em navegador que não instala.
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    if (isMobile()) {
+      timer = setTimeout(() => setVisible(true), 2500);
+    }
 
     return () => {
       window.removeEventListener("beforeinstallprompt", onBeforeInstall);
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
     };
   }, []);
 
@@ -80,7 +98,8 @@ export function InstallAppBanner() {
       <Smartphone className="h-5 w-5 shrink-0 mt-0.5" />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium">
-          Instale o StudioFlow no seu celular
+          Instale o StudioFlow{" "}
+          {isMobile() ? "no seu celular" : "no seu computador"}
         </p>
         <p className="text-xs text-blue-800/80 mt-0.5">
           Acesse como um aplicativo, em tela cheia, sem precisar abrir o
@@ -96,6 +115,25 @@ export function InstallAppBanner() {
             <Download className="mr-2 h-4 w-4" />
             Instalar agora
           </Button>
+        ) : isIos() && !isIosSafari() ? (
+          <div className="mt-2 text-xs text-blue-800/90 space-y-1">
+            <p>
+              No iPhone, só o <strong>Safari</strong> instala aplicativos.
+            </p>
+            <ol className="space-y-1 list-decimal list-inside">
+              <li>
+                Copie o endereço desta página (toque na barra de endereço →
+                Copiar)
+              </li>
+              <li>
+                Abra o <strong>Safari</strong> e cole o endereço
+              </li>
+              <li>
+                Faça login — o guia de instalação vai aparecer aqui no
+                Dashboard
+              </li>
+            </ol>
+          </div>
         ) : isIos() ? (
           <ol className="mt-2 text-xs text-blue-800/90 space-y-1 list-decimal list-inside">
             <li>
@@ -112,11 +150,23 @@ export function InstallAppBanner() {
               aparecer na sua tela inicial
             </li>
           </ol>
+        ) : isFirefox() ? (
+          <div className="mt-2 text-xs text-blue-800/90 space-y-1">
+            <p>
+              O Firefox não instala aplicativos (PWA) — essa função ainda não
+              existe nele.
+            </p>
+            <p>
+              Para ter o StudioFlow como app no aparelho, acesse pelo{" "}
+              <strong>Chrome</strong> — o botão de instalar vai aparecer aqui
+              no Dashboard.
+            </p>
+          </div>
         ) : (
           <ol className="mt-2 text-xs text-blue-800/90 space-y-1 list-decimal list-inside">
             <li>
               Toque nos <strong>3 pontinhos</strong> (menu) no canto superior
-              do Chrome
+              do navegador
             </li>
             <li>
               Toque em <strong>Instalar app</strong> (ou{" "}
