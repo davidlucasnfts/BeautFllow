@@ -10,6 +10,7 @@ import { appRouter } from "./router";
 import { createContext } from "./context";
 import { env } from "./lib/env";
 import { getDb } from "./queries/connection";
+import { getTheme } from "@contracts/segment-palettes";
 
 // Sentry — error tracking (só em produção)
 if (env.isProduction && process.env.SENTRY_DSN) {
@@ -106,6 +107,39 @@ app.get("/health", async c => {
   } catch {
     return c.json({ status: "error", db: "disconnected", ts: Date.now() }, 503);
   }
+});
+
+// Manifest PWA dinâmico — cor e ícones seguem o tema do estabelecimento.
+// Fica em /api/* porque o rewrite da Vercel só encaminha /api/* ao servidor
+// (qualquer outra rota cai no index.html da SPA). O app autenticado aponta o
+// <link rel="manifest"> para cá com ?theme=<id>; sem parâmetro, usa o azul padrão.
+app.get("/api/pwa-manifest", c => {
+  const themeParam = c.req.query("theme");
+  const theme = themeParam ? getTheme(themeParam) : undefined;
+  const base = theme ? `/themes/${theme.id}` : "";
+  return c.json({
+    name: "StudioFlow",
+    short_name: "StudioFlow",
+    description:
+      "Gestão completa para salões de beleza, barbearias e clínicas de estética",
+    lang: "pt-BR",
+    start_url: "/dashboard",
+    scope: "/",
+    display: "standalone",
+    orientation: "portrait",
+    theme_color: theme ? theme.palette.primary : "#2563eb",
+    background_color: theme ? theme.palette.background : "#ffffff",
+    icons: [
+      { src: `${base}/icon-192.png`, sizes: "192x192", type: "image/png" },
+      { src: `${base}/icon-512.png`, sizes: "512x512", type: "image/png" },
+      {
+        src: `${base}/icon-512-maskable.png`,
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
+    ],
+  });
 });
 
 // tRPC handler

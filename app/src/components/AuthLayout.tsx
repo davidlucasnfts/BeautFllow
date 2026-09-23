@@ -46,6 +46,7 @@ import { getSegmentLabel, type SalonSegment } from "@contracts/segment-labels";
 import {
   getThemeCssVars,
   defaultThemeForSegment,
+  getTheme,
 } from "@contracts/segment-palettes";
 
 const planLabels: Record<string, string> = {
@@ -142,7 +143,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   }, [sidebarWidth]);
 
   // Tema também no <html>: portais (sheet mobile, dialogs) ficam fora da
-  // árvore do SidebarProvider e herdariam apenas a cor do :root
+  // árvore do SidebarProvider e herdariam apenas a cor do :root.
+  // Aproveita para trocar o manifest do PWA e a theme-color da barra do
+  // navegador: ícone e cor do app instalado seguem o tema do estabelecimento.
   useEffect(() => {
     if (typeof document === "undefined") return;
     const root = document.documentElement;
@@ -155,10 +158,44 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       previous[key] = root.style.getPropertyValue(key);
       root.style.setProperty(key, value);
     }
+
+    const theme = themeId ? getTheme(themeId) : undefined;
+    const manifestLink = document.querySelector<HTMLLinkElement>(
+      'link[rel="manifest"]'
+    );
+    const previousManifestHref = manifestLink?.getAttribute("href") ?? null;
+    manifestLink?.setAttribute(
+      "href",
+      theme ? `/api/pwa-manifest?theme=${theme.id}` : "/api/pwa-manifest"
+    );
+    const themeColorMeta = document.querySelector<HTMLMetaElement>(
+      'meta[name="theme-color"]'
+    );
+    const previousThemeColor = themeColorMeta?.getAttribute("content") ?? null;
+    if (theme) themeColorMeta?.setAttribute("content", theme.palette.primary);
+    // iPhone usa o apple-touch-icon (link estático) na instalação — troca também
+    const appleIconLink = document.querySelector<HTMLLinkElement>(
+      'link[rel="apple-touch-icon"]'
+    );
+    const previousAppleIcon = appleIconLink?.getAttribute("href") ?? null;
+    appleIconLink?.setAttribute(
+      "href",
+      theme ? `/themes/${theme.id}/apple-touch-icon.png` : "/apple-touch-icon.png"
+    );
+
     return () => {
       for (const key of Object.keys(vars)) {
         if (previous[key]) root.style.setProperty(key, previous[key]);
         else root.style.removeProperty(key);
+      }
+      if (previousManifestHref !== null) {
+        manifestLink?.setAttribute("href", previousManifestHref);
+      }
+      if (previousThemeColor !== null) {
+        themeColorMeta?.setAttribute("content", previousThemeColor);
+      }
+      if (previousAppleIcon !== null) {
+        appleIconLink?.setAttribute("href", previousAppleIcon);
       }
     };
   }, [salon]);

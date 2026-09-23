@@ -25,6 +25,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="StudioFlow" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- Manifest dinâmico: o app autenticado troca o href para
+         /api/pwa-manifest?theme=<id> com a cor do estabelecimento -->
+    <link rel="manifest" href="/api/pwa-manifest" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />

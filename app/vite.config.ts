@@ -13,28 +13,10 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "apple-touch-icon.png"],
-      manifest: {
-        name: "StudioFlow",
-        short_name: "StudioFlow",
-        lang: "pt-BR",
-        description:
-          "Gestão completa para salões de beleza, barbearias e clínicas de estética",
-        theme_color: "#2563eb",
-        background_color: "#ffffff",
-        display: "standalone",
-        orientation: "portrait",
-        start_url: "/dashboard",
-        icons: [
-          { src: "icon-192.png", sizes: "192x192", type: "image/png" },
-          { src: "icon-512.png", sizes: "512x512", type: "image/png" },
-          {
-            src: "icon-512-maskable.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
-          },
-        ],
-      },
+      // Manifest desativado aqui — o app serve um manifest DINÂMICO pela rota
+      // /api/pwa-manifest (cor/ícones seguem o tema do estabelecimento logado).
+      // O <link rel="manifest"> está manual no index.html apontando pra lá.
+      manifest: false,
       workbox: {
         navigateFallback: "index.html",
         // O app depende da API para tudo — nada de cache offline de dados
