@@ -28,8 +28,10 @@ function isMobile(): boolean {
 
 /**
  * Banner de instalação do PWA.
- * - Android/Chrome: captura beforeinstallprompt e abre o prompt nativo.
- * - iPhone/iPad (Safari não dispara o evento): mostra o passo a passo manual.
+ * - Android/Chrome: usa beforeinstallprompt (botão "Instalar agora") quando o
+ *   Chrome dispara o evento; se não disparar (regra do Chrome), mostra o guia
+ *   manual pelo menu do navegador.
+ * - iPhone/iPad (Safari não dispara o evento): passo a passo manual.
  * - Some quando já instalado ou quando o usuário dispensa (localStorage).
  */
 export function InstallAppBanner() {
@@ -48,15 +50,13 @@ export function InstallAppBanner() {
     };
     window.addEventListener("beforeinstallprompt", onBeforeInstall);
 
-    // iOS nunca dispara beforeinstallprompt — mostra o guia manual
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    if (isIos()) {
-      timer = setTimeout(() => setVisible(true), 1500);
-    }
+    // Android e iOS nem sempre disparam o evento — mostra o guia manual como
+    // fallback (se o evento chegar depois, o botão nativo substitui o guia)
+    const timer = setTimeout(() => setVisible(true), 2500);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", onBeforeInstall);
-      if (timer) clearTimeout(timer);
+      clearTimeout(timer);
     };
   }, []);
 
@@ -96,7 +96,7 @@ export function InstallAppBanner() {
             <Download className="mr-2 h-4 w-4" />
             Instalar agora
           </Button>
-        ) : (
+        ) : isIos() ? (
           <ol className="mt-2 text-xs text-blue-800/90 space-y-1 list-decimal list-inside">
             <li>
               Toque no botão{" "}
@@ -110,6 +110,21 @@ export function InstallAppBanner() {
             <li>
               Toque em <strong>Adicionar</strong> — o ícone do StudioFlow vai
               aparecer na sua tela inicial
+            </li>
+          </ol>
+        ) : (
+          <ol className="mt-2 text-xs text-blue-800/90 space-y-1 list-decimal list-inside">
+            <li>
+              Toque nos <strong>3 pontinhos</strong> (menu) no canto superior
+              do Chrome
+            </li>
+            <li>
+              Toque em <strong>Instalar app</strong> (ou{" "}
+              <strong>Adicionar à tela inicial</strong>)
+            </li>
+            <li>
+              Confirme em <strong>Instalar</strong> — o ícone do StudioFlow
+              vai aparecer na sua tela inicial
             </li>
           </ol>
         )}
