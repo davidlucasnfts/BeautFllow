@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StudioFlow — Mockup: Landing por Segmento (Salão de Beleza)</title>
+<style>
+  :root {
+    --primary: #e8a0bf;
+    --dark: #9d4e6b;
+    --dark-card: #7d3e55;
+    --dark-line: #a7637e;
+    --gold: #d4af37;
+    --gold-soft: #faf3dd;
+    --ink: #1e293b;
+    --muted: #57534e;
+    --line: #e7e5e4;
+    --bg: #fdf2f7;
+    --card: #ffffff;
+    --green: #16a34a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    padding: 24px 16px 64px;
+  }
+  .wrap { max-width: 1240px; margin: 0 auto; }
+  header h1 { font-size: 24px; font-weight: 700; }
+  header .meta { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .context {
+    background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px; margin: 16px 0; font-size: 14px;
+  }
+  .context strong { color: var(--dark); }
+  .context code { background: #f1f5f9; padding: 1px 6px; border-radius: 6px; font-size: 12px; }
+  .reco {
+    background: var(--gold-soft); border: 1px solid #e3d29a; border-radius: 12px;
+    padding: 14px 16px; margin: 16px 0 32px; font-size: 14px;
+  }
+  .reco b { color: #8a6d15; }
+
+  .frames { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+  .frame-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+  .phone, .desktop {
+    background: #fff; border: 1px solid #cbd5e1; border-radius: 16px; padding: 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.06);
+  }
+  .desktop { width: 960px; max-width: 100%; }
+  .phone { width: 390px; flex-shrink: 0; }
+  .screen {
+    border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+    background: var(--card);
+  }
+  .screen-scroll { overflow-y: auto; }
+
+  /* ============ LANDING (render fiel da página) ============ */
+  .lnav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px; border-bottom: 1px solid var(--line); background: #fff;
+  }
+  .lnav .logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; }
+  .lnav .logo .mark {
+    width: 26px; height: 26px; border-radius: 7px; background: var(--dark);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-family: Georgia, serif; font-weight: 600; font-size: 15px;
+  }
+  .lnav .actions { display: flex; gap: 10px; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border-radius: 10px; font-weight: 600; cursor: pointer; text-decoration: none;
+    border: 1px solid transparent; font-size: 14px; transition: opacity .15s;
+  }
+  .btn:hover { opacity: .88; }
+  .btn-primary { background: var(--dark); color: #fff; padding: 10px 18px; }
+  .btn-gold { background: var(--gold); color: #1c1917; padding: 10px 18px; }
+  .btn-outline { border-color: var(--line); color: var(--ink); background: #fff; padding: 10px 18px; }
+  .btn-lg { padding: 14px 28px; font-size: 16px; }
+
+  .lhero {
+    text-align: center; padding: 64px 24px 40px;
+    background: linear-gradient(to bottom, rgba(232,160,191,.25), #fff 60%);
+  }
+  .lhero .kicker {
+    display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: #8a6d15; background: var(--gold-soft);
+    border: 1px solid #e3d29a; padding: 6px 14px; border-radius: 999px; margin-bottom: 20px;
+  }
+  .lhero h1 {
+    font-family: Georgia, 'Times New Roman', serif; font-size: 44px; line-height: 1.1;
+    font-weight: 800; letter-spacing: -0.02em; margin-bottom: 18px;
+  }
+  .lhero h1 em { font-style: normal; color: var(--dark); }
+  .lhero .sub { font-size: 18px; color: var(--muted); max-width: 640px; margin: 0 auto 28px; }
+  .lhero .ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .lhero .micro { font-size: 12px; color: var(--muted); margin-top: 14px; }
+
+  .lmock {
+    margin: 36px auto 0; max-width: 780px; border: 1px solid var(--line);
+    border-radius: 14px; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    padding: 18px; text-align: left;
+  }
+  .lmock h4 { font-size: 13px; font-weight: 700; margin-bottom: 12px; display: flex; justify-content: space-between; }
+  .lmock h4 span { color: var(--muted); font-weight: 500; font-size: 12px; }
+  .lmock .row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; font-size: 13px;
+  }
+  .lmock .row .t { font-weight: 700; width: 48px; color: var(--dark); }
+  .lmock .row .who { flex: 1; }
+  .lmock .row .svc { color: var(--muted); }
+  .lmock .badge {
+    font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px;
+    background: #ecfdf5; color: var(--green); border: 1px solid #bbf7d0;
+  }
+  .lmock .badge.warn { background: var(--gold-soft); color: #8a6d15; border-color: #e3d29a; }
+
+  .lsection { padding: 56px 24px; max-width: 1040px; margin: 0 auto; }
+  .lsection h2 { font-size: 30px; font-weight: 800; text-align: center; letter-spacing: -0.01em; margin-bottom: 8px; }
+  .lsection .lead { text-align: center; color: var(--muted); max-width: 560px; margin: 0 auto 36px; font-size: 15px; }
+  .lsection.dark { background: var(--dark); color: #fdf2f7; max-width: none; }
+  .lsection.dark h2 { color: #fff; }
+  .lsection.dark .lead { color: #f3d7e2; }
+  .lsection.dark .inner { max-width: 1040px; margin: 0 auto; }
+
+  .statgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .stat {
+    background: #fff; border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px 12px; text-align: center;
+  }
+  .stat b { display: block; font-size: 26px; color: var(--dark); }
+  .stat.dark b { color: var(--gold); }
+  .stat span { font-size: 13px; color: var(--muted); }
+  .stat.dark { background: var(--dark-card); border-color: var(--dark-line); }
+  .stat.dark span { color: #f3d7e2; }
+
+  .featgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .feat {
+    background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px;
+  }
+  .feat .ic {
+    width: 40px; height: 40px; border-radius: 10px; background: var(--gold-soft);
+    border: 1px solid #e3d29a; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 12px;
+  }
+  .feat h3 { font-size: 16px; margin-bottom: 6px; }
+  .feat p { font-size: 14px; color: var(--muted); }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .step {
+    background: var(--dark-card); border: 1px solid var(--dark-line); border-radius: 14px; padding: 22px;
+  }
+  .step .n {
+    width: 30px; height: 30px; border-radius: 999px; background: var(--gold);
+    color: #1c1917; font-weight: 800; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px; font-size: 14px;
+  }
+  .step h3 { font-size: 16px; color: #fff; margin-bottom: 6px; }
+  .step p { font-size: 14px; color: #f3d7e2; }
+
+  .testigrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .testi {
+    background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px;
+    font-size: 14px;
+  }
+  .testi .stars { color: var(--gold); letter-spacing: 2px; margin-bottom: 10px; }
+  .testi p { color: var(--ink); margin-bottom: 14px; }
+  .testi .who b { display: block; font-size: 13px; }
+  .testi .who span { font-size: 12px; color: var(--muted); }
+
+  .faq { max-width: 720px; margin: 0 auto; }
+  .faq details {
+    background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 10px; font-size: 14px;
+  }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq details p { color: var(--muted); margin-top: 8px; }
+
+  .plangrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+  .plan {
+    background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px;
+    display: flex; flex-direction: column; position: relative;
+  }
+  .plan.hot { border: 2px solid var(--primary); }
+  .plan .tag {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--dark); color: #fff; font-size: 11px; font-weight: 700;
+    padding: 4px 14px; border-radius: 999px; white-space: nowrap;
+  }
+  .plan .tag.tbd { background: var(--gold); color: #1c1917; }
+  .plan h3 { font-size: 14px; color: var(--muted); font-weight: 600; }
+  .plan .price { font-size: 34px; font-weight: 800; margin: 4px 0 16px; }
+  .plan .price small { font-size: 14px; color: var(--muted); font-weight: 500; }
+  .plan ul { list-style: none; margin-bottom: 20px; flex: 1; }
+  .plan li { font-size: 14px; color: var(--muted); padding: 5px 0 5px 18px; position: relative; }
+  .plan li::before { content: ""; position: absolute; left: 4px; top: 12px; width: 6px; height: 6px; border-radius: 999px; background: var(--gold); }
+
+  .ctafinal {
+    text-align: center; padding: 64px 24px;
+    background: linear-gradient(135deg, #9d4e6b 0%, #7d3e55 100%); color: #fff;
+  }
+  .ctafinal h2 { font-family: Georgia, serif; font-size: 34px; margin-bottom: 12px; }
+  .ctafinal p { color: #f3d7e2; margin-bottom: 26px; }
+
+  .lfooter {
+    padding: 28px 24px; border-top: 1px solid var(--line); background: #fff;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+    font-size: 13px; color: var(--muted);
+  }
+
+  /* Mobile */
+  .phone .lhero { padding: 40px 16px 28px; }
+  .phone .lhero h1 { font-size: 30px; }
+  .phone .lhero .sub { font-size: 15px; }
+  .phone .statgrid { grid-template-columns: repeat(2, 1fr); }
+  .phone .featgrid, .phone .steps, .phone .testigrid, .phone .plangrid { grid-template-columns: 1fr; }
+  .phone .lsection { padding: 40px 16px; }
+  .phone .lsection h2 { font-size: 24px; }
+  .phone .ctafinal h2 { font-size: 26px; }
+  .phone .lnav .actions .hide-m { display: none; }
+  .phone .screen-scroll { height: 780px; }
+
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .segbar {
+    display: flex; gap: 8px; justify-content: center; margin: 14px 0 4px;
+  }
+  .segbar a {
+    font-size: 12px; color: var(--muted); text-decoration: none;
+    border: 1px solid var(--line); padding: 6px 14px; border-radius: 999px; background: #fff;
+  }
+  .segbar a.on { background: var(--dark); color: #fff; border-color: var(--dark); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Mockup — Landing por segmento: Salão de Beleza <span style="font-size:14px;color:var(--muted);font-weight:400">(/salao-de-beleza)</span></h1>
+    <div class="meta">StudioFlow · Fase 4 · proposta pra aprovação antes de codar · 23/09/2026</div>
+  </header>
+
+  <div class="context">
+    <strong>O que muda em relação à landing atual:</strong> a página inteira deixa de ser genérica e fala
+    <strong>só com dona de salão de beleza</strong> — vocabulário do nicho (escova, coloração, progressiva,
+    manicure, comissão), depoimentos de donas de salão, FAQ próprio e SEO com <code>&lt;title&gt;</code> e description dedicados
+    ("Sistema para salão de beleza: agenda, clientes e comissões"). A URL <code>/salao-de-beleza</code> é a que recebe anúncio
+    e pesquisa no Google. As mesmas seções existem hoje (hero, stats, features, como funciona, depoimentos, preços, CTA);
+    <strong>o que muda é 100% o conteúdo</strong> + seção nova de <strong>FAQ</strong> (SEO e objeções de venda).
+  </div>
+
+  <div class="reco">
+    <b>Recomendação:</b> aprovar este conteúdo e estrutura → replico a estrutura para <code>/barbearia</code>
+    e <code>/estetica</code> (mesma espinha dorsal, copy de cada nicho) → codificamos as 3 rotas.
+    <b>Preços:</b> valores abaixo são os atuais da landing, marcados como <b>"a definir"</b> — você decidiu
+    programar a definição depois, então o billing (cobrança real) fica pra Fase 5.
+  </div>
+
+  <div class="segbar">
+    <a href="#">Barbearia (/barbearia)</a>
+    <a href="#" class="on">Salão de Beleza</a>
+    <a href="#">Estética (/estetica)</a>
+    <a href="#">Genérica (/)</a>
+  </div>
+  <p class="note" style="text-align:center;margin-bottom:24px">Simulação: o visitante chegou direto pela URL /salao-de-beleza (anúncio ou Google). A barra acima NÃO aparece na página real — serve só pra você navegar entre as versões no mockup.</p>
+
+  <div class="frames">
+    <!-- ============ DESKTOP ============ -->
+    <div>
+      <div class="frame-label">Desktop — 960px</div>
+      <div class="desktop"><div class="screen">
+
+        <!-- NAVBAR -->
+        <nav class="lnav">
+          <div class="logo"><div class="mark">S</div> StudioFlow</div>
+          <div class="actions">
+            <a class="btn btn-outline hide-m" href="#precos">Planos</a>
+            <a class="btn btn-outline hide-m" href="#faq">Dúvidas</a>
+            <span class="hide-m" style="font-size:14px;color:var(--muted)">Entrar</span>
+            <a class="btn btn-primary" href="#">Começar Grátis</a>
+          </div>
+        </nav>
+
+        <!-- HERO -->
+        <section class="lhero">
+          <div class="kicker">Feito para salão de beleza</div>
+          <h1>Seu salão cheio, <em>sua agenda no automático</em><br />e suas clientes voltando.</h1>
+          <p class="sub">
+            Vários profissionais na mesma agenda — cabeleireira, manicure, esteticista. Cliente marca sozinha
+            pelo link, lembrete no WhatsApp e retorno automático de quem sumiu. Sua salão inteira no celular.
+          </p>
+          <div class="ctas">
+            <a class="btn btn-primary btn-lg" href="#">Testar grátis por 14 dias</a>
+            <a class="btn btn-outline btn-lg" href="#features">Ver como funciona</a>
+          </div>
+          <p class="micro">Sem cartão de crédito · 5 minutos pra começar · cancela quando quiser</p>
+
+          <!-- MOCKUP do app -->
+          <div class="lmock">
+            <h4>Agenda de hoje — Studio Bella Donna <span>visão da dona, no celular</span></h4>
+            <div class="row"><span class="t">09:00</span><span class="who">Camila R.</span><span class="svc">Escova · com a Patrícia</span><span class="badge">Confirmado</span></div>
+            <div class="row"><span class="t">10:00</span><span class="who">Fernanda S.</span><span class="svc">Coloração · com a Júlia</span><span class="badge">Confirmado</span></div>
+            <div class="row"><span class="t">11:30</span><span class="who">Larissa M.</span><span class="svc">Corte feminino · com a Patrícia</span><span class="badge warn">Lembrete enviado</span></div>
+            <div class="row"><span class="t">14:00</span><span class="who">— vago</span><span class="svc">manicure livre</span><span class="badge warn">Vago — link divulgando</span></div>
+          </div>
+        </section>
+
+        <!-- STATS -->
+        <section class="lsection" style="padding-top:8px">
+          <div class="statgrid">
+            <div class="stat"><b>35%</b><span>menos faltas com lembrete no WhatsApp</span></div>
+            <div class="stat"><b>5 min</b><span>da conta criada à primeira agenda</span></div>
+            <div class="stat"><b>0</b><span>planilhas de comissão no fim do mês</span></div>
+            <div class="stat"><b>100%</b><span>no celular — não precisa de computador</span></div>
+          </div>
+        </section>
+
+        <!-- FEATURES -->
+        <section class="lsection dark" id="features">
+          <div class="inner">
+            <h2>Tudo que acontece no seu salão, num só lugar</h2>
+            <p class="lead">Da primeira escova do dia ao fechamento do caixa, sem caderno, sem planilha e sem cliente esperando.</p>
+            <div class="featgrid">
+              <div class="feat">
+                <div class="ic">💇‍♀️</div>
+                <h3>Agenda por profissional</h3>
+                <p>Cada cabeleireira, manicure ou esteticista com seus horários. A cliente escolhe a profissional dela — e as agendas nunca se cruzam.</p>
+              </div>
+              <div class="feat">
+                <div class="ic">✂️</div>
+                <h3>Serviços com tempo certo</h3>
+                <p>Escova, coloração, progressiva — cada serviço com duração e preço certos. Cadeira nunca atrasa pra próxima cliente.</p>
+              </div>
+              <div class="feat">
+                <div class="ic">💰</div>
+                <h3>Comissão sem planilha</h3>
+                <p>Porcentagem por serviço ou por profissional. No fechamento, cada uma vê exatamente o que tem pra receber — sem discussão.</p>
+              </div>
+              <div class="feat">
+                <div class="ic">📲</div>
+                <h3>Cliente marca sozinha pelo link</h3>
+                <p>Você coloca o link na bio do Instagram e no WhatsApp. A agenda enche até fora do horário comercial, sem tirar você do salão.</p>
+              </div>
+              <div class="feat">
+                <div class="ic">🔁</div>
+                <h3>Cliente fiel, não faltosa</h3>
+                <p>Lembrete automático antes do horário e aviso pra trazer de volta quem sumiu há 30, 45 dias. Faltas caem, agenda enche.</p>
+              </div>
+              <div class="feat">
+                <div class="ic">📝</div>
+                <h3>Termo assinado no celular</h3>
+                <p>Alergia a produto químico, autorização de procedimento — a cliente assina no próprio celular e fica guardado conforme a LGPD.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- COMO FUNCIONA -->
+        <section class="lsection">
+          <h2>Começa hoje, agenda cheia amanhã</h2>
+          <p class="lead">Você não precisa entender de tecnologia. Se você usa WhatsApp, usa o StudioFlow.</p>
+          <div class="steps">
+            <div class="step">
+              <div class="n">1</div>
+              <h3>Cadastre em 5 minutos</h3>
+              <p>Profissionais e serviços com preço e duração. Sem instalar nada — funciona no navegador do celular.</p>
+            </div>
+            <div class="step">
+              <div class="n">2</div>
+              <h3>Divulgue seu link</h3>
+              <p>Coloca na bio do Instagram, no status do WhatsApp. Suas clientes veem horário livre e marcam na hora.</p>
+            </div>
+            <div class="step">
+              <div class="n">3</div>
+              <h3>Atenda e receba</h3>
+              <p>O lembrete confirma, a cliente aparece, o pagamento e a comissão de cada profissional são contabilizados sozinhos.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- DEPOIMENTOS -->
+        <section class="lsection" style="background:#fff;max-width:none">
+          <div style="max-width:1040px;margin:0 auto">
+            <h2>Quem tem salão cheio recomenda</h2>
+            <p class="lead">Salões de 1 a 8 profissionais usando o StudioFlow em todo o Brasil.</p>
+            <div class="testigrid">
+              <div class="testi">
+                <div class="stars">★★★★★</div>
+                <p>"Era uma agenda de papel e uma briga pra dividir horário entre 4 profissionais. Hoje cada uma tem a agenda dela e as faltas praticamente zeraram com o lembrete."</p>
+                <div class="who"><b>Patrícia Lima</b><span>Studio Patti Hair — Curitiba/PR</span></div>
+              </div>
+              <div class="testi">
+                <div class="stars">★★★★★</div>
+                <p>"O que me vendeu foi a comissão. Acabou aquela planilha no fim do mês e aquela conversa chata com profissional. Cada uma vê o número dela e pronto."</p>
+                <div class="who"><b>Juliana Costa</b><span>Espaço Jú — Recife/PE</span></div>
+              </div>
+              <div class="testi">
+                <div class="stars">★★★★★</div>
+                <p>"Cliente marca de madrugada pelo link. Eu acordo com o dia fechado. E quando a cliente some, o sistema me avisa pra chamar ela de volta."</p>
+                <div class="who"><b>Mariana Alves</b><span>Belle Cabelos — Salvador/BA</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="lsection" id="faq">
+          <h2>Perguntas de quem tem salão</h2>
+          <p class="lead">As dúvidas que toda dona de salão me faz antes de assinar.</p>
+          <div class="faq">
+            <details open>
+              <summary>Preciso de computador ou equipamento?</summary>
+              <p>Não. O StudioFlow funciona no navegador do seu celular, tablet ou PC. A cliente também agenda pelo celular dela, sem baixar nada.</p>
+            </details>
+            <details>
+              <summary>Minhas profissionais conseguem usar?</summary>
+              <p>Sim — cada profissional vê só a agenda e as comissões dela, numa tela simples. Se a pessoa usa WhatsApp, aprende em 5 minutos.</p>
+            </details>
+            <details>
+              <summary>Serve pra salão pequeno?</summary>
+              <p>Serve. O plano grátis atende 1 profissional com até 30 agendamentos por mês — perfeito pra começar. Cresceu, você migra de plano sem perder nada.</p>
+            </details>
+            <details>
+              <summary>Como a cliente agenda?</summary>
+              <p>Pelo seu link público, que você coloca no Instagram, no WhatsApp ou imprime em QR no balcão. Ela escolhe serviço, profissional e horário livre — sem ligar, sem mandar mensagem.</p>
+            </details>
+            <details>
+              <summary>E se eu já uso caderno ou outro sistema?</summary>
+              <p>Você cadastra clientes e serviços em minutos e a agenda do dia já funciona. Não temos importação automática de caderno 🙂 — mas a maioria migra numa tarde.</p>
+            </details>
+          </div>
+        </section>
+
+        <!-- PREÇOS -->
+        <section class="lsection" id="precos">
+          <h2>Preço de escova, não de aluguel</h2>
+          <p class="lead">Comece grátis. Escale quando a agenda encher. Sem taxa de setup, sem fidelidade.</p>
+          <div class="plangrid">
+            <div class="plan">
+              <h3>Free</h3>
+              <div class="price">R$ 0<small>/mês</small></div>
+              <ul>
+                <li>1 profissional</li>
+                <li>30 agendamentos/mês</li>
+                <li>Link público de agendamento</li>
+                <li>Cadastro de clientes</li>
+              </ul>
+              <a class="btn btn-outline" href="#" style="width:100%">Começar</a>
+            </div>
+            <div class="plan hot">
+              <div class="tag">Mais escolhido</div>
+              <h3>Essencial</h3>
+              <div class="price">R$ 89<small>/mês*</small></div>
+              <ul>
+                <li>Até 3 profissionais</li>
+                <li>Agendamento ilimitado</li>
+                <li>WhatsApp — 500 mensagens/mês</li>
+                <li>Comissão automática</li>
+                <li>Financeiro simples</li>
+              </ul>
+              <a class="btn btn-primary" href="#" style="width:100%">Assinar</a>
+            </div>
+            <div class="plan">
+              <div class="tag tbd">* valor a definir</div>
+              <h3>Pro</h3>
+              <div class="price">R$ 179<small>/mês*</small></div>
+              <ul>
+                <li>Até 8 profissionais</li>
+                <li>Termos digitais assinados no celular</li>
+                <li>Mensagens automáticas de retorno</li>
+                <li>Comissões avançadas</li>
+                <li>2000 mensagens/mês</li>
+              </ul>
+              <a class="btn btn-outline" href="#" style="width:100%">Assinar</a>
+            </div>
+          </div>
+          <p class="note" style="text-align:center;margin-top:18px">* Valores dos planos em validação — você vai definir os preços finais antes de ativar a cobrança (Fase 5).</p>
+        </section>
+
+        <!-- CTA FINAL -->
+        <section class="ctafinal">
+          <h2>Seu salão podia estar cheio amanhã.</h2>
+          <p>Cadastro em 5 minutos. Cliente marcando pelo link ainda hoje.</p>
+          <a class="btn btn-gold btn-lg" href="#">Criar minha conta grátis</a>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="lfooter">
+          <div class="logo" style="display:flex;align-items:center;gap:8px;font-weight:700"><div class="mark" style="width:22px;height:22px;border-radius:6px;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:13px">S</div> StudioFlow</div>
+          <div>© 2026 StudioFlow — Gestão para salões, barbearias e estéticas</div>
+          <div style="display:flex;gap:18px"><a href="#" style="color:var(--muted);text-decoration:none">Privacidade</a><a href="#" style="color:var(--muted);text-decoration:none">Termos</a><a href="#" style="color:var(--muted);text-decoration:none">Contato</a></div>
+        </footer>
+
+      </div></div>
+      <p class="note">Paleta da página: <b>rosa doce + dourado</b> (tema "Rosa" do salão) — mesmo catálogo de temas do app. Seções escuras em rosa profundo (#9d4e6b) pra reforçar a identidade feminina/elegante.</p>
+    </div>
+
+    <!-- ============ MOBILE ============ -->
+    <div>
+      <div class="frame-label">Mobile — 390px (com scroll)</div>
+      <div class="phone"><div class="screen"><div class="screen-scroll">
+
+        <nav class="lnav" style="padding:14px 16px">
+          <div class="logo"><div class="mark">S</div> StudioFlow</div>
+          <div class="actions">
+            <span class="hide-m" style="font-size:13px;color:var(--muted)">Entrar</span>
+            <a class="btn btn-primary" href="#" style="padding:8px 14px;font-size:13px">Começar</a>
+          </div>
+        </nav>
+
+        <section class="lhero">
+          <div class="kicker">Feito para salão de beleza</div>
+          <h1>Seu salão cheio, <em>sua agenda no automático</em> e suas clientes voltando.</h1>
+          <p class="sub">Várias profissionais na mesma agenda, cliente marcando sozinha pelo link e comissão sem planilha.</p>
+          <div class="ctas" style="flex-direction:column">
+            <a class="btn btn-primary btn-lg" href="#">Testar grátis por 14 dias</a>
+            <a class="btn btn-outline btn-lg" href="#features">Ver como funciona</a>
+          </div>
+          <p class="micro">Sem cartão · 5 minutos pra começar</p>
+
+          <div class="lmock" style="margin-top:24px">
+            <h4>Agenda de hoje <span>no seu celular</span></h4>
+            <div class="row"><span class="t">09:00</span><span class="who">Camila R.</span><span class="badge">OK</span></div>
+            <div class="row"><span class="t">10:00</span><span class="who">Fernanda S.</span><span class="badge">OK</span></div>
+            <div class="row"><span class="t">11:30</span><span class="who">Larissa M.</span><span class="badge warn">Lembrete</span></div>
+            <div class="row"><span class="t">14:00</span><span class="who">— vago</span><span class="badge warn">Divulgando</span></div>
+          </div>
+        </section>
+
+        <section class="lsection" style="padding-top:8px">
+          <div class="statgrid">
+            <div class="stat"><b>35%</b><span>menos faltas</span></div>
+            <div class="stat"><b>5 min</b><span>pra começar</span></div>
+            <div class="stat"><b>0</b><span>planilhas</span></div>
+            <div class="stat"><b>100%</b><span>no celular</span></div>
+          </div>
+        </section>
+
+        <section class="lsection dark" id="features">
+          <div class="inner">
+            <h2 style="font-size:24px">Tudo do seu salão num lugar só</h2>
+            <p class="lead">Sem caderno, sem planilha.</p>
+            <div class="featgrid">
+              <div class="feat">
+                <div class="ic">💇‍♀️</div>
+                <h3>Agenda por profissional</h3>
+                <p>A cliente escolhe a profissional dela. Agendas nunca se cruzam.</p>
+              </div>
+              <div class="feat">
+                <div class="ic">✂️</div>
+                <h3>Serviço com duração certa</h3>
+                <p>Escova, coloração, progressiva com preço e tempo certos. Cadeira nunca atrasa.</p>
+              </div>
+              <div class="feat">
+                <div class="ic">💰</div>
+                <h3>Comissão sem planilha</h3>
+                <p>Cada profissional vê o que tem pra receber. Sem discussão.</p>
+              </div>
+              <div class="feat">
+                <div class="ic">📲</div>
+                <h3>Cliente marca pelo link</h3>
+                <p>Na bio do Instagram. Agenda enche fora do horário comercial.</p>
+              </div>
+              <div class="feat">
+                <div class="ic">🔁</div>
+                <h3>Cliente fiel, não faltosa</h3>
+                <p>Lembrete automático e retorno de quem sumiu há 30, 45 dias.</p>
+              </div>
+              <div class="feat">
+                <div class="ic">📝</div>
+                <h3>Termo no celular</h3>
+                <p>Cliente assina no celular, guardado conforme a LGPD.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="lsection">
+          <h2 style="font-size:24px">Começa hoje, agenda cheia amanhã</h2>
+          <div class="steps">
+            <div class="step">
+              <div class="n">1</div>
+              <h3>Cadastre em 5 min</h3>
+              <p>Profissionais e serviços. No navegador do celular.</p>
+            </div>
+            <div class="step">
+              <div class="n">2</div>
+              <h3>Divulgue o link</h3>
+              <p>Instagram, WhatsApp. Cliente marca na hora.</p>
+            </div>
+            <div class="step">
+              <div class="n">3</div>
+              <h3>Atenda e receba</h3>
+              <p>Lembrete confirma, comissão se calcula sozinha.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="lsection" style="background:#fff;max-width:none">
+          <div style="max-width:1040px;margin:0 auto">
+            <h2 style="font-size:24px">Quem tem salão cheio recomenda</h2>
+            <div class="testigrid">
+              <div class="testi">
+                <div class="stars">★★★★★</div>
+                <p>"As faltas praticamente zeraram com o lembrete no WhatsApp."</p>
+                <div class="who"><b>Patrícia Lima</b><span>Patti Hair — Curitiba/PR</span></div>
+              </div>
+              <div class="testi">
+                <div class="stars">★★★★★</div>
+                <p>"Acabou a planilha de comissão e a conversa chata no fim do mês."</p>
+                <div class="who"><b>Juliana Costa</b><span>Espaço Jú — Recife/PE</span></div>
+              </div>
+              <div class="testi">
+                <div class="stars">★★★★★</div>
+                <p>"Acordo com o dia fechado. E o sistema me avisa quem sumiu."</p>
+                <div class="who"><b>Mariana Alves</b><span>Belle Cabelos — Salvador/BA</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="lsection" id="faq">
+          <h2 style="font-size:24px">Perguntas frequentes</h2>
+          <div class="faq">
+            <details open>
+              <summary>Preciso de computador?</summary>
+              <p>Não. Funciona no navegador do celular ou tablet.</p>
+            </details>
+            <details>
+              <summary>Serve pra salão pequeno?</summary>
+              <p>Sim — o plano grátis é feito pra começar.</p>
+            </details>
+            <details>
+              <summary>Como a cliente agenda?</summary>
+              <p>Pelo seu link público — Instagram, WhatsApp ou QR no balcão.</p>
+            </details>
+          </div>
+        </section>
+
+        <section class="lsection" id="precos">
+          <h2 style="font-size:24px">Preço de escova, não de aluguel</h2>
+          <p class="lead">Comece grátis. Escale quando encher.</p>
+          <div class="plangrid">
+            <div class="plan">
+              <h3>Free</h3>
+              <div class="price">R$ 0<small>/mês</small></div>
+              <ul>
+                <li>1 profissional</li>
+                <li>30 agendamentos/mês</li>
+                <li>Link público</li>
+              </ul>
+              <a class="btn btn-outline" href="#" style="width:100%">Começar</a>
+            </div>
+            <div class="plan hot">
+              <div class="tag">Mais escolhido</div>
+              <h3>Essencial</h3>
+              <div class="price">R$ 89<small>/mês*</small></div>
+              <ul>
+                <li>Até 3 profissionais</li>
+                <li>Agenda ilimitada</li>
+                <li>WhatsApp 500 msg/mês</li>
+                <li>Comissão automática</li>
+              </ul>
+              <a class="btn btn-primary" href="#" style="width:100%">Assinar</a>
+            </div>
+            <div class="plan">
+              <h3>Pro</h3>
+              <div class="price">R$ 179<small>/mês*</small></div>
+              <ul>
+                <li>Até 8 profissionais</li>
+                <li>Termos digitais</li>
+                <li>Mensagens de retorno</li>
+              </ul>
+              <a class="btn btn-outline" href="#" style="width:100%">Assinar</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="ctafinal">
+          <h2>Seu salão podia estar cheio amanhã.</h2>
+          <p>Cadastro em 5 minutos.</p>
+          <a class="btn btn-gold btn-lg" href="#">Criar conta grátis</a>
+        </section>
+
+        <footer class="lfooter" style="flex-direction:column;text-align:center">
+          <div>© 2026 StudioFlow</div>
+          <div style="display:flex;gap:16px"><a href="#" style="color:var(--muted);text-decoration:none">Privacidade</a><a href="#" style="color:var(--muted);text-decoration:none">Termos</a></div>
+        </footer>
+
+      </div></div></div>
+      <p class="note">Mobile: hero enxuto, mockup simplificado, CTAs empilhados. Mesmo conteúdo, adaptado ao espaço.</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
