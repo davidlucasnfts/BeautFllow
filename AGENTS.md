@@ -347,9 +347,9 @@ Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a 
 
 1. **Estrutura de persuasão obrigatória** (ordem): **Dor** (a frustração real do dono, no vocabulário dele) → **Custo de não agir** (quanto ele perde por mês sem o sistema) → **Mecanismo** (o produto como a ponte, com nome e função concretos) → **Prova** (depoimento, número, caso) → **Quebra de objeção** (garantia, sem cartão, 5 min) → **CTA único e direto**
 2. **Nunca listar funcionalidade seca** — toda feature vem com o benefício que ela entrega na vida do dono ("comissão automática" → "acabou a planilha e a briga com barbeiro no fim do mês")
-3. **Específico vence genérico** — números reais (R$, horas, %) em vez de "muito mais", "vários"; 1 detalhe concreto ("cliente marca às 23h") vale mais que 3 adjetivos
-4. **Vocabulário do nicho** — falar como o dono fala (cadeira, agenda cheia, cliente sumido; cliente NÃO é "usuário")
-5. **Gatilhos com parcimônia e verdade** — prova social, escassez e urgência só quando verdadeiros; nunca promessa falsa (LGPD, resultados)
+3. **Específico vence genérico — MAS número só se for verdade ou conta do leitor** — nunca inventar valor (R$ 50/falta) que pode não bater com a realidade do leitor e quebrar a identificação; quando o valor varia por leitor, fazer ELE somar com o número dele ("quanto custa UMA falta na SUA cadeira?"). Detalhe concreto e real ("cliente marca às 23h") vale mais que 3 adjetivos
+4. **Vocabulário do nicho** — falar como o dono fala (cadeira, agenda cheia, cliente sumido; cliente NÃO é "usuário"); metáfora só se for palavra que o leitor usaria no balcão (nada de jargão de marketing tipo "hemorragia")
+5. **Tom: firme na dor, respeitoso com a pessoa** — público é pequeno negócio de bairro, relação de confiança; agressividade queima venda. Gatilhos com parcimônia e verdade — prova social, escassez e urgência só quando verdadeiros; nunca promessa falsa (LGPD, resultados)
 6. **Uma página, um leitor, uma ação** — cada landing fala com UM segmento e pede UMA coisa (criar conta grátis)
 7. **Headline testável** — H1 segue fórmulas de resposta direta (resultado + prazo / pergunta de dor / comando direto), não slogan de marca
 8. **Antes de escrever copy de venda nova**, reler esta seção; texto aprovado pelo David é a régua — se o novo texto for mais fraco que a régua, reescrever antes de entregar
