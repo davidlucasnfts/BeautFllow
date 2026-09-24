@@ -142,6 +142,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 008 | Espaço vazio grande no card de listagem | 06/09/2026 | O Card shadcn base vem com `py-6 gap-6` — em cards de listagem SEMPRE sobrescrever com `gap-1.5 py-2.5` no Card (tailwind-merge derruba o default) + header `p-4`. Ajustar só o CardHeader NÃO resolve |
 | 009 | Botão ícone-sozinho entregue em funcionalidade nova (WhatsApp na Fila do dia) | 07/09/2026 | ANTES de criar tela nova, reler a seção "Botões de Ação" do AGENTS.md: texto+ícone SEMPRE, inclusive em ações por linha (usar botão compacto `px-2 py-1 text-[11px]`), cores semânticas com fundo |
 | 010 | Cor fixa (`bg-blue-50`/`text-blue-900`) em componente interno — quebrou o tema por estabelecimento (banner PWA ficou azul num salão rosa) | 22/09/2026 | Dentro do app autenticado SEMPRE classes de tema (`bg-primary`, `text-foreground`, `text-muted-foreground`); cor fixa só em landing/auth e semânticas (sucesso/perigo/aviso). Ver regra "Cores do Projeto" no AGENTS.md |
+| 011 | Copy de landing escrita como "descrição de produto" (funcionalidades secas) em vez de copywriting de resposta direta | 23/09/2026 | Texto de venda SEMPRE segue dor → custo de não agir → mecanismo → prova → quebra de objeção → CTA único. Ver seção "Copywriting" no AGENTS.md ANTES de escrever qualquer landing/anúncio/e-mail |
 
 ### Checklist Obrigatório (executar antes de QUALQUER ação)
 
@@ -340,6 +341,18 @@ Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a 
 2. **Checklist de excelência por página** — cada página responde: estado vazio existe e orienta? ações visíveis (texto+ícone)? tarefa em 2-3 toques? mobile+desktop? dados nunca se perdem (exclusão lógica, nomes de itens inativos continuam visíveis no histórico)?
 3. **Conselho sincero sempre** — dizer quando algo está "bom para MVP" vs. quando merece investimento de polimento, com prioridade e justificativa de negócio; nunca vender trabalho desnecessário
 4. **Diferencial estratégico do StudioFlow** — WhatsApp-first, reengajamento automático (cliente sumido, aniversariante, pós-atendimento), simplicidade para dono não-técnico. Decisões de produto devem fortalecer esses pilares, não seguir concorrente genérico
+
+### 📝 Copywriting — Regras de Marketing e Persuasão
+> Regra permanente (definida com David em 23/09/2026): qualquer texto de venda (landing, e-mail, anúncio, página de preço) é escrito como **copywriting de resposta direta**, não como descrição de produto. Kimi deve atuar como profissional de marketing/vendas ao escrever.
+
+1. **Estrutura de persuasão obrigatória** (ordem): **Dor** (a frustração real do dono, no vocabulário dele) → **Custo de não agir** (quanto ele perde por mês sem o sistema) → **Mecanismo** (o produto como a ponte, com nome e função concretos) → **Prova** (depoimento, número, caso) → **Quebra de objeção** (garantia, sem cartão, 5 min) → **CTA único e direto**
+2. **Nunca listar funcionalidade seca** — toda feature vem com o benefício que ela entrega na vida do dono ("comissão automática" → "acabou a planilha e a briga com barbeiro no fim do mês")
+3. **Específico vence genérico** — números reais (R$, horas, %) em vez de "muito mais", "vários"; 1 detalhe concreto ("cliente marca às 23h") vale mais que 3 adjetivos
+4. **Vocabulário do nicho** — falar como o dono fala (cadeira, agenda cheia, cliente sumido; cliente NÃO é "usuário")
+5. **Gatilhos com parcimônia e verdade** — prova social, escassez e urgência só quando verdadeiros; nunca promessa falsa (LGPD, resultados)
+6. **Uma página, um leitor, uma ação** — cada landing fala com UM segmento e pede UMA coisa (criar conta grátis)
+7. **Headline testável** — H1 segue fórmulas de resposta direta (resultado + prazo / pergunta de dor / comando direto), não slogan de marca
+8. **Antes de escrever copy de venda nova**, reler esta seção; texto aprovado pelo David é a régua — se o novo texto for mais fraco que a régua, reescrever antes de entregar
 
 ### Cores do Projeto (Tailwind)
 | Uso | Cor |
