@@ -21,6 +21,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { maskMoneyBR, moneyBRToDot } from "@/lib/input-masks";
 import DatePicker from "@/components/DatePicker";
+import { ClientCombobox } from "@/components/clients/ClientCombobox";
 
 export type FinancialRecordType =
   | "service"
@@ -131,22 +132,12 @@ export default function FinancialFormDialog({
           )}
           <div className="grid gap-2">
             <Label>Cliente</Label>
-            <Select
+            <ClientCombobox
+              clients={clients}
               value={form.clientId}
-              onValueChange={v => setForm({ ...form, clientId: v })}
+              onChange={v => setForm({ ...form, clientId: v })}
               disabled={!!editingId}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione" className="truncate" />
-              </SelectTrigger>
-              <SelectContent className="z-[60]">
-                {clients?.map(c => (
-                  <SelectItem key={c.id} value={String(c.id)}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">

@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { ClientCombobox } from "@/components/clients/ClientCombobox";
 
 type MessageChannel = "whatsapp" | "sms" | "email" | "in_app";
 type MessageType =
@@ -130,24 +131,12 @@ export default function MessageFormDialog({
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label>Cliente</Label>
-            <Select
+            <ClientCombobox
+              clients={clients}
               value={form.clientId}
-              onValueChange={v => setForm({ ...form, clientId: v })}
-            >
-              <SelectTrigger>
-                <SelectValue
-                  placeholder="Escolha o cliente"
-                  className="truncate"
-                />
-              </SelectTrigger>
-              <SelectContent className="z-[60]">
-                {clients.map(c => (
-                  <SelectItem key={c.id} value={String(c.id)}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onChange={v => setForm({ ...form, clientId: v })}
+              placeholder="Escolha o cliente"
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">

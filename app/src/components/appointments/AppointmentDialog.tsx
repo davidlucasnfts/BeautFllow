@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import DatePicker from "@/components/DatePicker";
+import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import type { AppointmentFormData } from "./useAppointmentForm";
 import type { Client, Professional, Service } from "@db/schema";
 
@@ -57,21 +58,11 @@ export default function AppointmentDialog({
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label>Cliente</Label>
-            <Select
+            <ClientCombobox
+              clients={clients}
               value={form.clientId}
-              onValueChange={v => onFieldChange("clientId", v)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent className="z-[60]">
-                {clients?.map(c => (
-                  <SelectItem key={c.id} value={String(c.id)}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onChange={v => onFieldChange("clientId", v)}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
