@@ -9,6 +9,7 @@ import {
   reactivateService,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
+import { assertSalonMember } from "./lib/tenant";
 
 export const serviceRouter = createRouter({
   list: authedQuery
@@ -19,13 +20,17 @@ export const serviceRouter = createRouter({
         includeInactive: z.boolean().default(false),
       })
     )
-    .query(({ input }) =>
-      getServicesBySalon(input.salonId, input.includeInactive)
-    ),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getServicesBySalon(input.salonId, input.includeInactive);
+    }),
 
   byId: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
-    .query(({ input }) => getServiceById(input.id, input.salonId)),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getServiceById(input.id, input.salonId);
+    }),
 
   create: authedQuery
     .input(
@@ -43,6 +48,7 @@ export const serviceRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const { salonId, price, ...data } = input;
       const result = await createService({
         salonId,
@@ -78,6 +84,7 @@ export const serviceRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const { id, salonId, price, ...data } = input;
       const result = await updateService(id, salonId, {
         ...data,
@@ -98,6 +105,7 @@ export const serviceRouter = createRouter({
   delete: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       await deleteService(input.id, input.salonId);
       await auditAction(
         "delete",
@@ -112,6 +120,7 @@ export const serviceRouter = createRouter({
   reactivate: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       await reactivateService(input.id, input.salonId);
       await auditAction(
         "update",

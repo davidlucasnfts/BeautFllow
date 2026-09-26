@@ -74822,6 +74822,9 @@ var themes = {
     )
   }
 };
+function getTheme(id) {
+  return themes[id];
+}
 function themesForSegment(segment) {
   return Object.values(themes).filter((t2) => t2.segment === segment);
 }
@@ -86569,6 +86572,35 @@ async function refreshClientSegments(salonId) {
   );
 }
 
+// server/lib/tenant.ts
+async function findMembership(userId, salonId) {
+  return getDb().query.salonUsers.findFirst({
+    where: and(
+      eq(salonUsers.salonId, salonId),
+      eq(salonUsers.userId, userId),
+      eq(salonUsers.isActive, true)
+    )
+  });
+}
+async function assertSalonMember(userId, salonId) {
+  const membership = await findMembership(userId, salonId);
+  if (!membership) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Acesso negado a este estabelecimento."
+    });
+  }
+}
+async function assertSalonAdmin(userId, salonId) {
+  const membership = await findMembership(userId, salonId);
+  if (!membership || membership.role !== "owner" && membership.role !== "admin") {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Acesso negado a este estabelecimento."
+    });
+  }
+}
+
 // server/salon-router.ts
 var salonSegmentSchema = external_exports.enum([
   "beauty_salon",
@@ -86623,7 +86655,8 @@ var salonRouter = createRouter({
         inactiveDays: external_exports.number().int().min(15).max(730)
       }).optional()
     })
-  ).mutation(async ({ input }) => {
+  ).mutation(async ({ input, ctx }) => {
+    await assertSalonAdmin(ctx.user.id, input.id);
     const { id, theme, clientStatus, ...schedule } = input;
     const current = await getSalonById(id);
     let existing = {};
@@ -86657,7 +86690,8 @@ var salonRouter = createRouter({
       city: external_exports.string().optional(),
       state: external_exports.string().optional()
     })
-  ).mutation(async ({ input }) => {
+  ).mutation(async ({ input, ctx }) => {
+    await assertSalonAdmin(ctx.user.id, input.id);
     const { id, slug, ...rest } = input;
     if (slug) {
       const current = await getSalonById(id);
@@ -86696,12 +86730,19 @@ function auditAction(action, entityType, salonId, userId, entityId, oldValue, ne
 
 // server/client-router.ts
 var customerRouter = createRouter({
-  list: authedQuery.input(external_exports.object({ salonId: external_exports.number(), limit: external_exports.number().default(1e3) })).query(async ({ input }) => {
+  list: authedQuery.input(external_exports.object({ salonId: external_exports.number(), limit: external_exports.number().default(1e3) })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     await refreshClientSegments(input.salonId);
     return getClientsBySalon(input.salonId, input.limit);
   }),
-  byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(({ input }) => getClientById(input.id, input.salonId)),
-  search: authedQuery.input(external_exports.object({ salonId: external_exports.number(), query: external_exports.string() })).query(({ input }) => searchClients(input.salonId, input.query)),
+  byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getClientById(input.id, input.salonId);
+  }),
+  search: authedQuery.input(external_exports.object({ salonId: external_exports.number(), query: external_exports.string() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return searchClients(input.salonId, input.query);
+  }),
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
@@ -86712,6 +86753,7 @@ var customerRouter = createRouter({
       tags: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const { salonId, ...data } = input;
     const result = await createClient({
       salonId,
@@ -86746,6 +86788,7 @@ var customerRouter = createRouter({
       segmentManual: external_exports.boolean().optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const { id, salonId, birthDate, segmentManual, ...data } = input;
     const result = await updateClient(id, salonId, {
       ...data,
@@ -86765,6 +86808,7 @@ var customerRouter = createRouter({
     return result;
   }),
   delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     await deleteClient(input.id, input.salonId);
     invalidateClientSegments(input.salonId);
     await auditAction(
@@ -86786,10 +86830,14 @@ var serviceRouter = createRouter({
       /** true = traz também inativos (excluídos logicamente) */
       includeInactive: external_exports.boolean().default(false)
     })
-  ).query(
-    ({ input }) => getServicesBySalon(input.salonId, input.includeInactive)
-  ),
-  byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(({ input }) => getServiceById(input.id, input.salonId)),
+  ).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getServicesBySalon(input.salonId, input.includeInactive);
+  }),
+  byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getServiceById(input.id, input.salonId);
+  }),
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
@@ -86804,6 +86852,7 @@ var serviceRouter = createRouter({
       postCareInstructions: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const { salonId, price, ...data } = input;
     const result = await createService({
       salonId,
@@ -86836,6 +86885,7 @@ var serviceRouter = createRouter({
       postCareInstructions: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const { id, salonId, price, ...data } = input;
     const result = await updateService(id, salonId, {
       ...data,
@@ -86853,6 +86903,7 @@ var serviceRouter = createRouter({
     return result;
   }),
   delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     await deleteService(input.id, input.salonId);
     await auditAction(
       "delete",
@@ -86864,6 +86915,7 @@ var serviceRouter = createRouter({
     return { success: true };
   }),
   reactivate: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     await reactivateService(input.id, input.salonId);
     await auditAction(
       "update",
@@ -86886,10 +86938,14 @@ var professionalRouter = createRouter({
       /** true = traz também inativos (excluídos logicamente) */
       includeInactive: external_exports.boolean().default(false)
     })
-  ).query(
-    ({ input }) => getProfessionalsBySalon(input.salonId, input.includeInactive)
-  ),
-  byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(({ input }) => getProfessionalById(input.id, input.salonId)),
+  ).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getProfessionalsBySalon(input.salonId, input.includeInactive);
+  }),
+  byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getProfessionalById(input.id, input.salonId);
+  }),
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
@@ -86902,6 +86958,7 @@ var professionalRouter = createRouter({
       workingHours: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const { salonId, commissionRate, ...data } = input;
     const result = await createProfessional({
       salonId,
@@ -86933,6 +86990,7 @@ var professionalRouter = createRouter({
       isActive: external_exports.boolean().optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const { id, salonId, commissionRate, ...data } = input;
     const result = await updateProfessional(id, salonId, {
       ...data,
@@ -86950,6 +87008,7 @@ var professionalRouter = createRouter({
     return result;
   }),
   delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     await deleteProfessional(input.id, input.salonId);
     await auditAction(
       "delete",
@@ -86961,6 +87020,7 @@ var professionalRouter = createRouter({
     return { success: true };
   }),
   reactivate: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     await reactivateProfessional(input.id, input.salonId);
     await auditAction(
       "update",
@@ -86983,9 +87043,14 @@ var appointmentRouter = createRouter({
       fromDate: external_exports.string().optional(),
       toDate: external_exports.string().optional()
     })
-  ).query(
-    ({ input }) => getAppointmentsBySalon(input.salonId, input.fromDate, input.toDate)
-  ),
+  ).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getAppointmentsBySalon(
+      input.salonId,
+      input.fromDate,
+      input.toDate
+    );
+  }),
   listByProfessional: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
@@ -86993,24 +87058,29 @@ var appointmentRouter = createRouter({
       fromDate: external_exports.string().optional(),
       toDate: external_exports.string().optional()
     })
-  ).query(
-    ({ input }) => getAppointmentsByProfessional(
+  ).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getAppointmentsByProfessional(
       input.salonId,
       input.professionalId,
       input.fromDate,
       input.toDate
-    )
-  ),
-  byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(({ input }) => getAppointmentById(input.id, input.salonId)),
+    );
+  }),
+  byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getAppointmentById(input.id, input.salonId);
+  }),
   historyByClient: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
       clientId: external_exports.number(),
       limit: external_exports.number().min(1).max(20).default(5)
     })
-  ).query(
-    ({ input }) => getClientHistory(input.salonId, input.clientId, input.limit)
-  ),
+  ).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getClientHistory(input.salonId, input.clientId, input.limit);
+  }),
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
@@ -87024,6 +87094,7 @@ var appointmentRouter = createRouter({
       source: external_exports.enum(["online", "whatsapp", "phone", "walk_in", "staff"]).default("staff")
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const { salonId, ...data } = input;
     const nowBR = new Date(
       (/* @__PURE__ */ new Date()).toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
@@ -87077,6 +87148,7 @@ var appointmentRouter = createRouter({
       ]).optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const { id, salonId, price, appointmentDate, ...data } = input;
     const updateData = { ...data };
     if (price !== void 0) updateData.price = String(price);
@@ -87107,18 +87179,28 @@ var financialRouter = createRouter({
       fromDate: external_exports.string().optional(),
       toDate: external_exports.string().optional()
     })
-  ).query(
-    ({ input }) => getFinancialRecordsBySalon(input.salonId, input.fromDate, input.toDate)
-  ),
+  ).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getFinancialRecordsBySalon(
+      input.salonId,
+      input.fromDate,
+      input.toDate
+    );
+  }),
   summary: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
       fromDate: external_exports.string().optional(),
       toDate: external_exports.string().optional()
     })
-  ).query(
-    ({ input }) => getFinancialSummaryBySalon(input.salonId, input.fromDate, input.toDate)
-  ),
+  ).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getFinancialSummaryBySalon(
+      input.salonId,
+      input.fromDate,
+      input.toDate
+    );
+  }),
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
@@ -87134,6 +87216,7 @@ var financialRouter = createRouter({
       notes: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const { salonId, amount, commissionAmount, recordDate, ...data } = input;
     const result = await createFinancialRecord({
       salonId,
@@ -87163,6 +87246,7 @@ var financialRouter = createRouter({
       recordDate: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const { id, salonId, amount, ...data } = input;
     const result = await updateFinancialRecord(id, salonId, {
       ...data,
@@ -87183,6 +87267,7 @@ var financialRouter = createRouter({
     return result;
   }),
   delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     await deleteFinancialRecord(input.id, input.salonId);
     await auditAction(
       "delete",
@@ -87197,10 +87282,14 @@ var financialRouter = createRouter({
 
 // server/communication-router.ts
 var communicationRouter = createRouter({
-  listByClient: authedQuery.input(external_exports.object({ clientId: external_exports.number(), salonId: external_exports.number() })).query(
-    ({ input }) => getCommunicationsByClient(input.clientId, input.salonId)
-  ),
-  listBySalon: authedQuery.input(external_exports.object({ salonId: external_exports.number(), limit: external_exports.number().default(50) })).query(({ input }) => getCommunicationsBySalon(input.salonId, input.limit)),
+  listByClient: authedQuery.input(external_exports.object({ clientId: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getCommunicationsByClient(input.clientId, input.salonId);
+  }),
+  listBySalon: authedQuery.input(external_exports.object({ salonId: external_exports.number(), limit: external_exports.number().default(50) })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getCommunicationsBySalon(input.salonId, input.limit);
+  }),
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
@@ -87221,6 +87310,7 @@ var communicationRouter = createRouter({
       status: external_exports.enum(["pending", "sent", "delivered", "read", "failed"]).default("sent")
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const result = await createCommunication({
       ...input,
       sentAt: input.status === "sent" ? /* @__PURE__ */ new Date() : void 0
@@ -87237,6 +87327,7 @@ var communicationRouter = createRouter({
     return result;
   }),
   delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     await deleteCommunication(input.id, input.salonId);
     await auditAction(
       "delete",
@@ -87251,8 +87342,14 @@ var communicationRouter = createRouter({
 
 // server/consent-router.ts
 var consentRouter = createRouter({
-  list: authedQuery.input(external_exports.object({ salonId: external_exports.number() })).query(({ input }) => getConsentFormsBySalon(input.salonId)),
-  byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(({ input }) => getConsentFormById(input.id, input.salonId)),
+  list: authedQuery.input(external_exports.object({ salonId: external_exports.number() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getConsentFormsBySalon(input.salonId);
+  }),
+  byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getConsentFormById(input.id, input.salonId);
+  }),
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
@@ -87261,6 +87358,7 @@ var consentRouter = createRouter({
       serviceId: external_exports.number().optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const result = await createConsentForm(input);
     await auditAction(
       "create",
@@ -87281,6 +87379,7 @@ var consentRouter = createRouter({
       content: external_exports.string().min(1).optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const { id, salonId, ...data } = input;
     const result = await updateConsentForm(id, salonId, data);
     await auditAction(
@@ -87295,6 +87394,7 @@ var consentRouter = createRouter({
     return result;
   }),
   delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     await deleteConsentForm(input.id, input.salonId);
     await auditAction(
       "delete",
@@ -87305,9 +87405,10 @@ var consentRouter = createRouter({
     );
     return { success: true };
   }),
-  signaturesByClient: authedQuery.input(external_exports.object({ clientId: external_exports.number(), salonId: external_exports.number() })).query(
-    ({ input }) => getConsentSignaturesByClient(input.clientId, input.salonId)
-  ),
+  signaturesByClient: authedQuery.input(external_exports.object({ clientId: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getConsentSignaturesByClient(input.clientId, input.salonId);
+  }),
   sign: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
@@ -87319,6 +87420,7 @@ var consentRouter = createRouter({
       userAgent: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
     const form = await getConsentFormById(input.formId, input.salonId);
     if (!form || !form.isActive) {
       throw new TRPCError({
@@ -87342,7 +87444,10 @@ var consentRouter = createRouter({
 
 // server/dashboard-router.ts
 var dashboardRouter = createRouter({
-  metrics: authedQuery.input(external_exports.object({ salonId: external_exports.number(), month: external_exports.string() })).query(({ input }) => getDashboardMetrics(input.salonId, input.month))
+  metrics: authedQuery.input(external_exports.object({ salonId: external_exports.number(), month: external_exports.string() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getDashboardMetrics(input.salonId, input.month);
+  })
 });
 
 // server/lib/booking.ts
@@ -87726,6 +87831,33 @@ app.get("/health", async (c) => {
   } catch {
     return c.json({ status: "error", db: "disconnected", ts: Date.now() }, 503);
   }
+});
+app.get("/api/pwa-manifest", (c) => {
+  const themeParam = c.req.query("theme");
+  const theme = themeParam ? getTheme(themeParam) : void 0;
+  const base = theme ? `/themes/${theme.id}` : "";
+  return c.json({
+    name: "StudioFlow",
+    short_name: "StudioFlow",
+    description: "Gest\xE3o completa para sal\xF5es de beleza, barbearias e cl\xEDnicas de est\xE9tica",
+    lang: "pt-BR",
+    start_url: "/dashboard",
+    scope: "/",
+    display: "standalone",
+    orientation: "portrait",
+    theme_color: theme ? theme.palette.primary : "#2563eb",
+    background_color: theme ? theme.palette.background : "#ffffff",
+    icons: [
+      { src: `${base}/icon-192.png`, sizes: "192x192", type: "image/png" },
+      { src: `${base}/icon-512.png`, sizes: "512x512", type: "image/png" },
+      {
+        src: `${base}/icon-512-maskable.png`,
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable"
+      }
+    ]
+  });
 });
 app.use("/api/trpc/*", async (c) => {
   return fetchRequestHandler({

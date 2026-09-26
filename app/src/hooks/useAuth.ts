@@ -1,4 +1,5 @@
 import { trpc } from "@/providers/trpc";
+import { SALON_STORAGE_KEY } from "@/providers/salon";
 import { useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { LOGIN_PATH } from "@/const";
@@ -28,6 +29,9 @@ export function useAuth(options?: UseAuthOptions) {
   });
 
   const logout = useCallback(() => {
+    // Limpa o salão ativo salvo — evita vazamento de dados entre contas
+    // que usam o mesmo navegador (troca de usuário).
+    localStorage.removeItem(SALON_STORAGE_KEY);
     logoutLocal.mutate();
   }, [logoutLocal]);
 

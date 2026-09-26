@@ -8,6 +8,7 @@ import {
   deleteFinancialRecord,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
+import { assertSalonMember } from "./lib/tenant";
 
 export const financialRouter = createRouter({
   list: authedQuery
@@ -18,9 +19,14 @@ export const financialRouter = createRouter({
         toDate: z.string().optional(),
       })
     )
-    .query(({ input }) =>
-      getFinancialRecordsBySalon(input.salonId, input.fromDate, input.toDate)
-    ),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getFinancialRecordsBySalon(
+        input.salonId,
+        input.fromDate,
+        input.toDate
+      );
+    }),
 
   summary: authedQuery
     .input(
@@ -30,9 +36,14 @@ export const financialRouter = createRouter({
         toDate: z.string().optional(),
       })
     )
-    .query(({ input }) =>
-      getFinancialSummaryBySalon(input.salonId, input.fromDate, input.toDate)
-    ),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getFinancialSummaryBySalon(
+        input.salonId,
+        input.fromDate,
+        input.toDate
+      );
+    }),
 
   create: authedQuery
     .input(
@@ -55,6 +66,7 @@ export const financialRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const { salonId, amount, commissionAmount, recordDate, ...data } = input;
       const result = await createFinancialRecord({
         salonId,
@@ -89,6 +101,7 @@ export const financialRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const { id, salonId, amount, ...data } = input;
       const result = await updateFinancialRecord(id, salonId, {
         ...data,
@@ -112,6 +125,7 @@ export const financialRouter = createRouter({
   delete: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       await deleteFinancialRecord(input.id, input.salonId);
       await auditAction(
         "delete",

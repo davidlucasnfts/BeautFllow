@@ -9,6 +9,7 @@ import {
   reactivateProfessional,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
+import { assertSalonMember } from "./lib/tenant";
 
 export const professionalRouter = createRouter({
   list: authedQuery
@@ -19,13 +20,17 @@ export const professionalRouter = createRouter({
         includeInactive: z.boolean().default(false),
       })
     )
-    .query(({ input }) =>
-      getProfessionalsBySalon(input.salonId, input.includeInactive)
-    ),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getProfessionalsBySalon(input.salonId, input.includeInactive);
+    }),
 
   byId: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
-    .query(({ input }) => getProfessionalById(input.id, input.salonId)),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getProfessionalById(input.id, input.salonId);
+    }),
 
   create: authedQuery
     .input(
@@ -41,6 +46,7 @@ export const professionalRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const { salonId, commissionRate, ...data } = input;
       const result = await createProfessional({
         salonId,
@@ -75,6 +81,7 @@ export const professionalRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const { id, salonId, commissionRate, ...data } = input;
       const result = await updateProfessional(id, salonId, {
         ...data,
@@ -97,6 +104,7 @@ export const professionalRouter = createRouter({
   delete: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       await deleteProfessional(input.id, input.salonId);
       await auditAction(
         "delete",
@@ -111,6 +119,7 @@ export const professionalRouter = createRouter({
   reactivate: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       await reactivateProfessional(input.id, input.salonId);
       await auditAction(
         "update",

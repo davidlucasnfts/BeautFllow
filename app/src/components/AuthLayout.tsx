@@ -279,6 +279,13 @@ function AuthLayoutContent({
   });
 
   useEffect(() => {
+    // Salão salvo de outra conta (troca de usuário no mesmo navegador):
+    // se o salão ativo não está na lista do usuário, descarta — o efeito
+    // seguinte seleciona o primeiro salão válido.
+    if (salon && salonsData && !salonsData.some(s => s.id === salon.id)) {
+      setSalon(null);
+      return;
+    }
     if (salonsData && salonsData.length > 0 && !salon) {
       const first = salonsData[0];
       setSalon({

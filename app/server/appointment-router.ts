@@ -10,6 +10,7 @@ import {
   updateAppointment,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
+import { assertSalonMember } from "./lib/tenant";
 
 export const appointmentRouter = createRouter({
   list: authedQuery
@@ -20,9 +21,14 @@ export const appointmentRouter = createRouter({
         toDate: z.string().optional(),
       })
     )
-    .query(({ input }) =>
-      getAppointmentsBySalon(input.salonId, input.fromDate, input.toDate)
-    ),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getAppointmentsBySalon(
+        input.salonId,
+        input.fromDate,
+        input.toDate
+      );
+    }),
 
   listByProfessional: authedQuery
     .input(
@@ -33,18 +39,22 @@ export const appointmentRouter = createRouter({
         toDate: z.string().optional(),
       })
     )
-    .query(({ input }) =>
-      getAppointmentsByProfessional(
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getAppointmentsByProfessional(
         input.salonId,
         input.professionalId,
         input.fromDate,
         input.toDate
-      )
-    ),
+      );
+    }),
 
   byId: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
-    .query(({ input }) => getAppointmentById(input.id, input.salonId)),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getAppointmentById(input.id, input.salonId);
+    }),
 
   historyByClient: authedQuery
     .input(
@@ -54,9 +64,10 @@ export const appointmentRouter = createRouter({
         limit: z.number().min(1).max(20).default(5),
       })
     )
-    .query(({ input }) =>
-      getClientHistory(input.salonId, input.clientId, input.limit)
-    ),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getClientHistory(input.salonId, input.clientId, input.limit);
+    }),
 
   create: authedQuery
     .input(
@@ -75,6 +86,7 @@ export const appointmentRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const { salonId, ...data } = input;
 
       // Não permite agendar no passado (comparando em horário de Brasília)
@@ -136,6 +148,7 @@ export const appointmentRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const { id, salonId, price, appointmentDate, ...data } = input;
       const updateData: Record<string, unknown> = { ...data };
       if (price !== undefined) updateData.price = String(price);

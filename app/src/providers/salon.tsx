@@ -32,12 +32,12 @@ export const SalonContext = createContext<{
   setSalon: (salon: SalonContextType | null) => void;
 } | null>(null);
 
-const STORAGE_KEY = "studioflow_active_salon";
+export const SALON_STORAGE_KEY = "studioflow_active_salon";
 
 export function SalonProvider({ children }: { children: ReactNode }) {
   const [salon, setSalonState] = useState<SalonContextType | null>(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(SALON_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
         // garante schedule e clientStatus (salvos antes dessas configs não tinham)
@@ -58,8 +58,8 @@ export function SalonProvider({ children }: { children: ReactNode }) {
 
   const setSalon = (s: SalonContextType | null) => {
     setSalonState(s);
-    if (s) localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
-    else localStorage.removeItem(STORAGE_KEY);
+    if (s) localStorage.setItem(SALON_STORAGE_KEY, JSON.stringify(s));
+    else localStorage.removeItem(SALON_STORAGE_KEY);
   };
 
   return (

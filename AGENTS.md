@@ -143,6 +143,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 009 | Botão ícone-sozinho entregue em funcionalidade nova (WhatsApp na Fila do dia) | 07/09/2026 | ANTES de criar tela nova, reler a seção "Botões de Ação" do AGENTS.md: texto+ícone SEMPRE, inclusive em ações por linha (usar botão compacto `px-2 py-1 text-[11px]`), cores semânticas com fundo |
 | 010 | Cor fixa (`bg-blue-50`/`text-blue-900`) em componente interno — quebrou o tema por estabelecimento (banner PWA ficou azul num salão rosa) | 22/09/2026 | Dentro do app autenticado SEMPRE classes de tema (`bg-primary`, `text-foreground`, `text-muted-foreground`); cor fixa só em landing/auth e semânticas (sucesso/perigo/aviso). Ver regra "Cores do Projeto" no AGENTS.md |
 | 011 | Copy de landing escrita como "descrição de produto" (funcionalidades secas) em vez de copywriting de resposta direta | 23/09/2026 | Texto de venda SEMPRE segue dor → custo de não agir → mecanismo → prova → quebra de objeção → CTA único. Ver seção "Copywriting" no AGENTS.md ANTES de escrever qualquer landing/anúncio/e-mail |
+| 012 | Resolver tRPC confiava no `salonId` do input sem validar vínculo do usuário (IDOR — qualquer conta acessava qualquer salão, LGPD) | 26/09/2026 | **TODO** resolver com `salonId` no input deve começar com `await assertSalonMember(ctx.user.id, input.salonId)` (ou `assertSalonAdmin` em operações administrativas) — `app/server/lib/tenant.ts`. Nunca confiar em identificador de tenant vindo do cliente |
 
 ### Checklist Obrigatório (executar antes de QUALQUER ação)
 
@@ -202,6 +203,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - Rate limiting por IP + por usuário autenticado
 - Validação de TODOS os inputs com Zod
 - RBAC funcional: buscar role real do banco no contexto da API
+- **Isolamento por tenant:** todo resolver que recebe `salonId` do input valida vínculo do usuário via `assertSalonMember`/`assertSalonAdmin` (`server/lib/tenant.ts`) — nunca confiar em identificador de tenant vindo do cliente (erro 012)
 - RLS habilitado em todas as tabelas com dados pessoais
 - Audit logs para operações sensíveis (create, update, delete, login, export)
 - `npm audit` no CI/CD — falhar em vulnerabilidades HIGH/CRITICAL

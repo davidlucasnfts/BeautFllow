@@ -7,17 +7,22 @@ import {
   deleteCommunication,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
+import { assertSalonMember } from "./lib/tenant";
 
 export const communicationRouter = createRouter({
   listByClient: authedQuery
     .input(z.object({ clientId: z.number(), salonId: z.number() }))
-    .query(({ input }) =>
-      getCommunicationsByClient(input.clientId, input.salonId)
-    ),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getCommunicationsByClient(input.clientId, input.salonId);
+    }),
 
   listBySalon: authedQuery
     .input(z.object({ salonId: z.number(), limit: z.number().default(50) }))
-    .query(({ input }) => getCommunicationsBySalon(input.salonId, input.limit)),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getCommunicationsBySalon(input.salonId, input.limit);
+    }),
 
   create: authedQuery
     .input(
@@ -47,6 +52,7 @@ export const communicationRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const result = await createCommunication({
         ...input,
         sentAt: input.status === "sent" ? new Date() : undefined,
@@ -66,6 +72,7 @@ export const communicationRouter = createRouter({
   delete: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       await deleteCommunication(input.id, input.salonId);
       await auditAction(
         "delete",

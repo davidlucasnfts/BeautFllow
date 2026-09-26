@@ -11,15 +11,22 @@ import {
   getConsentSignaturesByClient,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
+import { assertSalonMember } from "./lib/tenant";
 
 export const consentRouter = createRouter({
   list: authedQuery
     .input(z.object({ salonId: z.number() }))
-    .query(({ input }) => getConsentFormsBySalon(input.salonId)),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getConsentFormsBySalon(input.salonId);
+    }),
 
   byId: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
-    .query(({ input }) => getConsentFormById(input.id, input.salonId)),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getConsentFormById(input.id, input.salonId);
+    }),
 
   create: authedQuery
     .input(
@@ -31,6 +38,7 @@ export const consentRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const result = await createConsentForm(input);
       await auditAction(
         "create",
@@ -54,6 +62,7 @@ export const consentRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const { id, salonId, ...data } = input;
       const result = await updateConsentForm(id, salonId, data);
       await auditAction(
@@ -71,6 +80,7 @@ export const consentRouter = createRouter({
   delete: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       await deleteConsentForm(input.id, input.salonId);
       await auditAction(
         "delete",
@@ -84,9 +94,10 @@ export const consentRouter = createRouter({
 
   signaturesByClient: authedQuery
     .input(z.object({ clientId: z.number(), salonId: z.number() }))
-    .query(({ input }) =>
-      getConsentSignaturesByClient(input.clientId, input.salonId)
-    ),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getConsentSignaturesByClient(input.clientId, input.salonId);
+    }),
 
   sign: authedQuery
     .input(
@@ -101,6 +112,7 @@ export const consentRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       // trava server-side: termo inativo (excluído, histórico LGPD) não aceita assinatura
       const form = await getConsentFormById(input.formId, input.salonId);
       if (!form || !form.isActive) {

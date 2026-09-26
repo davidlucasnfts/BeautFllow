@@ -11,11 +11,13 @@ import {
   invalidateClientSegments,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
+import { assertSalonMember } from "./lib/tenant";
 
 export const customerRouter = createRouter({
   list: authedQuery
     .input(z.object({ salonId: z.number(), limit: z.number().default(1000) }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       // Recalcula totais e status automáticos antes de listar (híbrido)
       await refreshClientSegments(input.salonId);
       return getClientsBySalon(input.salonId, input.limit);
@@ -23,11 +25,17 @@ export const customerRouter = createRouter({
 
   byId: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
-    .query(({ input }) => getClientById(input.id, input.salonId)),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return getClientById(input.id, input.salonId);
+    }),
 
   search: authedQuery
     .input(z.object({ salonId: z.number(), query: z.string() }))
-    .query(({ input }) => searchClients(input.salonId, input.query)),
+    .query(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      return searchClients(input.salonId, input.query);
+    }),
 
   create: authedQuery
     .input(
@@ -41,6 +49,7 @@ export const customerRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const { salonId, ...data } = input;
       const result = await createClient({
         salonId,
@@ -80,6 +89,7 @@ export const customerRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       const { id, salonId, birthDate, segmentManual, ...data } = input;
       const result = await updateClient(id, salonId, {
         ...data,
@@ -104,6 +114,7 @@ export const customerRouter = createRouter({
   delete: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
       await deleteClient(input.id, input.salonId);
       invalidateClientSegments(input.salonId);
       await auditAction(
