@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import DatePicker from "@/components/DatePicker";
 import { ClientCombobox } from "@/components/clients/ClientCombobox";
+import { ServiceMultiSelect } from "./ServiceMultiSelect";
 import type { AppointmentFormData } from "./useAppointmentForm";
 import type { Client, Professional, Service } from "@db/schema";
 
@@ -88,7 +89,14 @@ export default function AppointmentDialog({
               <Label>Serviço</Label>
               <Select
                 value={form.serviceId}
-                onValueChange={v => onFieldChange("serviceId", v)}
+                onValueChange={v => {
+                  onFieldChange("serviceId", v);
+                  // o serviço principal não pode aparecer como adicional
+                  onFieldChange(
+                    "extraServiceIds",
+                    form.extraServiceIds.filter(id => id !== v)
+                  );
+                }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
@@ -102,6 +110,16 @@ export default function AppointmentDialog({
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="grid gap-2">
+            <Label>Serviços adicionais (opcional)</Label>
+            <ServiceMultiSelect
+              services={services}
+              selectedIds={form.extraServiceIds}
+              onChange={ids => onFieldChange("extraServiceIds", ids)}
+              excludeIds={form.serviceId ? [form.serviceId] : []}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

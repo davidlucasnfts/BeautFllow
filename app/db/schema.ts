@@ -11,6 +11,7 @@ import {
   date,
   time,
   integer,
+  jsonb,
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
@@ -320,6 +321,15 @@ export type InsertProfessional = typeof professionals.$inferInsert;
 // ==========================================
 // Appointments
 // ==========================================
+
+/** Snapshot de serviço adicional feito no atendimento (sobrevive a edição/exclusão do serviço) */
+export type AppointmentExtraService = {
+  id: number;
+  name: string;
+  price: string;
+  durationMinutes: number;
+};
+
 export const appointments = pgTable(
   "appointments",
   {
@@ -327,6 +337,10 @@ export const appointments = pgTable(
     salonId: bigint("salonId", { mode: "number" }).notNull(),
     clientId: bigint("clientId", { mode: "number" }).notNull(),
     serviceId: bigint("serviceId", { mode: "number" }).notNull(),
+    extraServices: jsonb("extraServices")
+      .$type<AppointmentExtraService[]>()
+      .default([])
+      .notNull(),
     professionalId: bigint("professionalId", { mode: "number" }),
     appointmentDate: date("appointmentDate").notNull(),
     startTime: time("startTime").notNull(),

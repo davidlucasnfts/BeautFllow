@@ -22,7 +22,9 @@ import { CheckCheck } from "lucide-react";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { maskMoneyBR, moneyBRToDot, moneyDotToBR } from "@/lib/input-masks";
+import { ServiceMultiSelect } from "./ServiceMultiSelect";
 import type { CalendarAppointment } from "@/components/calendar/types";
+import type { Service } from "@db/schema";
 
 export interface CheckoutTarget {
   appointment: CalendarAppointment;
@@ -44,12 +46,15 @@ const PAYMENT_OPTIONS = [
 
 interface CheckoutDialogProps {
   target: CheckoutTarget | null;
+  /** Serviços ativos do salão (para adicionar extras no atendimento) */
+  services?: Service[];
   onOpenChange: (open: boolean) => void;
 }
 
 /** Finalização do atendimento: registra o pagamento e conclui o compromisso */
 export default function CheckoutDialog({
   target,
+  services,
   onOpenChange,
 }: CheckoutDialogProps) {
   return (
@@ -58,6 +63,7 @@ export default function CheckoutDialog({
         <CheckoutForm
           key={target.appointment.id}
           target={target}
+          services={services}
           onClose={() => onOpenChange(false)}
         />
       )}
@@ -67,9 +73,11 @@ export default function CheckoutDialog({
 
 function CheckoutForm({
   target,
+  services,
   onClose,
 }: {
   target: CheckoutTarget;
+  services?: Service[];
   onClose: () => void;
 }) {
   const { salon } = useSalon();
@@ -77,6 +85,30 @@ function CheckoutForm({
   const [valor, setValor] = useState(() => moneyDotToBR(target.defaultAmount));
   const [paymentMethod, setPaymentMethod] = useState("pix");
   const [generateFinancial, setGenerateFinancial] = useState(true);
+  // Serviços adicionais feitos no atendimento (ex.: marcou escova, fez
+  // escova + hidratação). Inicia com os extras já registrados no agendamento.
+  const [extraIds, setExtraIds] = useState<string[]>(() => {
+    const available = new Set((services ?? []).map(s => String(s.id)));
+    return (target.appointment.extraServices ?? [])
+      .map(e => String(e.id))
+      .filter(id => available.has(id));
+  });
+
+  // Preço do serviço principal = valor sugerido inicial − extras já registrados
+  const mainPrice =
+    Number(target.defaultAmount) -
+    (target.appointment.extraServices ?? []).reduce(
+      (acc, e) => acc + Number(e.price),
+      0
+    );
+
+  function handleExtrasChange(ids: string[]) {
+    setExtraIds(ids);
+    const extrasTotal = (services ?? [])
+      .filter(s => ids.includes(String(s.id)))
+      .reduce((acc, s) => acc + Number(s.price), 0);
+    setValor(moneyDotToBR((mainPrice + extrasTotal).toFixed(2)));
+  }
 
   const updateMutation = trpc.appointment.update.useMutation({
     onSuccess: () => {
@@ -97,6 +129,7 @@ function CheckoutForm({
         id: target.appointment.id,
         salonId: salon.id,
         status: "completed",
+        extraServiceIds: extraIds.map(Number),
       });
     },
     onError: e => toast.error(e.message),
@@ -111,6 +144,10 @@ function CheckoutForm({
       toast.error("Informe um valor maior que zero para concluir.");
       return;
     }
+    const extraNames = (services ?? [])
+      .filter(s => extraIds.includes(String(s.id)))
+      .map(s => s.name);
+    const description = [target.serviceName, ...extraNames].join(" + ");
     if (generateFinancial) {
       financialMutation.mutate({
         salonId: salon.id,
@@ -118,8 +155,8 @@ function CheckoutForm({
         clientId: target.clientId,
         professionalId: target.professionalId ?? undefined,
         type: "service",
-        // descrição só com o serviço — o cliente aparece em coluna própria na lista
-        description: target.serviceName,
+        // descrição só com os serviços — o cliente aparece em coluna própria
+        description,
         amount: moneyBRToDot(valor),
         paymentMethod: paymentMethod as
           | "pix"
@@ -133,6 +170,7 @@ function CheckoutForm({
         id: target.appointment.id,
         salonId: salon.id,
         status: "completed",
+        extraServiceIds: extraIds.map(Number),
       });
     }
   }
@@ -154,6 +192,17 @@ function CheckoutForm({
             value={valor}
             onChange={e => setValor(maskMoneyBR(e.target.value, 7))}
             placeholder="0,00"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label>Serviços adicionais realizados</Label>
+          <ServiceMultiSelect
+            services={services}
+            selectedIds={extraIds}
+            onChange={handleExtrasChange}
+            excludeIds={[String(target.appointment.serviceId)]}
+            placeholder="Nenhum — tocar para adicionar"
           />
         </div>
 

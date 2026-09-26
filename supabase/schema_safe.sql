@@ -379,3 +379,51 @@ $$;
 
 ALTER TABLE clients DROP COLUMN IF EXISTS cpf;
 ALTER TABLE clients DROP COLUMN IF EXISTS email;
+
+
+-- ============================================================
+-- MIGRATION 007: Status híbrido do cliente (segmento manual)
+-- Data: 08/09/2026
+-- Descricao: Quando segmentManual = true, as regras automáticas
+--            (VIP/sumindo/inativo) não mexem no status. Quando
+--            false (padrão), o sistema atualiza sozinho conforme
+--            gasto/atendimentos e tempo sem vir.
+-- ============================================================
+
+ALTER TABLE clients
+  ADD COLUMN IF NOT EXISTS "segmentManual" boolean NOT NULL DEFAULT false;
+
+
+-- ============================================================
+-- MIGRATION 008: Recuperação de senha (esqueci a senha)
+-- Data: 21/09/2026
+-- Descricao: Tokens de uso único com expiração de 1h. Guardamos
+--            apenas o hash SHA-256 do token — quem tem acesso ao
+--            banco não consegue reutilizar um token.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id SERIAL PRIMARY KEY,
+  "userId" INTEGER NOT NULL REFERENCES local_users(id) ON DELETE CASCADE,
+  "tokenHash" VARCHAR(64) NOT NULL,
+  "expiresAt" TIMESTAMP NOT NULL,
+  "usedAt" TIMESTAMP,
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS password_reset_tokens_user_idx
+  ON password_reset_tokens("userId");
+
+
+-- ============================================================
+-- MIGRATION 009: Múltiplos serviços por atendimento
+-- Data: 26/09/2026
+-- Descricao: Snapshot em JSONB dos serviços adicionais feitos no
+--            mesmo atendimento (ex.: escova + hidratação). Guarda
+--            nome/preço/duração da época, então sobrevive à edição
+--            ou exclusão lógica do serviço. O serviço principal
+--            continua em "serviceId".
+-- ============================================================
+
+ALTER TABLE appointments
+  ADD COLUMN IF NOT EXISTS "extraServices" jsonb NOT NULL DEFAULT '[]'::jsonb;

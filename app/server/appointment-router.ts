@@ -7,10 +7,37 @@ import {
   getAppointmentsByProfessional,
   getAppointmentById,
   getClientHistory,
+  getServicesBySalon,
   updateAppointment,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
 import { assertSalonMember } from "./lib/tenant";
+
+/**
+ * Monta o snapshot dos serviços adicionais do atendimento.
+ * Só aceita serviços do próprio salão (inclusive inativos — um serviço pode
+ * ter sido desativado entre o agendamento e a conclusão).
+ */
+async function buildExtraServicesSnapshot(salonId: number, ids: number[]) {
+  if (ids.length === 0) return [];
+  const salonServices = await getServicesBySalon(salonId, true);
+  const byId = new Map(salonServices.map(s => [s.id, s]));
+  return ids.map(id => {
+    const service = byId.get(id);
+    if (!service) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Serviço adicional inválido para este estabelecimento.",
+      });
+    }
+    return {
+      id: service.id,
+      name: service.name,
+      price: String(service.price),
+      durationMinutes: service.durationMinutes,
+    };
+  });
+}
 
 export const appointmentRouter = createRouter({
   list: authedQuery
@@ -83,11 +110,12 @@ export const appointmentRouter = createRouter({
         source: z
           .enum(["online", "whatsapp", "phone", "walk_in", "staff"])
           .default("staff"),
+        extraServiceIds: z.array(z.number()).max(10).optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       await assertSalonMember(ctx.user.id, input.salonId);
-      const { salonId, ...data } = input;
+      const { salonId, extraServiceIds, ...data } = input;
 
       // Não permite agendar no passado (comparando em horário de Brasília)
       const nowBR = new Date(
@@ -107,6 +135,10 @@ export const appointmentRouter = createRouter({
         salonId,
         ...data,
         appointmentDate: data.appointmentDate,
+        extraServices: await buildExtraServicesSnapshot(
+          salonId,
+          extraServiceIds ?? []
+        ),
         status: "scheduled",
       });
       await auditAction(
@@ -134,6 +166,7 @@ export const appointmentRouter = createRouter({
         endTime: z.string().optional(),
         notes: z.string().optional(),
         price: z.string().or(z.number()).optional(),
+        extraServiceIds: z.array(z.number()).max(10).optional(),
         status: z
           .enum([
             "scheduled",
@@ -149,9 +182,15 @@ export const appointmentRouter = createRouter({
     )
     .mutation(async ({ input, ctx }) => {
       await assertSalonMember(ctx.user.id, input.salonId);
-      const { id, salonId, price, appointmentDate, ...data } = input;
+      const { id, salonId, price, appointmentDate, extraServiceIds, ...data } =
+        input;
       const updateData: Record<string, unknown> = { ...data };
       if (price !== undefined) updateData.price = String(price);
+      if (extraServiceIds !== undefined)
+        updateData.extraServices = await buildExtraServicesSnapshot(
+          salonId,
+          extraServiceIds
+        );
       if (appointmentDate !== undefined)
         updateData.appointmentDate = new Date(appointmentDate);
       if (data.status === "checked_in") updateData.checkedInAt = new Date();

@@ -130,6 +130,12 @@ export default function Appointments() {
   );
 
   const formService = activeServices.find(s => s.id === Number(form.serviceId));
+  // Duração total = serviço principal + adicionais (ocupa mais slots na agenda)
+  const formTotalDuration =
+    (formService?.durationMinutes ?? 30) +
+    activeServices
+      .filter(s => form.extraServiceIds.includes(String(s.id)))
+      .reduce((acc, s) => acc + s.durationMinutes, 0);
   const busyIntervals = (formDayAppointments ?? [])
     .filter(
       a => a.status !== "cancelled" && a.status !== "no_show" && a.endTime
@@ -146,7 +152,7 @@ export default function Appointments() {
       salon?.schedule.slotMinutes
     ),
     busyIntervals,
-    formService?.durationMinutes ?? 30
+    formTotalDuration
   ).filter(slot => {
     // se a data for hoje, esconde horários que já passaram
     const cutoff = form.appointmentDate
@@ -182,6 +188,8 @@ export default function Appointments() {
     const client = clients?.find(c => c.id === appt.clientId);
     const service = services?.find(s => s.id === appt.serviceId);
     const professional = professionals?.find(p => p.id === appt.professionalId);
+    const extras = appt.extraServices ?? [];
+    const extrasTotal = extras.reduce((acc, e) => acc + Number(e.price), 0);
     setCheckoutTarget({
       appointment: appt,
       clientId: appt.clientId,
@@ -189,7 +197,8 @@ export default function Appointments() {
       serviceName: service?.name ?? "Serviço",
       professionalId: appt.professionalId,
       professionalName: professional?.name ?? null,
-      defaultAmount: service?.price ?? "0.00",
+      // valor sugerido = serviço principal + adicionais já registrados
+      defaultAmount: (Number(service?.price ?? 0) + extrasTotal).toFixed(2),
     });
   }
 
@@ -217,8 +226,14 @@ export default function Appointments() {
     const appt = appointments?.find(a => a.id === appointmentId);
     if (!appt) return;
     const service = services?.find(s => s.id === appt.serviceId);
+    const totalMinutes =
+      (service?.durationMinutes ?? 0) +
+      (appt.extraServices ?? []).reduce(
+        (acc, e) => acc + e.durationMinutes,
+        0
+      );
     const endTime = service
-      ? calculateEndTime(newStartTime, service.durationMinutes)
+      ? calculateEndTime(newStartTime, totalMinutes)
       : newStartTime;
     updateMutation.mutate({
       id: appointmentId,
@@ -235,9 +250,8 @@ export default function Appointments() {
       toast.error("Escolha uma data para o agendamento.");
       return;
     }
-    const service = services?.find(s => s.id === Number(form.serviceId));
-    const endTime = service
-      ? calculateEndTime(form.startTime, service.durationMinutes)
+    const endTime = formService
+      ? calculateEndTime(form.startTime, formTotalDuration)
       : form.startTime;
 
     createMutation.mutate({
@@ -245,6 +259,7 @@ export default function Appointments() {
       clientId: Number(form.clientId),
       professionalId: Number(form.professionalId),
       serviceId: Number(form.serviceId),
+      extraServiceIds: form.extraServiceIds.map(Number),
       appointmentDate: form.appointmentDate,
       startTime: form.startTime,
       endTime,
@@ -380,6 +395,7 @@ export default function Appointments() {
 
       <CheckoutDialog
         target={checkoutTarget}
+        services={activeServices}
         onOpenChange={open => !open && setCheckoutTarget(null)}
       />
 

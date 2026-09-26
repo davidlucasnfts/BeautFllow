@@ -130,6 +130,8 @@ export default function EventCard({
               />
               <span className={`truncate ${isDay ? "text-xs" : ""}`}>
                 {service?.name ?? "Serviço"}
+                {(appt.extraServices?.length ?? 0) > 0 &&
+                  ` +${appt.extraServices!.length}`}
               </span>
             </div>
             {professional && (

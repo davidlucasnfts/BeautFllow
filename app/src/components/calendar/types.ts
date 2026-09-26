@@ -1,3 +1,5 @@
+import type { AppointmentExtraService } from "@db/schema";
+
 export type ViewMode = "week" | "day" | "month";
 
 export interface CalendarAppointment {
@@ -5,6 +7,7 @@ export interface CalendarAppointment {
   clientId: number;
   professionalId: number | null;
   serviceId: number;
+  extraServices?: AppointmentExtraService[];
   appointmentDate: string;
   startTime: string;
   endTime: string | null;

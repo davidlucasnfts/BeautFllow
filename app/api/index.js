@@ -85472,6 +85472,7 @@ var appointments = pgTable(
     salonId: bigint4("salonId", { mode: "number" }).notNull(),
     clientId: bigint4("clientId", { mode: "number" }).notNull(),
     serviceId: bigint4("serviceId", { mode: "number" }).notNull(),
+    extraServices: jsonb("extraServices").$type().default([]).notNull(),
     professionalId: bigint4("professionalId", { mode: "number" }),
     appointmentDate: date5("appointmentDate").notNull(),
     startTime: time3("startTime").notNull(),
@@ -87036,6 +87037,26 @@ var professionalRouter = createRouter({
 });
 
 // server/appointment-router.ts
+async function buildExtraServicesSnapshot(salonId, ids) {
+  if (ids.length === 0) return [];
+  const salonServices = await getServicesBySalon(salonId, true);
+  const byId = new Map(salonServices.map((s) => [s.id, s]));
+  return ids.map((id) => {
+    const service = byId.get(id);
+    if (!service) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Servi\xE7o adicional inv\xE1lido para este estabelecimento."
+      });
+    }
+    return {
+      id: service.id,
+      name: service.name,
+      price: String(service.price),
+      durationMinutes: service.durationMinutes
+    };
+  });
+}
 var appointmentRouter = createRouter({
   list: authedQuery.input(
     external_exports.object({
@@ -87091,11 +87112,12 @@ var appointmentRouter = createRouter({
       startTime: external_exports.string(),
       endTime: external_exports.string(),
       notes: external_exports.string().optional(),
-      source: external_exports.enum(["online", "whatsapp", "phone", "walk_in", "staff"]).default("staff")
+      source: external_exports.enum(["online", "whatsapp", "phone", "walk_in", "staff"]).default("staff"),
+      extraServiceIds: external_exports.array(external_exports.number()).max(10).optional()
     })
   ).mutation(async ({ input, ctx }) => {
     await assertSalonMember(ctx.user.id, input.salonId);
-    const { salonId, ...data } = input;
+    const { salonId, extraServiceIds, ...data } = input;
     const nowBR = new Date(
       (/* @__PURE__ */ new Date()).toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
     );
@@ -87112,6 +87134,10 @@ var appointmentRouter = createRouter({
       salonId,
       ...data,
       appointmentDate: data.appointmentDate,
+      extraServices: await buildExtraServicesSnapshot(
+        salonId,
+        extraServiceIds ?? []
+      ),
       status: "scheduled"
     });
     await auditAction(
@@ -87137,6 +87163,7 @@ var appointmentRouter = createRouter({
       endTime: external_exports.string().optional(),
       notes: external_exports.string().optional(),
       price: external_exports.string().or(external_exports.number()).optional(),
+      extraServiceIds: external_exports.array(external_exports.number()).max(10).optional(),
       status: external_exports.enum([
         "scheduled",
         "confirmed",
@@ -87149,9 +87176,14 @@ var appointmentRouter = createRouter({
     })
   ).mutation(async ({ input, ctx }) => {
     await assertSalonMember(ctx.user.id, input.salonId);
-    const { id, salonId, price, appointmentDate, ...data } = input;
+    const { id, salonId, price, appointmentDate, extraServiceIds, ...data } = input;
     const updateData = { ...data };
     if (price !== void 0) updateData.price = String(price);
+    if (extraServiceIds !== void 0)
+      updateData.extraServices = await buildExtraServicesSnapshot(
+        salonId,
+        extraServiceIds
+      );
     if (appointmentDate !== void 0)
       updateData.appointmentDate = new Date(appointmentDate);
     if (data.status === "checked_in") updateData.checkedInAt = /* @__PURE__ */ new Date();

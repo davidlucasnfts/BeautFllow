@@ -89,6 +89,8 @@ export default function TodayAppointmentsBoard() {
                     </p>
                     <p className="text-xs text-muted-foreground break-words">
                       {service?.name ?? "Serviço"}
+                      {(appt.extraServices?.length ?? 0) > 0 &&
+                        ` +${appt.extraServices!.length}`}
                     </p>
                   </div>
                   <Badge
