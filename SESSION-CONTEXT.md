@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 22/09/2026
-> **Sessão atual:** PWA completo no ar — app instalável com guia por navegador e ícone/cor do app seguindo o tema do estabelecimento
+> **Atualizado em:** 26/09/2026
+> **Sessão atual:** Trava de isolamento por salão no ar (segurança/LGPD) — próximos: itens 7 (busca cliente) e 6 (multi-serviço) da lista de melhorias do David; landings por segmento com copy aprovada aguardando codificação
 
 ---
 
@@ -11,15 +11,12 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 ---
 
 ## Última funcionalidade trabalhada
-**Financeiro: filtros junto dos lançamentos + mês via DatePicker padrão** — 19/09 (na `main`)
+**Trava de isolamento por salão (segurança/LGPD)** — 26/09 (na `main`, deployado)
 
-### O que mudou (19/09, smoke test do David):
-- **Financeiro:** filtro por período Dia/Semana/Mês (seletor igual ao da agenda; lista e cards de resumo usam o mesmo período) + correção de bug de fuso (coluna `date` exibida sem `new Date()`, que deslocava 1 dia pra trás — "01/09 aparecia como 31/08" e parecia fora de ordem) + helpers `toISODate`/`dateToBR` em `input-masks.ts`
-- Busca + período saíram do cabeçalho e foram para dentro do card "Registros do mês" (o "+ Novo registro" ficou no cabeçalho, padrão das outras telas)
-- Campo de mês trocou o input nativo `type="month"` (só abria no ícone) pelo `DatePicker` com `label` — campo inteiro clicável, mesmo padrão da agenda; troca de mês no calendário fecha o popup e aplica o filtro
-- Regra nova no `AGENTS.md`: **sempre reusar padrões existentes aprovados antes de criar do zero**
-
-### Smoke test → auditoria + correções (19/09, commits `c6b2747` + `cd4522b`):
+### O que mudou (26/09):
+- **Correção crítica (bug relatado pelo David — "outra conta vê dados da primeira"):** achados 2 problemas. ① Frontend: salão ativo em localStorage persistia entre contas no mesmo navegador → agora `AuthLayout` descarta o salão salvo se ele não estiver na lista do usuário logado, e o logout limpa a memória (`SALON_STORAGE_KEY`). ② Backend (grave, IDOR): resolvers confiavam no `salonId` do input sem validar vínculo → criado `app/server/lib/tenant.ts` (`assertSalonMember`/`assertSalonAdmin`) e aplicado como 1ª linha em **43 resolvers** (8 routers); `salon.update`/`updateSettings` exigem owner/admin. Erro 012 no self-healing + regra "Isolamento por tenant" na seção de segurança do AGENTS.md
+- **Lista de melhorias do David (26/09) — análise entregue, ordem aprovada:** ① OBS segurança (feito); ② item 7 busca de cliente (combobox); ③ item 6 multi-serviço por atendimento; ④ itens 1+5 comissões/pagamentos + desempenho por profissional; ⑤ item 2 retorno programado pós-procedimento; ⑥ item 4 estoque; ⑦ item 3 controle de acessos (roles já existem no banco)
+- **Landings por segmento (23-24/09):** 3 mockups (`docs/mockups/landing-segmento-*.html`) com copy de persuasão aprovada — dor → mecanismo → prova → CTA, sem número inventado, sem jargão (seção "Copywriting" no AGENTS.md, erro 011). **Aguardando codificação das rotas `/barbearia`, `/salao-de-beleza`, `/estetica`** (segurado pelo David até terminarem as melhorias da lista)
 - **Página pública de agendamento:** overbooking resolvido — sem preferência de profissional, o backend atribui automaticamente o primeiro livre (e bloqueia se todos ocupados); `availableSlots` ganhou `freeSlots` (slot só livre se ALGUM profissional estiver livre); `startTime` não pré-seleciona mais 09:00 e limpa ao trocar serviço/profissional/data; sem flicker "Sem horários" (`keepPreviousData`); datas passadas bloqueadas; estado vazio com aviso quando não há serviços ativos
 - **Dashboard (crítico):** "hoje" calculado no SQL com `NOW() AT TIME ZONE 'America/Sao_Paulo'` — entre 21h–23h59 BRT o Dashboard mostrava o dia seguinte; SUM/COUNT do Postgres normalizados com `Number()` (KPI "R$ 3500.00" → "R$ 3.500,00")
 - **Clientes:** limite da lista 100 → 1000 (cliente 101+ sumia da tela e da busca); data de nascimento limpável na edição (grava NULL); idade corrigida (perdia 1 dia no fuso); botão WhatsApp com texto
