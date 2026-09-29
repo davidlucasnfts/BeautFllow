@@ -434,6 +434,33 @@ export type FinancialRecord = typeof financialRecords.$inferSelect;
 export type InsertFinancialRecord = typeof financialRecords.$inferInsert;
 
 // ==========================================
+// Professional Payments
+// ==========================================
+export const professionalPayments = pgTable(
+  "professional_payments",
+  {
+    id: serial("id").primaryKey(),
+    salonId: bigint("salonId", { mode: "number" }).notNull(),
+    professionalId: bigint("professionalId", { mode: "number" }).notNull(),
+    amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+    paymentMethod: paymentMethodEnum("paymentMethod").default("pix").notNull(),
+    paidAt: date("paidAt").notNull(),
+    notes: text("notes"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => ({
+    salonIdx: index("professional_payments_salon_idx").on(table.salonId),
+    professionalIdx: index("professional_payments_professional_idx").on(
+      table.professionalId
+    ),
+  })
+);
+
+export type ProfessionalPayment = typeof professionalPayments.$inferSelect;
+export type InsertProfessionalPayment =
+  typeof professionalPayments.$inferInsert;
+
+// ==========================================
 // Consent Forms
 // ==========================================
 export const consentForms = pgTable(

@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 26/09/2026
-> **Sessão atual:** Fila de melhorias do David em execução — feitos: isolamento por salão (LGPD), busca de cliente e múltiplos serviços por atendimento. Próximos: comissões + desempenho por profissional (itens 1+5), retorno programado (item 2), estoque (item 4), controle de acessos (item 3)
+> **Atualizado em:** 29/09/2026
+> **Sessão atual:** Fila de melhorias do David em execução — feitos: isolamento por salão (LGPD), busca de cliente, múltiplos serviços por atendimento e comissões/desempenho por profissional. Próximos: retorno programado pós-procedimento (item 2), estoque (item 4), controle de acessos (item 3)
 
 ---
 
@@ -11,21 +11,21 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 ---
 
 ## Última funcionalidade trabalhada
-**Múltiplos serviços por atendimento (item 6 da lista do David)** — 26/09
+**Comissões e desempenho por profissional (itens 1+5 da lista do David)** — 29/09
 
-### O que mudou (26/09 — item 6):
-- **Banco:** coluna `extraServices` jsonb em `appointments` (migration `009-appointment-extra-services.sql` — **precisa rodar no Supabase**). Snapshot `[{id, name, price, durationMinutes}]` — sobrevive a edição/exclusão do serviço; `serviceId` continua sendo o principal (agenda pública não muda: cliente agenda 1 serviço, extras são adicionados no atendimento)
-- **Backend:** `appointment.create`/`update` aceitam `extraServiceIds` (máx 10); snapshot montado no servidor validando que cada serviço pertence ao salão (`buildExtraServicesSnapshot` no appointment-router)
-- **Novo agendamento:** campo "Serviços adicionais (opcional)" com multi-select pesquisável (`ServiceMultiSelect.tsx`); duração total (principal + extras) define o fim do horário e os slots livres; trocar o serviço principal remove ele dos adicionais
-- **Concluir atendimento (checkout):** seção "Serviços adicionais realizados" — adicionar/remove extras recalcula o valor sugerido (principal + extras); lançamento financeiro sai com descrição "Escova + Hidratação" e o agendamento guarda os extras
-- **Exibição:** agenda (semana/dia), fila do dia e board "Agendamentos de hoje" do Dashboard mostram "+N" ao lado do serviço quando há adicionais; reagendamento (arrastar) recalcula o fim com a duração dos extras
+### O que mudou (29/09 — itens 1+5):
+- **Banco:** tabela `professional_payments` (migration `010-professional-payments.sql` — **precisa rodar no Supabase**) registra todo pagamento feito ao profissional
+- **Backend:** novo router `commission` com resumo de comissões (`summary`), desempenho detalhado por profissional (`performance`), lista de pagamentos (`payments`) e registro de pagamento (`pay` + audit)
+- **Cálculo:** comissão devida = atendimentos concluídos no período × taxa de comissão atual do profissional. O valor base usa o lançamento financeiro do atendimento (já inclui serviços extras feitos no checkout)
+- **Financeiro:** nova aba **Comissões** com cards de cada profissional (devido / pago / a pagar) + histórico de pagamentos. Botão "Pagar" abre dialog com valor sugerido = saldo
+- **Profissionais:** nova aba **Desempenho** com seletor de profissional e mês; mostra atendimentos, faturado, comissão e saldo a pagar; tabela lista dia, horário, cliente, serviço, valor e comissão
 - Check + 86 testes + build OK
 
 ### Fila de melhorias do David — status:
 1. ✅ Isolamento por salão (LGPD) — deployado (`559ead6`)
 2. ✅ Busca de cliente (combobox) — deployado (`b1c82d2`)
-3. ✅ Multi-serviço por atendimento — esta entrada
-4. ⏳ Itens 1+5: comissões/pagamentos de funcionários (aba "Comissões" no Financeiro) + aba "Desempenho" em Profissionais
+3. ✅ Multi-serviço por atendimento — deployado (`e02ec64`)
+4. ✅ Comissões/pagamentos de funcionários + desempenho por profissional — esta entrada
 5. ⏳ Item 2: retorno programado pós-procedimento (oferecer na conclusão do atendimento)
 6. ⏳ Item 4: estoque de produtos (aba "Produtos")
 7. ⏳ Item 3: controle de acessos (roles `owner/admin/professional/receptionist` já existem em `salonUsers`; falta tela de convite + limite por plano Free=1/Essencial=3/Pro=8)
@@ -221,7 +221,8 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [x] Rodar migration 005-rls-salons.sql no Supabase (SQL Editor) — fecha lacuna: tabela `salons` estava sem RLS. App não é afetado (backend acessa como owner), mas testar o fluxo local depois
 - [ ] Apagar usuário de teste `teste.kimi.2026@gmail.com` na tabela `local_users` do Supabase (opcional)
 - [x] Rodar migration 007-client-segment-manual.sql no Supabase — **aplicada pelo Kimi direto no banco em 09/09** (coluna `segmentManual` na tabela `clients`). Sem ela, listagem e cadastro de clientes quebravam com erro 500
-- [ ] **Rodar migration 009-appointment-extra-services.sql no Supabase** (SQL Editor → colar o conteúdo do arquivo → Run) — cria a coluna `extraServices` em `appointments`. Sem ela, criar/concluir agendamento dá erro após este deploy
+- [ ] **Rodar migration 010-professional-payments.sql no Supabase** (SQL Editor → colar o conteúdo do arquivo → Run) — cria a tabela `professional_payments`. Sem ela, a aba Comissões e a aba Desempenho não funcionam
+- [x] Rodar migration 009-appointment-extra-services.sql no Supabase — cria a coluna `extraServices` em `appointments`. Sem ela, criar/concluir agendamento dá erro após este deploy
 
 ---
 

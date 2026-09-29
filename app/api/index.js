@@ -85233,6 +85233,7 @@ __export(schema_exports, {
   passwordResetTokens: () => passwordResetTokens,
   paymentMethodEnum: () => paymentMethodEnum,
   planEnum: () => planEnum,
+  professionalPayments: () => professionalPayments,
   professionals: () => professionals,
   recordTypeEnum: () => recordTypeEnum,
   salonSegmentEnum: () => salonSegmentEnum,
@@ -85540,6 +85541,25 @@ var financialRecords = pgTable(
   (table) => ({
     salonIdx: index("financial_salon_idx").on(table.salonId),
     dateIdx: index("financial_date_idx").on(table.recordDate)
+  })
+);
+var professionalPayments = pgTable(
+  "professional_payments",
+  {
+    id: serial("id").primaryKey(),
+    salonId: bigint4("salonId", { mode: "number" }).notNull(),
+    professionalId: bigint4("professionalId", { mode: "number" }).notNull(),
+    amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+    paymentMethod: paymentMethodEnum("paymentMethod").default("pix").notNull(),
+    paidAt: date5("paidAt").notNull(),
+    notes: text("notes"),
+    createdAt: timestamp("createdAt").defaultNow().notNull()
+  },
+  (table) => ({
+    salonIdx: index("professional_payments_salon_idx").on(table.salonId),
+    professionalIdx: index("professional_payments_professional_idx").on(
+      table.professionalId
+    )
   })
 );
 var consentForms = pgTable(
@@ -87762,6 +87782,266 @@ var publicRouter = createRouter({
   })
 });
 
+// server/queries/commission.ts
+function dateConditions(fromDate, toDate) {
+  const conds = [];
+  if (fromDate)
+    conds.push(sql`${appointments.appointmentDate} >= ${fromDate}`);
+  if (toDate) conds.push(sql`${appointments.appointmentDate} <= ${toDate}`);
+  return conds;
+}
+function paymentDateConditions(fromDate, toDate) {
+  const conds = [];
+  if (fromDate)
+    conds.push(sql`${professionalPayments.paidAt} >= ${fromDate}`);
+  if (toDate) conds.push(sql`${professionalPayments.paidAt} <= ${toDate}`);
+  return conds;
+}
+async function getCommissionSummary(salonId, professionalId, fromDate, toDate) {
+  const db = getDb();
+  const proBase = [eq(professionals.salonId, salonId)];
+  if (professionalId) proBase.push(eq(professionals.id, professionalId));
+  const pros = await db.select().from(professionals).where(and(...proBase));
+  const apptBase = [
+    eq(appointments.salonId, salonId),
+    eq(appointments.status, "completed")
+  ];
+  if (professionalId)
+    apptBase.push(eq(appointments.professionalId, professionalId));
+  const apptConditions = [...apptBase, ...dateConditions(fromDate, toDate)];
+  const apptRows = await db.select({
+    id: appointments.id,
+    professionalId: appointments.professionalId,
+    amount: financialRecords.amount
+  }).from(appointments).leftJoin(
+    financialRecords,
+    and(
+      eq(financialRecords.appointmentId, appointments.id),
+      eq(financialRecords.type, "service")
+    )
+  ).where(and(...apptConditions));
+  const payBase = [eq(professionalPayments.salonId, salonId)];
+  if (professionalId)
+    payBase.push(eq(professionalPayments.professionalId, professionalId));
+  const payConditions = [...payBase, ...paymentDateConditions(fromDate, toDate)];
+  const payments = await db.select({
+    professionalId: professionalPayments.professionalId,
+    amount: professionalPayments.amount
+  }).from(professionalPayments).where(and(...payConditions));
+  const commissionByPro = {};
+  for (const row of apptRows) {
+    if (!row.professionalId) continue;
+    const pro = pros.find((p) => p.id === row.professionalId);
+    if (!pro) continue;
+    const amount = Number(row.amount ?? 0);
+    const rate = Number(pro.commissionRate ?? 0);
+    commissionByPro[row.professionalId] = (commissionByPro[row.professionalId] ?? 0) + amount * rate / 100;
+  }
+  const paidByPro = {};
+  for (const row of payments) {
+    paidByPro[row.professionalId] = (paidByPro[row.professionalId] ?? 0) + Number(row.amount);
+  }
+  return pros.map((p) => {
+    const total = commissionByPro[p.id] ?? 0;
+    const paid = paidByPro[p.id] ?? 0;
+    return {
+      professionalId: p.id,
+      name: p.name,
+      commissionRate: String(p.commissionRate),
+      totalCommission: total.toFixed(2),
+      totalPaid: paid.toFixed(2),
+      balance: (total - paid).toFixed(2)
+    };
+  });
+}
+async function getCommissionPerformance(salonId, professionalId, fromDate, toDate) {
+  const db = getDb();
+  const pro = await db.query.professionals.findFirst({
+    where: and(
+      eq(professionals.id, professionalId),
+      eq(professionals.salonId, salonId)
+    )
+  });
+  if (!pro) {
+    return {
+      professional: { id: professionalId, name: "", commissionRate: "0.00" },
+      appointments: []
+    };
+  }
+  const rate = Number(pro.commissionRate ?? 0);
+  const rows = await db.select({
+    id: appointments.id,
+    appointmentDate: appointments.appointmentDate,
+    startTime: appointments.startTime,
+    clientName: clients.name,
+    serviceName: services.name,
+    amount: financialRecords.amount
+  }).from(appointments).leftJoin(
+    financialRecords,
+    and(
+      eq(financialRecords.appointmentId, appointments.id),
+      eq(financialRecords.type, "service")
+    )
+  ).leftJoin(services, eq(services.id, appointments.serviceId)).leftJoin(clients, eq(clients.id, appointments.clientId)).where(
+    and(
+      eq(appointments.salonId, salonId),
+      eq(appointments.professionalId, professionalId),
+      eq(appointments.status, "completed"),
+      sql`${appointments.appointmentDate} >= ${fromDate}`,
+      sql`${appointments.appointmentDate} <= ${toDate}`
+    )
+  ).orderBy(appointments.appointmentDate, appointments.startTime);
+  return {
+    professional: {
+      id: pro.id,
+      name: pro.name,
+      commissionRate: String(pro.commissionRate)
+    },
+    appointments: rows.map((r) => {
+      const amount = Number(r.amount ?? 0);
+      return {
+        id: r.id,
+        appointmentDate: r.appointmentDate,
+        startTime: r.startTime,
+        clientName: r.clientName,
+        serviceName: r.serviceName,
+        amount: amount.toFixed(2),
+        commissionAmount: (amount * rate / 100).toFixed(2)
+      };
+    })
+  };
+}
+async function getProfessionalPayments(salonId, professionalId) {
+  const db = getDb();
+  const base = [eq(professionalPayments.salonId, salonId)];
+  if (professionalId)
+    base.push(eq(professionalPayments.professionalId, professionalId));
+  const rows = await db.select({
+    payment: professionalPayments,
+    professionalName: professionals.name
+  }).from(professionalPayments).innerJoin(
+    professionals,
+    eq(professionals.id, professionalPayments.professionalId)
+  ).where(and(...base)).orderBy(desc(professionalPayments.paidAt), desc(professionalPayments.id));
+  return rows.map((r) => ({
+    id: r.payment.id,
+    professionalId: r.payment.professionalId,
+    professionalName: r.professionalName,
+    amount: String(r.payment.amount),
+    paymentMethod: r.payment.paymentMethod,
+    paidAt: r.payment.paidAt,
+    notes: r.payment.notes,
+    createdAt: r.payment.createdAt
+  }));
+}
+async function createProfessionalPayment(data) {
+  const db = getDb();
+  const [{ id }] = await db.insert(professionalPayments).values(data).returning();
+  return db.query.professionalPayments.findFirst({
+    where: eq(professionalPayments.id, id)
+  });
+}
+async function deleteProfessionalPayment(id, salonId) {
+  const db = getDb();
+  await db.delete(professionalPayments).where(
+    and(
+      eq(professionalPayments.id, id),
+      eq(professionalPayments.salonId, salonId)
+    )
+  );
+}
+
+// server/commission-router.ts
+var commissionRouter = createRouter({
+  summary: authedQuery.input(
+    external_exports.object({
+      salonId: external_exports.number(),
+      professionalId: external_exports.number().optional(),
+      fromDate: external_exports.string().optional(),
+      toDate: external_exports.string().optional()
+    })
+  ).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getCommissionSummary(
+      input.salonId,
+      input.professionalId,
+      input.fromDate,
+      input.toDate
+    );
+  }),
+  performance: authedQuery.input(
+    external_exports.object({
+      salonId: external_exports.number(),
+      professionalId: external_exports.number(),
+      fromDate: external_exports.string(),
+      toDate: external_exports.string()
+    })
+  ).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getCommissionPerformance(
+      input.salonId,
+      input.professionalId,
+      input.fromDate,
+      input.toDate
+    );
+  }),
+  payments: authedQuery.input(
+    external_exports.object({
+      salonId: external_exports.number(),
+      professionalId: external_exports.number().optional()
+    })
+  ).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getProfessionalPayments(
+      input.salonId,
+      input.professionalId
+    );
+  }),
+  pay: authedQuery.input(
+    external_exports.object({
+      salonId: external_exports.number(),
+      professionalId: external_exports.number(),
+      amount: external_exports.string().or(external_exports.number()),
+      paymentMethod: external_exports.enum(["pix", "credit_card", "debit_card", "cash", "other"]).default("pix"),
+      paidAt: external_exports.string(),
+      notes: external_exports.string().optional()
+    })
+  ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    const { salonId, amount, ...data } = input;
+    const result = await createProfessionalPayment({
+      salonId,
+      ...data,
+      amount: String(amount)
+    });
+    await auditAction(
+      "create",
+      "professional_payment",
+      salonId,
+      ctx.user?.id,
+      result?.id ?? void 0,
+      void 0,
+      {
+        professionalId: data.professionalId,
+        amount: String(amount)
+      }
+    );
+    return result;
+  }),
+  deletePayment: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    await deleteProfessionalPayment(input.id, input.salonId);
+    await auditAction(
+      "delete",
+      "professional_payment",
+      input.salonId,
+      ctx.user?.id,
+      input.id
+    );
+    return { success: true };
+  })
+});
+
 // server/router.ts
 var appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
@@ -87773,6 +88053,7 @@ var appRouter = createRouter({
   professional: professionalRouter,
   appointment: appointmentRouter,
   financial: financialRouter,
+  commission: commissionRouter,
   communication: communicationRouter,
   consent: consentRouter,
   dashboard: dashboardRouter

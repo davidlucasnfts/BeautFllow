@@ -427,3 +427,29 @@ CREATE INDEX IF NOT EXISTS password_reset_tokens_user_idx
 
 ALTER TABLE appointments
   ADD COLUMN IF NOT EXISTS "extraServices" jsonb NOT NULL DEFAULT '[]'::jsonb;
+
+
+-- ============================================================
+-- MIGRATION 010: Pagamentos de comissão aos profissionais
+-- Data: 29/09/2026
+-- Descricao: Registra todo pagamento feito ao funcionário. O valor
+--            devido é calculado sobre atendimentos concluídos ×
+--            taxa de comissão atual do profissional.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS professional_payments (
+  id SERIAL PRIMARY KEY,
+  "salonId" BIGINT NOT NULL REFERENCES salons(id) ON DELETE CASCADE,
+  "professionalId" BIGINT NOT NULL REFERENCES professionals(id) ON DELETE CASCADE,
+  amount DECIMAL(10,2) NOT NULL,
+  "paymentMethod" payment_method NOT NULL DEFAULT 'pix',
+  "paidAt" DATE NOT NULL,
+  notes TEXT,
+  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS professional_payments_salon_idx
+  ON professional_payments("salonId");
+
+CREATE INDEX IF NOT EXISTS professional_payments_professional_idx
+  ON professional_payments("professionalId");

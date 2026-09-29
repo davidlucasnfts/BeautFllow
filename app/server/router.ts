@@ -10,6 +10,7 @@ import { communicationRouter } from "./communication-router";
 import { consentRouter } from "./consent-router";
 import { dashboardRouter } from "./dashboard-router";
 import { publicRouter } from "./public-router";
+import { commissionRouter } from "./commission-router";
 
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
@@ -21,6 +22,7 @@ export const appRouter = createRouter({
   professional: professionalRouter,
   appointment: appointmentRouter,
   financial: financialRouter,
+  commission: commissionRouter,
   communication: communicationRouter,
   consent: consentRouter,
   dashboard: dashboardRouter,

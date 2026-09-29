@@ -12,7 +12,9 @@ import FinancialFormDialog, {
   type FinancialFormValues,
 } from "@/components/financial/FinancialFormDialog";
 import FinancialRecordsList from "@/components/financial/FinancialRecordsList";
+import CommissionsView from "@/components/financial/CommissionsView";
 import type { FinancialRecordForList } from "@/components/financial/FinancialRecordExpanded";
+import { LayoutList, Users } from "lucide-react";
 
 function formatBRL(value: string | number) {
   return Number(value).toLocaleString("pt-BR", {
@@ -55,6 +57,8 @@ export default function Financial() {
     id: number;
     name: string;
   } | null>(null);
+
+  const [view, setView] = useState<"records" | "commissions">("records");
 
   const utils = trpc.useUtils();
   // intervalo de datas do período escolhido (lista e resumo usam o mesmo range)
@@ -271,26 +275,58 @@ export default function Financial() {
         </Card>
       </div>
 
-      <FinancialRecordsList
-        isLoading={isLoading}
-        isError={isError}
-        records={visibleRecords}
-        searchActive={!!search.trim()}
-        search={search}
-        onSearch={setSearch}
-        period={period}
-        onPeriod={setPeriod}
-        anchor={anchor}
-        onAnchor={setAnchor}
-        monthRecords={monthRecords ?? []}
-        onNew={handleNew}
-        clients={clients ?? []}
-        professionals={professionals ?? []}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      {/* Abas do Financeiro */}
+      <div className="flex items-center border rounded-md overflow-hidden w-fit">
+        <button
+          type="button"
+          onClick={() => setView("records")}
+          className={`flex items-center h-9 px-3 text-sm font-medium transition-colors ${
+            view === "records"
+              ? "bg-primary text-primary-foreground"
+              : "bg-background hover:bg-accent"
+          }`}
+        >
+          <LayoutList className="h-4 w-4 mr-1.5" />
+          Lançamentos
+        </button>
+        <button
+          type="button"
+          onClick={() => setView("commissions")}
+          className={`flex items-center h-9 px-3 text-sm font-medium transition-colors ${
+            view === "commissions"
+              ? "bg-primary text-primary-foreground"
+              : "bg-background hover:bg-accent"
+          }`}
+        >
+          <Users className="h-4 w-4 mr-1.5" />
+          Comissões
+        </button>
+      </div>
+
+      {view === "records" ? (
+        <FinancialRecordsList
+          isLoading={isLoading}
+          isError={isError}
+          records={visibleRecords}
+          searchActive={!!search.trim()}
+          search={search}
+          onSearch={setSearch}
+          period={period}
+          onPeriod={setPeriod}
+          anchor={anchor}
+          onAnchor={setAnchor}
+          monthRecords={monthRecords ?? []}
+          onNew={handleNew}
+          clients={clients ?? []}
+          professionals={professionals ?? []}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      ) : (
+        <CommissionsView />
+      )}
 
       <FinancialFormDialog
         open={open}

@@ -15,6 +15,8 @@ import ProfessionalCard, {
 import ProfessionalFormDialog, {
   type ProfessionalFormValues,
 } from "@/components/professionals/ProfessionalFormDialog";
+import ProfessionalPerformance from "@/components/professionals/ProfessionalPerformance";
+import { LayoutGrid, BarChart3 } from "lucide-react";
 
 function formFromProfessional(p: ProfessionalForCard): ProfessionalFormValues {
   return {
@@ -35,6 +37,7 @@ export default function Professionals() {
       ? getSegmentLabel(salon.segment, key)
       : getSegmentLabel("beauty_salon", key);
   const label = segmentLabel("professional");
+  const [view, setView] = useState<"team" | "performance">("team");
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<number | null>(null);
@@ -146,17 +149,46 @@ export default function Professionals() {
         </Button>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Search className="h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar por nome ou especialidade..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
+      <div className="flex items-center border rounded-md overflow-hidden w-fit">
+        <button
+          type="button"
+          onClick={() => setView("team")}
+          className={`flex items-center h-9 px-3 text-sm font-medium transition-colors ${
+            view === "team"
+              ? "bg-primary text-primary-foreground"
+              : "bg-background hover:bg-accent"
+          }`}
+        >
+          <LayoutGrid className="h-4 w-4 mr-1.5" />
+          Equipe
+        </button>
+        <button
+          type="button"
+          onClick={() => setView("performance")}
+          className={`flex items-center h-9 px-3 text-sm font-medium transition-colors ${
+            view === "performance"
+              ? "bg-primary text-primary-foreground"
+              : "bg-background hover:bg-accent"
+          }`}
+        >
+          <BarChart3 className="h-4 w-4 mr-1.5" />
+          Desempenho
+        </button>
       </div>
 
-      {isLoading ? (
+      {view === "team" ? (
+        <>
+          <div className="flex items-center gap-2">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por nome ou especialidade..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="max-w-sm"
+            />
+          </div>
+
+          {isLoading ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-36 bg-muted" />
@@ -232,6 +264,12 @@ export default function Professionals() {
           </div>
         </div>
       )}
+    </>
+  ) : (
+    <ProfessionalPerformance
+      professionals={(active ?? []).map(p => ({ id: p.id, name: p.name }))}
+    />
+  )}
 
       <ProfessionalFormDialog
         open={open}
