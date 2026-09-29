@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
 > **Atualizado em:** 29/09/2026
-> **Sessão atual:** Fila de melhorias do David em execução — feitos: isolamento por salão (LGPD), busca de cliente, múltiplos serviços por atendimento e comissões/desempenho por profissional. Próximos: retorno programado pós-procedimento (item 2), estoque (item 4), controle de acessos (item 3)
+> **Sessão atual:** Fila de melhorias do David em execução — feitos: isolamento por salão (LGPD), busca de cliente, múltiplos serviços por atendimento, comissões/desempenho e retorno programado pós-procedimento. Próximos: estoque (item 4), controle de acessos (item 3)
 
 ---
 
@@ -11,22 +11,22 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 ---
 
 ## Última funcionalidade trabalhada
-**Comissões e desempenho por profissional (itens 1+5 da lista do David)** — 29/09
+**Retorno programado pós-procedimento (item 2 da lista do David)** — 29/09
 
-### O que mudou (29/09 — itens 1+5):
-- **Banco:** tabela `professional_payments` (migration `010-professional-payments.sql` — **precisa rodar no Supabase**) registra todo pagamento feito ao profissional
-- **Backend:** novo router `commission` com resumo de comissões (`summary`), desempenho detalhado por profissional (`performance`), lista de pagamentos (`payments`) e registro de pagamento (`pay` + audit)
-- **Cálculo:** comissão devida = atendimentos concluídos no período × taxa de comissão atual do profissional. O valor base usa o lançamento financeiro do atendimento (já inclui serviços extras feitos no checkout)
-- **Financeiro:** nova aba **Comissões** com cards de cada profissional (devido / pago / a pagar) + histórico de pagamentos. Botão "Pagar" abre dialog com valor sugerido = saldo
-- **Profissionais:** nova aba **Desempenho** com seletor de profissional e mês; mostra atendimentos, faturado, comissão e saldo a pagar; tabela lista dia, horário, cliente, serviço, valor e comissão
+### O que mudou (29/09 — item 2):
+- **Banco:** `services` ganha `followUpDays` + `followUpServiceId`; nova tabela `client_follow_ups` (migration `011-client-follow-ups.sql` — **aplicada pelo Kimi direto no banco**). Enum `follow_up_status` (pending/scheduled/dismissed)
+- **Configuração:** cadastro/edição de serviço tem seção "Retorno sugerido" — quantos dias até sugerir o retorno e qual serviço sugerir (padrão: o mesmo)
+- **Automático:** ao concluir um atendimento (qualquer caminho), o servidor cria retorno pendente para cada serviço feito (principal + extras) com `followUpDays > 0`; vencimento = data do atendimento + dias; não duplica se já existe pendente/agendado para o mesmo cliente+serviço
+- **Dashboard:** novo card "Retornos pendentes" (4º card na primeira grade): cliente, serviço sugerido e vencimento ("hoje", "em N dias", "há N dias" em vermelho se atrasado). "Agendar" leva pra página de Agendamentos com o formulário pré-preenchido (cliente, profissional, serviço, data — reaproveita slots/conflitos; data passada cai em hoje); ao criar, o retorno é marcado como agendado. "Dispensar" remove da lista
+- **Backend:** novo router `followup` (list/schedule/dismiss + audit); criação dos retornos em `queries/followup.ts`, chamada no `appointment.update` quando status vira "completed" (falha não bloqueia a conclusão)
 - Check + 86 testes + build OK
 
 ### Fila de melhorias do David — status:
 1. ✅ Isolamento por salão (LGPD) — deployado (`559ead6`)
 2. ✅ Busca de cliente (combobox) — deployado (`b1c82d2`)
 3. ✅ Multi-serviço por atendimento — deployado (`e02ec64`)
-4. ✅ Comissões/pagamentos de funcionários + desempenho por profissional — esta entrada
-5. ⏳ Item 2: retorno programado pós-procedimento (oferecer na conclusão do atendimento)
+4. ✅ Comissões/pagamentos de funcionários + desempenho por profissional — deployado (`b2d4f52`)
+5. ✅ Retorno programado pós-procedimento — esta entrada
 6. ⏳ Item 4: estoque de produtos (aba "Produtos")
 7. ⏳ Item 3: controle de acessos (roles `owner/admin/professional/receptionist` já existem em `salonUsers`; falta tela de convite + limite por plano Free=1/Essencial=3/Pro=8)
 8. ⏳ Landings por segmento: mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/barbearia`, `/salao-de-beleza`, `/estetica` (segurado até terminar a fila)
@@ -223,6 +223,7 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [x] Rodar migration 007-client-segment-manual.sql no Supabase — **aplicada pelo Kimi direto no banco em 09/09** (coluna `segmentManual` na tabela `clients`). Sem ela, listagem e cadastro de clientes quebravam com erro 500
 - [x] Rodar migration 009-appointment-extra-services.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (coluna `extraServices` em `appointments` verificada)
 - [x] Rodar migration 010-professional-payments.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (tabela `professional_payments` verificada)
+- [x] Rodar migration 011-client-follow-ups.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (tabela `client_follow_ups`, colunas `followUpDays`/`followUpServiceId` e enum `follow_up_status` verificados)
 
 ---
 

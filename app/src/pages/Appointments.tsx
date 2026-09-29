@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -29,6 +29,7 @@ import type {
   ViewMode,
   CalendarAppointment,
 } from "@/components/calendar/types";
+import { consumeFollowUpPrefill } from "@/components/appointments/followUpPrefill";
 
 export default function Appointments() {
   const { salon } = useSalon();
@@ -49,7 +50,31 @@ export default function Appointments() {
   const [filterProfessional, setFilterProfessional] = useState<string>("all");
   const [filterService, setFilterService] = useState<string>("all");
 
-  const { form, updateField, resetForm } = useAppointmentForm();
+  const { form, updateField, resetForm, setForm } = useAppointmentForm();
+
+  // Retorno pendente vindo do Dashboard: abre o formulário pré-preenchido
+  // (cliente, profissional, serviço e data sugerida) reaproveitando toda a
+  // lógica de slots/conflitos. Data passada cai em hoje (não dá pra agendar no passado)
+  const followUpIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    const prefill = consumeFollowUpPrefill();
+    if (!prefill) return;
+    followUpIdRef.current = prefill.followUpId;
+    const today = format(new Date(), "yyyy-MM-dd");
+    setForm({
+      clientId: String(prefill.clientId),
+      professionalId: prefill.professionalId
+        ? String(prefill.professionalId)
+        : "",
+      serviceId: prefill.serviceId ? String(prefill.serviceId) : "",
+      extraServiceIds: [],
+      appointmentDate: prefill.date >= today ? prefill.date : today,
+      startTime: "09:00",
+      notes: "",
+    });
+    setOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const today = new Date();
   const weekStart = startOfWeek(addDays(today, weekOffset * 7), {
@@ -162,11 +187,28 @@ export default function Appointments() {
   });
 
   const createMutation = trpc.appointment.create.useMutation({
-    onSuccess: () => {
+    onSuccess: result => {
       utils.appointment.list.invalidate();
       setOpen(false);
       resetForm();
       toast.success("Agendamento criado");
+      // se veio de um retorno pendente, marca como agendado
+      if (followUpIdRef.current && result?.id && salon) {
+        followUpScheduleMutation.mutate({
+          id: followUpIdRef.current,
+          salonId: salon.id,
+          appointmentId: result.id,
+        });
+      }
+      followUpIdRef.current = null;
+    },
+    onError: e => toast.error(e.message),
+  });
+
+  const followUpScheduleMutation = trpc.followup.schedule.useMutation({
+    onSuccess: () => {
+      utils.followup.list.invalidate();
+      toast.success("Retorno agendado");
     },
     onError: e => toast.error(e.message),
   });

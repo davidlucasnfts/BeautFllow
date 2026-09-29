@@ -4,6 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -24,6 +31,10 @@ export type ServiceFormValues = {
   requiresConsent: boolean;
   preCareInstructions: string;
   postCareInstructions: string;
+  /** Dias até sugerir o retorno (0 = não sugere) */
+  followUpDays: number;
+  /** id do serviço sugerido no retorno ("" = o mesmo serviço) */
+  followUpServiceId: string;
 };
 
 function emptyServiceForm(): ServiceFormValues {
@@ -37,6 +48,8 @@ function emptyServiceForm(): ServiceFormValues {
     requiresConsent: false,
     preCareInstructions: "",
     postCareInstructions: "",
+    followUpDays: 0,
+    followUpServiceId: "",
   };
 }
 
@@ -49,6 +62,8 @@ interface ServiceFormDialogProps {
   initial: ServiceFormValues | null;
   /** Categorias já usadas no salão (sugestão enquanto digita) */
   categories: string[];
+  /** Serviços do salão (para escolher o retorno sugerido) */
+  services: { id: number; name: string }[];
   serviceLabel: string;
   isPending: boolean;
   onSubmit: (values: ServiceFormValues) => void;
@@ -60,6 +75,7 @@ export default function ServiceFormDialog({
   editingId,
   initial,
   categories,
+  services,
   serviceLabel,
   isPending,
   onSubmit,
@@ -216,6 +232,53 @@ export default function ServiceFormDialog({
               Orientações registradas para passar ao cliente depois do
               procedimento.
             </p>
+          </div>
+          <div className="rounded-lg border p-3 space-y-3 bg-muted/30">
+            <div className="grid gap-2">
+              <Label>Retorno sugerido (dias)</Label>
+              <Input
+                value={form.followUpDays || ""}
+                onChange={e =>
+                  setForm({
+                    ...form,
+                    followUpDays: Number(
+                      onlyDigits(e.target.value).slice(0, 3)
+                    ),
+                  })
+                }
+                placeholder="Ex: 15"
+                inputMode="numeric"
+              />
+              <p className="text-xs text-muted-foreground">
+                Ao concluir o atendimento, o sistema sugere marcar o retorno
+                depois desses dias. Deixe 0 para não sugerir.
+              </p>
+            </div>
+            {form.followUpDays > 0 && (
+              <div className="grid gap-2">
+                <Label>Serviço do retorno</Label>
+                <Select
+                  value={form.followUpServiceId}
+                  onValueChange={v =>
+                    setForm({ ...form, followUpServiceId: v })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="O mesmo serviço" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[60]">
+                    <SelectItem value="0">O mesmo serviço</SelectItem>
+                    {services
+                      .filter(s => s.id !== editingId)
+                      .map(s => (
+                        <SelectItem key={s.id} value={String(s.id)}>
+                          {s.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
         </div>
         <DialogFooter>

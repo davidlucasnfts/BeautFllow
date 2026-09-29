@@ -12,6 +12,7 @@ import {
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
 import { assertSalonMember } from "./lib/tenant";
+import { createFollowUpsFromAppointment } from "./queries/followup";
 
 /**
  * Monta o snapshot dos serviços adicionais do atendimento.
@@ -197,6 +198,16 @@ export const appointmentRouter = createRouter({
       if (data.status === "completed") updateData.completedAt = new Date();
       if (data.status === "cancelled") updateData.cancelledAt = new Date();
       const result = await updateAppointment(id, salonId, updateData);
+      // Ao concluir o atendimento, cria os retornos pendentes configurados
+      // nos serviços (ex.: coloração → hidratação em 15 dias). Falha aqui
+      // não pode impedir a conclusão do atendimento.
+      if (data.status === "completed") {
+        try {
+          await createFollowUpsFromAppointment(id, salonId);
+        } catch (e) {
+          console.error("Falha ao criar retornos pós-atendimento:", e);
+        }
+      }
       await auditAction(
         "update",
         "appointment",

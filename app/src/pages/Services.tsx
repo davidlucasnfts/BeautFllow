@@ -26,6 +26,8 @@ function formFromService(s: ServiceForCard): ServiceFormValues {
     requiresConsent: s.requiresConsent,
     preCareInstructions: s.preCareInstructions ?? "",
     postCareInstructions: s.postCareInstructions ?? "",
+    followUpDays: s.followUpDays ?? 0,
+    followUpServiceId: s.followUpServiceId ? String(s.followUpServiceId) : "",
   };
 }
 
@@ -129,11 +131,26 @@ export default function Services() {
 
   function handleSubmit(values: ServiceFormValues) {
     if (!salon) return;
-    const { price, ...data } = values;
+    const { price, followUpServiceId, ...data } = values;
+    const followUpServiceIdNum =
+      followUpServiceId && followUpServiceId !== "0"
+        ? Number(followUpServiceId)
+        : null;
     if (editing) {
-      updateMutation.mutate({ id: editing, salonId: salon.id, ...data, price });
+      updateMutation.mutate({
+        id: editing,
+        salonId: salon.id,
+        ...data,
+        price,
+        followUpServiceId: followUpServiceIdNum,
+      });
     } else {
-      createMutation.mutate({ salonId: salon.id, ...data, price });
+      createMutation.mutate({
+        salonId: salon.id,
+        ...data,
+        price,
+        followUpServiceId: followUpServiceIdNum ?? undefined,
+      });
     }
   }
 
@@ -238,6 +255,7 @@ export default function Services() {
         editingId={editing}
         initial={initialForm}
         categories={categories}
+        services={(services ?? []).map(s => ({ id: s.id, name: s.name }))}
         serviceLabel={label.toLowerCase()}
         isPending={createMutation.isPending || updateMutation.isPending}
         onSubmit={handleSubmit}

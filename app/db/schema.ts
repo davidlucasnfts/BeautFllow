@@ -48,6 +48,11 @@ export const appointmentStatusEnum = pgEnum("appointment_status", [
   "no_show",
   "cancelled",
 ]);
+export const followUpStatusEnum = pgEnum("follow_up_status", [
+  "pending",
+  "scheduled",
+  "dismissed",
+]);
 export const bookingSourceEnum = pgEnum("booking_source", [
   "online",
   "whatsapp",
@@ -271,6 +276,10 @@ export const services = pgTable(
     requiresConsent: boolean("requiresConsent").default(false).notNull(),
     preCareInstructions: text("preCareInstructions"),
     postCareInstructions: text("postCareInstructions"),
+    /** Dias até sugerir o retorno (0 = não sugere) */
+    followUpDays: integer("followUpDays").default(0).notNull(),
+    /** Serviço sugerido no retorno; null = o mesmo serviço */
+    followUpServiceId: bigint("followUpServiceId", { mode: "number" }),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt")
       .defaultNow()
@@ -367,6 +376,33 @@ export const appointments = pgTable(
 
 export type Appointment = typeof appointments.$inferSelect;
 export type InsertAppointment = typeof appointments.$inferInsert;
+
+// ==========================================
+// Client Follow-ups (retornos pós-procedimento)
+// ==========================================
+export const clientFollowUps = pgTable(
+  "client_follow_ups",
+  {
+    id: serial("id").primaryKey(),
+    salonId: bigint("salonId", { mode: "number" }).notNull(),
+    clientId: bigint("clientId", { mode: "number" }).notNull(),
+    professionalId: bigint("professionalId", { mode: "number" }),
+    originAppointmentId: bigint("originAppointmentId", { mode: "number" }),
+    /** Serviço sugerido para o retorno */
+    serviceId: bigint("serviceId", { mode: "number" }),
+    dueDate: date("dueDate").notNull(),
+    status: followUpStatusEnum("status").default("pending").notNull(),
+    scheduledAppointmentId: bigint("scheduledAppointmentId", { mode: "number" }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => ({
+    salonIdx: index("client_follow_ups_salon_idx").on(table.salonId),
+    clientIdx: index("client_follow_ups_client_idx").on(table.clientId),
+  })
+);
+
+export type ClientFollowUp = typeof clientFollowUps.$inferSelect;
+export type InsertClientFollowUp = typeof clientFollowUps.$inferInsert;
 
 // ==========================================
 // Communications (Omnichannel)

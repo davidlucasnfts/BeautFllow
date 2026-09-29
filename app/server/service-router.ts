@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { createRouter, authedQuery } from "./middleware";
 import {
   createService,
@@ -45,15 +46,30 @@ export const serviceRouter = createRouter({
         requiresConsent: z.boolean().default(false),
         preCareInstructions: z.string().optional(),
         postCareInstructions: z.string().optional(),
+        followUpDays: z.number().int().min(0).max(365).default(0),
+        followUpServiceId: z.number().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       await assertSalonMember(ctx.user.id, input.salonId);
-      const { salonId, price, ...data } = input;
+      const { salonId, price, followUpServiceId, followUpDays, ...data } =
+        input;
+      // serviço do retorno precisa pertencer ao mesmo salão
+      if (followUpServiceId) {
+        const target = await getServiceById(followUpServiceId, salonId);
+        if (!target) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Serviço de retorno inválido para este estabelecimento.",
+          });
+        }
+      }
       const result = await createService({
         salonId,
         ...data,
         price: String(price),
+        followUpDays,
+        followUpServiceId: followUpServiceId ?? null,
       });
       await auditAction(
         "create",
@@ -81,14 +97,27 @@ export const serviceRouter = createRouter({
         requiresConsent: z.boolean().optional(),
         preCareInstructions: z.string().optional(),
         postCareInstructions: z.string().optional(),
+        followUpDays: z.number().int().min(0).max(365).optional(),
+        /** enviar null limpa o serviço de retorno */
+        followUpServiceId: z.number().nullable().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       await assertSalonMember(ctx.user.id, input.salonId);
-      const { id, salonId, price, ...data } = input;
+      const { id, salonId, price, followUpServiceId, ...data } = input;
+      if (followUpServiceId) {
+        const target = await getServiceById(followUpServiceId, salonId);
+        if (!target) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Serviço de retorno inválido para este estabelecimento.",
+          });
+        }
+      }
       const result = await updateService(id, salonId, {
         ...data,
         ...(price !== undefined ? { price: String(price) } : {}),
+        ...(followUpServiceId !== undefined ? { followUpServiceId } : {}),
       });
       await auditAction(
         "update",

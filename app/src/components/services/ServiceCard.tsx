@@ -13,6 +13,8 @@ export type ServiceForCard = {
   requiresConsent: boolean;
   preCareInstructions: string | null;
   postCareInstructions: string | null;
+  followUpDays: number;
+  followUpServiceId: number | null;
 };
 
 interface ServiceCardProps {

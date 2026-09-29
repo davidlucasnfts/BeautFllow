@@ -25,6 +25,7 @@ import { KpiCard } from "@/components/home/KpiCard";
 import { PublicLinkBanner } from "@/components/home/PublicLinkBanner";
 import { InstallAppBanner } from "@/components/home/InstallAppBanner";
 import TodayAppointmentsBoard from "@/components/home/TodayAppointmentsBoard";
+import FollowUpsBoard from "@/components/home/FollowUpsBoard";
 
 export default function Dashboard() {
   const { salon } = useSalon();
@@ -193,6 +194,11 @@ export default function Dashboard() {
           <TodayAppointmentsBoard />
         </div>
 
+        {/* Retornos pós-procedimento pendentes */}
+        <div className="lg:col-span-3">
+          <FollowUpsBoard />
+        </div>
+
         {/* Status dos Agendamentos */}
         <Card className="h-full lg:col-span-3">
           <CardHeader>
@@ -247,7 +253,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Próximos Agendamentos */}
-        <Card className="h-full lg:col-span-6">
+        <Card className="h-full lg:col-span-3">
           <CardHeader>
             <CardTitle className="text-base font-serif">
               Próximos atendimentos

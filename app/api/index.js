@@ -1989,14 +1989,14 @@ var require_semver = __commonJS({
       return !id || id.toLowerCase() === "x" || id === "*";
     }
     function _parseVersion(versionString) {
-      const match2 = versionString.match(VERSION_REGEXP);
-      if (!match2) {
+      const match3 = versionString.match(VERSION_REGEXP);
+      if (!match3) {
         api_1.diag.error(`Invalid version: ${versionString}`);
         return void 0;
       }
-      const version4 = match2.groups.version;
-      const prerelease = match2.groups.prerelease;
-      const build = match2.groups.build;
+      const version4 = match3.groups.version;
+      const prerelease = match3.groups.prerelease;
+      const build = match3.groups.build;
       const versionSegments = version4.split(".");
       const prereleaseSegments = prerelease?.split(".");
       return {
@@ -2014,17 +2014,17 @@ var require_semver = __commonJS({
       if (!rangeString) {
         return {};
       }
-      const match2 = rangeString.match(RANGE_REGEXP);
-      if (!match2) {
+      const match3 = rangeString.match(RANGE_REGEXP);
+      if (!match3) {
         api_1.diag.error(`Invalid range: ${rangeString}`);
         return {
           invalid: true
         };
       }
-      let op = match2.groups.op;
-      const version4 = match2.groups.version;
-      const prerelease = match2.groups.prerelease;
-      const build = match2.groups.build;
+      let op = match3.groups.op;
+      const version4 = match3.groups.version;
+      const prerelease = match3.groups.prerelease;
+      const build = match3.groups.build;
       const versionSegments = version4.split(".");
       const prereleaseSegments = prerelease?.split(".");
       if (op === "==") {
@@ -2512,14 +2512,14 @@ var require_ms = __commonJS({
       if (str.length > 100) {
         return;
       }
-      var match2 = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+      var match3 = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
         str
       );
-      if (!match2) {
+      if (!match3) {
         return;
       }
-      var n = parseFloat(match2[1]);
-      var type = (match2[2] || "ms").toLowerCase();
+      var n = parseFloat(match3[1]);
+      var type = (match3[2] || "ms").toLowerCase();
       switch (type) {
         case "years":
         case "year":
@@ -2650,19 +2650,19 @@ var require_common = __commonJS({
             args.unshift("%O");
           }
           let index2 = 0;
-          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match2, format) => {
-            if (match2 === "%%") {
+          args[0] = args[0].replace(/%([a-zA-Z%])/g, (match3, format2) => {
+            if (match3 === "%%") {
               return "%";
             }
             index2++;
-            const formatter = createDebug.formatters[format];
+            const formatter = createDebug.formatters[format2];
             if (typeof formatter === "function") {
               const val = args[index2];
-              match2 = formatter.call(self2, val);
+              match3 = formatter.call(self2, val);
               args.splice(index2, 1);
               index2--;
             }
-            return match2;
+            return match3;
           });
           createDebug.formatArgs.call(self2, args);
           const logFn = self2.log || createDebug.log;
@@ -2897,12 +2897,12 @@ var require_browser = __commonJS({
       args.splice(1, 0, c, "color: inherit");
       let index2 = 0;
       let lastC = 0;
-      args[0].replace(/%[a-zA-Z%]/g, (match2) => {
-        if (match2 === "%%") {
+      args[0].replace(/%[a-zA-Z%]/g, (match3) => {
+        if (match3 === "%%") {
           return;
         }
         index2++;
-        if (match2 === "%c") {
+        if (match3 === "%c") {
           lastC = index2;
         }
       });
@@ -2938,8 +2938,8 @@ var require_browser = __commonJS({
       }
     }
     module2.exports = require_common()(exports);
-    var { formatters } = module2.exports;
-    formatters.j = function(v) {
+    var { formatters: formatters2 } = module2.exports;
+    formatters2.j = function(v) {
       try {
         return JSON.stringify(v);
       } catch (error53) {
@@ -3226,12 +3226,12 @@ var require_node = __commonJS({
       }
     }
     module2.exports = require_common()(exports);
-    var { formatters } = module2.exports;
-    formatters.o = function(v) {
+    var { formatters: formatters2 } = module2.exports;
+    formatters2.o = function(v) {
       this.inspectOpts.colors = this.useColors;
       return util2.inspect(v, this.inspectOpts).split("\n").map((str) => str.trim()).join(" ");
     };
-    formatters.O = function(v) {
+    formatters2.O = function(v) {
       this.inspectOpts.colors = this.useColors;
       return util2.inspect(v, this.inspectOpts);
     };
@@ -7262,15 +7262,15 @@ var require_W3CTraceContextPropagator = __commonJS({
     var FLAGS_PART = "[\\da-f]{2}";
     var TRACE_PARENT_REGEX = new RegExp(`^\\s?(${VERSION_PART})-(${TRACE_ID_PART})-(${PARENT_ID_PART})-(${FLAGS_PART})(-.*)?\\s?$`);
     function parseTraceParent(traceParent) {
-      const match2 = TRACE_PARENT_REGEX.exec(traceParent);
-      if (!match2)
+      const match3 = TRACE_PARENT_REGEX.exec(traceParent);
+      if (!match3)
         return null;
-      if (match2[1] === "00" && match2[5])
+      if (match3[1] === "00" && match3[5])
         return null;
       return {
-        traceId: match2[2],
-        spanId: match2[3],
-        traceFlags: parseInt(match2[4], 16)
+        traceId: match3[2],
+        spanId: match3[3],
+        traceFlags: parseInt(match3[4], 16)
       };
     }
     exports.parseTraceParent = parseTraceParent;
@@ -7528,8 +7528,8 @@ var require_timeout = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.callWithTimeout = exports.TimeoutError = void 0;
     var TimeoutError = class _TimeoutError extends Error {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         Object.setPrototypeOf(this, _TimeoutError.prototype);
       }
     };
@@ -10604,14 +10604,14 @@ var require_semver2 = __commonJS({
       return !id || id.toLowerCase() === "x" || id === "*";
     }
     function _parseVersion(versionString) {
-      const match2 = versionString.match(VERSION_REGEXP);
-      if (!match2) {
+      const match3 = versionString.match(VERSION_REGEXP);
+      if (!match3) {
         api_1.diag.error(`Invalid version: ${versionString}`);
         return void 0;
       }
-      const version4 = match2.groups.version;
-      const prerelease = match2.groups.prerelease;
-      const build = match2.groups.build;
+      const version4 = match3.groups.version;
+      const prerelease = match3.groups.prerelease;
+      const build = match3.groups.build;
       const versionSegments = version4.split(".");
       const prereleaseSegments = prerelease?.split(".");
       return {
@@ -10629,17 +10629,17 @@ var require_semver2 = __commonJS({
       if (!rangeString) {
         return {};
       }
-      const match2 = rangeString.match(RANGE_REGEXP);
-      if (!match2) {
+      const match3 = rangeString.match(RANGE_REGEXP);
+      if (!match3) {
         api_1.diag.error(`Invalid range: ${rangeString}`);
         return {
           invalid: true
         };
       }
-      let op = match2.groups.op;
-      const version4 = match2.groups.version;
-      const prerelease = match2.groups.prerelease;
-      const build = match2.groups.build;
+      let op = match3.groups.op;
+      const version4 = match3.groups.version;
+      const prerelease = match3.groups.prerelease;
+      const build = match3.groups.build;
       const versionSegments = version4.split(".");
       const prereleaseSegments = prerelease?.split(".");
       if (op === "==") {
@@ -13173,7 +13173,7 @@ var require_commonjs3 = __commonJS({
     var makeRe = (pattern, options = {}) => new Minimatch(pattern, options).makeRe();
     exports.makeRe = makeRe;
     exports.minimatch.makeRe = exports.makeRe;
-    var match2 = (list, pattern, options = {}) => {
+    var match3 = (list, pattern, options = {}) => {
       const mm = new Minimatch(pattern, options);
       list = list.filter((f) => mm.match(f));
       if (mm.options.nonull && !list.length) {
@@ -13181,7 +13181,7 @@ var require_commonjs3 = __commonJS({
       }
       return list;
     };
-    exports.match = match2;
+    exports.match = match3;
     exports.minimatch.match = exports.match;
     var globMagic = /[?*]|[+@!]\(.*?\)|\[|\]/;
     var regExpEscape = (s) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -13968,15 +13968,15 @@ var require_otel = __commonJS({
       }
       enable() {
         if (this._handleInitialization === void 0 && this.getConfig().registerOnInitialization) {
-          this._handleInitialization = (message2) => {
-            this.plugin()(message2.fastify, void 0, () => {
+          this._handleInitialization = (message3) => {
+            this.plugin()(message3.fastify, void 0, () => {
             });
             const emptyPlugin = (_, __, done) => {
               done();
             };
             emptyPlugin[/* @__PURE__ */ Symbol.for("skip-override")] = true;
             emptyPlugin[/* @__PURE__ */ Symbol.for("fastify.display-name")] = "@fastify/otel";
-            message2.fastify.register(emptyPlugin);
+            message3.fastify.register(emptyPlugin);
           };
           dc.subscribe("fastify.initialization", this._handleInitialization);
         }
@@ -15292,8 +15292,8 @@ var require_instrumentation6 = __commonJS({
                   [semconv_1.ATTR_MESSAGING_DESTINATION_PARTITION_ID]: String(payload.batch.partition)
                 })
               ];
-              payload.batch.messages.forEach((message2) => {
-                const propagatedContext = api_1.propagation.extract(api_1.ROOT_CONTEXT, message2.headers, propagator_1.bufferTextMapGetter);
+              payload.batch.messages.forEach((message3) => {
+                const propagatedContext = api_1.propagation.extract(api_1.ROOT_CONTEXT, message3.headers, propagator_1.bufferTextMapGetter);
                 const spanContext = api_1.trace.getSpan(propagatedContext)?.spanContext();
                 let origSpanLink;
                 if (spanContext) {
@@ -15303,7 +15303,7 @@ var require_instrumentation6 = __commonJS({
                 }
                 spans.push(instrumentation._startConsumerSpan({
                   topic: payload.batch.topic,
-                  message: message2,
+                  message: message3,
                   operationType: semconv_1.MESSAGING_OPERATION_TYPE_VALUE_PROCESS,
                   link: origSpanLink,
                   attributes: {
@@ -15392,14 +15392,14 @@ var require_instrumentation6 = __commonJS({
             const spans = [];
             const pendingMetrics = [];
             messages2.forEach((topicMessage) => {
-              topicMessage.messages.forEach((message2) => {
-                spans.push(instrumentation._startProducerSpan(topicMessage.topic, message2));
+              topicMessage.messages.forEach((message3) => {
+                spans.push(instrumentation._startProducerSpan(topicMessage.topic, message3));
                 pendingMetrics.push(prepareCounter(instrumentation._sentMessages, 1, {
                   [semconv_1.ATTR_MESSAGING_SYSTEM]: semconv_1.MESSAGING_SYSTEM_VALUE_KAFKA,
                   [semconv_1.ATTR_MESSAGING_OPERATION_NAME]: "send",
                   [semconv_1.ATTR_MESSAGING_DESTINATION_NAME]: topicMessage.topic,
-                  ...message2.partition !== void 0 ? {
-                    [semconv_1.ATTR_MESSAGING_DESTINATION_PARTITION_ID]: String(message2.partition)
+                  ...message3.partition !== void 0 ? {
+                    [semconv_1.ATTR_MESSAGING_DESTINATION_PARTITION_ID]: String(message3.partition)
                   } : {}
                 }));
               });
@@ -15414,8 +15414,8 @@ var require_instrumentation6 = __commonJS({
         return (original) => {
           return function send(...args) {
             const record2 = args[0];
-            const spans = record2.messages.map((message2) => {
-              return instrumentation._startProducerSpan(record2.topic, message2);
+            const spans = record2.messages.map((message3) => {
+              return instrumentation._startProducerSpan(record2.topic, message3);
             });
             const pendingMetrics = record2.messages.map((m) => prepareCounter(instrumentation._sentMessages, 1, {
               [semconv_1.ATTR_MESSAGING_SYSTEM]: semconv_1.MESSAGING_SYSTEM_VALUE_KAFKA,
@@ -15456,7 +15456,7 @@ var require_instrumentation6 = __commonJS({
           spans.forEach((span) => span.end());
         });
       }
-      _startConsumerSpan({ topic, message: message2, operationType, ctx, link, attributes }) {
+      _startConsumerSpan({ topic, message: message3, operationType, ctx, link, attributes }) {
         const operationName = operationType === semconv_1.MESSAGING_OPERATION_TYPE_VALUE_RECEIVE ? "poll" : operationType;
         const span = this.tracer.startSpan(`${operationName} ${topic}`, {
           kind: operationType === semconv_1.MESSAGING_OPERATION_TYPE_VALUE_RECEIVE ? api_1.SpanKind.CLIENT : api_1.SpanKind.CONSUMER,
@@ -15466,39 +15466,39 @@ var require_instrumentation6 = __commonJS({
             [semconv_1.ATTR_MESSAGING_DESTINATION_NAME]: topic,
             [semconv_1.ATTR_MESSAGING_OPERATION_TYPE]: operationType,
             [semconv_1.ATTR_MESSAGING_OPERATION_NAME]: operationName,
-            [semconv_1.ATTR_MESSAGING_KAFKA_MESSAGE_KEY]: message2?.key ? String(message2.key) : void 0,
-            [semconv_1.ATTR_MESSAGING_KAFKA_MESSAGE_TOMBSTONE]: message2?.key && message2.value === null ? true : void 0,
-            [semconv_1.ATTR_MESSAGING_KAFKA_OFFSET]: message2?.offset
+            [semconv_1.ATTR_MESSAGING_KAFKA_MESSAGE_KEY]: message3?.key ? String(message3.key) : void 0,
+            [semconv_1.ATTR_MESSAGING_KAFKA_MESSAGE_TOMBSTONE]: message3?.key && message3.value === null ? true : void 0,
+            [semconv_1.ATTR_MESSAGING_KAFKA_OFFSET]: message3?.offset
           },
           links: link ? [link] : []
         }, ctx);
         const { consumerHook } = this.getConfig();
-        if (consumerHook && message2) {
-          (0, instrumentation_1.safeExecuteInTheMiddle)(() => consumerHook(span, { topic, message: message2 }), (e) => {
+        if (consumerHook && message3) {
+          (0, instrumentation_1.safeExecuteInTheMiddle)(() => consumerHook(span, { topic, message: message3 }), (e) => {
             if (e)
               this._diag.error("consumerHook error", e);
           }, true);
         }
         return span;
       }
-      _startProducerSpan(topic, message2) {
+      _startProducerSpan(topic, message3) {
         const span = this.tracer.startSpan(`send ${topic}`, {
           kind: api_1.SpanKind.PRODUCER,
           attributes: {
             [semconv_1.ATTR_MESSAGING_SYSTEM]: semconv_1.MESSAGING_SYSTEM_VALUE_KAFKA,
             [semconv_1.ATTR_MESSAGING_DESTINATION_NAME]: topic,
-            [semconv_1.ATTR_MESSAGING_KAFKA_MESSAGE_KEY]: message2.key ? String(message2.key) : void 0,
-            [semconv_1.ATTR_MESSAGING_KAFKA_MESSAGE_TOMBSTONE]: message2.key && message2.value === null ? true : void 0,
-            [semconv_1.ATTR_MESSAGING_DESTINATION_PARTITION_ID]: message2.partition !== void 0 ? String(message2.partition) : void 0,
+            [semconv_1.ATTR_MESSAGING_KAFKA_MESSAGE_KEY]: message3.key ? String(message3.key) : void 0,
+            [semconv_1.ATTR_MESSAGING_KAFKA_MESSAGE_TOMBSTONE]: message3.key && message3.value === null ? true : void 0,
+            [semconv_1.ATTR_MESSAGING_DESTINATION_PARTITION_ID]: message3.partition !== void 0 ? String(message3.partition) : void 0,
             [semconv_1.ATTR_MESSAGING_OPERATION_NAME]: "send",
             [semconv_1.ATTR_MESSAGING_OPERATION_TYPE]: semconv_1.MESSAGING_OPERATION_TYPE_VALUE_SEND
           }
         });
-        message2.headers = message2.headers ?? {};
-        api_1.propagation.inject(api_1.trace.setSpan(api_1.context.active(), span), message2.headers);
+        message3.headers = message3.headers ?? {};
+        api_1.propagation.inject(api_1.trace.setSpan(api_1.context.active(), span), message3.headers);
         const { producerHook } = this.getConfig();
         if (producerHook) {
-          (0, instrumentation_1.safeExecuteInTheMiddle)(() => producerHook(span, { topic, message: message2 }), (e) => {
+          (0, instrumentation_1.safeExecuteInTheMiddle)(() => producerHook(span, { topic, message: message3 }), (e) => {
             if (e)
               this._diag.error("producerHook error", e);
           }, true);
@@ -17330,13 +17330,13 @@ var require_utils9 = __commonJS({
       }
       return jdbcString;
     }
-    function getQueryText(query, format, values2, maskStatement = false, maskStatementHook = defaultMaskingHook) {
+    function getQueryText(query, format2, values2, maskStatement = false, maskStatementHook = defaultMaskingHook) {
       const [querySql, queryValues] = typeof query === "string" ? [query, values2] : [query.sql, hasValues(query) ? values2 || query.values : values2];
       try {
         if (maskStatement) {
           return maskStatementHook(querySql);
-        } else if (format && queryValues) {
-          return format(querySql, queryValues);
+        } else if (format2 && queryValues) {
+          return format2(querySql, queryValues);
         } else {
           return querySql;
         }
@@ -17420,21 +17420,21 @@ var require_instrumentation10 = __commonJS({
         this._dbSemconvStability = (0, instrumentation_1.semconvStabilityFromStr)("database", process.env.OTEL_SEMCONV_STABILITY_OPT_IN);
       }
       init() {
-        let format;
+        let format2;
         function setFormatFunction(moduleExports) {
-          if (!format && moduleExports.format) {
-            format = moduleExports.format;
+          if (!format2 && moduleExports.format) {
+            format2 = moduleExports.format;
           }
         }
         const patch = (ConnectionPrototype) => {
           if ((0, instrumentation_1.isWrapped)(ConnectionPrototype.query)) {
             this._unwrap(ConnectionPrototype, "query");
           }
-          this._wrap(ConnectionPrototype, "query", this._patchQuery(format, false));
+          this._wrap(ConnectionPrototype, "query", this._patchQuery(format2, false));
           if ((0, instrumentation_1.isWrapped)(ConnectionPrototype.execute)) {
             this._unwrap(ConnectionPrototype, "execute");
           }
-          this._wrap(ConnectionPrototype, "execute", this._patchQuery(format, true));
+          this._wrap(ConnectionPrototype, "execute", this._patchQuery(format2, true));
         };
         const unpatch = (ConnectionPrototype) => {
           this._unwrap(ConnectionPrototype, "query");
@@ -17464,7 +17464,7 @@ var require_instrumentation10 = __commonJS({
           ])
         ];
       }
-      _patchQuery(format, isPrepared) {
+      _patchQuery(format2, isPrepared) {
         return (originalQuery) => {
           const thisPlugin = this;
           return function query(query, _valuesOrCallback, _callback) {
@@ -17476,7 +17476,7 @@ var require_instrumentation10 = __commonJS({
             }
             const { maskStatement, maskStatementHook, responseHook } = thisPlugin.getConfig();
             const attributes = (0, utils_1.getConnectionAttributes)(this.config, thisPlugin._dbSemconvStability, thisPlugin._netSemconvStability);
-            const dbQueryText = (0, utils_1.getQueryText)(query, format, values2, maskStatement, maskStatementHook);
+            const dbQueryText = (0, utils_1.getQueryText)(query, format2, values2, maskStatement, maskStatementHook);
             if (thisPlugin._dbSemconvStability & instrumentation_1.SemconvStability.OLD) {
               attributes[semconv_1.ATTR_DB_SYSTEM] = semconv_1.DB_SYSTEM_VALUE_MYSQL;
               attributes[semconv_1.ATTR_DB_STATEMENT] = dbQueryText;
@@ -18786,14 +18786,14 @@ var require_semver3 = __commonJS({
       return !id || id.toLowerCase() === "x" || id === "*";
     }
     function _parseVersion(versionString) {
-      const match2 = versionString.match(VERSION_REGEXP);
-      if (!match2) {
+      const match3 = versionString.match(VERSION_REGEXP);
+      if (!match3) {
         api_1.diag.error(`Invalid version: ${versionString}`);
         return void 0;
       }
-      const version4 = match2.groups.version;
-      const prerelease = match2.groups.prerelease;
-      const build = match2.groups.build;
+      const version4 = match3.groups.version;
+      const prerelease = match3.groups.prerelease;
+      const build = match3.groups.build;
       const versionSegments = version4.split(".");
       const prereleaseSegments = prerelease?.split(".");
       return {
@@ -18811,17 +18811,17 @@ var require_semver3 = __commonJS({
       if (!rangeString) {
         return {};
       }
-      const match2 = rangeString.match(RANGE_REGEXP);
-      if (!match2) {
+      const match3 = rangeString.match(RANGE_REGEXP);
+      if (!match3) {
         api_1.diag.error(`Invalid range: ${rangeString}`);
         return {
           invalid: true
         };
       }
-      let op = match2.groups.op;
-      const version4 = match2.groups.version;
-      const prerelease = match2.groups.prerelease;
-      const build = match2.groups.build;
+      let op = match3.groups.op;
+      const version4 = match3.groups.version;
+      const prerelease = match3.groups.prerelease;
+      const build = match3.groups.build;
       const versionSegments = version4.split(".");
       const prereleaseSegments = prerelease?.split(".");
       if (op === "==") {
@@ -21803,20 +21803,20 @@ var require_amqplib = __commonJS({
       }
       getAckPatch(isRejected, endOperation, original) {
         const self2 = this;
-        return function ack(message2, allUpToOrRequeue, requeue) {
+        return function ack(message3, allUpToOrRequeue, requeue) {
           const channel4 = this;
           const requeueResolved = endOperation === types_1.EndOperation.Reject ? allUpToOrRequeue : requeue;
           const spansNotEnded = channel4[utils_1.CHANNEL_SPANS_NOT_ENDED] ?? [];
-          const msgIndex = spansNotEnded.findIndex((msgDetails) => msgDetails.msg === message2);
+          const msgIndex = spansNotEnded.findIndex((msgDetails) => msgDetails.msg === message3);
           if (msgIndex < 0) {
-            self2.endConsumerSpan(message2, isRejected, endOperation, requeueResolved);
+            self2.endConsumerSpan(message3, isRejected, endOperation, requeueResolved);
           } else if (endOperation !== types_1.EndOperation.Reject && allUpToOrRequeue) {
             for (let i = 0; i <= msgIndex; i++) {
               self2.endConsumerSpan(spansNotEnded[i].msg, isRejected, endOperation, requeueResolved);
             }
             spansNotEnded.splice(0, msgIndex + 1);
           } else {
-            self2.endConsumerSpan(message2, isRejected, endOperation, requeueResolved);
+            self2.endConsumerSpan(message3, isRejected, endOperation, requeueResolved);
             spansNotEnded.splice(msgIndex, 1);
           }
           return original.apply(this, arguments);
@@ -22002,8 +22002,8 @@ var require_amqplib = __commonJS({
         api_1.propagation.inject(api_1.trace.setSpan(api_1.context.active(), span), modifiedOptions.headers);
         return { span, modifiedOptions };
       }
-      endConsumerSpan(message2, isRejected, operation, requeue) {
-        const storedSpan = message2[utils_1.MESSAGE_STORED_SPAN];
+      endConsumerSpan(message3, isRejected, operation, requeue) {
+        const storedSpan = message3[utils_1.MESSAGE_STORED_SPAN];
         if (!storedSpan)
           return;
         if (isRejected !== false) {
@@ -22012,9 +22012,9 @@ var require_amqplib = __commonJS({
             message: operation !== types_1.EndOperation.ChannelClosed && operation !== types_1.EndOperation.ChannelError ? `${operation} called on message${requeue === true ? " with requeue" : requeue === false ? " without requeue" : ""}` : operation
           });
         }
-        this.callConsumeEndHook(storedSpan, message2, isRejected, operation);
+        this.callConsumeEndHook(storedSpan, message3, isRejected, operation);
         storedSpan.end();
-        message2[utils_1.MESSAGE_STORED_SPAN] = void 0;
+        message3[utils_1.MESSAGE_STORED_SPAN] = void 0;
       }
       endAllSpansOnChannel(channel4, isRejected, operation, requeue) {
         const spansNotEnded = channel4[utils_1.CHANNEL_SPANS_NOT_ENDED] ?? [];
@@ -22110,10 +22110,10 @@ var require_main = __commonJS({
       const obj = {};
       let lines = src.toString();
       lines = lines.replace(/\r\n?/mg, "\n");
-      let match2;
-      while ((match2 = LINE.exec(lines)) != null) {
-        const key = match2[1];
-        let value = match2[2] || "";
+      let match3;
+      while ((match3 = LINE.exec(lines)) != null) {
+        const key = match3[1];
+        let value = match3[2] || "";
         value = value.trim();
         const maybeQuote = value[0];
         value = value.replace(/^(['"`])([\s\S]*)\1$/mg, "$2");
@@ -22152,14 +22152,14 @@ var require_main = __commonJS({
       }
       return DotenvModule.parse(decrypted);
     }
-    function _warn(message2) {
-      console.error(`\u26A0 ${message2}`);
+    function _warn(message3) {
+      console.error(`\u26A0 ${message3}`);
     }
-    function _debug(message2) {
-      console.log(`\u2506 ${message2}`);
+    function _debug(message3) {
+      console.log(`\u2506 ${message3}`);
     }
-    function _log(message2) {
-      console.log(`\u25C7 ${message2}`);
+    function _log(message3) {
+      console.log(`\u25C7 ${message3}`);
     }
     function _dotenvKey(options) {
       if (options && options.DOTENV_KEY && options.DOTENV_KEY.length > 0) {
@@ -22536,7 +22536,7 @@ var require_dist = __commonJS({
         str += "; Path=" + cookie2.path;
       }
       if (cookie2.expires) {
-        if (!isDate2(cookie2.expires) || !Number.isFinite(cookie2.expires.valueOf())) {
+        if (!isDate3(cookie2.expires) || !Number.isFinite(cookie2.expires.valueOf())) {
           throw new TypeError(`option expires is invalid: ${cookie2.expires}`);
         }
         str += "; Expires=" + cookie2.expires.toUTCString();
@@ -22681,7 +22681,7 @@ var require_dist = __commonJS({
         return str;
       }
     }
-    function isDate2(val) {
+    function isDate3(val) {
       return __toString.call(val) === "[object Date]";
     }
   }
@@ -22790,25 +22790,25 @@ function decodeWords(str) {
   while (!done) {
     let result = (str || "").toString().replace(
       /(=\?([^?]+)\?[Bb]\?([^?]*)\?=)\s*(?==\?([^?]+)\?[Bb]\?[^?]*\?=)/g,
-      (match2, left, chLeft, encodedLeftStr, chRight) => {
+      (match3, left, chLeft, encodedLeftStr, chRight) => {
         if (!joinString) {
-          return match2;
+          return match3;
         }
         if (chLeft === chRight && encodedLeftStr.length % 4 === 0 && !/=$/.test(encodedLeftStr)) {
           return left + "__\0JOIN\0__";
         }
-        return match2;
+        return match3;
       }
     ).replace(
       /(=\?([^?]+)\?[Qq]\?[^?]*\?=)\s*(?==\?([^?]+)\?[Qq]\?[^?]*\?=)/g,
-      (match2, left, chLeft, chRight) => {
+      (match3, left, chLeft, chRight) => {
         if (!joinString) {
-          return match2;
+          return match3;
         }
         if (chLeft === chRight) {
           return left + "__\0JOIN\0__";
         }
-        return match2;
+        return match3;
       }
     ).replace(/(\?=)?__\x00JOIN\x00__(=\?([^?]+)\?[QqBb]\?)?/g, "").replace(/(=\?[^?]+\?[QqBb]\?[^?]*\?=)\s+(?==\?[^?]+\?[QqBb]\?[^?]*\?=)/g, "$1").replace(
       /=\?([\w_\-*]+)\?([QqBb])\?([^?]*)\?=/g,
@@ -22849,12 +22849,12 @@ function decodeURIComponentWithCharset(encodedStr, charset) {
 function decodeParameterValueContinuations(header) {
   let paramKeys = /* @__PURE__ */ new Map();
   Object.keys(header.params).forEach((key) => {
-    let match2 = key.match(/\*((\d+)\*?)?$/);
-    if (!match2) {
+    let match3 = key.match(/\*((\d+)\*?)?$/);
+    if (!match3) {
       return;
     }
-    let actualKey = key.substr(0, match2.index).toLowerCase();
-    let nr = Number(match2[2]) || 0;
+    let actualKey = key.substr(0, match3.index).toLowerCase();
+    let nr = Number(match3[2]) || 0;
     let paramVal;
     if (!paramKeys.has(actualKey)) {
       paramVal = {
@@ -22866,9 +22866,9 @@ function decodeParameterValueContinuations(header) {
       paramVal = paramKeys.get(actualKey);
     }
     let value = header.params[key];
-    if (nr === 0 && match2[0].charAt(match2[0].length - 1) === "*" && (match2 = value.match(/^([^']*)'[^']*'(.*)$/))) {
-      paramVal.charset = match2[1] || "utf-8";
-      value = match2[2];
+    if (nr === 0 && match3[0].charAt(match3[0].length - 1) === "*" && (match3 = value.match(/^([^']*)'[^']*'(.*)$/))) {
+      paramVal.charset = match3[1] || "utf-8";
+      value = match3[2];
     }
     paramVal.values.push({ nr, value });
     delete header.params[key];
@@ -25587,12 +25587,12 @@ var init_html_entities = __esm({
 
 // node_modules/postal-mime/src/text-format.js
 function decodeHTMLEntities(str) {
-  return str.replace(/&(#\d+|#x[a-f0-9]+|[a-z]+\d*);?/gi, (match2, entity) => {
-    if (typeof html_entities_default[match2] === "string") {
-      return html_entities_default[match2];
+  return str.replace(/&(#\d+|#x[a-f0-9]+|[a-z]+\d*);?/gi, (match3, entity) => {
+    if (typeof html_entities_default[match3] === "string") {
+      return html_entities_default[match3];
     }
-    if (entity.charAt(0) !== "#" || match2.charAt(match2.length - 1) !== ";") {
-      return match2;
+    if (entity.charAt(0) !== "#" || match3.charAt(match3.length - 1) !== ";") {
+      return match3;
     }
     let codePoint;
     if (entity.charAt(1) === "x") {
@@ -25678,22 +25678,22 @@ function formatHtmlAddresses(addresses) {
 function foldLines(str, lineLength, afterSpace) {
   str = (str || "").toString();
   lineLength = lineLength || 76;
-  let pos = 0, len = str.length, result = "", line2, match2;
+  let pos = 0, len = str.length, result = "", line2, match3;
   while (pos < len) {
     line2 = str.substr(pos, lineLength);
     if (line2.length < lineLength) {
       result += line2;
       break;
     }
-    if (match2 = line2.match(/^[^\n\r]*(\r?\n|\r)/)) {
-      line2 = match2[0];
+    if (match3 = line2.match(/^[^\n\r]*(\r?\n|\r)/)) {
+      line2 = match3[0];
       result += line2;
       pos += line2.length;
       continue;
-    } else if ((match2 = line2.match(/(\s+)[^\s]*$/)) && match2[0].length - (afterSpace ? (match2[1] || "").length : 0) < line2.length) {
-      line2 = line2.substr(0, line2.length - (match2[0].length - (afterSpace ? (match2[1] || "").length : 0)));
-    } else if (match2 = str.substr(pos + line2.length).match(/^[^\s]+(\s*)/)) {
-      line2 = line2 + match2[0].substr(0, match2[0].length - (!afterSpace ? (match2[1] || "").length : 0));
+    } else if ((match3 = line2.match(/(\s+)[^\s]*$/)) && match3[0].length - (afterSpace ? (match3[1] || "").length : 0) < line2.length) {
+      line2 = line2.substr(0, line2.length - (match3[0].length - (afterSpace ? (match3[1] || "").length : 0)));
+    } else if (match3 = str.substr(pos + line2.length).match(/^[^\s]+(\s*)/)) {
+      line2 = line2 + match3[0].substr(0, match3[0].length - (!afterSpace ? (match3[1] || "").length : 0));
     }
     result += line2;
     pos += line2.length;
@@ -25703,15 +25703,15 @@ function foldLines(str, lineLength, afterSpace) {
   }
   return result;
 }
-function formatTextHeader(message2) {
+function formatTextHeader(message3) {
   let rows = [];
-  if (message2.from) {
-    rows.push({ key: "From", val: formatTextAddress(message2.from) });
+  if (message3.from) {
+    rows.push({ key: "From", val: formatTextAddress(message3.from) });
   }
-  if (message2.subject) {
-    rows.push({ key: "Subject", val: message2.subject });
+  if (message3.subject) {
+    rows.push({ key: "Subject", val: message3.subject });
   }
-  if (message2.date) {
+  if (message3.date) {
     let dateOptions = {
       year: "numeric",
       month: "numeric",
@@ -25721,17 +25721,17 @@ function formatTextHeader(message2) {
       second: "numeric",
       hour12: false
     };
-    let dateStr = typeof Intl === "undefined" ? message2.date : new Intl.DateTimeFormat("default", dateOptions).format(new Date(message2.date));
+    let dateStr = typeof Intl === "undefined" ? message3.date : new Intl.DateTimeFormat("default", dateOptions).format(new Date(message3.date));
     rows.push({ key: "Date", val: dateStr });
   }
-  if (message2.to && message2.to.length) {
-    rows.push({ key: "To", val: formatTextAddresses(message2.to) });
+  if (message3.to && message3.to.length) {
+    rows.push({ key: "To", val: formatTextAddresses(message3.to) });
   }
-  if (message2.cc && message2.cc.length) {
-    rows.push({ key: "Cc", val: formatTextAddresses(message2.cc) });
+  if (message3.cc && message3.cc.length) {
+    rows.push({ key: "Cc", val: formatTextAddresses(message3.cc) });
   }
-  if (message2.bcc && message2.bcc.length) {
-    rows.push({ key: "Bcc", val: formatTextAddresses(message2.bcc) });
+  if (message3.bcc && message3.bcc.length) {
+    rows.push({ key: "Bcc", val: formatTextAddresses(message3.bcc) });
   }
   let maxKeyLength = rows.map((r) => r.key.length).reduce((acc, cur) => {
     return cur > acc ? cur : acc;
@@ -25754,21 +25754,21 @@ ${lineMarker}
 `;
   return template;
 }
-function formatHtmlHeader(message2) {
+function formatHtmlHeader(message3) {
   let rows = [];
-  if (message2.from) {
+  if (message3.from) {
     rows.push(
-      `<div class="postal-email-header-key">From</div><div class="postal-email-header-value">${formatHtmlAddress(message2.from)}</div>`
+      `<div class="postal-email-header-key">From</div><div class="postal-email-header-value">${formatHtmlAddress(message3.from)}</div>`
     );
   }
-  if (message2.subject) {
+  if (message3.subject) {
     rows.push(
       `<div class="postal-email-header-key">Subject</div><div class="postal-email-header-value postal-email-header-subject">${escapeHtml(
-        message2.subject
+        message3.subject
       )}</div>`
     );
   }
-  if (message2.date) {
+  if (message3.date) {
     let dateOptions = {
       year: "numeric",
       month: "numeric",
@@ -25778,26 +25778,26 @@ function formatHtmlHeader(message2) {
       second: "numeric",
       hour12: false
     };
-    let dateStr = typeof Intl === "undefined" ? message2.date : new Intl.DateTimeFormat("default", dateOptions).format(new Date(message2.date));
+    let dateStr = typeof Intl === "undefined" ? message3.date : new Intl.DateTimeFormat("default", dateOptions).format(new Date(message3.date));
     rows.push(
       `<div class="postal-email-header-key">Date</div><div class="postal-email-header-value postal-email-header-date" data-date="${escapeHtml(
-        message2.date
+        message3.date
       )}">${escapeHtml(dateStr)}</div>`
     );
   }
-  if (message2.to && message2.to.length) {
+  if (message3.to && message3.to.length) {
     rows.push(
-      `<div class="postal-email-header-key">To</div><div class="postal-email-header-value">${formatHtmlAddresses(message2.to)}</div>`
+      `<div class="postal-email-header-key">To</div><div class="postal-email-header-value">${formatHtmlAddresses(message3.to)}</div>`
     );
   }
-  if (message2.cc && message2.cc.length) {
+  if (message3.cc && message3.cc.length) {
     rows.push(
-      `<div class="postal-email-header-key">Cc</div><div class="postal-email-header-value">${formatHtmlAddresses(message2.cc)}</div>`
+      `<div class="postal-email-header-key">Cc</div><div class="postal-email-header-value">${formatHtmlAddresses(message3.cc)}</div>`
     );
   }
-  if (message2.bcc && message2.bcc.length) {
+  if (message3.bcc && message3.bcc.length) {
     rows.push(
-      `<div class="postal-email-header-key">Bcc</div><div class="postal-email-header-value">${formatHtmlAddresses(message2.bcc)}</div>`
+      `<div class="postal-email-header-key">Bcc</div><div class="postal-email-header-value">${formatHtmlAddresses(message3.bcc)}</div>`
     );
   }
   let template = `<div class="postal-email-header">${rows.length ? '<div class="postal-email-header-row">' : ""}${rows.join(
@@ -26533,7 +26533,7 @@ var init_postal_mime = __esm({
           await this.processLine(line2.bytes, line2.done);
         }
         await this.processNodeTree();
-        const message2 = {
+        const message3 = {
           headers: this.root.headers.map((entry) => ({ key: entry.key, originalKey: entry.originalKey, value: entry.value })).reverse()
         };
         for (const key of ["from", "sender"]) {
@@ -26541,7 +26541,7 @@ var init_postal_mime = __esm({
           if (addressHeader && addressHeader.value) {
             const addresses = address_parser_default(addressHeader.value);
             if (addresses && addresses.length) {
-              message2[key] = addresses[0];
+              message3[key] = addresses[0];
             }
           }
         }
@@ -26551,7 +26551,7 @@ var init_postal_mime = __esm({
             const addresses = address_parser_default(addressHeader.value);
             if (addresses && addresses.length && addresses[0].address) {
               const camelKey = toCamelCase2(key);
-              message2[camelKey] = addresses[0].address;
+              message3[camelKey] = addresses[0].address;
             }
           }
         }
@@ -26561,14 +26561,14 @@ var init_postal_mime = __esm({
           addressHeaders.filter((entry) => entry && entry.value).map((entry) => address_parser_default(entry.value)).forEach((parsed) => addresses = addresses.concat(parsed || []));
           if (addresses && addresses.length) {
             const camelKey = toCamelCase2(key);
-            message2[camelKey] = addresses;
+            message3[camelKey] = addresses;
           }
         }
         for (const key of ["subject", "message-id", "in-reply-to", "references"]) {
           const header = this.root.headers.find((line2) => line2.key === key);
           if (header && header.value) {
             const camelKey = toCamelCase2(key);
-            message2[camelKey] = decodeWords(header.value);
+            message3[camelKey] = decodeWords(header.value);
           }
         }
         let dateHeader = this.root.headers.find((line2) => line2.key === "date");
@@ -26579,21 +26579,21 @@ var init_postal_mime = __esm({
           } else {
             date6 = date6.toISOString();
           }
-          message2.date = date6;
+          message3.date = date6;
         }
         if (this.textContent?.html) {
-          message2.html = this.textContent.html;
+          message3.html = this.textContent.html;
         }
         if (this.textContent?.plain) {
-          message2.text = this.textContent.plain;
+          message3.text = this.textContent.plain;
         }
-        message2.attachments = this.attachments;
-        message2.headerLines = (this.root.rawHeaderLines || []).slice().reverse();
+        message3.attachments = this.attachments;
+        message3.headerLines = (this.root.rawHeaderLines || []).slice().reverse();
         switch (this.attachmentEncoding) {
           case "arraybuffer":
             break;
           case "base64":
-            for (let attachment of message2.attachments || []) {
+            for (let attachment of message3.attachments || []) {
               if (attachment?.content) {
                 attachment.content = base64ArrayBuffer(attachment.content);
                 attachment.encoding = "base64";
@@ -26602,7 +26602,7 @@ var init_postal_mime = __esm({
             break;
           case "utf8":
             let attachmentDecoder = new TextDecoder("utf8");
-            for (let attachment of message2.attachments || []) {
+            for (let attachment of message3.attachments || []) {
               if (attachment?.content) {
                 attachment.content = attachmentDecoder.decode(attachment.content);
                 attachment.encoding = "utf8";
@@ -26612,7 +26612,7 @@ var init_postal_mime = __esm({
           default:
             throw new Error("Unknown attachment encoding");
         }
-        return message2;
+        return message3;
       }
     };
   }
@@ -27300,16 +27300,16 @@ var require_dist2 = __commonJS({
     var timing_safe_equal_1 = require_timing_safe_equal();
     var WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60;
     var ExtendableError = class _ExtendableError extends Error {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         Object.setPrototypeOf(this, _ExtendableError.prototype);
         this.name = "ExtendableError";
-        this.stack = new Error(message2).stack;
+        this.stack = new Error(message3).stack;
       }
     };
     var WebhookVerificationError = class _WebhookVerificationError extends ExtendableError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         Object.setPrototypeOf(this, _WebhookVerificationError.prototype);
         this.name = "WebhookVerificationError";
       }
@@ -28830,8 +28830,8 @@ var RequestError2, toRequestError2, GlobalRequest2, Request3, newHeadersFromInco
 var init_dist2 = __esm({
   "node_modules/@hono/node-server/dist/index.mjs"() {
     RequestError2 = class extends Error {
-      constructor(message2, options) {
-        super(message2, options);
+      constructor(message3, options) {
+        super(message3, options);
         this.name = "RequestError";
       }
     };
@@ -29427,11 +29427,11 @@ var init_mime = __esm({
   "node_modules/hono/dist/utils/mime.js"() {
     getMimeType = (filename, mimes = baseMimes) => {
       const regexp = /\.([a-zA-Z0-9]+?)$/;
-      const match2 = filename.match(regexp);
-      if (!match2) {
+      const match3 = filename.match(regexp);
+      if (!match3) {
         return;
       }
-      let mimeType = mimes[match2[1].toLowerCase()];
+      let mimeType = mimes[match3[1].toLowerCase()];
       if (mimeType && mimeType.startsWith("text")) {
         mimeType += "; charset=utf-8";
       }
@@ -29554,11 +29554,11 @@ var init_serve_static = __esm({
       try {
         return decoder2(str);
       } catch {
-        return str.replace(/(?:%[0-9A-Fa-f]{2})+/g, (match2) => {
+        return str.replace(/(?:%[0-9A-Fa-f]{2})+/g, (match3) => {
           try {
-            return decoder2(match2);
+            return decoder2(match3);
           } catch {
-            return match2;
+            return match3;
           }
         });
       }
@@ -29686,8 +29686,8 @@ import { Http2ServerRequest } from "http2";
 import { Readable } from "stream";
 import crypto2 from "crypto";
 var RequestError = class extends Error {
-  constructor(message2, options) {
-    super(message2, options);
+  constructor(message3, options) {
+    super(message3, options);
     this.name = "RequestError";
   }
 };
@@ -30471,9 +30471,9 @@ var splitRoutingPath = (routePath) => {
 };
 var extractGroupsFromPath = (path2) => {
   const groups = [];
-  path2 = path2.replace(/\{[^}]+\}/g, (match2, index2) => {
+  path2 = path2.replace(/\{[^}]+\}/g, (match3, index2) => {
     const mark = `@${index2}`;
-    groups.push([mark, match2]);
+    groups.push([mark, match3]);
     return mark;
   });
   return { groups, path: path2 };
@@ -30495,14 +30495,14 @@ var getPattern = (label, next) => {
   if (label === "*") {
     return "*";
   }
-  const match2 = label.match(/^\:([^\{\}]+)(?:\{(.+)\})?$/);
-  if (match2) {
+  const match3 = label.match(/^\:([^\{\}]+)(?:\{(.+)\})?$/);
+  if (match3) {
     const cacheKey3 = `${label}#${next}`;
     if (!patternCache[cacheKey3]) {
-      if (match2[2]) {
-        patternCache[cacheKey3] = next && next[0] !== ":" && next[0] !== "*" ? [cacheKey3, match2[1], new RegExp(`^${match2[2]}(?=/${next})`)] : [label, match2[1], new RegExp(`^${match2[2]}$`)];
+      if (match3[2]) {
+        patternCache[cacheKey3] = next && next[0] !== ":" && next[0] !== "*" ? [cacheKey3, match3[1], new RegExp(`^${match3[2]}(?=/${next})`)] : [label, match3[1], new RegExp(`^${match3[2]}$`)];
       } else {
-        patternCache[cacheKey3] = [label, match2[1], true];
+        patternCache[cacheKey3] = [label, match3[1], true];
       }
     }
     return patternCache[cacheKey3];
@@ -30513,11 +30513,11 @@ var tryDecode = (str, decoder2) => {
   try {
     return decoder2(str);
   } catch {
-    return str.replace(/(?:%[0-9A-Fa-f]{2})+/g, (match2) => {
+    return str.replace(/(?:%[0-9A-Fa-f]{2})+/g, (match3) => {
       try {
-        return decoder2(match2);
+        return decoder2(match3);
       } catch {
-        return match2;
+        return match3;
       }
     });
   }
@@ -31763,7 +31763,7 @@ var Hono = class _Hono {
 var emptyParam = [];
 function match(method, path2) {
   const matchers = this.buildAllMatchers();
-  const match2 = ((method2, path22) => {
+  const match22 = ((method2, path22) => {
     const matcher = matchers[method2] || matchers[METHOD_NAME_ALL];
     const staticMatch = matcher[2][path22];
     if (staticMatch) {
@@ -31776,8 +31776,8 @@ function match(method, path2) {
     const index2 = match3.indexOf("", 1);
     return [matcher[1][index2], match3];
   });
-  this.match = match2;
-  return match2(method, path2);
+  this.match = match22;
+  return match22(method, path2);
 }
 
 // node_modules/hono/dist/router/reg-exp-router/node.js
@@ -32617,7 +32617,7 @@ function getCSPDirectives(contentSecurityPolicy) {
     resultValues.push(
       directive.replace(
         /[A-Z]+(?![a-z])|[A-Z]/g,
-        (match2, offset) => offset ? "-" + match2.toLowerCase() : match2.toLowerCase()
+        (match3, offset) => offset ? "-" + match3.toLowerCase() : match3.toLowerCase()
       ),
       ...valueArray.flatMap((value2) => [" ", value2]),
       "; "
@@ -32870,7 +32870,7 @@ function honoRateLimiter(config4) {
   const {
     windowMs = 6e4,
     limit = 5,
-    message: message2 = "Too many requests, please try again later.",
+    message: message3 = "Too many requests, please try again later.",
     statusCode = 429,
     standardHeaders = "draft-6",
     requestPropertyName = "rateLimit",
@@ -32891,7 +32891,7 @@ function honoRateLimiter(config4) {
   const options = {
     windowMs,
     limit,
-    message: message2,
+    message: message3,
     statusCode,
     standardHeaders,
     requestPropertyName,
@@ -32965,7 +32965,7 @@ function honoRateLimiter(config4) {
 }
 function cloudflareRateLimiter(config4) {
   const {
-    message: message2 = "Too many requests, please try again later.",
+    message: message3 = "Too many requests, please try again later.",
     statusCode = 429,
     binding: bindingProp,
     keyGenerator,
@@ -32983,7 +32983,7 @@ function cloudflareRateLimiter(config4) {
       rateLimitBinding = rateLimitBinding(c);
     }
     const options = {
-      message: message2,
+      message: message3,
       statusCode,
       binding: rateLimitBinding,
       keyGenerator,
@@ -33666,9 +33666,9 @@ function getFirstException(event) {
   return event.exception?.values?.[0];
 }
 function getEventDescription(event) {
-  const { message: message2, event_id: eventId } = event;
-  if (message2) {
-    return message2;
+  const { message: message3, event_id: eventId } = event;
+  if (message3) {
+    return message3;
   }
   const firstException = getFirstException(event);
   if (firstException) {
@@ -33708,16 +33708,16 @@ function _parseInt(input) {
   return parseInt(input || "", 10);
 }
 function parseSemver(input) {
-  const match2 = input.match(SEMVER_REGEXP) || [];
-  const major2 = _parseInt(match2[1]);
-  const minor = _parseInt(match2[2]);
-  const patch = _parseInt(match2[3]);
+  const match3 = input.match(SEMVER_REGEXP) || [];
+  const major2 = _parseInt(match3[1]);
+  const minor = _parseInt(match3[2]);
+  const patch = _parseInt(match3[3]);
   return {
-    buildmetadata: match2[5],
+    buildmetadata: match3[5],
     major: isNaN(major2) ? void 0 : major2,
     minor: isNaN(minor) ? void 0 : minor,
     patch: isNaN(patch) ? void 0 : patch,
-    prerelease: match2[4]
+    prerelease: match3[4]
   };
 }
 function checkOrSetAlreadyCaught(exception) {
@@ -34416,18 +34416,18 @@ var Scope = class _Scope {
    *
    * @returns {string} The id of the captured message.
    */
-  captureMessage(message2, level, hint) {
+  captureMessage(message3, level, hint) {
     const eventId = hint?.event_id || uuid4();
     if (!this._client) {
       DEBUG_BUILD && debug.warn("No client configured on scope - will not capture message!");
       return eventId;
     }
-    const syntheticException = hint?.syntheticException ?? new Error(message2);
+    const syntheticException = hint?.syntheticException ?? new Error(message3);
     this._client.captureMessage(
-      message2,
+      message3,
       level,
       {
-        originalException: message2,
+        originalException: message3,
         syntheticException,
         ...hint,
         event_id: eventId
@@ -35028,14 +35028,14 @@ function dsnToString(dsn, withPassword = false) {
   return `${protocol}://${publicKey}${withPassword && pass ? `:${pass}` : ""}@${host}${port ? `:${port}` : ""}/${path2 ? `${path2}/` : path2}${projectId}`;
 }
 function dsnFromString(str) {
-  const match2 = DSN_REGEX.exec(str);
-  if (!match2) {
+  const match3 = DSN_REGEX.exec(str);
+  if (!match3) {
     consoleSandbox(() => {
       console.error(`Invalid Sentry Dsn: ${str}`);
     });
     return void 0;
   }
-  const [protocol, publicKey, pass = "", host = "", port = "", lastPath = ""] = match2.slice(1);
+  const [protocol, publicKey, pass = "", host = "", port = "", lastPath = ""] = match3.slice(1);
   let path2 = "";
   let projectId = lastPath;
   const split = projectId.split("/");
@@ -35093,8 +35093,8 @@ function validateDsn(dsn) {
   return true;
 }
 function extractOrgIdFromDsnHost(host) {
-  const match2 = host.match(ORG_ID_REGEX);
-  return match2?.[1];
+  const match3 = host.match(ORG_ID_REGEX);
+  return match3?.[1];
 }
 function extractOrgIdFromClient(client) {
   const options = client.getOptions();
@@ -35458,9 +35458,9 @@ function registerSpanErrorInstrumentation() {
     const activeSpan = getActiveSpan();
     const rootSpan = activeSpan && getRootSpan(activeSpan);
     if (rootSpan) {
-      const message2 = "internal_error";
-      DEBUG_BUILD && debug.log(`[Tracing] Root span: ${message2} -> Global error occurred`);
-      rootSpan.setStatus({ code: SPAN_STATUS_ERROR, message: message2 });
+      const message3 = "internal_error";
+      DEBUG_BUILD && debug.log(`[Tracing] Root span: ${message3} -> Global error occurred`);
+      rootSpan.setStatus({ code: SPAN_STATUS_ERROR, message: message3 });
     }
   }
   errorCallback.tag = "sentry_tracingErrorCallback";
@@ -37040,19 +37040,19 @@ function parseUrl(url2) {
   if (!url2) {
     return {};
   }
-  const match2 = url2.match(/^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$/);
-  if (!match2) {
+  const match3 = url2.match(/^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$/);
+  if (!match3) {
     return {};
   }
-  const query = match2[6] || "";
-  const fragment2 = match2[8] || "";
+  const query = match3[6] || "";
+  const fragment2 = match3[8] || "";
   return {
-    host: match2[4],
-    path: match2[5],
-    protocol: match2[2],
+    host: match3[4],
+    path: match3[5],
+    protocol: match3[2],
     search: query,
     hash: fragment2,
-    relative: match2[5] + query + fragment2
+    relative: match3[5] + query + fragment2
     // everything minus origin
   };
 }
@@ -37066,8 +37066,8 @@ function getSanitizedUrlString(url2) {
 }
 function stripDataUrlContent(url2, includeDataPrefix = true) {
   if (url2.startsWith("data:")) {
-    const match2 = url2.match(/^data:([^;,]+)/);
-    const mimeType = match2 ? match2[1] : "text/plain";
+    const match3 = url2.match(/^data:([^;,]+)/);
+    const mimeType = match3 ? match3[1] : "text/plain";
     const isBase64 = url2.includes(";base64,");
     const dataStart = url2.indexOf(",");
     let dataPrefix = "";
@@ -37977,13 +37977,13 @@ function _INTERNAL_captureLog(beforeLog, currentScope = getCurrentScope(), captu
     DEBUG_BUILD && debug.warn("beforeSendLog returned null, log will not be captured.");
     return;
   }
-  const { level, message: message2, attributes: logAttributes = {}, severityNumber } = log3;
+  const { level, message: message3, attributes: logAttributes = {}, severityNumber } = log3;
   const timestamp2 = timestampInSeconds();
   const sequenceAttr = getSequenceAttribute(timestamp2);
   const serializedLog = {
     timestamp: timestamp2,
     level,
-    body: message2,
+    body: message3,
     trace_id: traceContext?.trace_id,
     severity_number: severityNumber ?? SEVERITY_TEXT_TO_SEVERITY_NUMBER[level],
     attributes: {
@@ -38333,15 +38333,15 @@ var MISSING_RELEASE_FOR_SESSION_ERROR = "Discarded session because of missing or
 var INTERNAL_ERROR_SYMBOL = /* @__PURE__ */ Symbol.for("SentryInternalError");
 var DO_NOT_SEND_EVENT_SYMBOL = /* @__PURE__ */ Symbol.for("SentryDoNotSendEventError");
 var DEFAULT_FLUSH_INTERVAL = 5e3;
-function _makeInternalError(message2) {
+function _makeInternalError(message3) {
   return {
-    message: message2,
+    message: message3,
     [INTERNAL_ERROR_SYMBOL]: true
   };
 }
-function _makeDoNotSendEventError(message2) {
+function _makeDoNotSendEventError(message3) {
   return {
-    message: message2,
+    message: message3,
     [DO_NOT_SEND_EVENT_SYMBOL]: true
   };
 }
@@ -38456,14 +38456,14 @@ var Client = class {
    *
    * Unlike `captureMessage` exported from every SDK, this method requires that you pass it the current scope.
    */
-  captureMessage(message2, level, hint, currentScope) {
+  captureMessage(message3, level, hint, currentScope) {
     const hintWithEventId = {
       event_id: uuid4(),
       ...hint
     };
-    const eventMessage = isParameterizedString(message2) ? message2 : String(message2);
-    const isMessage = isPrimitive(message2);
-    const promisedEvent = isMessage ? this.eventFromMessage(eventMessage, level, hintWithEventId) : this.eventFromException(message2, hintWithEventId);
+    const eventMessage = isParameterizedString(message3) ? message3 : String(message3);
+    const isMessage = isPrimitive(message3);
+    const promisedEvent = isMessage ? this.eventFromMessage(eventMessage, level, hintWithEventId) : this.eventFromException(message3, hintWithEventId);
     this._process(
       () => promisedEvent.then((event) => this._captureEvent(event, hintWithEventId, currentScope)),
       isMessage ? "unknown" : "error"
@@ -39221,11 +39221,11 @@ function getErrorPropertyFromObject(obj) {
 }
 function getMessageForObject(exception) {
   if ("name" in exception && typeof exception.name === "string") {
-    let message2 = `'${exception.name}' captured as exception`;
+    let message3 = `'${exception.name}' captured as exception`;
     if ("message" in exception && typeof exception.message === "string") {
-      message2 += ` with message '${exception.message}'`;
+      message3 += ` with message '${exception.message}'`;
     }
-    return message2;
+    return message3;
   } else if ("message" in exception && typeof exception.message === "string") {
     return exception.message;
   }
@@ -39255,9 +39255,9 @@ function getException(client, mechanism, exception, hint) {
     if (errorFromProp) {
       return [errorFromProp, extras];
     }
-    const message2 = getMessageForObject(exception);
-    const ex2 = hint?.syntheticException || new Error(message2);
-    ex2.message = message2;
+    const message3 = getMessageForObject(exception);
+    const ex2 = hint?.syntheticException || new Error(message3);
+    ex2.message = message3;
     return [ex2, extras];
   }
   const ex = hint?.syntheticException || new Error(exception);
@@ -39286,7 +39286,7 @@ function eventFromUnknownInput(client, stackParser, exception, hint) {
     event_id: hint?.event_id
   };
 }
-function eventFromMessage(stackParser, message2, level = "info", hint, attachStacktrace) {
+function eventFromMessage(stackParser, message3, level = "info", hint, attachStacktrace) {
   const event = {
     event_id: hint?.event_id,
     level
@@ -39297,7 +39297,7 @@ function eventFromMessage(stackParser, message2, level = "info", hint, attachSta
       event.exception = {
         values: [
           {
-            value: message2,
+            value: message3,
             stacktrace: { frames }
           }
         ]
@@ -39305,15 +39305,15 @@ function eventFromMessage(stackParser, message2, level = "info", hint, attachSta
       addExceptionMechanism(event, { synthetic: true });
     }
   }
-  if (isParameterizedString(message2)) {
-    const { __sentry_template_string__, __sentry_template_values__ } = message2;
+  if (isParameterizedString(message3)) {
+    const { __sentry_template_string__, __sentry_template_values__ } = message3;
     event.logentry = {
       message: __sentry_template_string__,
       params: __sentry_template_values__
     };
     return event;
   }
-  event.message = message2;
+  event.message = message3;
   return event;
 }
 
@@ -39344,9 +39344,9 @@ var ServerRuntimeClient = class _ServerRuntimeClient extends Client {
   /**
    * @inheritDoc
    */
-  eventFromMessage(message2, level = "info", hint) {
+  eventFromMessage(message3, level = "info", hint) {
     return resolvedSyncPromise(
-      eventFromMessage(this._options.stackParser, message2, level, hint, this._options.attachStacktrace)
+      eventFromMessage(this._options.stackParser, message3, level, hint, this._options.attachStacktrace)
     );
   }
   /**
@@ -39993,7 +39993,7 @@ function _isIgnoredError(event, ignoreErrors) {
   if (!ignoreErrors?.length) {
     return false;
   }
-  return getPossibleEventMessages(event).some((message2) => stringMatchesSomePattern(message2, ignoreErrors));
+  return getPossibleEventMessages(event).some((message3) => stringMatchesSomePattern(message3, ignoreErrors));
 }
 function _isIgnoredTransaction(event, ignoreTransactions) {
   if (!ignoreTransactions?.length) {
@@ -40609,10 +40609,10 @@ function patchLayer(getOptions, maybeLayer, layerPath) {
           const maybeError = args[0];
           const isError3 = !!maybeError && maybeError !== "route" && maybeError !== "router";
           if (!spanHasEnded && isError3) {
-            const [_, message2] = asErrorAndMessage(maybeError);
+            const [_, message3] = asErrorAndMessage(maybeError);
             span.setStatus({
               code: SPAN_STATUS_ERROR,
-              message: message2
+              message: message3
             });
           }
           if (!spanHasEnded) {
@@ -40630,10 +40630,10 @@ function patchLayer(getOptions, maybeLayer, layerPath) {
       try {
         return layerHandleOriginal.apply(this, [req, res, ...otherArgs]);
       } catch (anyError) {
-        const [_, message2] = asErrorAndMessage(anyError);
+        const [_, message3] = asErrorAndMessage(anyError);
         span.setStatus({
           code: SPAN_STATUS_ERROR,
-          message: message2
+          message: message3
         });
         throw anyError;
       } finally {
@@ -41483,26 +41483,26 @@ __export(public_api_exports, {
   trace: () => trace,
   warn: () => warn2
 });
-function captureLog(level, message2, attributes, scope, severityNumber) {
-  _INTERNAL_captureLog({ level, message: message2, attributes, severityNumber }, scope);
+function captureLog(level, message3, attributes, scope, severityNumber) {
+  _INTERNAL_captureLog({ level, message: message3, attributes, severityNumber }, scope);
 }
-function trace(message2, attributes, { scope } = {}) {
-  captureLog("trace", message2, attributes, scope);
+function trace(message3, attributes, { scope } = {}) {
+  captureLog("trace", message3, attributes, scope);
 }
-function debug2(message2, attributes, { scope } = {}) {
-  captureLog("debug", message2, attributes, scope);
+function debug2(message3, attributes, { scope } = {}) {
+  captureLog("debug", message3, attributes, scope);
 }
-function info(message2, attributes, { scope } = {}) {
-  captureLog("info", message2, attributes, scope);
+function info(message3, attributes, { scope } = {}) {
+  captureLog("info", message3, attributes, scope);
 }
-function warn2(message2, attributes, { scope } = {}) {
-  captureLog("warn", message2, attributes, scope);
+function warn2(message3, attributes, { scope } = {}) {
+  captureLog("warn", message3, attributes, scope);
 }
-function error2(message2, attributes, { scope } = {}) {
-  captureLog("error", message2, attributes, scope);
+function error2(message3, attributes, { scope } = {}) {
+  captureLog("error", message3, attributes, scope);
 }
-function fatal(message2, attributes, { scope } = {}) {
-  captureLog("fatal", message2, attributes, scope);
+function fatal(message3, attributes, { scope } = {}) {
+  captureLog("fatal", message3, attributes, scope);
 }
 
 // node_modules/@sentry/core/build/esm/tracing/ai/gen-ai-attributes.js
@@ -41668,41 +41668,41 @@ function withItemText(item, text2) {
   }
   return { ...item, text: text2 };
 }
-function isContentMessage(message2) {
-  return message2 !== null && typeof message2 === "object" && "content" in message2 && typeof message2.content === "string";
+function isContentMessage(message3) {
+  return message3 !== null && typeof message3 === "object" && "content" in message3 && typeof message3.content === "string";
 }
-function isContentArrayMessage(message2) {
-  return message2 !== null && typeof message2 === "object" && "content" in message2 && Array.isArray(message2.content);
+function isContentArrayMessage(message3) {
+  return message3 !== null && typeof message3 === "object" && "content" in message3 && Array.isArray(message3.content);
 }
-function isPartsMessage(message2) {
-  return message2 !== null && typeof message2 === "object" && "parts" in message2 && Array.isArray(message2.parts) && message2.parts.length > 0;
+function isPartsMessage(message3) {
+  return message3 !== null && typeof message3 === "object" && "parts" in message3 && Array.isArray(message3.parts) && message3.parts.length > 0;
 }
-function truncateContentMessage(message2, maxBytes) {
-  const emptyMessage = { ...message2, content: "" };
+function truncateContentMessage(message3, maxBytes) {
+  const emptyMessage = { ...message3, content: "" };
   const overhead = jsonBytes(emptyMessage);
   const availableForContent = maxBytes - overhead;
   if (availableForContent <= 0) {
     return [];
   }
-  const truncatedContent = truncateTextByBytes(message2.content, availableForContent);
-  return [{ ...message2, content: truncatedContent }];
+  const truncatedContent = truncateTextByBytes(message3.content, availableForContent);
+  return [{ ...message3, content: truncatedContent }];
 }
-function getArrayItems(message2) {
-  if ("parts" in message2 && Array.isArray(message2.parts)) {
-    return { key: "parts", items: message2.parts };
+function getArrayItems(message3) {
+  if ("parts" in message3 && Array.isArray(message3.parts)) {
+    return { key: "parts", items: message3.parts };
   }
-  if ("content" in message2 && Array.isArray(message2.content)) {
-    return { key: "content", items: message2.content };
+  if ("content" in message3 && Array.isArray(message3.content)) {
+    return { key: "content", items: message3.content };
   }
   return { key: null, items: [] };
 }
-function truncateArrayMessage(message2, maxBytes) {
-  const { key, items } = getArrayItems(message2);
+function truncateArrayMessage(message3, maxBytes) {
+  const { key, items } = getArrayItems(message3);
   if (key === null || items.length === 0) {
     return [];
   }
   const emptyItems = items.map((item) => withItemText(item, ""));
-  const overhead = jsonBytes({ ...message2, [key]: emptyItems });
+  const overhead = jsonBytes({ ...message3, [key]: emptyItems });
   let remainingBytes = maxBytes - overhead;
   if (remainingBytes <= 0) {
     return [];
@@ -41727,55 +41727,55 @@ function truncateArrayMessage(message2, maxBytes) {
   if (includedItems.length <= 0) {
     return [];
   } else {
-    return [{ ...message2, [key]: includedItems }];
+    return [{ ...message3, [key]: includedItems }];
   }
 }
-function truncateSingleMessage(message2, maxBytes) {
-  if (!message2) return [];
-  if (typeof message2 === "string") {
-    const truncated = truncateTextByBytes(message2, maxBytes);
+function truncateSingleMessage(message3, maxBytes) {
+  if (!message3) return [];
+  if (typeof message3 === "string") {
+    const truncated = truncateTextByBytes(message3, maxBytes);
     return truncated ? [truncated] : [];
   }
-  if (typeof message2 !== "object") {
+  if (typeof message3 !== "object") {
     return [];
   }
-  if (isContentMessage(message2)) {
-    return truncateContentMessage(message2, maxBytes);
+  if (isContentMessage(message3)) {
+    return truncateContentMessage(message3, maxBytes);
   }
-  if (isContentArrayMessage(message2) || isPartsMessage(message2)) {
-    return truncateArrayMessage(message2, maxBytes);
+  if (isContentArrayMessage(message3) || isPartsMessage(message3)) {
+    return truncateArrayMessage(message3, maxBytes);
   }
   return [];
 }
 function stripInlineMediaFromMessages(messages2) {
-  const stripped = messages2.map((message2) => {
+  const stripped = messages2.map((message3) => {
     let newMessage = void 0;
-    if (!!message2 && typeof message2 === "object") {
-      if (isContentArrayMessage(message2)) {
+    if (!!message3 && typeof message3 === "object") {
+      if (isContentArrayMessage(message3)) {
         newMessage = {
-          ...message2,
-          content: stripInlineMediaFromMessages(message2.content)
+          ...message3,
+          content: stripInlineMediaFromMessages(message3.content)
         };
-      } else if ("content" in message2 && isContentMedia(message2.content)) {
+      } else if ("content" in message3 && isContentMedia(message3.content)) {
         newMessage = {
-          ...message2,
-          content: stripInlineMediaFromSingleMessage(message2.content)
+          ...message3,
+          content: stripInlineMediaFromSingleMessage(message3.content)
         };
       }
-      if (isPartsMessage(message2)) {
+      if (isPartsMessage(message3)) {
         newMessage = {
           // might have to strip content AND parts
-          ...newMessage ?? message2,
-          parts: stripInlineMediaFromMessages(message2.parts)
+          ...newMessage ?? message3,
+          parts: stripInlineMediaFromMessages(message3.parts)
         };
       }
       if (isContentMedia(newMessage)) {
         newMessage = stripInlineMediaFromSingleMessage(newMessage);
-      } else if (isContentMedia(message2)) {
-        newMessage = stripInlineMediaFromSingleMessage(message2);
+      } else if (isContentMedia(message3)) {
+        newMessage = stripInlineMediaFromSingleMessage(message3);
       }
     }
-    return newMessage ?? message2;
+    return newMessage ?? message3;
   });
   return stripped;
 }
@@ -42539,13 +42539,13 @@ function addResponseAttributes(span, result, recordOutputs) {
     }
     if (recordOutputs) {
       const responseTexts = choices.map((choice) => {
-        const message2 = choice.message;
-        return message2?.content || "";
+        const message3 = choice.message;
+        return message3?.content || "";
       });
       attrs[GEN_AI_RESPONSE_TEXT_ATTRIBUTE] = JSON.stringify(responseTexts);
       const toolCalls = choices.map((choice) => {
-        const message2 = choice.message;
-        return message2?.tool_calls;
+        const message3 = choice.message;
+        return message3?.tool_calls;
       }).filter((calls) => Array.isArray(calls) && calls.length > 0).flat();
       if (toolCalls.length > 0) {
         attrs[GEN_AI_RESPONSE_TOOL_CALLS_ATTRIBUTE] = JSON.stringify(toolCalls);
@@ -42973,16 +42973,16 @@ function handleMessageMetadata(event, state) {
     }
   }
   if (event.message) {
-    const message2 = event.message;
-    if (message2.id) state.responseId = message2.id;
-    if (message2.model) state.responseModel = message2.model;
-    if (message2.stop_reason) state.finishReasons.push(message2.stop_reason);
-    if (message2.usage) {
-      if (typeof message2.usage.input_tokens === "number") state.promptTokens = message2.usage.input_tokens;
-      if (typeof message2.usage.cache_creation_input_tokens === "number")
-        state.cacheCreationInputTokens = message2.usage.cache_creation_input_tokens;
-      if (typeof message2.usage.cache_read_input_tokens === "number")
-        state.cacheReadInputTokens = message2.usage.cache_read_input_tokens;
+    const message3 = event.message;
+    if (message3.id) state.responseId = message3.id;
+    if (message3.model) state.responseModel = message3.model;
+    if (message3.stop_reason) state.finishReasons.push(message3.stop_reason);
+    if (message3.usage) {
+      if (typeof message3.usage.input_tokens === "number") state.promptTokens = message3.usage.input_tokens;
+      if (typeof message3.usage.cache_creation_input_tokens === "number")
+        state.cacheCreationInputTokens = message3.usage.cache_creation_input_tokens;
+      if (typeof message3.usage.cache_read_input_tokens === "number")
+        state.cacheReadInputTokens = message3.usage.cache_read_input_tokens;
     }
   }
 }
@@ -43339,9 +43339,9 @@ var GOOGLE_GENAI_SYSTEM_NAME = "google_genai";
 function isErrorChunk(chunk, span) {
   const feedback = chunk?.promptFeedback;
   if (feedback?.blockReason) {
-    const message2 = feedback.blockReasonMessage ?? feedback.blockReason;
+    const message3 = feedback.blockReasonMessage ?? feedback.blockReason;
     span.setStatus({ code: SPAN_STATUS_ERROR, message: "internal_error" });
-    captureException(`Content blocked: ${message2}`, {
+    captureException(`Content blocked: ${message3}`, {
       mechanism: { handled: false, type: "auto.ai.google_genai" }
     });
     return true;
@@ -43723,47 +43723,47 @@ function getInvocationParams(tags) {
   return tags.invocation_params;
 }
 function normalizeLangChainMessages(messages2) {
-  return messages2.map((message2) => {
-    const maybeGetType = message2._getType;
+  return messages2.map((message3) => {
+    const maybeGetType = message3._getType;
     if (typeof maybeGetType === "function") {
-      const messageType = maybeGetType.call(message2);
+      const messageType = maybeGetType.call(message3);
       return {
         role: normalizeMessageRole(messageType),
-        content: normalizeContent(message2.content)
+        content: normalizeContent(message3.content)
       };
     }
-    if (message2.lc === 1 && message2.kwargs) {
-      const id = message2.id;
+    if (message3.lc === 1 && message3.kwargs) {
+      const id = message3.id;
       const messageType = Array.isArray(id) && id.length > 0 ? id[id.length - 1] : "";
       const role = typeof messageType === "string" ? normalizeRoleNameFromCtor(messageType) : "user";
       return {
         role: normalizeMessageRole(role),
-        content: normalizeContent(message2.kwargs?.content)
+        content: normalizeContent(message3.kwargs?.content)
       };
     }
-    if (message2.type) {
-      const role = String(message2.type).toLowerCase();
+    if (message3.type) {
+      const role = String(message3.type).toLowerCase();
       return {
         role: normalizeMessageRole(role),
-        content: normalizeContent(message2.content)
+        content: normalizeContent(message3.content)
       };
     }
-    if (message2.role) {
+    if (message3.role) {
       return {
-        role: normalizeMessageRole(String(message2.role)),
-        content: normalizeContent(message2.content)
+        role: normalizeMessageRole(String(message3.role)),
+        content: normalizeContent(message3.content)
       };
     }
-    const ctor = message2.constructor?.name;
+    const ctor = message3.constructor?.name;
     if (ctor && ctor !== "Object") {
       return {
         role: normalizeMessageRole(normalizeRoleNameFromCtor(ctor)),
-        content: normalizeContent(message2.content)
+        content: normalizeContent(message3.content)
       };
     }
     return {
       role: "user",
-      content: normalizeContent(message2.content)
+      content: normalizeContent(message3.content)
     };
   });
 }
@@ -44300,9 +44300,9 @@ function extractToolCalls(messages2) {
     return null;
   }
   const toolCalls = [];
-  for (const message2 of messages2) {
-    if (message2 && typeof message2 === "object") {
-      const msgToolCalls = message2.tool_calls;
+  for (const message3 of messages2) {
+    if (message3 && typeof message3 === "object") {
+      const msgToolCalls = message3.tool_calls;
       if (msgToolCalls && Array.isArray(msgToolCalls)) {
         toolCalls.push(...msgToolCalls);
       }
@@ -44310,8 +44310,8 @@ function extractToolCalls(messages2) {
   }
   return toolCalls.length > 0 ? toolCalls : null;
 }
-function extractTokenUsageFromMessage(message2) {
-  const msg = message2;
+function extractTokenUsageFromMessage(message3) {
+  const msg = message3;
   let inputTokens = 0;
   let outputTokens = 0;
   let totalTokens = 0;
@@ -44345,8 +44345,8 @@ function extractTokenUsageFromMessage(message2) {
   }
   return { inputTokens, outputTokens, totalTokens };
 }
-function extractModelMetadata(span, message2) {
-  const msg = message2;
+function extractModelMetadata(span, message3) {
+  const msg = message3;
   if (msg.response_metadata && typeof msg.response_metadata === "object") {
     const metadata = msg.response_metadata;
     if (metadata.model_name && typeof metadata.model_name === "string") {
@@ -44391,12 +44391,12 @@ function setResponseAttributes(span, inputMessages, result) {
   let totalInputTokens = 0;
   let totalOutputTokens = 0;
   let totalTokens = 0;
-  for (const message2 of newMessages) {
-    const tokens = extractTokenUsageFromMessage(message2);
+  for (const message3 of newMessages) {
+    const tokens = extractTokenUsageFromMessage(message3);
     totalInputTokens += tokens.inputTokens;
     totalOutputTokens += tokens.outputTokens;
     totalTokens += tokens.totalTokens;
-    extractModelMetadata(span, message2);
+    extractModelMetadata(span, message3);
   }
   if (totalInputTokens > 0) {
     span.setAttribute(GEN_AI_USAGE_INPUT_TOKENS_ATTRIBUTE, totalInputTokens);
@@ -46794,8 +46794,8 @@ var canonicalGrpcErrorCodesMap = {
   "15": "data_loss",
   "16": "unauthenticated"
 };
-var isStatusErrorMessageValid = (message2) => {
-  return Object.values(canonicalGrpcErrorCodesMap).includes(message2);
+var isStatusErrorMessageValid = (message3) => {
+  return Object.values(canonicalGrpcErrorCodesMap).includes(message3);
 };
 function mapStatus(span) {
   const attributes = spanHasAttributes(span) ? span.attributes : {};
@@ -47989,8 +47989,8 @@ var LINUX_VERSIONS = {
   ubuntu: (content) => matchFirst(/distrib_release=(.*)/, content)
 };
 function matchFirst(regex, text2) {
-  const match2 = regex.exec(text2);
-  return match2 ? match2[1] : void 0;
+  const match3 = regex.exec(text2);
+  return match3 ? match3[1] : void 0;
 }
 async function getDarwinInfo() {
   const darwinInfo = {
@@ -49034,8 +49034,8 @@ function extractErrorInfo(reason) {
   }
   const errorLike = reason;
   const name = typeof errorLike.name === "string" ? errorLike.name : "";
-  const message2 = typeof errorLike.message === "string" ? errorLike.message : String(reason);
-  return { name, message: message2 };
+  const message3 = typeof errorLike.message === "string" ? errorLike.message : String(reason);
+  return { name, message: message3 };
 }
 function isMatchingReason(matcher, errorInfo) {
   const nameMatches = matcher.name === void 0 || isMatchingPattern(errorInfo.name, matcher.name, true);
@@ -50934,8 +50934,8 @@ function handleFastifyError(error53, request2, reply, handlerOrigin) {
 var instrumentFastify = generateInstrumentOnce(`${INTEGRATION_NAME24}.v5`, () => {
   const fastifyOtelInstrumentationInstance = new import_otel.FastifyOtelInstrumentation();
   const plugin = fastifyOtelInstrumentationInstance.plugin();
-  diagnosticsChannel2.subscribe("fastify.initialization", (message2) => {
-    const fastifyInstance = message2.fastify;
+  diagnosticsChannel2.subscribe("fastify.initialization", (message3) => {
+    const fastifyInstance = message3.fastify;
     fastifyInstance?.register(plugin).after((err) => {
       if (err) {
         DEBUG_BUILD4 && debug.error("Failed to setup Fastify instrumentation", err);
@@ -50947,8 +50947,8 @@ var instrumentFastify = generateInstrumentOnce(`${INTEGRATION_NAME24}.v5`, () =>
       }
     });
   });
-  diagnosticsChannel2.subscribe("tracing:fastify.request.handler:error", (message2) => {
-    const { error: error53, request: request2, reply } = message2;
+  diagnosticsChannel2.subscribe("tracing:fastify.request.handler:error", (message3) => {
+    const { error: error53, request: request2, reply } = message3;
     handleFastifyError.call(handleFastifyError, error53, request2, reply, "diagnostics-channel");
   });
   return fastifyOtelInstrumentationInstance;
@@ -55091,8 +55091,8 @@ var TRPCError = class extends Error {
   constructor(opts) {
     var _ref, _opts$message, _this$cause;
     const cause = getCauseFromUnknown(opts.cause);
-    const message2 = (_ref = (_opts$message = opts.message) !== null && _opts$message !== void 0 ? _opts$message : cause === null || cause === void 0 ? void 0 : cause.message) !== null && _ref !== void 0 ? _ref : opts.code;
-    super(message2, { cause });
+    const message3 = (_ref = (_opts$message = opts.message) !== null && _opts$message !== void 0 ? _opts$message : cause === null || cause === void 0 ? void 0 : cause.message) !== null && _ref !== void 0 ? _ref : opts.code;
+    super(message3, { cause });
     (0, import_defineProperty.default)(this, "cause", void 0);
     (0, import_defineProperty.default)(this, "code", void 0);
     this.code = opts.code;
@@ -55612,8 +55612,8 @@ async function getRequestInfo(opts) {
 function isAbortError(error53) {
   return isObject(error53) && error53["name"] === "AbortError";
 }
-function throwAbortError(message2 = "AbortError") {
-  throw new DOMException(message2, "AbortError");
+function throwAbortError(message3 = "AbortError") {
+  throw new DOMException(message3, "AbortError");
 }
 function isObject$1(o) {
   return Object.prototype.toString.call(o) === "[object Object]";
@@ -58285,14 +58285,14 @@ function prefixIssues(path2, issues) {
     return iss;
   });
 }
-function unwrapMessage(message2) {
-  return typeof message2 === "string" ? message2 : message2?.message;
+function unwrapMessage(message3) {
+  return typeof message3 === "string" ? message3 : message3?.message;
 }
 function finalizeIssue(iss, ctx, config4) {
-  const message2 = iss.message ? iss.message : unwrapMessage(iss.inst?._zod.def?.error?.(iss)) ?? unwrapMessage(ctx?.error?.(iss)) ?? unwrapMessage(config4.customError?.(iss)) ?? unwrapMessage(config4.localeError?.(iss)) ?? "Invalid input";
+  const message3 = iss.message ? iss.message : unwrapMessage(iss.inst?._zod.def?.error?.(iss)) ?? unwrapMessage(ctx?.error?.(iss)) ?? unwrapMessage(config4.customError?.(iss)) ?? unwrapMessage(config4.localeError?.(iss)) ?? "Invalid input";
   const { inst: _inst, continue: _continue, input: _input, ...rest } = iss;
   rest.path ?? (rest.path = []);
-  rest.message = message2;
+  rest.message = message3;
   if (ctx?.reportInput) {
     rest.input = _input;
   }
@@ -59975,15 +59975,15 @@ var $ZodDate = /* @__PURE__ */ $constructor("$ZodDate", (inst, def) => {
       }
     }
     const input = payload.value;
-    const isDate2 = input instanceof Date;
-    const isValidDate = isDate2 && !Number.isNaN(input.getTime());
+    const isDate3 = input instanceof Date;
+    const isValidDate = isDate3 && !Number.isNaN(input.getTime());
     if (isValidDate)
       return payload;
     payload.issues.push({
       expected: "date",
       code: "invalid_type",
       input,
-      ...isDate2 ? { received: "Invalid Date" } : {},
+      ...isDate3 ? { received: "Invalid Date" } : {},
       inst
     });
     return payload;
@@ -68491,13 +68491,13 @@ function _stringbool(Classes, _params) {
   return codec2;
 }
 // @__NO_SIDE_EFFECTS__
-function _stringFormat(Class2, format, fnOrRegex, _params = {}) {
+function _stringFormat(Class2, format2, fnOrRegex, _params = {}) {
   const params = normalizeParams(_params);
   const def = {
     ...normalizeParams(_params),
     check: "string_format",
     type: "string",
-    format,
+    format: format2,
     fn: typeof fnOrRegex === "function" ? fnOrRegex : (val) => fnOrRegex.test(val),
     ...params
   };
@@ -68879,16 +68879,16 @@ var formatMap = {
 var stringProcessor = (schema, ctx, _json, _params) => {
   const json3 = _json;
   json3.type = "string";
-  const { minimum, maximum, format, patterns, contentEncoding } = schema._zod.bag;
+  const { minimum, maximum, format: format2, patterns, contentEncoding } = schema._zod.bag;
   if (typeof minimum === "number")
     json3.minLength = minimum;
   if (typeof maximum === "number")
     json3.maxLength = maximum;
-  if (format) {
-    json3.format = formatMap[format] ?? format;
+  if (format2) {
+    json3.format = formatMap[format2] ?? format2;
     if (json3.format === "")
       delete json3.format;
-    if (format === "time") {
+    if (format2 === "time") {
       delete json3.format;
     }
   }
@@ -68910,8 +68910,8 @@ var stringProcessor = (schema, ctx, _json, _params) => {
 };
 var numberProcessor = (schema, ctx, _json, _params) => {
   const json3 = _json;
-  const { minimum, maximum, format, multipleOf, exclusiveMaximum, exclusiveMinimum } = schema._zod.bag;
-  if (typeof format === "string" && format.includes("int"))
+  const { minimum, maximum, format: format2, multipleOf, exclusiveMaximum, exclusiveMinimum } = schema._zod.bag;
+  if (typeof format2 === "string" && format2.includes("int"))
     json3.type = "integer";
   else
     json3.type = "number";
@@ -70210,8 +70210,8 @@ var ZodCustomStringFormat = /* @__PURE__ */ $constructor("ZodCustomStringFormat"
   $ZodCustomStringFormat.init(inst, def);
   ZodStringFormat.init(inst, def);
 });
-function stringFormat(format, fnOrRegex, _params = {}) {
-  return _stringFormat(ZodCustomStringFormat, format, fnOrRegex, _params);
+function stringFormat(format2, fnOrRegex, _params = {}) {
+  return _stringFormat(ZodCustomStringFormat, format2, fnOrRegex, _params);
 }
 function hostname3(_params) {
   return _stringFormat(ZodCustomStringFormat, "hostname", regexes_exports.hostname, _params);
@@ -70221,11 +70221,11 @@ function hex2(_params) {
 }
 function hash(alg, params) {
   const enc = params?.enc ?? "hex";
-  const format = `${alg}_${enc}`;
-  const regex = regexes_exports[format];
+  const format2 = `${alg}_${enc}`;
+  const regex = regexes_exports[format2];
   if (!regex)
-    throw new Error(`Unrecognized hash format: ${format}`);
-  return _stringFormat(ZodCustomStringFormat, format, regex, params);
+    throw new Error(`Unrecognized hash format: ${format2}`);
+  return _stringFormat(ZodCustomStringFormat, format2, regex, params);
 }
 var ZodNumber = /* @__PURE__ */ $constructor("ZodNumber", (inst, def) => {
   $ZodNumber.init(inst, def);
@@ -71297,52 +71297,52 @@ function convertBaseSchema(schema, ctx) {
     case "string": {
       let stringSchema = z.string();
       if (schema.format) {
-        const format = schema.format;
-        if (format === "email") {
+        const format2 = schema.format;
+        if (format2 === "email") {
           stringSchema = stringSchema.check(z.email());
-        } else if (format === "uri" || format === "uri-reference") {
+        } else if (format2 === "uri" || format2 === "uri-reference") {
           stringSchema = stringSchema.check(z.url());
-        } else if (format === "uuid" || format === "guid") {
+        } else if (format2 === "uuid" || format2 === "guid") {
           stringSchema = stringSchema.check(z.uuid());
-        } else if (format === "date-time") {
+        } else if (format2 === "date-time") {
           stringSchema = stringSchema.check(z.iso.datetime());
-        } else if (format === "date") {
+        } else if (format2 === "date") {
           stringSchema = stringSchema.check(z.iso.date());
-        } else if (format === "time") {
+        } else if (format2 === "time") {
           stringSchema = stringSchema.check(z.iso.time());
-        } else if (format === "duration") {
+        } else if (format2 === "duration") {
           stringSchema = stringSchema.check(z.iso.duration());
-        } else if (format === "ipv4") {
+        } else if (format2 === "ipv4") {
           stringSchema = stringSchema.check(z.ipv4());
-        } else if (format === "ipv6") {
+        } else if (format2 === "ipv6") {
           stringSchema = stringSchema.check(z.ipv6());
-        } else if (format === "mac") {
+        } else if (format2 === "mac") {
           stringSchema = stringSchema.check(z.mac());
-        } else if (format === "cidr") {
+        } else if (format2 === "cidr") {
           stringSchema = stringSchema.check(z.cidrv4());
-        } else if (format === "cidr-v6") {
+        } else if (format2 === "cidr-v6") {
           stringSchema = stringSchema.check(z.cidrv6());
-        } else if (format === "base64") {
+        } else if (format2 === "base64") {
           stringSchema = stringSchema.check(z.base64());
-        } else if (format === "base64url") {
+        } else if (format2 === "base64url") {
           stringSchema = stringSchema.check(z.base64url());
-        } else if (format === "e164") {
+        } else if (format2 === "e164") {
           stringSchema = stringSchema.check(z.e164());
-        } else if (format === "jwt") {
+        } else if (format2 === "jwt") {
           stringSchema = stringSchema.check(z.jwt());
-        } else if (format === "emoji") {
+        } else if (format2 === "emoji") {
           stringSchema = stringSchema.check(z.emoji());
-        } else if (format === "nanoid") {
+        } else if (format2 === "nanoid") {
           stringSchema = stringSchema.check(z.nanoid());
-        } else if (format === "cuid") {
+        } else if (format2 === "cuid") {
           stringSchema = stringSchema.check(z.cuid());
-        } else if (format === "cuid2") {
+        } else if (format2 === "cuid2") {
           stringSchema = stringSchema.check(z.cuid2());
-        } else if (format === "ulid") {
+        } else if (format2 === "ulid") {
           stringSchema = stringSchema.check(z.ulid());
-        } else if (format === "xid") {
+        } else if (format2 === "xid") {
           stringSchema = stringSchema.check(z.xid());
-        } else if (format === "ksuid") {
+        } else if (format2 === "ksuid") {
           stringSchema = stringSchema.check(z.ksuid());
         }
       }
@@ -73419,8 +73419,8 @@ function encode4(input) {
 var JOSEError = class extends Error {
   static code = "ERR_JOSE_GENERIC";
   code = "ERR_JOSE_GENERIC";
-  constructor(message2, options) {
-    super(message2, options);
+  constructor(message3, options) {
+    super(message3, options);
     this.name = this.constructor.name;
     Error.captureStackTrace?.(this, this.constructor);
   }
@@ -73431,8 +73431,8 @@ var JWTClaimValidationFailed = class extends JOSEError {
   claim;
   reason;
   payload;
-  constructor(message2, payload, claim = "unspecified", reason = "unspecified") {
-    super(message2, { cause: { claim, reason, payload } });
+  constructor(message3, payload, claim = "unspecified", reason = "unspecified") {
+    super(message3, { cause: { claim, reason, payload } });
     this.claim = claim;
     this.reason = reason;
     this.payload = payload;
@@ -73444,8 +73444,8 @@ var JWTExpired = class extends JOSEError {
   claim;
   reason;
   payload;
-  constructor(message2, payload, claim = "unspecified", reason = "unspecified") {
-    super(message2, { cause: { claim, reason, payload } });
+  constructor(message3, payload, claim = "unspecified", reason = "unspecified") {
+    super(message3, { cause: { claim, reason, payload } });
     this.claim = claim;
     this.reason = reason;
     this.payload = payload;
@@ -73470,8 +73470,8 @@ var JWTInvalid = class extends JOSEError {
 var JWSSignatureVerificationFailed = class extends JOSEError {
   static code = "ERR_JWS_SIGNATURE_VERIFICATION_FAILED";
   code = "ERR_JWS_SIGNATURE_VERIFICATION_FAILED";
-  constructor(message2 = "signature verification failed", options) {
-    super(message2, options);
+  constructor(message3 = "signature verification failed", options) {
+    super(message3, options);
   }
 };
 
@@ -76221,8 +76221,8 @@ function postgres(x) {
   Error.captureStackTrace(error53, postgres);
   return error53;
 }
-function generic(code, message2) {
-  const error53 = Object.assign(new Error(code + ": " + message2), { code });
+function generic(code, message3) {
+  const error53 = Object.assign(new Error(code + ": " + message3), { code });
   Error.captureStackTrace(error53, generic);
   return error53;
 }
@@ -78198,8 +78198,8 @@ function is(value, type) {
 // node_modules/drizzle-orm/logger.js
 var ConsoleLogWriter = class {
   static [entityKind] = "ConsoleLogWriter";
-  write(message2) {
-    console.log(message2);
+  write(message3) {
+    console.log(message3);
   }
 };
 var DefaultLogger = class {
@@ -81307,8 +81307,8 @@ var CasingCache = class {
 // node_modules/drizzle-orm/errors.js
 var DrizzleError = class extends Error {
   static [entityKind] = "DrizzleError";
-  constructor({ message: message2, cause }) {
-    super(message2);
+  constructor({ message: message3, cause }) {
+    super(message3);
     this.name = "DrizzleError";
     this.cause = cause;
   }
@@ -85219,6 +85219,7 @@ __export(schema_exports, {
   appointments: () => appointments,
   auditLogs: () => auditLogs,
   bookingSourceEnum: () => bookingSourceEnum,
+  clientFollowUps: () => clientFollowUps,
   clientSegmentEnum: () => clientSegmentEnum,
   clients: () => clients,
   communicationChannelEnum: () => communicationChannelEnum,
@@ -85229,6 +85230,7 @@ __export(schema_exports, {
   consentForms: () => consentForms,
   consentSignatures: () => consentSignatures,
   financialRecords: () => financialRecords,
+  followUpStatusEnum: () => followUpStatusEnum,
   localUsers: () => localUsers,
   passwordResetTokens: () => passwordResetTokens,
   paymentMethodEnum: () => paymentMethodEnum,
@@ -85272,6 +85274,11 @@ var appointmentStatusEnum = pgEnum("appointment_status", [
   "completed",
   "no_show",
   "cancelled"
+]);
+var followUpStatusEnum = pgEnum("follow_up_status", [
+  "pending",
+  "scheduled",
+  "dismissed"
 ]);
 var bookingSourceEnum = pgEnum("booking_source", [
   "online",
@@ -85436,6 +85443,10 @@ var services = pgTable(
     requiresConsent: boolean4("requiresConsent").default(false).notNull(),
     preCareInstructions: text("preCareInstructions"),
     postCareInstructions: text("postCareInstructions"),
+    /** Dias até sugerir o retorno (0 = não sugere) */
+    followUpDays: integer2("followUpDays").default(0).notNull(),
+    /** Serviço sugerido no retorno; null = o mesmo serviço */
+    followUpServiceId: bigint4("followUpServiceId", { mode: "number" }),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().notNull().$onUpdate(() => /* @__PURE__ */ new Date())
   },
@@ -85492,6 +85503,26 @@ var appointments = pgTable(
     salonIdx: index("appointments_salon_idx").on(table.salonId),
     dateIdx: index("appointments_date_idx").on(table.appointmentDate),
     clientIdx: index("appointments_client_idx").on(table.clientId)
+  })
+);
+var clientFollowUps = pgTable(
+  "client_follow_ups",
+  {
+    id: serial("id").primaryKey(),
+    salonId: bigint4("salonId", { mode: "number" }).notNull(),
+    clientId: bigint4("clientId", { mode: "number" }).notNull(),
+    professionalId: bigint4("professionalId", { mode: "number" }),
+    originAppointmentId: bigint4("originAppointmentId", { mode: "number" }),
+    /** Serviço sugerido para o retorno */
+    serviceId: bigint4("serviceId", { mode: "number" }),
+    dueDate: date5("dueDate").notNull(),
+    status: followUpStatusEnum("status").default("pending").notNull(),
+    scheduledAppointmentId: bigint4("scheduledAppointmentId", { mode: "number" }),
+    createdAt: timestamp("createdAt").defaultNow().notNull()
+  },
+  (table) => ({
+    salonIdx: index("client_follow_ups_salon_idx").on(table.salonId),
+    clientIdx: index("client_follow_ups_client_idx").on(table.clientId)
   })
 );
 var communications = pgTable(
@@ -85806,8 +85837,8 @@ async function verifyToken(token) {
 }
 async function authenticateLocalRequest(headers) {
   const cookies = headers.get("cookie") || "";
-  const match2 = cookies.match(new RegExp(`${Session.cookieName}=([^;]+)`));
-  const token = match2?.[1];
+  const match3 = cookies.match(new RegExp(`${Session.cookieName}=([^;]+)`));
+  const token = match3?.[1];
   if (!token) return null;
   const claim = await verifyToken(token);
   if (!claim) return null;
@@ -85997,8 +86028,8 @@ Se n\xE3o foi voc\xEA, ignore este e-mail.`
   }),
   me: publicQuery.query(async ({ ctx }) => {
     const cookies = ctx.req.headers.get("cookie") || "";
-    const match2 = cookies.match(new RegExp(`${Session.cookieName}=([^;]+)`));
-    const token = match2?.[1];
+    const match3 = cookies.match(new RegExp(`${Session.cookieName}=([^;]+)`));
+    const token = match3?.[1];
     if (!token) return null;
     const claim = await verifyToken(token);
     if (!claim) return null;
@@ -86138,23 +86169,23 @@ async function createAppointment(data) {
   const [{ id }] = await db.insert(appointments).values(data).returning();
   return db.query.appointments.findFirst({ where: eq(appointments.id, id) });
 }
-async function getAppointmentsBySalon(salonId, fromDate, toDate) {
+async function getAppointmentsBySalon(salonId, fromDate, toDate2) {
   const conditions = [eq(appointments.salonId, salonId)];
   if (fromDate)
     conditions.push(sql`${appointments.appointmentDate} >= ${fromDate}`);
-  if (toDate)
-    conditions.push(sql`${appointments.appointmentDate} <= ${toDate}`);
+  if (toDate2)
+    conditions.push(sql`${appointments.appointmentDate} <= ${toDate2}`);
   return getDb().select().from(appointments).where(and(...conditions)).orderBy(appointments.appointmentDate, appointments.startTime);
 }
-async function getAppointmentsByProfessional(salonId, professionalId, fromDate, toDate) {
+async function getAppointmentsByProfessional(salonId, professionalId, fromDate, toDate2) {
   const conditions = [
     eq(appointments.salonId, salonId),
     eq(appointments.professionalId, professionalId)
   ];
   if (fromDate)
     conditions.push(sql`${appointments.appointmentDate} >= ${fromDate}`);
-  if (toDate)
-    conditions.push(sql`${appointments.appointmentDate} <= ${toDate}`);
+  if (toDate2)
+    conditions.push(sql`${appointments.appointmentDate} <= ${toDate2}`);
   return getDb().select().from(appointments).where(and(...conditions)).orderBy(appointments.appointmentDate, appointments.startTime);
 }
 async function getAppointmentById(id, salonId) {
@@ -86188,18 +86219,18 @@ async function createFinancialRecord(data) {
     where: eq(financialRecords.id, id)
   });
 }
-async function getFinancialRecordsBySalon(salonId, fromDate, toDate) {
+async function getFinancialRecordsBySalon(salonId, fromDate, toDate2) {
   const conditions = [eq(financialRecords.salonId, salonId)];
   if (fromDate)
     conditions.push(sql`${financialRecords.recordDate} >= ${fromDate}`);
-  if (toDate) conditions.push(sql`${financialRecords.recordDate} <= ${toDate}`);
+  if (toDate2) conditions.push(sql`${financialRecords.recordDate} <= ${toDate2}`);
   return getDb().select().from(financialRecords).where(and(...conditions)).orderBy(desc(financialRecords.recordDate));
 }
-async function getFinancialSummaryBySalon(salonId, fromDate, toDate) {
+async function getFinancialSummaryBySalon(salonId, fromDate, toDate2) {
   const conditions = [eq(financialRecords.salonId, salonId)];
   if (fromDate)
     conditions.push(sql`${financialRecords.recordDate} >= ${fromDate}`);
-  if (toDate) conditions.push(sql`${financialRecords.recordDate} <= ${toDate}`);
+  if (toDate2) conditions.push(sql`${financialRecords.recordDate} <= ${toDate2}`);
   const [row] = await getDb().select({
     totalRevenue: sql`COALESCE(SUM(CASE WHEN ${financialRecords.type} != 'refund' THEN ${financialRecords.amount} ELSE 0 END), 0)`,
     totalRefunds: sql`COALESCE(SUM(CASE WHEN ${financialRecords.type} = 'refund' THEN ABS(${financialRecords.amount}) ELSE 0 END), 0)`,
@@ -86870,15 +86901,28 @@ var serviceRouter = createRouter({
       color: external_exports.string().default("#6366f1"),
       requiresConsent: external_exports.boolean().default(false),
       preCareInstructions: external_exports.string().optional(),
-      postCareInstructions: external_exports.string().optional()
+      postCareInstructions: external_exports.string().optional(),
+      followUpDays: external_exports.number().int().min(0).max(365).default(0),
+      followUpServiceId: external_exports.number().optional()
     })
   ).mutation(async ({ input, ctx }) => {
     await assertSalonMember(ctx.user.id, input.salonId);
-    const { salonId, price, ...data } = input;
+    const { salonId, price, followUpServiceId, followUpDays, ...data } = input;
+    if (followUpServiceId) {
+      const target = await getServiceById(followUpServiceId, salonId);
+      if (!target) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Servi\xE7o de retorno inv\xE1lido para este estabelecimento."
+        });
+      }
+    }
     const result = await createService({
       salonId,
       ...data,
-      price: String(price)
+      price: String(price),
+      followUpDays,
+      followUpServiceId: followUpServiceId ?? null
     });
     await auditAction(
       "create",
@@ -86903,14 +86947,27 @@ var serviceRouter = createRouter({
       color: external_exports.string().optional(),
       requiresConsent: external_exports.boolean().optional(),
       preCareInstructions: external_exports.string().optional(),
-      postCareInstructions: external_exports.string().optional()
+      postCareInstructions: external_exports.string().optional(),
+      followUpDays: external_exports.number().int().min(0).max(365).optional(),
+      /** enviar null limpa o serviço de retorno */
+      followUpServiceId: external_exports.number().nullable().optional()
     })
   ).mutation(async ({ input, ctx }) => {
     await assertSalonMember(ctx.user.id, input.salonId);
-    const { id, salonId, price, ...data } = input;
+    const { id, salonId, price, followUpServiceId, ...data } = input;
+    if (followUpServiceId) {
+      const target = await getServiceById(followUpServiceId, salonId);
+      if (!target) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Servi\xE7o de retorno inv\xE1lido para este estabelecimento."
+        });
+      }
+    }
     const result = await updateService(id, salonId, {
       ...data,
-      ...price !== void 0 ? { price: String(price) } : {}
+      ...price !== void 0 ? { price: String(price) } : {},
+      ...followUpServiceId !== void 0 ? { followUpServiceId } : {}
     });
     await auditAction(
       "update",
@@ -87055,6 +87112,1669 @@ var professionalRouter = createRouter({
     return { success: true };
   })
 });
+
+// node_modules/date-fns/constants.js
+var daysInYear = 365.2425;
+var maxTime = Math.pow(10, 8) * 24 * 60 * 60 * 1e3;
+var minTime = -maxTime;
+var millisecondsInWeek = 6048e5;
+var millisecondsInDay = 864e5;
+var secondsInHour = 3600;
+var secondsInDay = secondsInHour * 24;
+var secondsInWeek = secondsInDay * 7;
+var secondsInYear = secondsInDay * daysInYear;
+var secondsInMonth = secondsInYear / 12;
+var secondsInQuarter = secondsInMonth * 3;
+var constructFromSymbol = /* @__PURE__ */ Symbol.for("constructDateFrom");
+
+// node_modules/date-fns/constructFrom.js
+function constructFrom(date6, value) {
+  if (typeof date6 === "function") return date6(value);
+  if (date6 && typeof date6 === "object" && constructFromSymbol in date6)
+    return date6[constructFromSymbol](value);
+  if (date6 instanceof Date) return new date6.constructor(value);
+  return new Date(value);
+}
+
+// node_modules/date-fns/toDate.js
+function toDate(argument, context2) {
+  return constructFrom(context2 || argument, argument);
+}
+
+// node_modules/date-fns/addDays.js
+function addDays(date6, amount, options) {
+  const _date2 = toDate(date6, options?.in);
+  if (isNaN(amount)) return constructFrom(options?.in || date6, NaN);
+  if (!amount) return _date2;
+  _date2.setDate(_date2.getDate() + amount);
+  return _date2;
+}
+
+// node_modules/date-fns/_lib/defaultOptions.js
+var defaultOptions = {};
+function getDefaultOptions() {
+  return defaultOptions;
+}
+
+// node_modules/date-fns/startOfWeek.js
+function startOfWeek(date6, options) {
+  const defaultOptions2 = getDefaultOptions();
+  const weekStartsOn = options?.weekStartsOn ?? options?.locale?.options?.weekStartsOn ?? defaultOptions2.weekStartsOn ?? defaultOptions2.locale?.options?.weekStartsOn ?? 0;
+  const _date2 = toDate(date6, options?.in);
+  const day2 = _date2.getDay();
+  const diff = (day2 < weekStartsOn ? 7 : 0) + day2 - weekStartsOn;
+  _date2.setDate(_date2.getDate() - diff);
+  _date2.setHours(0, 0, 0, 0);
+  return _date2;
+}
+
+// node_modules/date-fns/startOfISOWeek.js
+function startOfISOWeek(date6, options) {
+  return startOfWeek(date6, { ...options, weekStartsOn: 1 });
+}
+
+// node_modules/date-fns/getISOWeekYear.js
+function getISOWeekYear(date6, options) {
+  const _date2 = toDate(date6, options?.in);
+  const year2 = _date2.getFullYear();
+  const fourthOfJanuaryOfNextYear = constructFrom(_date2, 0);
+  fourthOfJanuaryOfNextYear.setFullYear(year2 + 1, 0, 4);
+  fourthOfJanuaryOfNextYear.setHours(0, 0, 0, 0);
+  const startOfNextYear = startOfISOWeek(fourthOfJanuaryOfNextYear);
+  const fourthOfJanuaryOfThisYear = constructFrom(_date2, 0);
+  fourthOfJanuaryOfThisYear.setFullYear(year2, 0, 4);
+  fourthOfJanuaryOfThisYear.setHours(0, 0, 0, 0);
+  const startOfThisYear = startOfISOWeek(fourthOfJanuaryOfThisYear);
+  if (_date2.getTime() >= startOfNextYear.getTime()) {
+    return year2 + 1;
+  } else if (_date2.getTime() >= startOfThisYear.getTime()) {
+    return year2;
+  } else {
+    return year2 - 1;
+  }
+}
+
+// node_modules/date-fns/_lib/getTimezoneOffsetInMilliseconds.js
+function getTimezoneOffsetInMilliseconds(date6) {
+  const _date2 = toDate(date6);
+  const utcDate = new Date(
+    Date.UTC(
+      _date2.getFullYear(),
+      _date2.getMonth(),
+      _date2.getDate(),
+      _date2.getHours(),
+      _date2.getMinutes(),
+      _date2.getSeconds(),
+      _date2.getMilliseconds()
+    )
+  );
+  utcDate.setUTCFullYear(_date2.getFullYear());
+  return +date6 - +utcDate;
+}
+
+// node_modules/date-fns/_lib/normalizeDates.js
+function normalizeDates(context2, ...dates) {
+  const normalize2 = constructFrom.bind(
+    null,
+    context2 || dates.find((date6) => typeof date6 === "object")
+  );
+  return dates.map(normalize2);
+}
+
+// node_modules/date-fns/startOfDay.js
+function startOfDay(date6, options) {
+  const _date2 = toDate(date6, options?.in);
+  _date2.setHours(0, 0, 0, 0);
+  return _date2;
+}
+
+// node_modules/date-fns/differenceInCalendarDays.js
+function differenceInCalendarDays(laterDate, earlierDate, options) {
+  const [laterDate_, earlierDate_] = normalizeDates(
+    options?.in,
+    laterDate,
+    earlierDate
+  );
+  const laterStartOfDay = startOfDay(laterDate_);
+  const earlierStartOfDay = startOfDay(earlierDate_);
+  const laterTimestamp = +laterStartOfDay - getTimezoneOffsetInMilliseconds(laterStartOfDay);
+  const earlierTimestamp = +earlierStartOfDay - getTimezoneOffsetInMilliseconds(earlierStartOfDay);
+  return Math.round((laterTimestamp - earlierTimestamp) / millisecondsInDay);
+}
+
+// node_modules/date-fns/startOfISOWeekYear.js
+function startOfISOWeekYear(date6, options) {
+  const year2 = getISOWeekYear(date6, options);
+  const fourthOfJanuary = constructFrom(options?.in || date6, 0);
+  fourthOfJanuary.setFullYear(year2, 0, 4);
+  fourthOfJanuary.setHours(0, 0, 0, 0);
+  return startOfISOWeek(fourthOfJanuary);
+}
+
+// node_modules/date-fns/isDate.js
+function isDate2(value) {
+  return value instanceof Date || typeof value === "object" && Object.prototype.toString.call(value) === "[object Date]";
+}
+
+// node_modules/date-fns/isValid.js
+function isValid(date6) {
+  return !(!isDate2(date6) && typeof date6 !== "number" || isNaN(+toDate(date6)));
+}
+
+// node_modules/date-fns/startOfYear.js
+function startOfYear(date6, options) {
+  const date_ = toDate(date6, options?.in);
+  date_.setFullYear(date_.getFullYear(), 0, 1);
+  date_.setHours(0, 0, 0, 0);
+  return date_;
+}
+
+// node_modules/date-fns/locale/en-US/_lib/formatDistance.js
+var formatDistanceLocale = {
+  lessThanXSeconds: {
+    one: "less than a second",
+    other: "less than {{count}} seconds"
+  },
+  xSeconds: {
+    one: "1 second",
+    other: "{{count}} seconds"
+  },
+  halfAMinute: "half a minute",
+  lessThanXMinutes: {
+    one: "less than a minute",
+    other: "less than {{count}} minutes"
+  },
+  xMinutes: {
+    one: "1 minute",
+    other: "{{count}} minutes"
+  },
+  aboutXHours: {
+    one: "about 1 hour",
+    other: "about {{count}} hours"
+  },
+  xHours: {
+    one: "1 hour",
+    other: "{{count}} hours"
+  },
+  xDays: {
+    one: "1 day",
+    other: "{{count}} days"
+  },
+  aboutXWeeks: {
+    one: "about 1 week",
+    other: "about {{count}} weeks"
+  },
+  xWeeks: {
+    one: "1 week",
+    other: "{{count}} weeks"
+  },
+  aboutXMonths: {
+    one: "about 1 month",
+    other: "about {{count}} months"
+  },
+  xMonths: {
+    one: "1 month",
+    other: "{{count}} months"
+  },
+  aboutXYears: {
+    one: "about 1 year",
+    other: "about {{count}} years"
+  },
+  xYears: {
+    one: "1 year",
+    other: "{{count}} years"
+  },
+  overXYears: {
+    one: "over 1 year",
+    other: "over {{count}} years"
+  },
+  almostXYears: {
+    one: "almost 1 year",
+    other: "almost {{count}} years"
+  }
+};
+var formatDistance = (token, count, options) => {
+  let result;
+  const tokenValue = formatDistanceLocale[token];
+  if (typeof tokenValue === "string") {
+    result = tokenValue;
+  } else if (count === 1) {
+    result = tokenValue.one;
+  } else {
+    result = tokenValue.other.replace("{{count}}", count.toString());
+  }
+  if (options?.addSuffix) {
+    if (options.comparison && options.comparison > 0) {
+      return "in " + result;
+    } else {
+      return result + " ago";
+    }
+  }
+  return result;
+};
+
+// node_modules/date-fns/locale/_lib/buildFormatLongFn.js
+function buildFormatLongFn(args) {
+  return (options = {}) => {
+    const width = options.width ? String(options.width) : args.defaultWidth;
+    const format2 = args.formats[width] || args.formats[args.defaultWidth];
+    return format2;
+  };
+}
+
+// node_modules/date-fns/locale/en-US/_lib/formatLong.js
+var dateFormats = {
+  full: "EEEE, MMMM do, y",
+  long: "MMMM do, y",
+  medium: "MMM d, y",
+  short: "MM/dd/yyyy"
+};
+var timeFormats = {
+  full: "h:mm:ss a zzzz",
+  long: "h:mm:ss a z",
+  medium: "h:mm:ss a",
+  short: "h:mm a"
+};
+var dateTimeFormats = {
+  full: "{{date}} 'at' {{time}}",
+  long: "{{date}} 'at' {{time}}",
+  medium: "{{date}}, {{time}}",
+  short: "{{date}}, {{time}}"
+};
+var formatLong = {
+  date: buildFormatLongFn({
+    formats: dateFormats,
+    defaultWidth: "full"
+  }),
+  time: buildFormatLongFn({
+    formats: timeFormats,
+    defaultWidth: "full"
+  }),
+  dateTime: buildFormatLongFn({
+    formats: dateTimeFormats,
+    defaultWidth: "full"
+  })
+};
+
+// node_modules/date-fns/locale/en-US/_lib/formatRelative.js
+var formatRelativeLocale = {
+  lastWeek: "'last' eeee 'at' p",
+  yesterday: "'yesterday at' p",
+  today: "'today at' p",
+  tomorrow: "'tomorrow at' p",
+  nextWeek: "eeee 'at' p",
+  other: "P"
+};
+var formatRelative = (token, _date2, _baseDate, _options) => formatRelativeLocale[token];
+
+// node_modules/date-fns/locale/_lib/buildLocalizeFn.js
+function buildLocalizeFn(args) {
+  return (value, options) => {
+    const context2 = options?.context ? String(options.context) : "standalone";
+    let valuesArray;
+    if (context2 === "formatting" && args.formattingValues) {
+      const defaultWidth = args.defaultFormattingWidth || args.defaultWidth;
+      const width = options?.width ? String(options.width) : defaultWidth;
+      valuesArray = args.formattingValues[width] || args.formattingValues[defaultWidth];
+    } else {
+      const defaultWidth = args.defaultWidth;
+      const width = options?.width ? String(options.width) : args.defaultWidth;
+      valuesArray = args.values[width] || args.values[defaultWidth];
+    }
+    const index2 = args.argumentCallback ? args.argumentCallback(value) : value;
+    return valuesArray[index2];
+  };
+}
+
+// node_modules/date-fns/locale/en-US/_lib/localize.js
+var eraValues = {
+  narrow: ["B", "A"],
+  abbreviated: ["BC", "AD"],
+  wide: ["Before Christ", "Anno Domini"]
+};
+var quarterValues = {
+  narrow: ["1", "2", "3", "4"],
+  abbreviated: ["Q1", "Q2", "Q3", "Q4"],
+  wide: ["1st quarter", "2nd quarter", "3rd quarter", "4th quarter"]
+};
+var monthValues = {
+  narrow: ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"],
+  abbreviated: [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ],
+  wide: [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ]
+};
+var dayValues = {
+  narrow: ["S", "M", "T", "W", "T", "F", "S"],
+  short: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+  abbreviated: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  wide: [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ]
+};
+var dayPeriodValues = {
+  narrow: {
+    am: "a",
+    pm: "p",
+    midnight: "mi",
+    noon: "n",
+    morning: "morning",
+    afternoon: "afternoon",
+    evening: "evening",
+    night: "night"
+  },
+  abbreviated: {
+    am: "AM",
+    pm: "PM",
+    midnight: "midnight",
+    noon: "noon",
+    morning: "morning",
+    afternoon: "afternoon",
+    evening: "evening",
+    night: "night"
+  },
+  wide: {
+    am: "a.m.",
+    pm: "p.m.",
+    midnight: "midnight",
+    noon: "noon",
+    morning: "morning",
+    afternoon: "afternoon",
+    evening: "evening",
+    night: "night"
+  }
+};
+var formattingDayPeriodValues = {
+  narrow: {
+    am: "a",
+    pm: "p",
+    midnight: "mi",
+    noon: "n",
+    morning: "in the morning",
+    afternoon: "in the afternoon",
+    evening: "in the evening",
+    night: "at night"
+  },
+  abbreviated: {
+    am: "AM",
+    pm: "PM",
+    midnight: "midnight",
+    noon: "noon",
+    morning: "in the morning",
+    afternoon: "in the afternoon",
+    evening: "in the evening",
+    night: "at night"
+  },
+  wide: {
+    am: "a.m.",
+    pm: "p.m.",
+    midnight: "midnight",
+    noon: "noon",
+    morning: "in the morning",
+    afternoon: "in the afternoon",
+    evening: "in the evening",
+    night: "at night"
+  }
+};
+var ordinalNumber = (dirtyNumber, _options) => {
+  const number4 = Number(dirtyNumber);
+  const rem100 = number4 % 100;
+  if (rem100 > 20 || rem100 < 10) {
+    switch (rem100 % 10) {
+      case 1:
+        return number4 + "st";
+      case 2:
+        return number4 + "nd";
+      case 3:
+        return number4 + "rd";
+    }
+  }
+  return number4 + "th";
+};
+var localize = {
+  ordinalNumber,
+  era: buildLocalizeFn({
+    values: eraValues,
+    defaultWidth: "wide"
+  }),
+  quarter: buildLocalizeFn({
+    values: quarterValues,
+    defaultWidth: "wide",
+    argumentCallback: (quarter) => quarter - 1
+  }),
+  month: buildLocalizeFn({
+    values: monthValues,
+    defaultWidth: "wide"
+  }),
+  day: buildLocalizeFn({
+    values: dayValues,
+    defaultWidth: "wide"
+  }),
+  dayPeriod: buildLocalizeFn({
+    values: dayPeriodValues,
+    defaultWidth: "wide",
+    formattingValues: formattingDayPeriodValues,
+    defaultFormattingWidth: "wide"
+  })
+};
+
+// node_modules/date-fns/locale/_lib/buildMatchFn.js
+function buildMatchFn(args) {
+  return (string4, options = {}) => {
+    const width = options.width;
+    const matchPattern = width && args.matchPatterns[width] || args.matchPatterns[args.defaultMatchWidth];
+    const matchResult = string4.match(matchPattern);
+    if (!matchResult) {
+      return null;
+    }
+    const matchedString = matchResult[0];
+    const parsePatterns = width && args.parsePatterns[width] || args.parsePatterns[args.defaultParseWidth];
+    const key = Array.isArray(parsePatterns) ? findIndex(parsePatterns, (pattern) => pattern.test(matchedString)) : (
+      // [TODO] -- I challenge you to fix the type
+      findKey(parsePatterns, (pattern) => pattern.test(matchedString))
+    );
+    let value;
+    value = args.valueCallback ? args.valueCallback(key) : key;
+    value = options.valueCallback ? (
+      // [TODO] -- I challenge you to fix the type
+      options.valueCallback(value)
+    ) : value;
+    const rest = string4.slice(matchedString.length);
+    return { value, rest };
+  };
+}
+function findKey(object2, predicate) {
+  for (const key in object2) {
+    if (Object.prototype.hasOwnProperty.call(object2, key) && predicate(object2[key])) {
+      return key;
+    }
+  }
+  return void 0;
+}
+function findIndex(array2, predicate) {
+  for (let key = 0; key < array2.length; key++) {
+    if (predicate(array2[key])) {
+      return key;
+    }
+  }
+  return void 0;
+}
+
+// node_modules/date-fns/locale/_lib/buildMatchPatternFn.js
+function buildMatchPatternFn(args) {
+  return (string4, options = {}) => {
+    const matchResult = string4.match(args.matchPattern);
+    if (!matchResult) return null;
+    const matchedString = matchResult[0];
+    const parseResult = string4.match(args.parsePattern);
+    if (!parseResult) return null;
+    let value = args.valueCallback ? args.valueCallback(parseResult[0]) : parseResult[0];
+    value = options.valueCallback ? options.valueCallback(value) : value;
+    const rest = string4.slice(matchedString.length);
+    return { value, rest };
+  };
+}
+
+// node_modules/date-fns/locale/en-US/_lib/match.js
+var matchOrdinalNumberPattern = /^(\d+)(th|st|nd|rd)?/i;
+var parseOrdinalNumberPattern = /\d+/i;
+var matchEraPatterns = {
+  narrow: /^(b|a)/i,
+  abbreviated: /^(b\.?\s?c\.?|b\.?\s?c\.?\s?e\.?|a\.?\s?d\.?|c\.?\s?e\.?)/i,
+  wide: /^(before christ|before common era|anno domini|common era)/i
+};
+var parseEraPatterns = {
+  any: [/^b/i, /^(a|c)/i]
+};
+var matchQuarterPatterns = {
+  narrow: /^[1234]/i,
+  abbreviated: /^q[1234]/i,
+  wide: /^[1234](th|st|nd|rd)? quarter/i
+};
+var parseQuarterPatterns = {
+  any: [/1/i, /2/i, /3/i, /4/i]
+};
+var matchMonthPatterns = {
+  narrow: /^[jfmasond]/i,
+  abbreviated: /^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i,
+  wide: /^(january|february|march|april|may|june|july|august|september|october|november|december)/i
+};
+var parseMonthPatterns = {
+  narrow: [
+    /^j/i,
+    /^f/i,
+    /^m/i,
+    /^a/i,
+    /^m/i,
+    /^j/i,
+    /^j/i,
+    /^a/i,
+    /^s/i,
+    /^o/i,
+    /^n/i,
+    /^d/i
+  ],
+  any: [
+    /^ja/i,
+    /^f/i,
+    /^mar/i,
+    /^ap/i,
+    /^may/i,
+    /^jun/i,
+    /^jul/i,
+    /^au/i,
+    /^s/i,
+    /^o/i,
+    /^n/i,
+    /^d/i
+  ]
+};
+var matchDayPatterns = {
+  narrow: /^[smtwf]/i,
+  short: /^(su|mo|tu|we|th|fr|sa)/i,
+  abbreviated: /^(sun|mon|tue|wed|thu|fri|sat)/i,
+  wide: /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)/i
+};
+var parseDayPatterns = {
+  narrow: [/^s/i, /^m/i, /^t/i, /^w/i, /^t/i, /^f/i, /^s/i],
+  any: [/^su/i, /^m/i, /^tu/i, /^w/i, /^th/i, /^f/i, /^sa/i]
+};
+var matchDayPeriodPatterns = {
+  narrow: /^(a|p|mi|n|(in the|at) (morning|afternoon|evening|night))/i,
+  any: /^([ap]\.?\s?m\.?|midnight|noon|(in the|at) (morning|afternoon|evening|night))/i
+};
+var parseDayPeriodPatterns = {
+  any: {
+    am: /^a/i,
+    pm: /^p/i,
+    midnight: /^mi/i,
+    noon: /^no/i,
+    morning: /morning/i,
+    afternoon: /afternoon/i,
+    evening: /evening/i,
+    night: /night/i
+  }
+};
+var match2 = {
+  ordinalNumber: buildMatchPatternFn({
+    matchPattern: matchOrdinalNumberPattern,
+    parsePattern: parseOrdinalNumberPattern,
+    valueCallback: (value) => parseInt(value, 10)
+  }),
+  era: buildMatchFn({
+    matchPatterns: matchEraPatterns,
+    defaultMatchWidth: "wide",
+    parsePatterns: parseEraPatterns,
+    defaultParseWidth: "any"
+  }),
+  quarter: buildMatchFn({
+    matchPatterns: matchQuarterPatterns,
+    defaultMatchWidth: "wide",
+    parsePatterns: parseQuarterPatterns,
+    defaultParseWidth: "any",
+    valueCallback: (index2) => index2 + 1
+  }),
+  month: buildMatchFn({
+    matchPatterns: matchMonthPatterns,
+    defaultMatchWidth: "wide",
+    parsePatterns: parseMonthPatterns,
+    defaultParseWidth: "any"
+  }),
+  day: buildMatchFn({
+    matchPatterns: matchDayPatterns,
+    defaultMatchWidth: "wide",
+    parsePatterns: parseDayPatterns,
+    defaultParseWidth: "any"
+  }),
+  dayPeriod: buildMatchFn({
+    matchPatterns: matchDayPeriodPatterns,
+    defaultMatchWidth: "any",
+    parsePatterns: parseDayPeriodPatterns,
+    defaultParseWidth: "any"
+  })
+};
+
+// node_modules/date-fns/locale/en-US.js
+var enUS = {
+  code: "en-US",
+  formatDistance,
+  formatLong,
+  formatRelative,
+  localize,
+  match: match2,
+  options: {
+    weekStartsOn: 0,
+    firstWeekContainsDate: 1
+  }
+};
+
+// node_modules/date-fns/getDayOfYear.js
+function getDayOfYear(date6, options) {
+  const _date2 = toDate(date6, options?.in);
+  const diff = differenceInCalendarDays(_date2, startOfYear(_date2));
+  const dayOfYear = diff + 1;
+  return dayOfYear;
+}
+
+// node_modules/date-fns/getISOWeek.js
+function getISOWeek(date6, options) {
+  const _date2 = toDate(date6, options?.in);
+  const diff = +startOfISOWeek(_date2) - +startOfISOWeekYear(_date2);
+  return Math.round(diff / millisecondsInWeek) + 1;
+}
+
+// node_modules/date-fns/getWeekYear.js
+function getWeekYear(date6, options) {
+  const _date2 = toDate(date6, options?.in);
+  const year2 = _date2.getFullYear();
+  const defaultOptions2 = getDefaultOptions();
+  const firstWeekContainsDate = options?.firstWeekContainsDate ?? options?.locale?.options?.firstWeekContainsDate ?? defaultOptions2.firstWeekContainsDate ?? defaultOptions2.locale?.options?.firstWeekContainsDate ?? 1;
+  const firstWeekOfNextYear = constructFrom(options?.in || date6, 0);
+  firstWeekOfNextYear.setFullYear(year2 + 1, 0, firstWeekContainsDate);
+  firstWeekOfNextYear.setHours(0, 0, 0, 0);
+  const startOfNextYear = startOfWeek(firstWeekOfNextYear, options);
+  const firstWeekOfThisYear = constructFrom(options?.in || date6, 0);
+  firstWeekOfThisYear.setFullYear(year2, 0, firstWeekContainsDate);
+  firstWeekOfThisYear.setHours(0, 0, 0, 0);
+  const startOfThisYear = startOfWeek(firstWeekOfThisYear, options);
+  if (+_date2 >= +startOfNextYear) {
+    return year2 + 1;
+  } else if (+_date2 >= +startOfThisYear) {
+    return year2;
+  } else {
+    return year2 - 1;
+  }
+}
+
+// node_modules/date-fns/startOfWeekYear.js
+function startOfWeekYear(date6, options) {
+  const defaultOptions2 = getDefaultOptions();
+  const firstWeekContainsDate = options?.firstWeekContainsDate ?? options?.locale?.options?.firstWeekContainsDate ?? defaultOptions2.firstWeekContainsDate ?? defaultOptions2.locale?.options?.firstWeekContainsDate ?? 1;
+  const year2 = getWeekYear(date6, options);
+  const firstWeek = constructFrom(options?.in || date6, 0);
+  firstWeek.setFullYear(year2, 0, firstWeekContainsDate);
+  firstWeek.setHours(0, 0, 0, 0);
+  const _date2 = startOfWeek(firstWeek, options);
+  return _date2;
+}
+
+// node_modules/date-fns/getWeek.js
+function getWeek(date6, options) {
+  const _date2 = toDate(date6, options?.in);
+  const diff = +startOfWeek(_date2, options) - +startOfWeekYear(_date2, options);
+  return Math.round(diff / millisecondsInWeek) + 1;
+}
+
+// node_modules/date-fns/_lib/addLeadingZeros.js
+function addLeadingZeros(number4, targetLength) {
+  const sign2 = number4 < 0 ? "-" : "";
+  const output = Math.abs(number4).toString().padStart(targetLength, "0");
+  return sign2 + output;
+}
+
+// node_modules/date-fns/_lib/format/lightFormatters.js
+var lightFormatters = {
+  // Year
+  y(date6, token) {
+    const signedYear = date6.getFullYear();
+    const year2 = signedYear > 0 ? signedYear : 1 - signedYear;
+    return addLeadingZeros(token === "yy" ? year2 % 100 : year2, token.length);
+  },
+  // Month
+  M(date6, token) {
+    const month = date6.getMonth();
+    return token === "M" ? String(month + 1) : addLeadingZeros(month + 1, 2);
+  },
+  // Day of the month
+  d(date6, token) {
+    return addLeadingZeros(date6.getDate(), token.length);
+  },
+  // AM or PM
+  a(date6, token) {
+    const dayPeriodEnumValue = date6.getHours() / 12 >= 1 ? "pm" : "am";
+    switch (token) {
+      case "a":
+      case "aa":
+        return dayPeriodEnumValue.toUpperCase();
+      case "aaa":
+        return dayPeriodEnumValue;
+      case "aaaaa":
+        return dayPeriodEnumValue[0];
+      case "aaaa":
+      default:
+        return dayPeriodEnumValue === "am" ? "a.m." : "p.m.";
+    }
+  },
+  // Hour [1-12]
+  h(date6, token) {
+    return addLeadingZeros(date6.getHours() % 12 || 12, token.length);
+  },
+  // Hour [0-23]
+  H(date6, token) {
+    return addLeadingZeros(date6.getHours(), token.length);
+  },
+  // Minute
+  m(date6, token) {
+    return addLeadingZeros(date6.getMinutes(), token.length);
+  },
+  // Second
+  s(date6, token) {
+    return addLeadingZeros(date6.getSeconds(), token.length);
+  },
+  // Fraction of second
+  S(date6, token) {
+    const numberOfDigits = token.length;
+    const milliseconds = date6.getMilliseconds();
+    const fractionalSeconds = Math.trunc(
+      milliseconds * Math.pow(10, numberOfDigits - 3)
+    );
+    return addLeadingZeros(fractionalSeconds, token.length);
+  }
+};
+
+// node_modules/date-fns/_lib/format/formatters.js
+var dayPeriodEnum = {
+  am: "am",
+  pm: "pm",
+  midnight: "midnight",
+  noon: "noon",
+  morning: "morning",
+  afternoon: "afternoon",
+  evening: "evening",
+  night: "night"
+};
+var formatters = {
+  // Era
+  G: function(date6, token, localize2) {
+    const era = date6.getFullYear() > 0 ? 1 : 0;
+    switch (token) {
+      // AD, BC
+      case "G":
+      case "GG":
+      case "GGG":
+        return localize2.era(era, { width: "abbreviated" });
+      // A, B
+      case "GGGGG":
+        return localize2.era(era, { width: "narrow" });
+      // Anno Domini, Before Christ
+      case "GGGG":
+      default:
+        return localize2.era(era, { width: "wide" });
+    }
+  },
+  // Year
+  y: function(date6, token, localize2) {
+    if (token === "yo") {
+      const signedYear = date6.getFullYear();
+      const year2 = signedYear > 0 ? signedYear : 1 - signedYear;
+      return localize2.ordinalNumber(year2, { unit: "year" });
+    }
+    return lightFormatters.y(date6, token);
+  },
+  // Local week-numbering year
+  Y: function(date6, token, localize2, options) {
+    const signedWeekYear = getWeekYear(date6, options);
+    const weekYear = signedWeekYear > 0 ? signedWeekYear : 1 - signedWeekYear;
+    if (token === "YY") {
+      const twoDigitYear = weekYear % 100;
+      return addLeadingZeros(twoDigitYear, 2);
+    }
+    if (token === "Yo") {
+      return localize2.ordinalNumber(weekYear, { unit: "year" });
+    }
+    return addLeadingZeros(weekYear, token.length);
+  },
+  // ISO week-numbering year
+  R: function(date6, token) {
+    const isoWeekYear = getISOWeekYear(date6);
+    return addLeadingZeros(isoWeekYear, token.length);
+  },
+  // Extended year. This is a single number designating the year of this calendar system.
+  // The main difference between `y` and `u` localizers are B.C. years:
+  // | Year | `y` | `u` |
+  // |------|-----|-----|
+  // | AC 1 |   1 |   1 |
+  // | BC 1 |   1 |   0 |
+  // | BC 2 |   2 |  -1 |
+  // Also `yy` always returns the last two digits of a year,
+  // while `uu` pads single digit years to 2 characters and returns other years unchanged.
+  u: function(date6, token) {
+    const year2 = date6.getFullYear();
+    return addLeadingZeros(year2, token.length);
+  },
+  // Quarter
+  Q: function(date6, token, localize2) {
+    const quarter = Math.ceil((date6.getMonth() + 1) / 3);
+    switch (token) {
+      // 1, 2, 3, 4
+      case "Q":
+        return String(quarter);
+      // 01, 02, 03, 04
+      case "QQ":
+        return addLeadingZeros(quarter, 2);
+      // 1st, 2nd, 3rd, 4th
+      case "Qo":
+        return localize2.ordinalNumber(quarter, { unit: "quarter" });
+      // Q1, Q2, Q3, Q4
+      case "QQQ":
+        return localize2.quarter(quarter, {
+          width: "abbreviated",
+          context: "formatting"
+        });
+      // 1, 2, 3, 4 (narrow quarter; could be not numerical)
+      case "QQQQQ":
+        return localize2.quarter(quarter, {
+          width: "narrow",
+          context: "formatting"
+        });
+      // 1st quarter, 2nd quarter, ...
+      case "QQQQ":
+      default:
+        return localize2.quarter(quarter, {
+          width: "wide",
+          context: "formatting"
+        });
+    }
+  },
+  // Stand-alone quarter
+  q: function(date6, token, localize2) {
+    const quarter = Math.ceil((date6.getMonth() + 1) / 3);
+    switch (token) {
+      // 1, 2, 3, 4
+      case "q":
+        return String(quarter);
+      // 01, 02, 03, 04
+      case "qq":
+        return addLeadingZeros(quarter, 2);
+      // 1st, 2nd, 3rd, 4th
+      case "qo":
+        return localize2.ordinalNumber(quarter, { unit: "quarter" });
+      // Q1, Q2, Q3, Q4
+      case "qqq":
+        return localize2.quarter(quarter, {
+          width: "abbreviated",
+          context: "standalone"
+        });
+      // 1, 2, 3, 4 (narrow quarter; could be not numerical)
+      case "qqqqq":
+        return localize2.quarter(quarter, {
+          width: "narrow",
+          context: "standalone"
+        });
+      // 1st quarter, 2nd quarter, ...
+      case "qqqq":
+      default:
+        return localize2.quarter(quarter, {
+          width: "wide",
+          context: "standalone"
+        });
+    }
+  },
+  // Month
+  M: function(date6, token, localize2) {
+    const month = date6.getMonth();
+    switch (token) {
+      case "M":
+      case "MM":
+        return lightFormatters.M(date6, token);
+      // 1st, 2nd, ..., 12th
+      case "Mo":
+        return localize2.ordinalNumber(month + 1, { unit: "month" });
+      // Jan, Feb, ..., Dec
+      case "MMM":
+        return localize2.month(month, {
+          width: "abbreviated",
+          context: "formatting"
+        });
+      // J, F, ..., D
+      case "MMMMM":
+        return localize2.month(month, {
+          width: "narrow",
+          context: "formatting"
+        });
+      // January, February, ..., December
+      case "MMMM":
+      default:
+        return localize2.month(month, { width: "wide", context: "formatting" });
+    }
+  },
+  // Stand-alone month
+  L: function(date6, token, localize2) {
+    const month = date6.getMonth();
+    switch (token) {
+      // 1, 2, ..., 12
+      case "L":
+        return String(month + 1);
+      // 01, 02, ..., 12
+      case "LL":
+        return addLeadingZeros(month + 1, 2);
+      // 1st, 2nd, ..., 12th
+      case "Lo":
+        return localize2.ordinalNumber(month + 1, { unit: "month" });
+      // Jan, Feb, ..., Dec
+      case "LLL":
+        return localize2.month(month, {
+          width: "abbreviated",
+          context: "standalone"
+        });
+      // J, F, ..., D
+      case "LLLLL":
+        return localize2.month(month, {
+          width: "narrow",
+          context: "standalone"
+        });
+      // January, February, ..., December
+      case "LLLL":
+      default:
+        return localize2.month(month, { width: "wide", context: "standalone" });
+    }
+  },
+  // Local week of year
+  w: function(date6, token, localize2, options) {
+    const week2 = getWeek(date6, options);
+    if (token === "wo") {
+      return localize2.ordinalNumber(week2, { unit: "week" });
+    }
+    return addLeadingZeros(week2, token.length);
+  },
+  // ISO week of year
+  I: function(date6, token, localize2) {
+    const isoWeek = getISOWeek(date6);
+    if (token === "Io") {
+      return localize2.ordinalNumber(isoWeek, { unit: "week" });
+    }
+    return addLeadingZeros(isoWeek, token.length);
+  },
+  // Day of the month
+  d: function(date6, token, localize2) {
+    if (token === "do") {
+      return localize2.ordinalNumber(date6.getDate(), { unit: "date" });
+    }
+    return lightFormatters.d(date6, token);
+  },
+  // Day of year
+  D: function(date6, token, localize2) {
+    const dayOfYear = getDayOfYear(date6);
+    if (token === "Do") {
+      return localize2.ordinalNumber(dayOfYear, { unit: "dayOfYear" });
+    }
+    return addLeadingZeros(dayOfYear, token.length);
+  },
+  // Day of week
+  E: function(date6, token, localize2) {
+    const dayOfWeek = date6.getDay();
+    switch (token) {
+      // Tue
+      case "E":
+      case "EE":
+      case "EEE":
+        return localize2.day(dayOfWeek, {
+          width: "abbreviated",
+          context: "formatting"
+        });
+      // T
+      case "EEEEE":
+        return localize2.day(dayOfWeek, {
+          width: "narrow",
+          context: "formatting"
+        });
+      // Tu
+      case "EEEEEE":
+        return localize2.day(dayOfWeek, {
+          width: "short",
+          context: "formatting"
+        });
+      // Tuesday
+      case "EEEE":
+      default:
+        return localize2.day(dayOfWeek, {
+          width: "wide",
+          context: "formatting"
+        });
+    }
+  },
+  // Local day of week
+  e: function(date6, token, localize2, options) {
+    const dayOfWeek = date6.getDay();
+    const localDayOfWeek = (dayOfWeek - options.weekStartsOn + 8) % 7 || 7;
+    switch (token) {
+      // Numerical value (Nth day of week with current locale or weekStartsOn)
+      case "e":
+        return String(localDayOfWeek);
+      // Padded numerical value
+      case "ee":
+        return addLeadingZeros(localDayOfWeek, 2);
+      // 1st, 2nd, ..., 7th
+      case "eo":
+        return localize2.ordinalNumber(localDayOfWeek, { unit: "day" });
+      case "eee":
+        return localize2.day(dayOfWeek, {
+          width: "abbreviated",
+          context: "formatting"
+        });
+      // T
+      case "eeeee":
+        return localize2.day(dayOfWeek, {
+          width: "narrow",
+          context: "formatting"
+        });
+      // Tu
+      case "eeeeee":
+        return localize2.day(dayOfWeek, {
+          width: "short",
+          context: "formatting"
+        });
+      // Tuesday
+      case "eeee":
+      default:
+        return localize2.day(dayOfWeek, {
+          width: "wide",
+          context: "formatting"
+        });
+    }
+  },
+  // Stand-alone local day of week
+  c: function(date6, token, localize2, options) {
+    const dayOfWeek = date6.getDay();
+    const localDayOfWeek = (dayOfWeek - options.weekStartsOn + 8) % 7 || 7;
+    switch (token) {
+      // Numerical value (same as in `e`)
+      case "c":
+        return String(localDayOfWeek);
+      // Padded numerical value
+      case "cc":
+        return addLeadingZeros(localDayOfWeek, token.length);
+      // 1st, 2nd, ..., 7th
+      case "co":
+        return localize2.ordinalNumber(localDayOfWeek, { unit: "day" });
+      case "ccc":
+        return localize2.day(dayOfWeek, {
+          width: "abbreviated",
+          context: "standalone"
+        });
+      // T
+      case "ccccc":
+        return localize2.day(dayOfWeek, {
+          width: "narrow",
+          context: "standalone"
+        });
+      // Tu
+      case "cccccc":
+        return localize2.day(dayOfWeek, {
+          width: "short",
+          context: "standalone"
+        });
+      // Tuesday
+      case "cccc":
+      default:
+        return localize2.day(dayOfWeek, {
+          width: "wide",
+          context: "standalone"
+        });
+    }
+  },
+  // ISO day of week
+  i: function(date6, token, localize2) {
+    const dayOfWeek = date6.getDay();
+    const isoDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
+    switch (token) {
+      // 2
+      case "i":
+        return String(isoDayOfWeek);
+      // 02
+      case "ii":
+        return addLeadingZeros(isoDayOfWeek, token.length);
+      // 2nd
+      case "io":
+        return localize2.ordinalNumber(isoDayOfWeek, { unit: "day" });
+      // Tue
+      case "iii":
+        return localize2.day(dayOfWeek, {
+          width: "abbreviated",
+          context: "formatting"
+        });
+      // T
+      case "iiiii":
+        return localize2.day(dayOfWeek, {
+          width: "narrow",
+          context: "formatting"
+        });
+      // Tu
+      case "iiiiii":
+        return localize2.day(dayOfWeek, {
+          width: "short",
+          context: "formatting"
+        });
+      // Tuesday
+      case "iiii":
+      default:
+        return localize2.day(dayOfWeek, {
+          width: "wide",
+          context: "formatting"
+        });
+    }
+  },
+  // AM or PM
+  a: function(date6, token, localize2) {
+    const hours = date6.getHours();
+    const dayPeriodEnumValue = hours / 12 >= 1 ? "pm" : "am";
+    switch (token) {
+      case "a":
+      case "aa":
+        return localize2.dayPeriod(dayPeriodEnumValue, {
+          width: "abbreviated",
+          context: "formatting"
+        });
+      case "aaa":
+        return localize2.dayPeriod(dayPeriodEnumValue, {
+          width: "abbreviated",
+          context: "formatting"
+        }).toLowerCase();
+      case "aaaaa":
+        return localize2.dayPeriod(dayPeriodEnumValue, {
+          width: "narrow",
+          context: "formatting"
+        });
+      case "aaaa":
+      default:
+        return localize2.dayPeriod(dayPeriodEnumValue, {
+          width: "wide",
+          context: "formatting"
+        });
+    }
+  },
+  // AM, PM, midnight, noon
+  b: function(date6, token, localize2) {
+    const hours = date6.getHours();
+    let dayPeriodEnumValue;
+    if (hours === 12) {
+      dayPeriodEnumValue = dayPeriodEnum.noon;
+    } else if (hours === 0) {
+      dayPeriodEnumValue = dayPeriodEnum.midnight;
+    } else {
+      dayPeriodEnumValue = hours / 12 >= 1 ? "pm" : "am";
+    }
+    switch (token) {
+      case "b":
+      case "bb":
+        return localize2.dayPeriod(dayPeriodEnumValue, {
+          width: "abbreviated",
+          context: "formatting"
+        });
+      case "bbb":
+        return localize2.dayPeriod(dayPeriodEnumValue, {
+          width: "abbreviated",
+          context: "formatting"
+        }).toLowerCase();
+      case "bbbbb":
+        return localize2.dayPeriod(dayPeriodEnumValue, {
+          width: "narrow",
+          context: "formatting"
+        });
+      case "bbbb":
+      default:
+        return localize2.dayPeriod(dayPeriodEnumValue, {
+          width: "wide",
+          context: "formatting"
+        });
+    }
+  },
+  // in the morning, in the afternoon, in the evening, at night
+  B: function(date6, token, localize2) {
+    const hours = date6.getHours();
+    let dayPeriodEnumValue;
+    if (hours >= 17) {
+      dayPeriodEnumValue = dayPeriodEnum.evening;
+    } else if (hours >= 12) {
+      dayPeriodEnumValue = dayPeriodEnum.afternoon;
+    } else if (hours >= 4) {
+      dayPeriodEnumValue = dayPeriodEnum.morning;
+    } else {
+      dayPeriodEnumValue = dayPeriodEnum.night;
+    }
+    switch (token) {
+      case "B":
+      case "BB":
+      case "BBB":
+        return localize2.dayPeriod(dayPeriodEnumValue, {
+          width: "abbreviated",
+          context: "formatting"
+        });
+      case "BBBBB":
+        return localize2.dayPeriod(dayPeriodEnumValue, {
+          width: "narrow",
+          context: "formatting"
+        });
+      case "BBBB":
+      default:
+        return localize2.dayPeriod(dayPeriodEnumValue, {
+          width: "wide",
+          context: "formatting"
+        });
+    }
+  },
+  // Hour [1-12]
+  h: function(date6, token, localize2) {
+    if (token === "ho") {
+      let hours = date6.getHours() % 12;
+      if (hours === 0) hours = 12;
+      return localize2.ordinalNumber(hours, { unit: "hour" });
+    }
+    return lightFormatters.h(date6, token);
+  },
+  // Hour [0-23]
+  H: function(date6, token, localize2) {
+    if (token === "Ho") {
+      return localize2.ordinalNumber(date6.getHours(), { unit: "hour" });
+    }
+    return lightFormatters.H(date6, token);
+  },
+  // Hour [0-11]
+  K: function(date6, token, localize2) {
+    const hours = date6.getHours() % 12;
+    if (token === "Ko") {
+      return localize2.ordinalNumber(hours, { unit: "hour" });
+    }
+    return addLeadingZeros(hours, token.length);
+  },
+  // Hour [1-24]
+  k: function(date6, token, localize2) {
+    let hours = date6.getHours();
+    if (hours === 0) hours = 24;
+    if (token === "ko") {
+      return localize2.ordinalNumber(hours, { unit: "hour" });
+    }
+    return addLeadingZeros(hours, token.length);
+  },
+  // Minute
+  m: function(date6, token, localize2) {
+    if (token === "mo") {
+      return localize2.ordinalNumber(date6.getMinutes(), { unit: "minute" });
+    }
+    return lightFormatters.m(date6, token);
+  },
+  // Second
+  s: function(date6, token, localize2) {
+    if (token === "so") {
+      return localize2.ordinalNumber(date6.getSeconds(), { unit: "second" });
+    }
+    return lightFormatters.s(date6, token);
+  },
+  // Fraction of second
+  S: function(date6, token) {
+    return lightFormatters.S(date6, token);
+  },
+  // Timezone (ISO-8601. If offset is 0, output is always `'Z'`)
+  X: function(date6, token, _localize) {
+    const timezoneOffset = date6.getTimezoneOffset();
+    if (timezoneOffset === 0) {
+      return "Z";
+    }
+    switch (token) {
+      // Hours and optional minutes
+      case "X":
+        return formatTimezoneWithOptionalMinutes(timezoneOffset);
+      // Hours, minutes and optional seconds without `:` delimiter
+      // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
+      // so this token always has the same output as `XX`
+      case "XXXX":
+      case "XX":
+        return formatTimezone(timezoneOffset);
+      // Hours, minutes and optional seconds with `:` delimiter
+      // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
+      // so this token always has the same output as `XXX`
+      case "XXXXX":
+      case "XXX":
+      // Hours and minutes with `:` delimiter
+      default:
+        return formatTimezone(timezoneOffset, ":");
+    }
+  },
+  // Timezone (ISO-8601. If offset is 0, output is `'+00:00'` or equivalent)
+  x: function(date6, token, _localize) {
+    const timezoneOffset = date6.getTimezoneOffset();
+    switch (token) {
+      // Hours and optional minutes
+      case "x":
+        return formatTimezoneWithOptionalMinutes(timezoneOffset);
+      // Hours, minutes and optional seconds without `:` delimiter
+      // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
+      // so this token always has the same output as `xx`
+      case "xxxx":
+      case "xx":
+        return formatTimezone(timezoneOffset);
+      // Hours, minutes and optional seconds with `:` delimiter
+      // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
+      // so this token always has the same output as `xxx`
+      case "xxxxx":
+      case "xxx":
+      // Hours and minutes with `:` delimiter
+      default:
+        return formatTimezone(timezoneOffset, ":");
+    }
+  },
+  // Timezone (GMT)
+  O: function(date6, token, _localize) {
+    const timezoneOffset = date6.getTimezoneOffset();
+    switch (token) {
+      // Short
+      case "O":
+      case "OO":
+      case "OOO":
+        return "GMT" + formatTimezoneShort(timezoneOffset, ":");
+      // Long
+      case "OOOO":
+      default:
+        return "GMT" + formatTimezone(timezoneOffset, ":");
+    }
+  },
+  // Timezone (specific non-location)
+  z: function(date6, token, _localize) {
+    const timezoneOffset = date6.getTimezoneOffset();
+    switch (token) {
+      // Short
+      case "z":
+      case "zz":
+      case "zzz":
+        return "GMT" + formatTimezoneShort(timezoneOffset, ":");
+      // Long
+      case "zzzz":
+      default:
+        return "GMT" + formatTimezone(timezoneOffset, ":");
+    }
+  },
+  // Seconds timestamp
+  t: function(date6, token, _localize) {
+    const timestamp2 = Math.trunc(+date6 / 1e3);
+    return addLeadingZeros(timestamp2, token.length);
+  },
+  // Milliseconds timestamp
+  T: function(date6, token, _localize) {
+    return addLeadingZeros(+date6, token.length);
+  }
+};
+function formatTimezoneShort(offset, delimiter = "") {
+  const sign2 = offset > 0 ? "-" : "+";
+  const absOffset = Math.abs(offset);
+  const hours = Math.trunc(absOffset / 60);
+  const minutes = absOffset % 60;
+  if (minutes === 0) {
+    return sign2 + String(hours);
+  }
+  return sign2 + String(hours) + delimiter + addLeadingZeros(minutes, 2);
+}
+function formatTimezoneWithOptionalMinutes(offset, delimiter) {
+  if (offset % 60 === 0) {
+    const sign2 = offset > 0 ? "-" : "+";
+    return sign2 + addLeadingZeros(Math.abs(offset) / 60, 2);
+  }
+  return formatTimezone(offset, delimiter);
+}
+function formatTimezone(offset, delimiter = "") {
+  const sign2 = offset > 0 ? "-" : "+";
+  const absOffset = Math.abs(offset);
+  const hours = addLeadingZeros(Math.trunc(absOffset / 60), 2);
+  const minutes = addLeadingZeros(absOffset % 60, 2);
+  return sign2 + hours + delimiter + minutes;
+}
+
+// node_modules/date-fns/_lib/format/longFormatters.js
+var dateLongFormatter = (pattern, formatLong2) => {
+  switch (pattern) {
+    case "P":
+      return formatLong2.date({ width: "short" });
+    case "PP":
+      return formatLong2.date({ width: "medium" });
+    case "PPP":
+      return formatLong2.date({ width: "long" });
+    case "PPPP":
+    default:
+      return formatLong2.date({ width: "full" });
+  }
+};
+var timeLongFormatter = (pattern, formatLong2) => {
+  switch (pattern) {
+    case "p":
+      return formatLong2.time({ width: "short" });
+    case "pp":
+      return formatLong2.time({ width: "medium" });
+    case "ppp":
+      return formatLong2.time({ width: "long" });
+    case "pppp":
+    default:
+      return formatLong2.time({ width: "full" });
+  }
+};
+var dateTimeLongFormatter = (pattern, formatLong2) => {
+  const matchResult = pattern.match(/(P+)(p+)?/) || [];
+  const datePattern = matchResult[1];
+  const timePattern = matchResult[2];
+  if (!timePattern) {
+    return dateLongFormatter(pattern, formatLong2);
+  }
+  let dateTimeFormat;
+  switch (datePattern) {
+    case "P":
+      dateTimeFormat = formatLong2.dateTime({ width: "short" });
+      break;
+    case "PP":
+      dateTimeFormat = formatLong2.dateTime({ width: "medium" });
+      break;
+    case "PPP":
+      dateTimeFormat = formatLong2.dateTime({ width: "long" });
+      break;
+    case "PPPP":
+    default:
+      dateTimeFormat = formatLong2.dateTime({ width: "full" });
+      break;
+  }
+  return dateTimeFormat.replace("{{date}}", dateLongFormatter(datePattern, formatLong2)).replace("{{time}}", timeLongFormatter(timePattern, formatLong2));
+};
+var longFormatters = {
+  p: timeLongFormatter,
+  P: dateTimeLongFormatter
+};
+
+// node_modules/date-fns/_lib/protectedTokens.js
+var dayOfYearTokenRE = /^D+$/;
+var weekYearTokenRE = /^Y+$/;
+var throwTokens = ["D", "DD", "YY", "YYYY"];
+function isProtectedDayOfYearToken(token) {
+  return dayOfYearTokenRE.test(token);
+}
+function isProtectedWeekYearToken(token) {
+  return weekYearTokenRE.test(token);
+}
+function warnOrThrowProtectedError(token, format2, input) {
+  const _message = message2(token, format2, input);
+  console.warn(_message);
+  if (throwTokens.includes(token)) throw new RangeError(_message);
+}
+function message2(token, format2, input) {
+  const subject = token[0] === "Y" ? "years" : "days of the month";
+  return `Use \`${token.toLowerCase()}\` instead of \`${token}\` (in \`${format2}\`) for formatting ${subject} to the input \`${input}\`; see: https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md`;
+}
+
+// node_modules/date-fns/format.js
+var formattingTokensRegExp = /[yYQqMLwIdDecihHKkms]o|(\w)\1*|''|'(''|[^'])+('|$)|./g;
+var longFormattingTokensRegExp = /P+p+|P+|p+|''|'(''|[^'])+('|$)|./g;
+var escapedStringRegExp = /^'([^]*?)'?$/;
+var doubleQuoteRegExp = /''/g;
+var unescapedLatinCharacterRegExp = /[a-zA-Z]/;
+function format(date6, formatStr, options) {
+  const defaultOptions2 = getDefaultOptions();
+  const locale = options?.locale ?? defaultOptions2.locale ?? enUS;
+  const firstWeekContainsDate = options?.firstWeekContainsDate ?? options?.locale?.options?.firstWeekContainsDate ?? defaultOptions2.firstWeekContainsDate ?? defaultOptions2.locale?.options?.firstWeekContainsDate ?? 1;
+  const weekStartsOn = options?.weekStartsOn ?? options?.locale?.options?.weekStartsOn ?? defaultOptions2.weekStartsOn ?? defaultOptions2.locale?.options?.weekStartsOn ?? 0;
+  const originalDate = toDate(date6, options?.in);
+  if (!isValid(originalDate)) {
+    throw new RangeError("Invalid time value");
+  }
+  let parts = formatStr.match(longFormattingTokensRegExp).map((substring) => {
+    const firstCharacter = substring[0];
+    if (firstCharacter === "p" || firstCharacter === "P") {
+      const longFormatter = longFormatters[firstCharacter];
+      return longFormatter(substring, locale.formatLong);
+    }
+    return substring;
+  }).join("").match(formattingTokensRegExp).map((substring) => {
+    if (substring === "''") {
+      return { isToken: false, value: "'" };
+    }
+    const firstCharacter = substring[0];
+    if (firstCharacter === "'") {
+      return { isToken: false, value: cleanEscapedString(substring) };
+    }
+    if (formatters[firstCharacter]) {
+      return { isToken: true, value: substring };
+    }
+    if (firstCharacter.match(unescapedLatinCharacterRegExp)) {
+      throw new RangeError(
+        "Format string contains an unescaped latin alphabet character `" + firstCharacter + "`"
+      );
+    }
+    return { isToken: false, value: substring };
+  });
+  if (locale.localize.preprocessor) {
+    parts = locale.localize.preprocessor(originalDate, parts);
+  }
+  const formatterOptions = {
+    firstWeekContainsDate,
+    weekStartsOn,
+    locale
+  };
+  return parts.map((part) => {
+    if (!part.isToken) return part.value;
+    const token = part.value;
+    if (!options?.useAdditionalWeekYearTokens && isProtectedWeekYearToken(token) || !options?.useAdditionalDayOfYearTokens && isProtectedDayOfYearToken(token)) {
+      warnOrThrowProtectedError(token, formatStr, String(date6));
+    }
+    const formatter = formatters[token[0]];
+    return formatter(originalDate, token, locale.localize, formatterOptions);
+  }).join("");
+}
+function cleanEscapedString(input) {
+  const matched = input.match(escapedStringRegExp);
+  if (!matched) {
+    return input;
+  }
+  return matched[1].replace(doubleQuoteRegExp, "'");
+}
+
+// server/queries/followup.ts
+async function createFollowUpsFromAppointment(appointmentId, salonId) {
+  const db = getDb();
+  const appt = await db.query.appointments.findFirst({
+    where: eq(appointments.id, appointmentId)
+  });
+  if (!appt || appt.status !== "completed") return 0;
+  const doneServiceIds = [
+    appt.serviceId,
+    ...(appt.extraServices ?? []).map((e) => e.id)
+  ];
+  const doneServices = await db.select().from(services).where(
+    and(eq(services.salonId, salonId), inArray(services.id, doneServiceIds))
+  );
+  let created = 0;
+  for (const service of doneServices) {
+    if (!service.followUpDays || service.followUpDays <= 0) continue;
+    const targetServiceId = service.followUpServiceId ?? service.id;
+    const existing = await db.query.clientFollowUps.findFirst({
+      where: and(
+        eq(clientFollowUps.salonId, salonId),
+        eq(clientFollowUps.clientId, appt.clientId),
+        eq(clientFollowUps.serviceId, targetServiceId),
+        inArray(clientFollowUps.status, ["pending", "scheduled"])
+      )
+    });
+    if (existing) continue;
+    const due = addDays(
+      /* @__PURE__ */ new Date(`${appt.appointmentDate}T00:00:00`),
+      service.followUpDays
+    );
+    await db.insert(clientFollowUps).values({
+      salonId,
+      clientId: appt.clientId,
+      professionalId: appt.professionalId,
+      originAppointmentId: appt.id,
+      serviceId: targetServiceId,
+      dueDate: format(due, "yyyy-MM-dd"),
+      status: "pending"
+    });
+    created += 1;
+  }
+  return created;
+}
+async function getPendingFollowUps(salonId) {
+  const db = getDb();
+  const rows = await db.select({
+    id: clientFollowUps.id,
+    clientId: clientFollowUps.clientId,
+    clientName: clients.name,
+    serviceId: clientFollowUps.serviceId,
+    serviceName: services.name,
+    professionalId: clientFollowUps.professionalId,
+    dueDate: clientFollowUps.dueDate,
+    status: clientFollowUps.status
+  }).from(clientFollowUps).innerJoin(clients, eq(clients.id, clientFollowUps.clientId)).leftJoin(services, eq(services.id, clientFollowUps.serviceId)).where(
+    and(
+      eq(clientFollowUps.salonId, salonId),
+      eq(clientFollowUps.status, "pending")
+    )
+  ).orderBy(asc(clientFollowUps.dueDate));
+  return rows.map((r) => ({
+    id: r.id,
+    clientId: r.clientId,
+    clientName: r.clientName,
+    serviceId: r.serviceId,
+    serviceName: r.serviceName ?? "Retorno",
+    professionalId: r.professionalId,
+    dueDate: r.dueDate,
+    status: r.status
+  }));
+}
+async function markFollowUpScheduled(id, salonId, appointmentId) {
+  const db = getDb();
+  await db.update(clientFollowUps).set({ status: "scheduled", scheduledAppointmentId: appointmentId }).where(
+    and(eq(clientFollowUps.id, id), eq(clientFollowUps.salonId, salonId))
+  );
+}
+async function dismissFollowUp(id, salonId) {
+  const db = getDb();
+  await db.update(clientFollowUps).set({ status: "dismissed" }).where(
+    and(eq(clientFollowUps.id, id), eq(clientFollowUps.salonId, salonId))
+  );
+}
 
 // server/appointment-router.ts
 async function buildExtraServicesSnapshot(salonId, ids) {
@@ -87210,6 +88930,13 @@ var appointmentRouter = createRouter({
     if (data.status === "completed") updateData.completedAt = /* @__PURE__ */ new Date();
     if (data.status === "cancelled") updateData.cancelledAt = /* @__PURE__ */ new Date();
     const result = await updateAppointment(id, salonId, updateData);
+    if (data.status === "completed") {
+      try {
+        await createFollowUpsFromAppointment(id, salonId);
+      } catch (e) {
+        console.error("Falha ao criar retornos p\xF3s-atendimento:", e);
+      }
+    }
     await auditAction(
       "update",
       "appointment",
@@ -87783,21 +89510,21 @@ var publicRouter = createRouter({
 });
 
 // server/queries/commission.ts
-function dateConditions(fromDate, toDate) {
+function dateConditions(fromDate, toDate2) {
   const conds = [];
   if (fromDate)
     conds.push(sql`${appointments.appointmentDate} >= ${fromDate}`);
-  if (toDate) conds.push(sql`${appointments.appointmentDate} <= ${toDate}`);
+  if (toDate2) conds.push(sql`${appointments.appointmentDate} <= ${toDate2}`);
   return conds;
 }
-function paymentDateConditions(fromDate, toDate) {
+function paymentDateConditions(fromDate, toDate2) {
   const conds = [];
   if (fromDate)
     conds.push(sql`${professionalPayments.paidAt} >= ${fromDate}`);
-  if (toDate) conds.push(sql`${professionalPayments.paidAt} <= ${toDate}`);
+  if (toDate2) conds.push(sql`${professionalPayments.paidAt} <= ${toDate2}`);
   return conds;
 }
-async function getCommissionSummary(salonId, professionalId, fromDate, toDate) {
+async function getCommissionSummary(salonId, professionalId, fromDate, toDate2) {
   const db = getDb();
   const proBase = [eq(professionals.salonId, salonId)];
   if (professionalId) proBase.push(eq(professionals.id, professionalId));
@@ -87808,7 +89535,7 @@ async function getCommissionSummary(salonId, professionalId, fromDate, toDate) {
   ];
   if (professionalId)
     apptBase.push(eq(appointments.professionalId, professionalId));
-  const apptConditions = [...apptBase, ...dateConditions(fromDate, toDate)];
+  const apptConditions = [...apptBase, ...dateConditions(fromDate, toDate2)];
   const apptRows = await db.select({
     id: appointments.id,
     professionalId: appointments.professionalId,
@@ -87823,7 +89550,7 @@ async function getCommissionSummary(salonId, professionalId, fromDate, toDate) {
   const payBase = [eq(professionalPayments.salonId, salonId)];
   if (professionalId)
     payBase.push(eq(professionalPayments.professionalId, professionalId));
-  const payConditions = [...payBase, ...paymentDateConditions(fromDate, toDate)];
+  const payConditions = [...payBase, ...paymentDateConditions(fromDate, toDate2)];
   const payments = await db.select({
     professionalId: professionalPayments.professionalId,
     amount: professionalPayments.amount
@@ -87854,7 +89581,7 @@ async function getCommissionSummary(salonId, professionalId, fromDate, toDate) {
     };
   });
 }
-async function getCommissionPerformance(salonId, professionalId, fromDate, toDate) {
+async function getCommissionPerformance(salonId, professionalId, fromDate, toDate2) {
   const db = getDb();
   const pro = await db.query.professionals.findFirst({
     where: and(
@@ -87888,7 +89615,7 @@ async function getCommissionPerformance(salonId, professionalId, fromDate, toDat
       eq(appointments.professionalId, professionalId),
       eq(appointments.status, "completed"),
       sql`${appointments.appointmentDate} >= ${fromDate}`,
-      sql`${appointments.appointmentDate} <= ${toDate}`
+      sql`${appointments.appointmentDate} <= ${toDate2}`
     )
   ).orderBy(appointments.appointmentDate, appointments.startTime);
   return {
@@ -88042,6 +89769,48 @@ var commissionRouter = createRouter({
   })
 });
 
+// server/followup-router.ts
+var followupRouter = createRouter({
+  list: authedQuery.input(external_exports.object({ salonId: external_exports.number() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getPendingFollowUps(input.salonId);
+  }),
+  schedule: authedQuery.input(
+    external_exports.object({
+      id: external_exports.number(),
+      salonId: external_exports.number(),
+      appointmentId: external_exports.number()
+    })
+  ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    await markFollowUpScheduled(input.id, input.salonId, input.appointmentId);
+    await auditAction(
+      "update",
+      "client_follow_up",
+      input.salonId,
+      ctx.user?.id,
+      input.id,
+      void 0,
+      { status: "scheduled", appointmentId: input.appointmentId }
+    );
+    return { success: true };
+  }),
+  dismiss: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    await dismissFollowUp(input.id, input.salonId);
+    await auditAction(
+      "update",
+      "client_follow_up",
+      input.salonId,
+      ctx.user?.id,
+      input.id,
+      void 0,
+      { status: "dismissed" }
+    );
+    return { success: true };
+  })
+});
+
 // server/router.ts
 var appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
@@ -88054,6 +89823,7 @@ var appRouter = createRouter({
   appointment: appointmentRouter,
   financial: financialRouter,
   commission: commissionRouter,
+  followup: followupRouter,
   communication: communicationRouter,
   consent: consentRouter,
   dashboard: dashboardRouter
