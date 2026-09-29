@@ -43,6 +43,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 ### Banco de dados
 - **Schema:** usar migrations em `supabase/migrations/NNN-descricao.sql`. Nunca editar `schema_safe.sql` manualmente — ele é gerado juntando as migrations.
 - Comentar **data + descrição** no topo de cada migration
+- **Aplicar migrations: o Kimi aplica direto no banco** (script local Node com `postgres.js` + `DATABASE_URL` do `.env`, nunca impressa) e verifica o resultado. **Não pedir pro David rodar SQL no Supabase** — avisar ele apenas do que foi aplicado (precedente: migrations 007, 009 e 010 aplicadas assim)
 - **SENHA do PostgreSQL: nunca usar caracteres especiais que quebram a URL** (`!`, `@`, `#`, `$`, `%`, `&`, etc.)
   - Se a senha já existir com caracteres especiais, codificar com `encodeURIComponent()` antes de montar a `DATABASE_URL`
   - Exemplo de senha segura: `Studio2026SeguroXYZ` (apenas letras e números)

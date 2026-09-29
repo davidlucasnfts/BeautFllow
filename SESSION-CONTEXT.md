@@ -221,8 +221,8 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [x] Rodar migration 005-rls-salons.sql no Supabase (SQL Editor) — fecha lacuna: tabela `salons` estava sem RLS. App não é afetado (backend acessa como owner), mas testar o fluxo local depois
 - [ ] Apagar usuário de teste `teste.kimi.2026@gmail.com` na tabela `local_users` do Supabase (opcional)
 - [x] Rodar migration 007-client-segment-manual.sql no Supabase — **aplicada pelo Kimi direto no banco em 09/09** (coluna `segmentManual` na tabela `clients`). Sem ela, listagem e cadastro de clientes quebravam com erro 500
-- [ ] **Rodar migration 010-professional-payments.sql no Supabase** (SQL Editor → colar o conteúdo do arquivo → Run) — cria a tabela `professional_payments`. Sem ela, a aba Comissões e a aba Desempenho não funcionam
-- [x] Rodar migration 009-appointment-extra-services.sql no Supabase — cria a coluna `extraServices` em `appointments`. Sem ela, criar/concluir agendamento dá erro após este deploy
+- [x] Rodar migration 009-appointment-extra-services.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (coluna `extraServices` em `appointments` verificada)
+- [x] Rodar migration 010-professional-payments.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (tabela `professional_payments` verificada)
 
 ---
 
