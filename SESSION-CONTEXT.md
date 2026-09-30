@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
 > **Atualizado em:** 30/09/2026
-> **Sessão atual:** Fila de melhorias do David em execução — feitos: isolamento por salão (LGPD), busca de cliente, múltiplos serviços por atendimento, comissões/desempenho e retorno programado pós-procedimento. Próximos: estoque (item 4), controle de acessos (item 3)
+> **Sessão atual:** Fila de melhorias do David em execução — feitos: isolamento por salão (LGPD), busca de cliente, múltiplos serviços por atendimento, comissões/desempenho, retorno programado pós-procedimento e estoque de produtos (item 4). Próximo: controle de acessos (item 3)
 
 ---
 
@@ -11,7 +11,17 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 ---
 
 ## Última funcionalidade trabalhada
-**Retorno programado pós-procedimento (item 2 da lista do David)** — 29/09
+**Estoque de produtos — aba "Produtos" (item 4 da lista do David)** — 30/09 (commit `0a9d632`)
+
+### O que mudou (30/09 — item 4):
+- **Banco:** tabelas `products` (nome, unidade livre, quantidade, mínimo, custo, ativo) e `stock_movements` (produto, tipo in/out, quantidade, motivo, data automática); enum `stock_movement_type`. Migration `012-estoque-produtos.sql` — **aplicada pelo Kimi direto no banco**, com RLS + policies de isolamento por tenant (padrão da 002)
+- **Backend:** novo router `product` (`product-router.ts`) registrado no `appRouter`: list (com inativos), summary (total investido, ativos, estoque baixo), create, update, reactivate, delete, movement, movements. Todas as procedures com `assertSalonMember` na 1ª linha + Zod + audit log. Saldo aplicado **atomicamente em transação Drizzle** (`db.transaction`) dentro de `createStockMovement` — saída nunca deixa saldo negativo (erro claro em pt-BR). Queries em `server/queries/product.ts`; lógica pura em `server/lib/stock.ts` com 6 testes unitários
+- **Exclusão:** sem movimentações = exclusão física; com movimentações = inativa (soft delete, histórico preservado) — com AlertDialog de confirmação citando o nome e explicando o comportamento
+- **Frontend:** nova página `/products` + item "Produtos" no menu lateral (após Profissionais, ícone `Package`). Resumo no topo: Total investido / Produtos ativos / Estoque baixo. Tabela padrão no desktop e lista estilo Fila do Dia no mobile (padrão Financeiro): ações sempre visíveis empilhadas (Editar azul, Entrada verde, Saída âmbar, Histórico slate, Excluir vermelho), badge "Baixo" quando quantidade <= mínimo, badge Ativo/Inativo, hover azul. Dialogs de cadastro, movimentação e histórico com header/footer fixos (regra do Modal/Dialog). Componentes em `src/components/products/`
+- **Campos:** estoque mínimo/quantidade usam máscara nova `maskQuantity` (até 3 casas decimais, ex.: "250,750") em `input-masks.ts`; saldo inicial do produto sempre 0 — entrada só via movimentação
+- Check + 92 testes (86 existentes + 6 novos) + build OK; roundtrip real no banco validado (criação, entrada/saída transacional, trava de saldo negativo, resumo/histórico)
+
+### Histórico — retorno programado pós-procedimento (item 2 da lista do David)** — 29/09
 
 ### O que mudou (29/09 — item 2):
 - **Banco:** `services` ganha `followUpDays` + `followUpServiceId`; nova tabela `client_follow_ups` (migration `011-client-follow-ups.sql` — **aplicada pelo Kimi direto no banco**). Enum `follow_up_status` (pending/scheduled/dismissed)
@@ -31,8 +41,8 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 2. ✅ Busca de cliente (combobox) — deployado (`b1c82d2`)
 3. ✅ Multi-serviço por atendimento — deployado (`e02ec64`)
 4. ✅ Comissões/pagamentos de funcionários + desempenho por profissional — deployado (`b2d4f52`)
-5. ✅ Retorno programado pós-procedimento — esta entrada
-6. ⏳ Item 4: estoque de produtos (aba "Produtos")
+5. ✅ Retorno programado pós-procedimento — deployado (ver histórico)
+6. ✅ Estoque de produtos (aba "Produtos") — deployado (`0a9d632`)
 7. ⏳ Item 3: controle de acessos (roles `owner/admin/professional/receptionist` já existem em `salonUsers`; falta tela de convite + limite por plano Free=1/Essencial=3/Pro=8)
 8. ⏳ Landings por segmento: mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/barbearia`, `/salao-de-beleza`, `/estetica` (segurado até terminar a fila)
 
@@ -229,6 +239,7 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [x] Rodar migration 009-appointment-extra-services.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (coluna `extraServices` em `appointments` verificada)
 - [x] Rodar migration 010-professional-payments.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (tabela `professional_payments` verificada)
 - [x] Rodar migration 011-client-follow-ups.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (tabela `client_follow_ups`, colunas `followUpDays`/`followUpServiceId` e enum `follow_up_status` verificados)
+- [x] Rodar migration 012-estoque-produtos.sql no Supabase — **aplicada pelo Kimi direto no banco em 30/09** (tabelas `products`/`stock_movements`, enum `stock_movement_type` e policies RLS verificados)
 
 ---
 
