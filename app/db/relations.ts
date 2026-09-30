@@ -11,6 +11,8 @@ import {
   consentSignatures,
   communications,
   financialRecords,
+  products,
+  stockMovements,
 } from "./schema";
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -26,6 +28,8 @@ export const salonsRelations = relations(salons, ({ many }) => ({
   consentForms: many(consentForms),
   communications: many(communications),
   financialRecords: many(financialRecords),
+  products: many(products),
+  stockMovements: many(stockMovements),
 }));
 
 export const salonUsersRelations = relations(salonUsers, ({ one }) => ({
@@ -144,6 +148,25 @@ export const financialRecordsRelations = relations(
     appointment: one(appointments, {
       fields: [financialRecords.appointmentId],
       references: [appointments.id],
+    }),
+  })
+);
+
+export const productsRelations = relations(products, ({ one, many }) => ({
+  salon: one(salons, { fields: [products.salonId], references: [salons.id] }),
+  stockMovements: many(stockMovements),
+}));
+
+export const stockMovementsRelations = relations(
+  stockMovements,
+  ({ one }) => ({
+    salon: one(salons, {
+      fields: [stockMovements.salonId],
+      references: [salons.id],
+    }),
+    product: one(products, {
+      fields: [stockMovements.productId],
+      references: [products.id],
     }),
   })
 );

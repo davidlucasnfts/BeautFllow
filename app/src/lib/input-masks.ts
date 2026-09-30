@@ -122,3 +122,25 @@ export function maskSlug(value: string): string {
     .replace(/^-+|-+$/g, "")
     .slice(0, 50);
 }
+
+/** Máscara de quantidade de estoque: dígitos com até 3 casas decimais
+ *  (ex.: "12", "2,5", "250,750"). Máx. 7 dígitos inteiros. */
+export function maskQuantity(value: string): string {
+  const cleaned = value.replace(/[^\d,]/g, "").slice(0, 11);
+  const parts = cleaned.split(",");
+  const intPart = (parts[0] ?? "").slice(0, 7);
+  if (parts.length === 1) return intPart;
+  return `${intPart},${parts.slice(1).join("").slice(0, 3)}`;
+}
+
+/** Converte "12,5" (tela) → "12.5" (banco). */
+export function quantityToDot(value: string): string {
+  return value.replace(",", ".");
+}
+
+/** Converte "12.500" (banco, NUMERIC(10,3)) → "12,5" (tela, sem zeros à direita). */
+export function quantityDotToBR(value: string | number): string {
+  const n = Number(value);
+  if (Number.isNaN(n)) return "";
+  return String(Number(n.toFixed(3))).replace(".", ",");
+}

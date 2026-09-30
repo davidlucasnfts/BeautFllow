@@ -85235,6 +85235,7 @@ __export(schema_exports, {
   passwordResetTokens: () => passwordResetTokens,
   paymentMethodEnum: () => paymentMethodEnum,
   planEnum: () => planEnum,
+  products: () => products,
   professionalPayments: () => professionalPayments,
   professionals: () => professionals,
   recordTypeEnum: () => recordTypeEnum,
@@ -85243,6 +85244,8 @@ __export(schema_exports, {
   salonUsers: () => salonUsers,
   salons: () => salons,
   services: () => services,
+  stockMovementTypeEnum: () => stockMovementTypeEnum,
+  stockMovements: () => stockMovements,
   userRoleEnum: () => userRoleEnum,
   users: () => users
 });
@@ -85627,6 +85630,48 @@ var consentSignatures = pgTable(
     formIdx: index("consent_signatures_form_idx").on(table.formId)
   })
 );
+var stockMovementTypeEnum = pgEnum("stock_movement_type", [
+  "in",
+  "out"
+]);
+var products = pgTable(
+  "products",
+  {
+    id: serial("id").primaryKey(),
+    salonId: bigint4("salonId", { mode: "number" }).notNull(),
+    name: varchar("name", { length: 255 }).notNull(),
+    /** unidade livre: "un", "ml", "g", "frasco"... */
+    unit: varchar("unit", { length: 20 }).notNull().default("un"),
+    /** saldo atual — só muda via movimentações (nunca direto pelo front) */
+    quantity: decimal("quantity", { precision: 10, scale: 3 }).notNull().default("0.000"),
+    /** alerta de estoque baixo quando quantity <= minQuantity */
+    minQuantity: decimal("minQuantity", { precision: 10, scale: 3 }).notNull().default("0.000"),
+    costPrice: decimal("costPrice", { precision: 10, scale: 2 }).notNull().default("0.00"),
+    isActive: boolean4("isActive").default(true).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().notNull().$onUpdate(() => /* @__PURE__ */ new Date())
+  },
+  (table) => ({
+    salonIdx: index("products_salon_idx").on(table.salonId)
+  })
+);
+var stockMovements = pgTable(
+  "stock_movements",
+  {
+    id: serial("id").primaryKey(),
+    salonId: bigint4("salonId", { mode: "number" }).notNull(),
+    productId: bigint4("productId", { mode: "number" }).notNull(),
+    type: stockMovementTypeEnum("type").notNull(),
+    quantity: decimal("quantity", { precision: 10, scale: 3 }).notNull(),
+    /** motivo/observação opcional (compra, reposição, uso interno...) */
+    reason: text("reason"),
+    createdAt: timestamp("createdAt").defaultNow().notNull()
+  },
+  (table) => ({
+    salonIdx: index("stock_movements_salon_idx").on(table.salonId),
+    productIdx: index("stock_movements_product_idx").on(table.productId)
+  })
+);
 var auditLogs = pgTable(
   "audit_logs",
   {
@@ -85656,10 +85701,12 @@ __export(relations_exports, {
   consentFormsRelations: () => consentFormsRelations,
   consentSignaturesRelations: () => consentSignaturesRelations,
   financialRecordsRelations: () => financialRecordsRelations,
+  productsRelations: () => productsRelations,
   professionalsRelations: () => professionalsRelations,
   salonUsersRelations: () => salonUsersRelations,
   salonsRelations: () => salonsRelations,
   servicesRelations: () => servicesRelations,
+  stockMovementsRelations: () => stockMovementsRelations,
   usersRelations: () => usersRelations
 });
 var usersRelations = relations(users, ({ many }) => ({
@@ -85673,7 +85720,9 @@ var salonsRelations = relations(salons, ({ many }) => ({
   appointments: many(appointments),
   consentForms: many(consentForms),
   communications: many(communications),
-  financialRecords: many(financialRecords)
+  financialRecords: many(financialRecords),
+  products: many(products),
+  stockMovements: many(stockMovements)
 }));
 var salonUsersRelations = relations(salonUsers, ({ one }) => ({
   user: one(users, { fields: [salonUsers.userId], references: [users.id] }),
@@ -85783,6 +85832,23 @@ var financialRecordsRelations = relations(
     appointment: one(appointments, {
       fields: [financialRecords.appointmentId],
       references: [appointments.id]
+    })
+  })
+);
+var productsRelations = relations(products, ({ one, many }) => ({
+  salon: one(salons, { fields: [products.salonId], references: [salons.id] }),
+  stockMovements: many(stockMovements)
+}));
+var stockMovementsRelations = relations(
+  stockMovements,
+  ({ one }) => ({
+    salon: one(salons, {
+      fields: [stockMovements.salonId],
+      references: [salons.id]
+    }),
+    product: one(products, {
+      fields: [stockMovements.productId],
+      references: [products.id]
     })
   })
 );
@@ -89835,6 +89901,259 @@ var followupRouter = createRouter({
   })
 });
 
+// server/lib/stock.ts
+function applyMovement(current, type, quantity) {
+  const delta = type === "in" ? quantity : -quantity;
+  return Math.round((current + delta) * 1e3) / 1e3;
+}
+
+// server/queries/product.ts
+async function createProduct(data) {
+  const db = getDb();
+  const [{ id }] = await db.insert(products).values(data).returning();
+  return db.query.products.findFirst({ where: eq(products.id, id) });
+}
+async function getProductsBySalon(salonId, includeInactive = false) {
+  return getDb().select().from(products).where(
+    includeInactive ? eq(products.salonId, salonId) : and(eq(products.salonId, salonId), eq(products.isActive, true))
+  ).orderBy(products.name);
+}
+async function getProductById(id, salonId) {
+  return getDb().query.products.findFirst({
+    where: and(eq(products.id, id), eq(products.salonId, salonId))
+  });
+}
+async function updateProduct(id, salonId, data) {
+  await getDb().update(products).set(data).where(and(eq(products.id, id), eq(products.salonId, salonId)));
+  return getProductById(id, salonId);
+}
+async function deleteProduct(id, salonId) {
+  await getDb().delete(products).where(and(eq(products.id, id), eq(products.salonId, salonId)));
+}
+async function deactivateProduct(id, salonId) {
+  await getDb().update(products).set({ isActive: false }).where(and(eq(products.id, id), eq(products.salonId, salonId)));
+}
+async function reactivateProduct(id, salonId) {
+  await getDb().update(products).set({ isActive: true }).where(and(eq(products.id, id), eq(products.salonId, salonId)));
+}
+async function getProductsSummary(salonId) {
+  const [row] = await getDb().select({
+    totalInvested: sql`COALESCE(SUM(${products.quantity} * ${products.costPrice}), 0)`,
+    activeCount: sql`COUNT(*) FILTER (WHERE ${products.isActive} = true)`,
+    lowStockCount: sql`COUNT(*) FILTER (WHERE ${products.isActive} = true AND ${products.quantity} <= ${products.minQuantity})`
+  }).from(products).where(eq(products.salonId, salonId));
+  return {
+    totalInvested: Number(row?.totalInvested ?? 0),
+    activeCount: Number(row?.activeCount ?? 0),
+    lowStockCount: Number(row?.lowStockCount ?? 0)
+  };
+}
+async function countMovementsByProduct(productId, salonId) {
+  const [row] = await getDb().select({ count: sql`COUNT(*)` }).from(stockMovements).where(
+    and(
+      eq(stockMovements.productId, productId),
+      eq(stockMovements.salonId, salonId)
+    )
+  );
+  return Number(row?.count ?? 0);
+}
+async function createStockMovement(data) {
+  const db = getDb();
+  return db.transaction(async (tx) => {
+    const product = await tx.query.products.findFirst({
+      where: and(
+        eq(products.id, data.productId),
+        eq(products.salonId, data.salonId)
+      )
+    });
+    if (!product) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Produto n\xE3o encontrado."
+      });
+    }
+    const next = applyMovement(
+      Number(product.quantity),
+      data.type,
+      Number(data.quantity)
+    );
+    if (next < 0) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: `Saldo insuficiente: ${Number(product.quantity)} ${product.unit} em estoque.`
+      });
+    }
+    await tx.update(products).set({ quantity: next.toFixed(3) }).where(eq(products.id, product.id));
+    const [{ id }] = await tx.insert(stockMovements).values(data).returning();
+    return tx.query.stockMovements.findFirst({ where: eq(stockMovements.id, id) });
+  });
+}
+async function getMovementsByProduct(productId, salonId) {
+  return getDb().select({
+    id: stockMovements.id,
+    type: stockMovements.type,
+    quantity: stockMovements.quantity,
+    reason: stockMovements.reason,
+    // timestamp gravado em UTC — formatar no servidor com o fuso do Brasil
+    createdAt: sql`TO_CHAR(${stockMovements.createdAt} AT TIME ZONE 'America/Sao_Paulo', 'DD/MM/YYYY HH24:MI')`
+  }).from(stockMovements).where(
+    and(
+      eq(stockMovements.productId, productId),
+      eq(stockMovements.salonId, salonId)
+    )
+  ).orderBy(desc(stockMovements.createdAt)).limit(100);
+}
+
+// server/product-router.ts
+var productRouter = createRouter({
+  list: authedQuery.input(
+    external_exports.object({
+      salonId: external_exports.number(),
+      /** true = traz também inativos (excluídos logicamente) */
+      includeInactive: external_exports.boolean().default(false)
+    })
+  ).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getProductsBySalon(input.salonId, input.includeInactive);
+  }),
+  summary: authedQuery.input(external_exports.object({ salonId: external_exports.number() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getProductsSummary(input.salonId);
+  }),
+  byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getProductById(input.id, input.salonId);
+  }),
+  create: authedQuery.input(
+    external_exports.object({
+      salonId: external_exports.number(),
+      name: external_exports.string().min(1).max(255),
+      unit: external_exports.string().min(1).max(20).default("un"),
+      minQuantity: external_exports.string().or(external_exports.number()).default("0"),
+      costPrice: external_exports.string().or(external_exports.number()).default("0")
+    })
+  ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    const { salonId, minQuantity, costPrice, ...data } = input;
+    const result = await createProduct({
+      salonId,
+      ...data,
+      quantity: "0.000",
+      minQuantity: String(minQuantity),
+      costPrice: String(costPrice)
+    });
+    await auditAction(
+      "create",
+      "product",
+      salonId,
+      ctx.user?.id,
+      result?.id ?? void 0,
+      void 0,
+      { name: data.name }
+    );
+    return result;
+  }),
+  update: authedQuery.input(
+    external_exports.object({
+      id: external_exports.number(),
+      salonId: external_exports.number(),
+      name: external_exports.string().min(1).max(255).optional(),
+      unit: external_exports.string().min(1).max(20).optional(),
+      minQuantity: external_exports.string().or(external_exports.number()).optional(),
+      costPrice: external_exports.string().or(external_exports.number()).optional()
+    })
+  ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    const { id, salonId, minQuantity, costPrice, ...data } = input;
+    const result = await updateProduct(id, salonId, {
+      ...data,
+      ...minQuantity !== void 0 ? { minQuantity: String(minQuantity) } : {},
+      ...costPrice !== void 0 ? { costPrice: String(costPrice) } : {}
+    });
+    await auditAction("update", "product", salonId, ctx.user?.id, id, void 0, {
+      ...data,
+      ...minQuantity !== void 0 ? { minQuantity } : {},
+      ...costPrice !== void 0 ? { costPrice } : {}
+    });
+    return result;
+  }),
+  /** Sem movimentações = exclusão física; com movimentações = inativa (soft delete) */
+  delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    const movements = await countMovementsByProduct(input.id, input.salonId);
+    if (movements > 0) {
+      await deactivateProduct(input.id, input.salonId);
+    } else {
+      await deleteProduct(input.id, input.salonId);
+    }
+    await auditAction(
+      "delete",
+      "product",
+      input.salonId,
+      ctx.user?.id,
+      input.id,
+      void 0,
+      { mode: movements > 0 ? "soft" : "physical" }
+    );
+    return { success: true, softDeleted: movements > 0 };
+  }),
+  reactivate: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    await reactivateProduct(input.id, input.salonId);
+    await auditAction(
+      "update",
+      "product",
+      input.salonId,
+      ctx.user?.id,
+      input.id,
+      void 0,
+      { reactivated: true }
+    );
+    return { success: true };
+  }),
+  /** Cria movimentação e aplica o saldo transacionalmente (nunca negativo) */
+  movement: authedQuery.input(
+    external_exports.object({
+      salonId: external_exports.number(),
+      productId: external_exports.number(),
+      type: external_exports.enum(["in", "out"]),
+      quantity: external_exports.string().or(external_exports.number()),
+      reason: external_exports.string().max(500).optional()
+    })
+  ).mutation(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    const { salonId, productId, type, quantity, reason } = input;
+    const qty = Number(quantity);
+    if (!Number.isFinite(qty) || qty <= 0) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Quantidade deve ser maior que zero."
+      });
+    }
+    const result = await createStockMovement({
+      salonId,
+      productId,
+      type,
+      quantity: qty.toFixed(3),
+      reason: reason?.trim() ? reason.trim() : null
+    });
+    await auditAction(
+      "create",
+      "stock_movement",
+      salonId,
+      ctx.user?.id,
+      result?.id ?? void 0,
+      void 0,
+      { productId, type, quantity: qty, reason: reason ?? null }
+    );
+    return result;
+  }),
+  movements: authedQuery.input(external_exports.object({ productId: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
+    await assertSalonMember(ctx.user.id, input.salonId);
+    return getMovementsByProduct(input.productId, input.salonId);
+  })
+});
+
 // server/router.ts
 var appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
@@ -89848,6 +90167,7 @@ var appRouter = createRouter({
   financial: financialRouter,
   commission: commissionRouter,
   followup: followupRouter,
+  product: productRouter,
   communication: communicationRouter,
   consent: consentRouter,
   dashboard: dashboardRouter

@@ -548,6 +548,72 @@ export type ConsentSignature = typeof consentSignatures.$inferSelect;
 export type InsertConsentSignature = typeof consentSignatures.$inferInsert;
 
 // ==========================================
+// Products (Estoque de produtos de uso interno)
+// ==========================================
+export const stockMovementTypeEnum = pgEnum("stock_movement_type", [
+  "in",
+  "out",
+]);
+
+export const products = pgTable(
+  "products",
+  {
+    id: serial("id").primaryKey(),
+    salonId: bigint("salonId", { mode: "number" }).notNull(),
+    name: varchar("name", { length: 255 }).notNull(),
+    /** unidade livre: "un", "ml", "g", "frasco"... */
+    unit: varchar("unit", { length: 20 }).notNull().default("un"),
+    /** saldo atual — só muda via movimentações (nunca direto pelo front) */
+    quantity: decimal("quantity", { precision: 10, scale: 3 })
+      .notNull()
+      .default("0.000"),
+    /** alerta de estoque baixo quando quantity <= minQuantity */
+    minQuantity: decimal("minQuantity", { precision: 10, scale: 3 })
+      .notNull()
+      .default("0.000"),
+    costPrice: decimal("costPrice", { precision: 10, scale: 2 })
+      .notNull()
+      .default("0.00"),
+    isActive: boolean("isActive").default(true).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt")
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  table => ({
+    salonIdx: index("products_salon_idx").on(table.salonId),
+  })
+);
+
+export type Product = typeof products.$inferSelect;
+export type InsertProduct = typeof products.$inferInsert;
+
+// ==========================================
+// Stock Movements (entrada/saída — saldo é aplicado transacionalmente)
+// ==========================================
+export const stockMovements = pgTable(
+  "stock_movements",
+  {
+    id: serial("id").primaryKey(),
+    salonId: bigint("salonId", { mode: "number" }).notNull(),
+    productId: bigint("productId", { mode: "number" }).notNull(),
+    type: stockMovementTypeEnum("type").notNull(),
+    quantity: decimal("quantity", { precision: 10, scale: 3 }).notNull(),
+    /** motivo/observação opcional (compra, reposição, uso interno...) */
+    reason: text("reason"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => ({
+    salonIdx: index("stock_movements_salon_idx").on(table.salonId),
+    productIdx: index("stock_movements_product_idx").on(table.productId),
+  })
+);
+
+export type StockMovement = typeof stockMovements.$inferSelect;
+export type InsertStockMovement = typeof stockMovements.$inferInsert;
+
+// ==========================================
 // Audit Logs
 // ==========================================
 export const auditLogs = pgTable(

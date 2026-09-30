@@ -8,6 +8,7 @@ import Appointments from "./pages/Appointments";
 import Services from "./pages/Services";
 import Professionals from "./pages/Professionals";
 import Financial from "./pages/Financial";
+import Products from "./pages/Products";
 import Communications from "./pages/Communications";
 import Consent from "./pages/Consent";
 import Settings from "./pages/Settings";
@@ -61,6 +62,14 @@ export default function App() {
         element={
           <AuthLayout>
             <Professionals />
+          </AuthLayout>
+        }
+      />
+      <Route
+        path="/products"
+        element={
+          <AuthLayout>
+            <Products />
           </AuthLayout>
         }
       />
