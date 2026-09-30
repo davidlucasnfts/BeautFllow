@@ -86,6 +86,13 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Profissionais padrão design system: ficha expansível, desativar/reativar (soft delete, endpoints `professional.delete`/`professional.reactivate` + audit), busca, ícone correto no campo bio, input de horários de trabalho | 19/09 |
 | Comunicação: reenviar (form pré-preenchido) / excluir mensagem (endpoint `communication.delete` + audit), ficha expansível com conteúdo, cards de marketing reduzidos a 1 hint | 19/09 |
 | Login/Cadastro: ícone nos botões principais + toast de sucesso após criar conta | 19/09 |
+| Trava de isolamento por salão: `assertSalonMember/Admin` na 1ª linha de todos os resolvers + limpeza do salão ativo na troca de conta (LGPD) | 26/09 |
+| Campo de cliente com busca (combobox) em agendamento, financeiro e mensagens | 26/09 |
+| Múltiplos serviços por atendimento (serviço principal + extras) | 26/09 |
+| Comissões/pagamentos de funcionários + desempenho por profissional (itens 1+5 da fila) | 29/09 |
+| Retorno programado pós-procedimento: `client_follow_ups`, dias/serviço sugerido por serviço, card no dashboard com Agendar/Dispensar (migration 011) | 29/09 |
+| Dialogs com cabeçalho/rodapé fixos (9 telas): ação principal nunca escondida; cancelar agendamento apaga retorno vinculado; vencimento do retorno pela data de conclusão | 30/09 |
+| Estoque de produtos: aba "Produtos" com cadastro, entradas/saídas transacionais (sem saldo negativo), alerta de estoque baixo, histórico e resumo investido (migration 012) | 30/09 |
 
 ---
 
