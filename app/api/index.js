@@ -88692,6 +88692,14 @@ function cleanEscapedString(input) {
 }
 
 // server/queries/followup.ts
+function brDateString(d) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(d);
+}
 async function createFollowUpsFromAppointment(appointmentId, salonId) {
   const db = getDb();
   const appt = await db.query.appointments.findFirst({
@@ -88718,8 +88726,9 @@ async function createFollowUpsFromAppointment(appointmentId, salonId) {
       )
     });
     if (existing) continue;
+    const baseDate = appt.completedAt ? brDateString(appt.completedAt) : appt.appointmentDate;
     const due = addDays(
-      /* @__PURE__ */ new Date(`${appt.appointmentDate}T00:00:00`),
+      /* @__PURE__ */ new Date(`${baseDate}T00:00:00`),
       service.followUpDays
     );
     await db.insert(clientFollowUps).values({
@@ -88773,6 +88782,18 @@ async function dismissFollowUp(id, salonId) {
   const db = getDb();
   await db.update(clientFollowUps).set({ status: "dismissed" }).where(
     and(eq(clientFollowUps.id, id), eq(clientFollowUps.salonId, salonId))
+  );
+}
+async function deleteFollowUpsForCancelledAppointment(appointmentId, salonId) {
+  const db = getDb();
+  await db.delete(clientFollowUps).where(
+    and(
+      eq(clientFollowUps.salonId, salonId),
+      or(
+        eq(clientFollowUps.scheduledAppointmentId, appointmentId),
+        eq(clientFollowUps.originAppointmentId, appointmentId)
+      )
+    )
   );
 }
 
@@ -88936,6 +88957,9 @@ var appointmentRouter = createRouter({
       } catch (e) {
         console.error("Falha ao criar retornos p\xF3s-atendimento:", e);
       }
+    }
+    if (data.status === "cancelled") {
+      await deleteFollowUpsForCancelledAppointment(id, salonId);
     }
     await auditAction(
       "update",

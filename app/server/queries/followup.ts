@@ -1,4 +1,4 @@
-import { eq, and, inArray, asc } from "drizzle-orm";
+import { eq, and, or, inArray, asc } from "drizzle-orm";
 import { addDays, format } from "date-fns";
 import { getDb } from "./connection";
 import {
@@ -7,6 +7,16 @@ import {
   clients,
   clientFollowUps,
 } from "@db/schema";
+
+/** Data (yyyy-MM-dd) no fuso de Brasília — datas de negócio seguem o BR */
+function brDateString(d: Date): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(d);
+}
 
 export type PendingFollowUp = {
   id: number;
@@ -62,9 +72,13 @@ export async function createFollowUpsFromAppointment(
     });
     if (existing) continue;
 
-    // appointmentDate vem como "yyyy-MM-dd" — somar dias sem mexer em fuso
+    // vencimento = data da CONCLUSÃO do atendimento (não a data agendada)
+    // + dias configurados; data em fuso de Brasília
+    const baseDate = appt.completedAt
+      ? brDateString(appt.completedAt)
+      : appt.appointmentDate;
     const due = addDays(
-      new Date(`${appt.appointmentDate}T00:00:00`),
+      new Date(`${baseDate}T00:00:00`),
       service.followUpDays
     );
     await db.insert(clientFollowUps).values({
@@ -142,5 +156,28 @@ export async function dismissFollowUp(id: number, salonId: number) {
     .set({ status: "dismissed" })
     .where(
       and(eq(clientFollowUps.id, id), eq(clientFollowUps.salonId, salonId))
+    );
+}
+
+/**
+ * Agendamento cancelado → o retorno vinculado deixa de existir.
+ * Cobre os dois vínculos: retorno agendado a partir dele
+ * (scheduledAppointmentId) e retorno gerado por ele (originAppointmentId).
+ */
+export async function deleteFollowUpsForCancelledAppointment(
+  appointmentId: number,
+  salonId: number
+) {
+  const db = getDb();
+  await db
+    .delete(clientFollowUps)
+    .where(
+      and(
+        eq(clientFollowUps.salonId, salonId),
+        or(
+          eq(clientFollowUps.scheduledAppointmentId, appointmentId),
+          eq(clientFollowUps.originAppointmentId, appointmentId)
+        )
+      )
     );
 }

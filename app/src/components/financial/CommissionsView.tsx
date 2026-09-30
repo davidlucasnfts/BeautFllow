@@ -301,56 +301,61 @@ function PaymentDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
+      <DialogContent className="max-w-md max-h-[85vh] flex flex-col">
+        <DialogHeader className="shrink-0">
           <DialogTitle>Pagar {professional.name}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Valor sugerido (saldo)</Label>
-            <Input
-              inputMode="numeric"
-              value={amount}
-              onChange={e => setAmount(maskMoneyBR(e.target.value, 7))}
-              placeholder="0,00"
-            />
+        <form
+          onSubmit={handleSubmit}
+          className="flex min-h-0 flex-1 flex-col gap-4"
+        >
+          <div className="space-y-4 overflow-y-auto min-h-0">
+            <div className="space-y-1.5">
+              <Label>Valor sugerido (saldo)</Label>
+              <Input
+                inputMode="numeric"
+                value={amount}
+                onChange={e => setAmount(maskMoneyBR(e.target.value, 7))}
+                placeholder="0,00"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Forma de pagamento</Label>
+              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAYMENT_OPTIONS.map(opt => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Data do pagamento</Label>
+              <Input
+                type="date"
+                value={paidAt}
+                onChange={e => setPaidAt(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Observações</Label>
+              <Input
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+                placeholder="Opcional"
+              />
+            </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label>Forma de pagamento</Label>
-            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PAYMENT_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>Data do pagamento</Label>
-            <Input
-              type="date"
-              value={paidAt}
-              onChange={e => setPaidAt(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>Observações</Label>
-            <Input
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-              placeholder="Opcional"
-            />
-          </div>
-
-          <DialogFooter>
+          <DialogFooter className="shrink-0">
             <Button
               type="button"
               variant="outline"

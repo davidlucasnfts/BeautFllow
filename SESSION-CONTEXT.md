@@ -1,6 +1,6 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 29/09/2026
+> **Atualizado em:** 30/09/2026
 > **Sessão atual:** Fila de melhorias do David em execução — feitos: isolamento por salão (LGPD), busca de cliente, múltiplos serviços por atendimento, comissões/desempenho e retorno programado pós-procedimento. Próximos: estoque (item 4), controle de acessos (item 3)
 
 ---
@@ -21,7 +21,12 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 - **Backend:** novo router `followup` (list/schedule/dismiss + audit); criação dos retornos em `queries/followup.ts`, chamada no `appointment.update` quando status vira "completed" (falha não bloqueia a conclusão)
 - Check + 86 testes + build OK
 
-### Fila de melhorias do David — status:
+### Ajustes do retorno (30/09 — item 2 refinado):
+- **9 dialogs reestruturados** (agendamento, checkout, serviço, financeiro, comunicação, profissional, consentimento, cliente, pagamento de comissão): `DialogContent` com `max-h-[85vh] flex flex-col`, `DialogHeader`/`DialogFooter` com `shrink-0` (sempre visíveis) e corpo com `overflow-y-auto min-h-0` — botão Criar/Salvar nunca fica escondido abaixo do fold. Regra salva no AGENTS.md (Modal/Dialog)
+- **Card "Retornos pendentes" alinhado ao padrão do Dashboard:** título `text-base font-serif` sem ícone (contador mantido), `Card` com `flex flex-col`, hover das linhas `hover:bg-blue-50/50`
+- **Regra de negócio:** cancelar um agendamento **apaga o retorno vinculado** (tanto cancelar o retorno agendado quanto o atendimento de origem — `deleteFollowUpsForCancelledAppointment` em `queries/followup.ts`, chamada no `appointment.update` quando status vira `cancelled`)
+- **Regra de negócio:** vencimento do retorno conta da **data de conclusão** do atendimento (`completedAt` em fuso `America/Sao_Paulo`), não da data agendada — atendimento agendado para hoje mas concluído amanhã gera retorno a partir de amanhã
+- Check + 86 testes + build OK
 1. ✅ Isolamento por salão (LGPD) — deployado (`559ead6`)
 2. ✅ Busca de cliente (combobox) — deployado (`b1c82d2`)
 3. ✅ Multi-serviço por atendimento — deployado (`e02ec64`)

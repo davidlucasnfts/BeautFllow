@@ -205,15 +205,15 @@ export default function Clients() {
               {segmentLabel("client").toLowerCase()}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
+            <DialogHeader className="shrink-0">
               <DialogTitle>
                 {editing
                   ? `Editar ${segmentLabel("client").toLowerCase()}`
                   : `Novo ${segmentLabel("client").toLowerCase()}`}
               </DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-4 overflow-y-auto min-h-0">
               <div className="grid gap-2">
                 <Label>Nome *</Label>
                 <Input
@@ -300,7 +300,7 @@ export default function Clients() {
                 </div>
               )}
             </div>
-            <DialogFooter>
+            <DialogFooter className="shrink-0">
               <DialogClose asChild>
                 <Button variant="outline">Cancelar</Button>
               </DialogClose>

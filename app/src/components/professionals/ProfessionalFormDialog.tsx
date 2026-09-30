@@ -76,15 +76,15 @@ export default function ProfessionalFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
+        <DialogHeader className="shrink-0">
           <DialogTitle>
             {editingId
               ? `Editar ${professionalLabel}`
               : `Novo ${professionalLabel}`}
           </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 py-4 overflow-y-auto min-h-0">
           <div className="grid gap-2">
             <Label>Nome *</Label>
             <Input
@@ -166,7 +166,7 @@ export default function ProfessionalFormDialog({
             </p>
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="shrink-0">
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DialogClose>

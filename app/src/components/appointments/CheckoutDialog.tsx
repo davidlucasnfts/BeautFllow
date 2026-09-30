@@ -178,12 +178,12 @@ function CheckoutForm({
   const isPending = financialMutation.isPending || updateMutation.isPending;
 
   return (
-    <DialogContent className="w-full max-w-lg max-h-[80vh] overflow-y-auto">
-      <DialogHeader>
+    <DialogContent className="w-full max-w-lg max-h-[85vh] flex flex-col">
+      <DialogHeader className="shrink-0">
         <DialogTitle>Concluir atendimento — {target.clientName}</DialogTitle>
       </DialogHeader>
 
-      <div className="space-y-4 py-2">
+      <div className="space-y-4 py-2 overflow-y-auto min-h-0">
         <div className="space-y-1.5">
           <Label htmlFor="checkout-valor">Valor (R$)</Label>
           <Input
@@ -240,7 +240,7 @@ function CheckoutForm({
         </label>
       </div>
 
-      <DialogFooter>
+      <DialogFooter className="shrink-0">
         <Button type="button" variant="outline" onClick={onClose}>
           Cancelar
         </Button>

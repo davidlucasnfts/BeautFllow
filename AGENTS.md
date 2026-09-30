@@ -293,6 +293,7 @@ Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a 
 - Excluir: `bg-red-600 hover:bg-red-700`
 - Aprovar: `bg-green-600 hover:bg-green-700`
 - Tamanho: `w-full max-w-lg max-h-[80vh] overflow-y-auto` (largura total no mobile, limitada no desktop)
+- **Cabeçalho e rodapé SEMPRE visíveis, apenas o corpo scrolla** — `DialogContent` com `max-h-[85vh] flex flex-col`, `DialogHeader` e `DialogFooter` com `shrink-0`, corpo com `overflow-y-auto min-h-0`. Nunca deixar o botão de ação (Criar/Salvar) escondido abaixo do fold.
 
 ### Exclusão — Confirmação Obrigatória
 - **SEMPRE** abrir `AlertDialog` de confirmação antes de qualquer delete — nunca chamar a mutation direto no clique

@@ -12,7 +12,10 @@ import {
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
 import { assertSalonMember } from "./lib/tenant";
-import { createFollowUpsFromAppointment } from "./queries/followup";
+import {
+  createFollowUpsFromAppointment,
+  deleteFollowUpsForCancelledAppointment,
+} from "./queries/followup";
 
 /**
  * Monta o snapshot dos serviços adicionais do atendimento.
@@ -207,6 +210,10 @@ export const appointmentRouter = createRouter({
         } catch (e) {
           console.error("Falha ao criar retornos pós-atendimento:", e);
         }
+      }
+      // Agendamento cancelado → retorno vinculado deixa de existir
+      if (data.status === "cancelled") {
+        await deleteFollowUpsForCancelledAppointment(id, salonId);
       }
       await auditAction(
         "update",

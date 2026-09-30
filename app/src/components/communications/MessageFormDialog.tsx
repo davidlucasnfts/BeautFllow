@@ -122,13 +122,13 @@ export default function MessageFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
+        <DialogHeader className="shrink-0">
           <DialogTitle>
             {preset ? "Reenviar Mensagem" : "Nova Mensagem"}
           </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 py-4 overflow-y-auto min-h-0">
           <div className="grid gap-2">
             <Label>Cliente</Label>
             <ClientCombobox
@@ -189,7 +189,7 @@ export default function MessageFormDialog({
             />
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="shrink-0">
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DialogClose>

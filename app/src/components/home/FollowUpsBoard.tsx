@@ -52,10 +52,9 @@ export default function FollowUpsBoard() {
   }
 
   return (
-    <Card className="h-full">
+    <Card className="h-full flex flex-col">
       <CardHeader>
-        <CardTitle className="text-base font-serif flex items-center gap-2">
-          <CalendarClock className="h-4 w-4 text-primary" />
+        <CardTitle className="text-base font-serif">
           Retornos pendentes
           {(followUps?.length ?? 0) > 0 && (
             <span className="text-xs font-normal text-muted-foreground">
@@ -78,7 +77,7 @@ export default function FollowUpsBoard() {
               return (
                 <div
                   key={fu.id}
-                  className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg p-2 hover:bg-muted/50 transition-colors"
+                  className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg p-2 hover:bg-blue-50/50 transition-colors"
                 >
                   <div className="flex w-12 shrink-0 items-center justify-center gap-1 text-xs font-semibold text-primary">
                     <CalendarClock className="h-3 w-3" />
