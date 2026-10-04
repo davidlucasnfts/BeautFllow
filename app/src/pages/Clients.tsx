@@ -360,7 +360,13 @@ export default function Clients() {
                   </div>
                   <div className="min-w-0 flex-1 basis-44">
                     <p className="text-sm font-medium break-words">{client.name}</p>
-                    <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                    <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
+                      <Phone className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{client.phone}</span>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 flex-col items-end gap-1.5">
+                    <div className="flex items-center gap-1.5 flex-wrap justify-end">
                       <Badge
                         variant="secondary"
                         className={segmentColors[client.segment] + " text-[10px]"}
@@ -377,34 +383,30 @@ export default function Clients() {
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
-                      <Phone className="h-3 w-3 shrink-0" />
-                      <span className="truncate">{client.phone}</span>
+                    <div className="flex flex-row items-center gap-1.5">
+                      <a
+                        href={`https://wa.me/55${client.phone.replace(/\D/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={e => e.stopPropagation()}
+                        title={`Chamar ${client.name} no WhatsApp`}
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors"
+                      >
+                        <WhatsAppIcon className="h-3.5 w-3.5" />
+                        WhatsApp
+                      </a>
+                      <button
+                        type="button"
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleEdit(client);
+                        }}
+                        className="flex items-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
+                      >
+                        <Edit3 className="h-3.5 w-3.5" />
+                        Editar
+                      </button>
                     </div>
-                  </div>
-                  <div className="flex flex-row items-center gap-1.5 shrink-0">
-                    <a
-                      href={`https://wa.me/55${client.phone.replace(/\D/g, "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={e => e.stopPropagation()}
-                      title={`Chamar ${client.name} no WhatsApp`}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors"
-                    >
-                      <WhatsAppIcon className="h-3.5 w-3.5" />
-                      WhatsApp
-                    </a>
-                    <button
-                      type="button"
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleEdit(client);
-                      }}
-                      className="flex items-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
-                    >
-                      <Edit3 className="h-3.5 w-3.5" />
-                      Editar
-                    </button>
                   </div>
                 </div>
                 {expanded && salon && (

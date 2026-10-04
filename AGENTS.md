@@ -281,6 +281,7 @@ Botões com funções diferentes **nunca** podem ter o mesmo estilo:
 - **Coluna de Ações na primeira posição** (antes do nome)
 - **TODAS as ações na mesma coluna**
 - Status com badges: `ativo`=verde, `pendente`=âmbar, `inativo`=cinza
+- **Badge de status SEMPRE no canto direito do card/linha** (grupo `shrink-0 items-end`), nunca embaixo ou ao lado do nome
 - **Hover azul**: `hover:bg-blue-50/50` em todas as linhas
 - **Clique na linha** → abre preview/detalhes
 - Botões usam `stopPropagation`

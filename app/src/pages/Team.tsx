@@ -175,32 +175,34 @@ export default function Team() {
                   {member.email}
                 </p>
               </div>
-              <Badge variant="secondary">
-                {SALON_ROLE_LABELS[member.role]}
-              </Badge>
-              {member.isActive ? (
-                <Badge className="bg-green-50 text-green-700 border border-green-200 hover:bg-green-50">
-                  Ativo
+              <div className="flex shrink-0 items-center gap-1.5 flex-wrap justify-end">
+                <Badge variant="secondary">
+                  {SALON_ROLE_LABELS[member.role]}
                 </Badge>
-              ) : (
-                <Badge className="bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-50">
-                  Inativo
-                </Badge>
-              )}
-              {member.role !== "owner" && member.isActive && (
-                <button
-                  onClick={() =>
-                    setRemoveTarget({
-                      membershipId: member.membershipId,
-                      name: member.name ?? member.email,
-                    })
-                  }
-                  className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-red-50 px-2 py-1 text-[11px] font-medium text-red-700 hover:bg-red-100"
-                >
-                  <Trash2 className="h-3 w-3" />
-                  Remover
-                </button>
-              )}
+                {member.isActive ? (
+                  <Badge className="bg-green-50 text-green-700 border border-green-200 hover:bg-green-50">
+                    Ativo
+                  </Badge>
+                ) : (
+                  <Badge className="bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-50">
+                    Inativo
+                  </Badge>
+                )}
+                {member.role !== "owner" && member.isActive && (
+                  <button
+                    onClick={() =>
+                      setRemoveTarget({
+                        membershipId: member.membershipId,
+                        name: member.name ?? member.email,
+                      })
+                    }
+                    className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-red-50 px-2 py-1 text-[11px] font-medium text-red-700 hover:bg-red-100"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                    Remover
+                  </button>
+                )}
+              </div>
             </div>
           ))}
           {data && data.members.length === 0 && (

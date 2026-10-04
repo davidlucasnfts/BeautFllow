@@ -217,17 +217,9 @@ export default function Communications() {
                     <Icon className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="min-w-0 flex-1 basis-44">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium break-words">
-                        {clientName(c.clientId)}
-                      </span>
-                      <Badge
-                        variant="secondary"
-                        className={statusColors[c.status] + " text-[10px]"}
-                      >
-                        {statusLabels[c.status] ?? c.status}
-                      </Badge>
-                    </div>
+                    <span className="text-sm font-medium break-words">
+                      {clientName(c.clientId)}
+                    </span>
                     <p className="text-xs text-muted-foreground truncate mt-0.5">
                       {c.content}
                     </p>
@@ -245,6 +237,14 @@ export default function Communications() {
                       {/* createdAt já vem formatado do servidor (fuso SP) */}
                       <span>{c.createdAt}</span>
                     </div>
+                  </div>
+                  <div className="flex shrink-0 flex-col items-end gap-1">
+                    <Badge
+                      variant="secondary"
+                      className={statusColors[c.status] + " text-[10px]"}
+                    >
+                      {statusLabels[c.status] ?? c.status}
+                    </Badge>
                   </div>
                 </div>
                 {expanded && (
