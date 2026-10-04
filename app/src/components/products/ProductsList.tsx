@@ -130,7 +130,7 @@ export default function ProductsList({
   );
 
   const detail = (p: ProductForList) => (
-    <div className="grid grid-cols-2 gap-x-4 gap-y-2 rounded-lg bg-muted/40 p-3 text-xs">
+    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
       <div>
         <p className="text-[10px] font-semibold text-muted-foreground uppercase">
           Quantidade atual
