@@ -10,7 +10,6 @@ import {
   CalendarDays,
   CalendarRange,
   Calendar,
-  Plus,
 } from "lucide-react";
 import {
   addDays,
@@ -38,7 +37,6 @@ interface AppointmentFiltersProps {
   setFilterService: (v: string) => void;
   professionals?: Professional[];
   services?: Service[];
-  onNew: () => void;
 }
 
 const chipBase =
@@ -46,9 +44,9 @@ const chipBase =
 const chipActive = "border-transparent bg-primary text-primary-foreground";
 const chipIdle = "bg-background hover:bg-accent";
 
-/** Filtros da agenda no padrão Opção 5 (mockup docs/mockups/agendamento-seletor-visao.html):
- *  linha 1 = visão + (desktop) navegação central + Novo; linha 2 = navegação no
- *  mobile; linha 3 = chips de profissional com cor (visões dia/semana). */
+/** Filtros da agenda: visão (Dia/Semana/Mês) + navegação de período centralizados,
+ *  chips de profissional abaixo. O botão Novo agendamento fica no cabeçalho da
+ *  página (mesmo padrão do Dashboard). */
 export default function AppointmentFilters({
   viewMode,
   setViewMode,
@@ -64,7 +62,6 @@ export default function AppointmentFilters({
   setFilterService,
   professionals,
   services,
-  onNew,
 }: AppointmentFiltersProps) {
   const today = new Date();
   const weekStart = startOfWeek(addDays(today, weekOffset * 7), {
@@ -120,10 +117,9 @@ export default function AppointmentFilters({
   );
 
   return (
-    <div className="flex w-full flex-col gap-2 md:w-auto">
-      {/* Linha 1: visão + navegação (grupo esquerda) · Novo (direita) —
-          mesmo padrão da barra do Financeiro */}
-      <div className="flex items-center gap-2">
+    <div className="flex w-full flex-col gap-2">
+      {/* Visão + navegação centralizadas (mobile e desktop) */}
+      <div className="flex flex-col items-center gap-2">
         <div className="flex items-center border rounded-md overflow-hidden">
           <Button
             variant={viewMode === "day" ? "default" : "ghost"}
@@ -153,16 +149,10 @@ export default function AppointmentFilters({
             Mês
           </Button>
         </div>
-        <div className="hidden md:block md:pl-1">{nav}</div>
-        <div className="grow" />
-        <Button size="sm" onClick={onNew}>
-          <Plus className="mr-1.5 h-4 w-4" /> Novo
-        </Button>
+        {viewMode !== "day" && nav}
       </div>
-      {/* Linha 2 (mobile): navegação — a fila do dia já troca de dia com 1 toque */}
-      {viewMode !== "day" && <div className="md:hidden">{nav}</div>}
 
-      {/* Linha 3: chips de profissional com cor (dia/semana, mobile + desktop) */}
+      {/* Linha 2: chips de profissional com cor (dia/semana, mobile + desktop) */}
       {viewMode !== "month" && (
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 pr-1">

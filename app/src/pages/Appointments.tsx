@@ -14,6 +14,8 @@ import {
 } from "date-fns";
 import AgendaViews from "@/components/appointments/AgendaViews";
 import AppointmentFilters from "@/components/appointments/AppointmentFilters";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import AppointmentDialog from "@/components/appointments/AppointmentDialog";
 import CheckoutDialog, {
   type CheckoutTarget,
@@ -353,30 +355,37 @@ export default function Appointments() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-4">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Agendamentos</h1>
           <p className="text-muted-foreground">Sua agenda de atendimentos</p>
         </div>
-        <div className="flex items-start">
-          <AppointmentFilters
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-            weekOffset={weekOffset}
-            setWeekOffset={setWeekOffset}
-            monthOffset={monthOffset}
-            setMonthOffset={setMonthOffset}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            filterProfessional={filterProfessional}
-            setFilterProfessional={setFilterProfessional}
-            filterService={filterService}
-            setFilterService={setFilterService}
-            professionals={professionals}
-            services={services}
-            onNew={() => setOpen(true)}
-          />
-          <AppointmentDialog
+        <Button
+          onClick={() => setOpen(true)}
+          className="shrink-0 gap-1.5"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Novo agendamento
+        </Button>
+      </div>
+
+      <AppointmentFilters
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        weekOffset={weekOffset}
+        setWeekOffset={setWeekOffset}
+        monthOffset={monthOffset}
+        setMonthOffset={setMonthOffset}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        filterProfessional={filterProfessional}
+        setFilterProfessional={setFilterProfessional}
+        filterService={filterService}
+        setFilterService={filterService}
+        professionals={professionals}
+        services={services}
+      />
+      <AppointmentDialog
             open={open}
             onOpenChange={v => {
               if (v) {
