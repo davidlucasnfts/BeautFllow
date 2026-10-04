@@ -74,7 +74,7 @@ export default function FinancialRecordExpanded({
   onClose: () => void;
 }) {
   return (
-    <div className="space-y-4 rounded-lg border border-primary/40 bg-muted/30 p-3">
+    <div className="space-y-4 rounded-lg border border-primary/40 p-3">
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <Detail
           label="Data"
@@ -111,7 +111,7 @@ export default function FinancialRecordExpanded({
         <button
           type="button"
           onClick={onClose}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-slate-300 bg-transparent text-slate-600 hover:bg-slate-100 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-slate-100 transition-colors"
         >
           <ChevronDown className="h-3.5 w-3.5" />
           Fechar

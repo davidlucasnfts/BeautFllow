@@ -203,14 +203,14 @@ export default function ProductsList({
                 </div>
               </div>
               {expanded && (
-                <div className="mx-3 mb-3 space-y-2 rounded-lg border border-primary/40 bg-muted/30 p-3">
+                <div className="mx-3 mb-3 space-y-2 rounded-lg border border-primary/40 p-3">
                   {detail(p)}
                   <div className="flex items-center justify-between gap-2">
                     {secondaryActions(p)}
                     <button
                       type="button"
                       onClick={() => setExpandedId(null)}
-                      className="flex items-center gap-1 rounded-md border border-slate-300 bg-transparent px-3 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                      className="flex items-center gap-1 rounded-md px-3 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-slate-100 transition-colors"
                     >
                       Fechar
                     </button>
@@ -269,14 +269,14 @@ export default function ProductsList({
                   {expanded && (
                     <TableRow className="hover:bg-transparent">
                       <TableCell colSpan={5}>
-                        <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/40 bg-muted/30 p-3">
+                        <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/40 p-3">
                           {detail(p)}
                           <div className="flex shrink-0 flex-col gap-2">
                             {secondaryActions(p)}
                             <button
                               type="button"
                               onClick={() => setExpandedId(null)}
-                              className="flex items-center justify-center gap-1 rounded-md border border-slate-300 bg-transparent px-3 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                              className="flex items-center justify-center gap-1 rounded-md px-3 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-slate-100 transition-colors"
                             >
                               Fechar
                             </button>

@@ -266,7 +266,7 @@ Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a 
 #### Ações neutras — dois tons distintos
 Botões com funções diferentes **nunca** podem ter o mesmo estilo:
 - **Ação de conteúdo** (Ver, Histórico, Preview): fundo pastel slate (`bg-slate-50 border-slate-200 text-slate-700`)
-- **Ação de dispensar** (Fechar, Recolher, Cancelar secundário): **sem preenchimento** (`bg-transparent border-slate-300 text-slate-600`) — hierarquia visual inferior, nunca confundir com ação de conteúdo
+- **Ação de dispensar** (Fechar, Recolher, Cancelar secundário): **botão de texto puro**, sem borda e sem fundo (`text-muted-foreground hover:text-foreground hover:bg-slate-100`) — hierarquia visual inferior, impossível confundir com ação de conteúdo
 
 #### Layout — Botões com Texto (padrão preferido)
 - **Sempre com texto + ícone**, nunca ícone sozinho
@@ -281,7 +281,7 @@ Botões com funções diferentes **nunca** podem ter o mesmo estilo:
 - **Hover azul**: `hover:bg-blue-50/50` em todas as linhas
 - **Clique na linha** → abre preview/detalhes
 - Botões usam `stopPropagation`
-- **Faixa/ficha expandida de detalhe: borda na cor do tema** (`rounded-lg border border-primary/40 bg-muted/30 p-3`) — identifica visualmente o card aberto
+- **Faixa/ficha expandida de detalhe: borda na cor do tema** (`rounded-lg border border-primary/40 p-3`) — identifica visualmente o card aberto. **Sem fundo colorido** — só a borda, para não sujar o tema pastel
 
 ### Cards e Bordas
 - **Card NUNCA fica "aberto" no fundo da página** — borda sempre visível

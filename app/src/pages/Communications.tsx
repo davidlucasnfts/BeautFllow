@@ -249,7 +249,7 @@ export default function Communications() {
                 </div>
                 {expanded && (
                   <div className="px-4 pb-4">
-                    <div className="rounded-lg border border-primary/40 bg-muted/30 p-4">
+                    <div className="rounded-lg border border-primary/40 p-4">
                       <p className="text-[10px] font-semibold text-slate-400 uppercase mb-1">
                         Conteúdo da mensagem
                       </p>
@@ -261,7 +261,7 @@ export default function Communications() {
                       <button
                         type="button"
                         onClick={() => setSelectedId(null)}
-                        className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border border-slate-300 bg-transparent text-slate-600 hover:bg-slate-100 transition-colors"
+                        className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-slate-100 transition-colors"
                       >
                         Fechar
                       </button>

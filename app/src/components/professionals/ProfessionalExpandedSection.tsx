@@ -77,7 +77,7 @@ export default function ProfessionalExpandedSection({
 
   return (
     <div
-      className="m-3 mt-1 space-y-3 rounded-lg border border-primary/40 bg-muted/30 p-3"
+      className="m-3 mt-1 space-y-3 rounded-lg border border-primary/40 p-3"
       onClick={e => e.stopPropagation()}
     >
       <div className="grid grid-cols-2 gap-4">
@@ -94,7 +94,7 @@ export default function ProfessionalExpandedSection({
         <button
           type="button"
           onClick={onClose}
-          className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border border-slate-300 bg-transparent text-slate-600 hover:bg-slate-100 transition-colors"
+          className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-slate-100 transition-colors"
         >
           <ChevronDown className="h-3.5 w-3.5" />
           Fechar

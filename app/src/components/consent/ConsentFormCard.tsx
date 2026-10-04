@@ -52,7 +52,7 @@ export default function ConsentFormCard({
       </CardHeader>
       {expanded ? (
         <CardContent className="px-4 pb-3 pt-1">
-          <div className="rounded-lg border border-primary/40 bg-muted/30 p-3">
+          <div className="rounded-lg border border-primary/40 p-3">
             <p className="text-sm text-slate-700 whitespace-pre-wrap">
               {form.content}
             </p>
@@ -88,7 +88,7 @@ export default function ConsentFormCard({
                 e.stopPropagation();
                 onToggle();
               }}
-              className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md border border-slate-300 bg-transparent text-slate-600 hover:bg-slate-100 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-slate-100 transition-colors"
             >
               <ChevronDown className="h-3.5 w-3.5" />
               Fechar

@@ -33,7 +33,7 @@ export default function ClientExpandedSection({
   const lastVisit = history && history.length > 0 ? history[0].appointmentDate : null;
 
   return (
-    <div className="mx-3 mb-3 space-y-3 rounded-lg border border-primary/40 bg-muted/30 p-3">
+    <div className="mx-3 mb-3 space-y-3 rounded-lg border border-primary/40 p-3">
       <ClientCardDetails client={client} lastVisit={lastVisit} />
       <ClientHistory history={history} />
       <div className="flex justify-end">
