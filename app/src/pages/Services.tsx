@@ -163,8 +163,8 @@ export default function Services() {
             Seus {label.toLowerCase()}s e preços
           </p>
         </div>
-        <Button onClick={handleNew}>
-          <Plus className="mr-2 h-4 w-4" /> Novo {label.toLowerCase()}
+        <Button onClick={handleNew} className="gap-1.5">
+          <Plus className="h-3.5 w-3.5" /> Novo {label.toLowerCase()}
         </Button>
       </div>
 

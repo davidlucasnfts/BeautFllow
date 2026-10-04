@@ -144,8 +144,8 @@ export default function Professionals() {
           <h1 className="text-2xl font-bold tracking-tight">{label}s</h1>
           <p className="text-muted-foreground">Equipe, comissões e horários</p>
         </div>
-        <Button onClick={handleNew}>
-          <Plus className="mr-2 h-4 w-4" /> Novo {label.toLowerCase()}
+        <Button onClick={handleNew} className="gap-1.5">
+          <Plus className="h-3.5 w-3.5" /> Novo {label.toLowerCase()}
         </Button>
       </div>
 

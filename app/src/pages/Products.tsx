@@ -165,8 +165,9 @@ export default function Products() {
             setEditing(null);
             setFormOpen(true);
           }}
+          className="gap-1.5"
         >
-          <Plus className="mr-2 h-4 w-4" /> Novo produto
+          <Plus className="h-3.5 w-3.5" /> Novo produto
         </Button>
       </div>
 

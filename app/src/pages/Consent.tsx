@@ -93,8 +93,9 @@ export default function Consent() {
             setEditing(null);
             setOpen(true);
           }}
+          className="gap-1.5"
         >
-          <Plus className="mr-2 h-4 w-4" /> Novo Termo
+          <Plus className="h-3.5 w-3.5" /> Novo Termo
         </Button>
       </div>
 

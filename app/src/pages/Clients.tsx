@@ -200,8 +200,9 @@ export default function Clients() {
                 setEditing(null);
                 resetForm();
               }}
+              className="gap-1.5"
             >
-              <Plus className="mr-2 h-4 w-4" /> Novo{" "}
+              <Plus className="h-3.5 w-3.5" /> Novo{" "}
               {segmentLabel("client").toLowerCase()}
             </Button>
           </DialogTrigger>
