@@ -9,7 +9,7 @@ export function MobileTopBar({ title }: { title: string }) {
       <div className="flex items-center gap-2">
         <button
           onClick={toggleSidebar}
-          className="h-9 w-9 flex items-center justify-center hover:bg-accent rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0"
+          className="h-9 w-9 flex items-center justify-center rounded-lg border border-primary/40 bg-background hover:bg-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0"
           aria-label="Abrir menu"
         >
           <Menu className="h-5 w-5 text-foreground" />
