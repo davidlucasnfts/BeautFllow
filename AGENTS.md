@@ -251,19 +251,22 @@ Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a 
 #### Visibilidade
 - **Sempre visíveis** — nunca usar `opacity-0` + `group-hover:opacity-100`
 
-#### Cores por Ação (sempre com fundo)
-| Ação | Cor de Fundo | Cor do Ícone | Hover |
-|---|---|---|---|
-| Editar | `bg-blue-50` | `text-blue-600` | `hover:bg-blue-100` |
-| Excluir/Recusar | `bg-red-50` | `text-red-600` | `hover:bg-red-100` |
-| Aprovar/Confirmar | `bg-green-50` | `text-green-600` | `hover:bg-green-100` |
-| Ver/Preview | `bg-slate-50` | `text-slate-600` | `hover:bg-slate-100` |
-| Link/Afiliar | `bg-purple-50` | `text-purple-600` | `hover:bg-purple-100` |
+#### Cores por Ação (sempre com fundo e borda)
+| Ação | Fundo | Borda | Texto/Ícone | Hover |
+|---|---|---|---|---|
+| Editar | `bg-blue-50` | `border-blue-200` | `text-blue-700` | `hover:bg-blue-100` |
+| Excluir/Recusar | `bg-red-50` | `border-red-200` | `text-red-700` | `hover:bg-red-100` |
+| Aprovar/Confirmar | `bg-green-50` | `border-green-200` | `text-green-700` | `hover:bg-green-100` |
+| Ver/Preview/Histórico | `bg-slate-50` | `border-slate-200` | `text-slate-700` | `hover:bg-slate-100` |
+| Aviso/Saída | `bg-amber-50` | `border-amber-200` | `text-amber-700` | `hover:bg-amber-100` |
+| Link/Afiliar | `bg-purple-50` | `border-purple-200` | `text-purple-700` | `hover:bg-purple-100` |
+
+> A borda é obrigatória: sem ela o botão pastel some no fundo branco.
 
 #### Layout — Botões com Texto (padrão preferido)
 - **Sempre com texto + ícone**, nunca ícone sozinho
 - Empilhados verticalmente (`flex-col gap-1`) na coluna de ações
-- Tamanho compacto: `text-[10px] font-medium`, padding `px-1.5 py-0.5`
+- Tamanho: `text-[11px] font-medium`, padding `px-2 py-1`, `rounded-md border`
 - **Exceção (4+ ações):** separar em primárias (uso do dia a dia, sempre visíveis no item) e secundárias/destrutivas (Histórico, Excluir). No mobile, secundárias vão na área expandida da ficha; no desktop, primárias em grade 2 colunas e Excluir largura total abaixo. Nunca dropdown.
 
 ### Tabelas — Posicionamento Unificado

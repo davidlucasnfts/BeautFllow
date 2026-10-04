@@ -57,12 +57,14 @@ export default function ProductsList({
 }: ProductsListProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
+  const btn = "text-[11px] font-medium px-2 py-1 rounded-md border transition-colors";
+
   const primaryActions = (p: ProductForList) => (
     <div className="flex flex-col gap-1" onClick={e => e.stopPropagation()}>
       <button
         type="button"
         onClick={() => onEdit(p)}
-        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+        className={`${btn} flex items-center gap-1 border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100`}
       >
         <Edit3 className="h-3 w-3" />
         Editar
@@ -70,7 +72,7 @@ export default function ProductsList({
       <button
         type="button"
         onClick={() => onMove(p, "in")}
-        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+        className={`${btn} flex items-center gap-1 border-green-200 bg-green-50 text-green-700 hover:bg-green-100`}
       >
         <ArrowDownToLine className="h-3 w-3" />
         Entrada
@@ -78,7 +80,7 @@ export default function ProductsList({
       <button
         type="button"
         onClick={() => onMove(p, "out")}
-        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"
+        className={`${btn} flex items-center gap-1 border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100`}
       >
         <ArrowUpFromLine className="h-3 w-3" />
         Saída
@@ -91,7 +93,7 @@ export default function ProductsList({
       <button
         type="button"
         onClick={() => onHistory(p)}
-        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors"
+        className={`${btn} flex items-center gap-1 border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100`}
       >
         <History className="h-3 w-3" />
         Histórico
@@ -99,7 +101,7 @@ export default function ProductsList({
       <button
         type="button"
         onClick={() => onDelete(p)}
-        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+        className={`${btn} flex items-center gap-1 border-red-200 bg-red-50 text-red-700 hover:bg-red-100`}
       >
         <Trash2 className="h-3 w-3" />
         Excluir
@@ -208,7 +210,7 @@ export default function ProductsList({
                     <button
                       type="button"
                       onClick={() => setExpandedId(null)}
-                      className="flex items-center gap-1 rounded-md bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-200 transition-colors"
+                      className="flex items-center gap-1 rounded-md border border-slate-200 bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-200 transition-colors"
                     >
                       Fechar
                     </button>
@@ -274,7 +276,7 @@ export default function ProductsList({
                             <button
                               type="button"
                               onClick={() => setExpandedId(null)}
-                              className="flex items-center justify-center gap-1 rounded-md bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-200 transition-colors"
+                              className="flex items-center justify-center gap-1 rounded-md border border-slate-200 bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-200 transition-colors"
                             >
                               Fechar
                             </button>
