@@ -281,6 +281,7 @@ Botões com funções diferentes **nunca** podem ter o mesmo estilo:
 - **Hover azul**: `hover:bg-blue-50/50` em todas as linhas
 - **Clique na linha** → abre preview/detalhes
 - Botões usam `stopPropagation`
+- **Faixa/ficha expandida de detalhe: borda na cor do tema** (`rounded-lg border border-primary/40 bg-muted/30 p-3`) — identifica visualmente o card aberto
 
 ### Listagens — Nome de Pessoa NUNCA Truncado
 - **PROIBIDO `truncate` em nome** de cliente/profissional/usuário → usar `break-words`

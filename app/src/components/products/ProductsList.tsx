@@ -203,7 +203,7 @@ export default function ProductsList({
                 </div>
               </div>
               {expanded && (
-                <div className="px-3 pb-3 space-y-2">
+                <div className="mx-3 mb-3 space-y-2 rounded-lg border border-primary/40 bg-muted/30 p-3">
                   {detail(p)}
                   <div className="flex items-center justify-between gap-2">
                     {secondaryActions(p)}
@@ -267,9 +267,9 @@ export default function ProductsList({
                     <TableCell>{statusBadges(p)}</TableCell>
                   </TableRow>
                   {expanded && (
-                    <TableRow className="bg-muted/30 hover:bg-muted/30">
+                    <TableRow className="hover:bg-transparent">
                       <TableCell colSpan={5}>
-                        <div className="flex items-center justify-between gap-3 py-1">
+                        <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/40 bg-muted/30 p-3">
                           {detail(p)}
                           <div className="flex shrink-0 flex-col gap-2">
                             {secondaryActions(p)}
