@@ -381,7 +381,7 @@ export default function Appointments() {
         filterProfessional={filterProfessional}
         setFilterProfessional={setFilterProfessional}
         filterService={filterService}
-        setFilterService={filterService}
+        setFilterService={setFilterService}
         professionals={professionals}
         services={services}
       />
