@@ -236,18 +236,20 @@ export default function Products() {
           <p>Falha ao carregar. Atualize a página.</p>
         </div>
       ) : visibleActive.length > 0 ? (
-        <ProductsList
-          products={visibleActive}
-          onEdit={p => {
-            setEditing({ id: p.id, values: valuesFromProduct(p) });
-            setFormOpen(true);
-          }}
-          onMove={(p, type) => setMovement({ product: p, type })}
-          onHistory={p =>
-            setHistoryTarget({ id: p.id, name: p.name, unit: p.unit })
-          }
-          onDelete={setDeleteTarget}
-        />
+        <Card className="py-0">
+          <ProductsList
+            products={visibleActive}
+            onEdit={p => {
+              setEditing({ id: p.id, values: valuesFromProduct(p) });
+              setFormOpen(true);
+            }}
+            onMove={(p, type) => setMovement({ product: p, type })}
+            onHistory={p =>
+              setHistoryTarget({ id: p.id, name: p.name, unit: p.unit })
+            }
+            onDelete={setDeleteTarget}
+          />
+        </Card>
       ) : (
         <ProductsEmpty hasSearch={active.length > 0} />
       )}
