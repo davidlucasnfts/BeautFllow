@@ -121,7 +121,8 @@ export default function ProductFormDialog({
                 onChange={e => setMinQuantity(maskQuantity(e.target.value))}
               />
               <p className="text-[11px] text-muted-foreground">
-                Alerta "baixo" quando atingir esse nível
+                Nível que dispara o alerta "baixo". A quantidade em estoque é
+                adicionada pelos botões Entrada/Saída do produto.
               </p>
             </div>
           </div>
