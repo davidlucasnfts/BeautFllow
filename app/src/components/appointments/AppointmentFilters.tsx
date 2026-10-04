@@ -155,56 +155,59 @@ export default function AppointmentFilters({
       {/* Linha 2: chips de profissional com cor (dia/semana, mobile + desktop) */}
       {viewMode !== "month" && (
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 pr-1">
+          <div className="relative flex items-center justify-center gap-2">
             <button
               type="button"
               onClick={() => setFilterProfessional("all")}
               className={cn(
                 chipBase,
+                "shrink-0",
                 filterProfessional === "all" ? chipActive : chipIdle
               )}
             >
               Todos
             </button>
-            {professionals?.map(p => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => setFilterProfessional(String(p.id))}
-                className={cn(
-                  chipBase,
-                  filterProfessional === String(p.id) ? chipActive : chipIdle
-                )}
-              >
-                <span
-                  className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: p.color ?? "#ccc" }}
-                />
-                {p.name}
-              </button>
-            ))}
-          </div>
-          <div className="grow" />
-          <div className="hidden md:block">
-            <Select value={filterService} onValueChange={setFilterService}>
-              <SelectTrigger className="w-[160px] h-8 text-xs">
-                <SelectValue placeholder="Serviço" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos serviços</SelectItem>
-                {services?.map(s => (
-                  <SelectItem key={s.id} value={String(s.id)}>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: s.color ?? "#ccc" }}
-                      />
-                      {s.name}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex min-w-0 items-center gap-1.5 overflow-x-auto py-0.5 pr-1">
+              {professionals?.map(p => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setFilterProfessional(String(p.id))}
+                  className={cn(
+                    chipBase,
+                    "shrink-0",
+                    filterProfessional === String(p.id) ? chipActive : chipIdle
+                  )}
+                >
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{ backgroundColor: p.color ?? "#ccc" }}
+                  />
+                  {p.name}
+                </button>
+              ))}
+            </div>
+            <div className="absolute right-0 hidden md:block">
+              <Select value={filterService} onValueChange={setFilterService}>
+                <SelectTrigger className="w-[160px] h-8 text-xs">
+                  <SelectValue placeholder="Serviço" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos serviços</SelectItem>
+                  {services?.map(s => (
+                    <SelectItem key={s.id} value={String(s.id)}>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: s.color ?? "#ccc" }}
+                        />
+                        {s.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       )}
