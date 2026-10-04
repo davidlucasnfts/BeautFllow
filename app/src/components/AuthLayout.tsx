@@ -27,7 +27,9 @@ import {
   PanelLeft,
   Building2,
   Settings,
+  UsersRound,
 } from "lucide-react";
+import { canAccess } from "@contracts/permissions";
 import {
   type CSSProperties,
   type ReactNode,
@@ -102,28 +104,72 @@ function Logo({ className }: { className?: string }) {
 function getMenuItems(segment: SalonSegment) {
   const labels = getSegmentLabel;
   return [
-    { icon: LayoutDashboard, label: "Início", path: "/dashboard" },
-    { icon: Users, label: labels(segment, "client"), path: "/clients" },
+    {
+      icon: LayoutDashboard,
+      label: "Início",
+      path: "/dashboard",
+      area: "dashboard" as const,
+    },
+    {
+      icon: Users,
+      label: labels(segment, "client"),
+      path: "/clients",
+      area: "clients" as const,
+    },
     {
       icon: CalendarDays,
       label: labels(segment, "appointment"),
       path: "/appointments",
+      area: "appointments" as const,
     },
     {
       icon: ScissorsIcon,
       label: labels(segment, "service"),
       path: "/services",
+      area: "services" as const,
     },
     {
       icon: UserCircle,
       label: labels(segment, "professional"),
       path: "/professionals",
+      area: "professionals" as const,
     },
-    { icon: Package, label: "Produtos", path: "/products" },
-    { icon: DollarSign, label: "Financeiro", path: "/financial" },
-    { icon: MessageSquare, label: "Mensagens", path: "/communications" },
-    { icon: FileCheck, label: "Termos e Autorizações", path: "/consent" },
-    { icon: Settings, label: "Configurações", path: "/settings" },
+    {
+      icon: Package,
+      label: "Produtos",
+      path: "/products",
+      area: "products" as const,
+    },
+    {
+      icon: DollarSign,
+      label: "Financeiro",
+      path: "/financial",
+      area: "financial" as const,
+    },
+    {
+      icon: MessageSquare,
+      label: "Mensagens",
+      path: "/communications",
+      area: "communications" as const,
+    },
+    {
+      icon: FileCheck,
+      label: "Termos e Autorizações",
+      path: "/consent",
+      area: "consent" as const,
+    },
+    {
+      icon: UsersRound,
+      label: "Equipe",
+      path: "/equipe",
+      area: "team" as const,
+    },
+    {
+      icon: Settings,
+      label: "Configurações",
+      path: "/settings",
+      area: "settings" as const,
+    },
   ];
 }
 
@@ -275,6 +321,9 @@ function AuthLayoutContent({
     item => item.path === location.pathname
   );
   const isMobile = useIsMobile();
+  const visibleMenuItems = getMenuItems(salon?.segment ?? "beauty_salon").filter(
+    item => !salon || canAccess(salon.role, item.area)
+  );
 
   const { data: salonsData } = trpc.salon.list.useQuery(undefined, {
     enabled: !!user,
@@ -376,7 +425,7 @@ function AuthLayoutContent({
 
           <SidebarContent className="gap-0 overflow-y-auto">
             <SidebarMenu className="px-2 py-1">
-              {getMenuItems(salon?.segment ?? "beauty_salon").map(item => {
+              {visibleMenuItems.map(item => {
                 const isActive = location.pathname === item.path;
                 return (
                   <SidebarMenuItem key={item.path}>

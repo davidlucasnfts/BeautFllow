@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 30/09/2026
-> **Sessão atual:** Fila de melhorias do David em execução — feitos: isolamento por salão (LGPD), busca de cliente, múltiplos serviços por atendimento, comissões/desempenho, retorno programado pós-procedimento e estoque de produtos (item 4). Próximo: controle de acessos (item 3)
+> **Atualizado em:** 04/10/2026
+> **Sessão atual:** Fila de melhorias do David em execução — feitos: isolamento por salão (LGPD), busca de cliente, múltiplos serviços por atendimento, comissões/desempenho, retorno programado pós-procedimento, estoque de produtos (item 4) e **controle de acessos (item 3)**. Próximo: landings por segmento
 
 ---
 
@@ -11,7 +11,19 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 ---
 
 ## Última funcionalidade trabalhada
-**Estoque de produtos — aba "Produtos" (item 4 da lista do David)** — 30/09 (commit `0a9d632`)
+**Controle de acessos — equipe, convites e permissões por papel (item 3 da lista do David)** — 04/10 (commit local, aguardando homologação do David)
+
+### O que mudou (04/10 — item 3):
+- **Banco:** tabela `salon_invites` (e-mail, papel, token uuid único, status pending/accepted/cancelled, expira em 7 dias, quem convidou); enum `invite_status`; migration `014-salon-invites.sql` — **aplicada pelo Kimi direto no banco** (colunas e RLS verificados). Papel `owner` não é convidável (CHECK no banco)
+- **Limite por plano:** `PLAN_USER_LIMITS` em `contracts/constants.ts` — free 1 / essential 3 / pro 8 / business ilimitado. Ao convidar, backend conta `salon_users` ativos e rejeita com mensagem clara ("Seu plano Essencial permite até 3 acessos. Faça upgrade para adicionar mais.")
+- **Matriz de permissões** em `contracts/permissions.ts` (compartilhada front+back): owner tudo; admin tudo exceto Configurações; recepcionista = Início/Agenda/Clientes/Mensagens; profissional = Início/Agenda. 7 testes unitários (`server/lib/__tests__/permissions.test.ts`)
+- **Guards de role no backend:** novos `assertSalonOwner` e `assertSalonRole` em `server/lib/tenant.ts`. `salon.update`/`updateSettings` agora exigem **owner**; financial, products, services, professionals, consent e commission exigem **admin+** (antes aceitavam qualquer membro). Appointment/client/communication/dashboard/followup continuam member
+- **Router `team`** (`server/team-router.ts`, registrado no appRouter): list (membros + convites pendentes), invite (valida limite do plano, reaproveita convite pendente pro mesmo e-mail, audit log, **envia e-mail via Resend** com link `/convite?token=`; sem `RESEND_API_KEY` não quebra — devolve o link pra cópia manual), cancelInvite, removeMember (nunca remove owner; exclusão lógica `isActive=false`, histórico preservado), getInvite + **acceptInvite públicos** (validam token/pending/prazo; criam `local_user` se o e-mail não existe; criam o vínculo com o papel do convite; marcam accepted; fazem login com o mesmo cookie da auth local)
+- **Frontend:** menu lateral filtra itens por `canAccess(role, area)` + novo item "Equipe" (owner/admin); `ProtectedRoute` (`src/components/ProtectedRoute.tsx`) envolve todas as rotas privadas em `App.tsx` — rota direta sem permissão redireciona pro Início com toast. A role do salão ativo já vinha no provider (`salon.role` via `salon.list`)
+- **Página `/equipe`:** lista de membros (nome, e-mail, papel em pt-BR Dono/Administrador/Profissional/Recepcionista, badge Ativo/Inativo), convites pendentes (badge âmbar "Pendente"), Remover com AlertDialog (explica que o acesso fica inativo e o histórico continua), Cancelar convite com confirmação, botão Convidar (azul sólido) com dialog e-mail + papel + contador "X de Y acessos usados · Plano Z"; quando o e-mail não é enviado, mostra o link com botão Copiar
+- **Página pública `/convite`:** sem menu lateral; e-mail do convite bloqueado/pré-preenchido, formulário nome + senha (mesmas validações do cadastro), sucesso → login automático e vai pro app; token inválido/expirado → tela amigável com "Voltar pro login"
+- Check + 104 testes (97 baseline + 7 novos) + build OK; `api/index.js` regenerado
+- **Observação:** a constraint única de `salon_users` é por `userId` (1 salão por usuário — comportamento pré-existente). Se um usuário com conta em outro salão aceitar um convite, o vínculo migra para o salão novo
 
 ### O que mudou (30/09 — item 4):
 - **Banco:** tabelas `products` (nome, unidade livre, quantidade, mínimo, custo, ativo) e `stock_movements` (produto, tipo in/out, quantidade, motivo, data automática); enum `stock_movement_type`. Migration `012-estoque-produtos.sql` — **aplicada pelo Kimi direto no banco**, com RLS + policies de isolamento por tenant (padrão da 002)
@@ -43,7 +55,7 @@ React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + 
 4. ✅ Comissões/pagamentos de funcionários + desempenho por profissional — deployado (`b2d4f52`)
 5. ✅ Retorno programado pós-procedimento — deployado (ver histórico)
 6. ✅ Estoque de produtos (aba "Produtos") — deployado (`0a9d632`)
-7. ⏳ Item 3: controle de acessos (roles `owner/admin/professional/receptionist` já existem em `salonUsers`; falta tela de convite + limite por plano Free=1/Essencial=3/Pro=8)
+7. ✅ Item 3: controle de acessos — implementado 04/10, **aguardando homologação do David** (ver "O que mudou 04/10" acima)
 8. ⏳ Landings por segmento: mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/barbearia`, `/salao-de-beleza`, `/estetica` (segurado até terminar a fila)
 
 ### O que mudou (26/09):
@@ -240,6 +252,7 @@ supabase/        → schema_safe.sql + migrations/ (001-003)
 - [x] Rodar migration 010-professional-payments.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (tabela `professional_payments` verificada)
 - [x] Rodar migration 011-client-follow-ups.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (tabela `client_follow_ups`, colunas `followUpDays`/`followUpServiceId` e enum `follow_up_status` verificados)
 - [x] Rodar migration 012-estoque-produtos.sql no Supabase — **aplicada pelo Kimi direto no banco em 30/09** (tabelas `products`/`stock_movements`, enum `stock_movement_type` e policies RLS verificados)
+- [x] Rodar migration 014-salon-invites.sql no Supabase — **aplicada pelo Kimi direto no banco em 04/10** (tabela `salon_invites`, enum `invite_status` e RLS verificados). Convites usam a mesma `RESEND_API_KEY`/`RESEND_FROM` já configuradas na Vercel (sem nova ação manual)
 
 ---
 

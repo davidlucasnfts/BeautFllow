@@ -93,6 +93,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Retorno programado pós-procedimento: `client_follow_ups`, dias/serviço sugerido por serviço, card no dashboard com Agendar/Dispensar (migration 011) | 29/09 |
 | Dialogs com cabeçalho/rodapé fixos (9 telas): ação principal nunca escondida; cancelar agendamento apaga retorno vinculado; vencimento do retorno pela data de conclusão | 30/09 |
 | Estoque de produtos: aba "Produtos" com cadastro, entradas/saídas transacionais (sem saldo negativo), alerta de estoque baixo, histórico e resumo investido (migration 012) | 30/09 |
+| Controle de acessos: equipe com convites por e-mail (migration 014), limite por plano (Free 1 / Essencial 3 / Pro 8), matriz de permissões por papel, guards de role no backend, página Equipe e aceite público de convite | 04/10 |
 
 ---
 

@@ -15,7 +15,7 @@ import {
   getMovementsByProduct,
 } from "./queries/product";
 import { auditAction } from "./lib/audit";
-import { assertSalonMember } from "./lib/tenant";
+import { assertSalonAdmin } from "./lib/tenant";
 import { capitalizeWords } from "./lib/format";
 
 export const productRouter = createRouter({
@@ -28,21 +28,21 @@ export const productRouter = createRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       return getProductsBySalon(input.salonId, input.includeInactive);
     }),
 
   summary: authedQuery
     .input(z.object({ salonId: z.number() }))
     .query(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       return getProductsSummary(input.salonId);
     }),
 
   byId: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .query(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       return getProductById(input.id, input.salonId);
     }),
 
@@ -57,7 +57,7 @@ export const productRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       const { salonId, minQuantity, costPrice, ...data } = input;
       // saldo inicial sempre 0 — entrada dá-se por movimentação (RN: saldo
       // só muda no backend, aplicando a movimentação)
@@ -92,7 +92,7 @@ export const productRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       const { id, salonId, minQuantity, costPrice, ...data } = input;
       const result = await updateProduct(id, salonId, {
         ...data,
@@ -111,7 +111,7 @@ export const productRouter = createRouter({
   delete: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       const movements = await countMovementsByProduct(input.id, input.salonId);
       if (movements > 0) {
         await deactivateProduct(input.id, input.salonId);
@@ -133,7 +133,7 @@ export const productRouter = createRouter({
   reactivate: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       await reactivateProduct(input.id, input.salonId);
       await auditAction(
         "update",
@@ -159,7 +159,7 @@ export const productRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       const { salonId, productId, type, quantity, reason } = input;
       const qty = Number(quantity);
       if (!Number.isFinite(qty) || qty <= 0) {
@@ -190,7 +190,7 @@ export const productRouter = createRouter({
   movements: authedQuery
     .input(z.object({ productId: z.number(), salonId: z.number() }))
     .query(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       return getMovementsByProduct(input.productId, input.salonId);
     }),
 });

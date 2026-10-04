@@ -15,7 +15,7 @@ import {
   addUserToSalon,
   updateSalon,
 } from "./queries/salon";
-import { assertSalonAdmin } from "./lib/tenant";
+import { assertSalonOwner } from "./lib/tenant";
 
 const salonSegmentSchema = z.enum([
   "beauty_salon",
@@ -82,7 +82,7 @@ export const salonRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      await assertSalonAdmin(ctx.user.id, input.id);
+      await assertSalonOwner(ctx.user.id, input.id);
       const { id, theme, clientStatus, ...schedule } = input;
       // merge: preserva chaves desconhecidas já salvas em settings
       const current = await getSalonById(id);
@@ -126,7 +126,7 @@ export const salonRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      await assertSalonAdmin(ctx.user.id, input.id);
+      await assertSalonOwner(ctx.user.id, input.id);
       const { id, slug, ...rest } = input;
       if (slug) {
         const current = await getSalonById(id);

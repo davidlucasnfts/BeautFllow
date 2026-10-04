@@ -22079,7 +22079,7 @@ var require_main = __commonJS({
     var fs3 = __require("fs");
     var path2 = __require("path");
     var os4 = __require("os");
-    var crypto6 = __require("crypto");
+    var crypto7 = __require("crypto");
     var TIPS = [
       "\u25C8 encrypted .env [www.dotenvx.com]",
       "\u25C8 secrets for agents [www.dotenvx.com]",
@@ -22323,7 +22323,7 @@ var require_main = __commonJS({
       const authTag = ciphertext.subarray(-16);
       ciphertext = ciphertext.subarray(12, -16);
       try {
-        const aesgcm = crypto6.createDecipheriv("aes-256-gcm", key, nonce);
+        const aesgcm = crypto7.createDecipheriv("aes-256-gcm", key, nonce);
         aesgcm.setAuthTag(authTag);
         return `${aesgcm.update(ciphertext)}${aesgcm.final()}`;
       } catch (error53) {
@@ -22487,11 +22487,11 @@ var require_dist = __commonJS({
       } while (index2 < len);
       return obj;
     }
-    function stringifyCookie(cookie2, options) {
+    function stringifyCookie(cookie3, options) {
       const enc = options?.encode || encodeURIComponent;
       const cookieStrings = [];
-      for (const name of Object.keys(cookie2)) {
-        const val = cookie2[name];
+      for (const name of Object.keys(cookie3)) {
+        const val = cookie3[name];
         if (val === void 0)
           continue;
         if (!cookieNameRegExp.test(name)) {
@@ -22506,52 +22506,52 @@ var require_dist = __commonJS({
       return cookieStrings.join("; ");
     }
     function stringifySetCookie(_name, _val, _opts) {
-      const cookie2 = typeof _name === "object" ? _name : { ..._opts, name: _name, value: String(_val) };
+      const cookie3 = typeof _name === "object" ? _name : { ..._opts, name: _name, value: String(_val) };
       const options = typeof _val === "object" ? _val : _opts;
       const enc = options?.encode || encodeURIComponent;
-      if (!cookieNameRegExp.test(cookie2.name)) {
-        throw new TypeError(`argument name is invalid: ${cookie2.name}`);
+      if (!cookieNameRegExp.test(cookie3.name)) {
+        throw new TypeError(`argument name is invalid: ${cookie3.name}`);
       }
-      const value = cookie2.value ? enc(cookie2.value) : "";
+      const value = cookie3.value ? enc(cookie3.value) : "";
       if (!cookieValueRegExp.test(value)) {
-        throw new TypeError(`argument val is invalid: ${cookie2.value}`);
+        throw new TypeError(`argument val is invalid: ${cookie3.value}`);
       }
-      let str = cookie2.name + "=" + value;
-      if (cookie2.maxAge !== void 0) {
-        if (!Number.isInteger(cookie2.maxAge)) {
-          throw new TypeError(`option maxAge is invalid: ${cookie2.maxAge}`);
+      let str = cookie3.name + "=" + value;
+      if (cookie3.maxAge !== void 0) {
+        if (!Number.isInteger(cookie3.maxAge)) {
+          throw new TypeError(`option maxAge is invalid: ${cookie3.maxAge}`);
         }
-        str += "; Max-Age=" + cookie2.maxAge;
+        str += "; Max-Age=" + cookie3.maxAge;
       }
-      if (cookie2.domain) {
-        if (!domainValueRegExp.test(cookie2.domain)) {
-          throw new TypeError(`option domain is invalid: ${cookie2.domain}`);
+      if (cookie3.domain) {
+        if (!domainValueRegExp.test(cookie3.domain)) {
+          throw new TypeError(`option domain is invalid: ${cookie3.domain}`);
         }
-        str += "; Domain=" + cookie2.domain;
+        str += "; Domain=" + cookie3.domain;
       }
-      if (cookie2.path) {
-        if (!pathValueRegExp.test(cookie2.path)) {
-          throw new TypeError(`option path is invalid: ${cookie2.path}`);
+      if (cookie3.path) {
+        if (!pathValueRegExp.test(cookie3.path)) {
+          throw new TypeError(`option path is invalid: ${cookie3.path}`);
         }
-        str += "; Path=" + cookie2.path;
+        str += "; Path=" + cookie3.path;
       }
-      if (cookie2.expires) {
-        if (!isDate3(cookie2.expires) || !Number.isFinite(cookie2.expires.valueOf())) {
-          throw new TypeError(`option expires is invalid: ${cookie2.expires}`);
+      if (cookie3.expires) {
+        if (!isDate3(cookie3.expires) || !Number.isFinite(cookie3.expires.valueOf())) {
+          throw new TypeError(`option expires is invalid: ${cookie3.expires}`);
         }
-        str += "; Expires=" + cookie2.expires.toUTCString();
+        str += "; Expires=" + cookie3.expires.toUTCString();
       }
-      if (cookie2.httpOnly) {
+      if (cookie3.httpOnly) {
         str += "; HttpOnly";
       }
-      if (cookie2.secure) {
+      if (cookie3.secure) {
         str += "; Secure";
       }
-      if (cookie2.partitioned) {
+      if (cookie3.partitioned) {
         str += "; Partitioned";
       }
-      if (cookie2.priority) {
-        const priority = typeof cookie2.priority === "string" ? cookie2.priority.toLowerCase() : void 0;
+      if (cookie3.priority) {
+        const priority = typeof cookie3.priority === "string" ? cookie3.priority.toLowerCase() : void 0;
         switch (priority) {
           case "low":
             str += "; Priority=Low";
@@ -22563,11 +22563,11 @@ var require_dist = __commonJS({
             str += "; Priority=High";
             break;
           default:
-            throw new TypeError(`option priority is invalid: ${cookie2.priority}`);
+            throw new TypeError(`option priority is invalid: ${cookie3.priority}`);
         }
       }
-      if (cookie2.sameSite) {
-        const sameSite = typeof cookie2.sameSite === "string" ? cookie2.sameSite.toLowerCase() : cookie2.sameSite;
+      if (cookie3.sameSite) {
+        const sameSite = typeof cookie3.sameSite === "string" ? cookie3.sameSite.toLowerCase() : cookie3.sameSite;
         switch (sameSite) {
           case true:
           case "strict":
@@ -22580,7 +22580,7 @@ var require_dist = __commonJS({
             str += "; SameSite=None";
             break;
           default:
-            throw new TypeError(`option sameSite is invalid: ${cookie2.sameSite}`);
+            throw new TypeError(`option sameSite is invalid: ${cookie3.sameSite}`);
         }
       }
       return str;
@@ -28780,7 +28780,7 @@ import { createServer as createServerHTTP } from "http";
 import { Http2ServerRequest as Http2ServerRequest22, constants as h2constants2 } from "http2";
 import { Http2ServerRequest as Http2ServerRequest3 } from "http2";
 import { Readable as Readable3 } from "stream";
-import crypto5 from "crypto";
+import crypto6 from "crypto";
 async function readWithoutBlocking2(readPromise) {
   return Promise.race([readPromise, Promise.resolve().then(() => Promise.resolve(void 0))]);
 }
@@ -29122,7 +29122,7 @@ var init_dist2 = __esm({
     };
     X_ALREADY_SENT2 = "x-hono-already-sent";
     if (typeof global.crypto === "undefined") {
-      global.crypto = crypto5;
+      global.crypto = crypto6;
     }
     outgoingEnded2 = /* @__PURE__ */ Symbol("outgoingEnded");
     incomingDraining2 = /* @__PURE__ */ Symbol("incomingDraining");
@@ -31096,8 +31096,8 @@ var Context = class {
         if (k === "set-cookie") {
           const cookies = this.#res.headers.getSetCookie();
           _res.headers.delete("set-cookie");
-          for (const cookie2 of cookies) {
-            _res.headers.append("set-cookie", cookie2);
+          for (const cookie3 of cookies) {
+            _res.headers.append("set-cookie", cookie3);
           }
         } else {
           _res.headers.set(k, v);
@@ -33644,10 +33644,10 @@ var emptyUuid;
 function getRandomByte() {
   return safeMathRandom() * 16;
 }
-function uuid4(crypto6 = getCrypto()) {
+function uuid4(crypto7 = getCrypto()) {
   try {
-    if (crypto6?.randomUUID) {
-      return withRandomSafeContext(() => crypto6.randomUUID()).replace(/-/g, "");
+    if (crypto7?.randomUUID) {
+      return withRandomSafeContext(() => crypto7.randomUUID()).replace(/-/g, "");
     }
   } catch {
   }
@@ -39766,10 +39766,10 @@ function httpHeadersToSpanAttributes(headers, sendDefaultPii = false, lifecycle 
         const semicolonIndex = value.indexOf(";");
         const cookieString = isSetCookie && semicolonIndex !== -1 ? value.substring(0, semicolonIndex) : value;
         const cookies = isSetCookie ? [cookieString] : cookieString.split("; ");
-        for (const cookie2 of cookies) {
-          const equalSignIndex = cookie2.indexOf("=");
-          const cookieKey = equalSignIndex !== -1 ? cookie2.substring(0, equalSignIndex) : cookie2;
-          const cookieValue = equalSignIndex !== -1 ? cookie2.substring(equalSignIndex + 1) : "";
+        for (const cookie3 of cookies) {
+          const equalSignIndex = cookie3.indexOf("=");
+          const cookieKey = equalSignIndex !== -1 ? cookie3.substring(0, equalSignIndex) : cookie3;
+          const cookieValue = equalSignIndex !== -1 ? cookie3.substring(equalSignIndex + 1) : "";
           const lowerCasedCookieKey = cookieKey.toLowerCase();
           addSpanAttribute({
             spanAttributes,
@@ -56462,10 +56462,10 @@ function _createBatchStreamProducer() {
 }
 function jsonlStreamProducer(opts) {
   let stream = readableStreamFrom(createBatchStreamProducer(opts));
-  const { serialize: serialize3 } = opts;
-  if (serialize3) stream = stream.pipeThrough(new TransformStream({ transform(chunk, controller) {
+  const { serialize: serialize4 } = opts;
+  if (serialize4) stream = stream.pipeThrough(new TransformStream({ transform(chunk, controller) {
     if (chunk === PING_SYM) controller.enqueue(PING_SYM);
-    else controller.enqueue(serialize3(chunk));
+    else controller.enqueue(serialize4(chunk));
   } }));
   return stream.pipeThrough(new TransformStream({ transform(chunk, controller) {
     if (chunk === PING_SYM) controller.enqueue(" ");
@@ -56508,7 +56508,7 @@ var CONNECTED_EVENT = "connected";
 var RETURN_EVENT = "return";
 function sseStreamProducer(opts) {
   var _opts$ping$enabled, _opts$ping, _opts$ping$intervalMs, _opts$ping2, _opts$client;
-  const { serialize: serialize3 = identity } = opts;
+  const { serialize: serialize4 = identity } = opts;
   const ping = {
     enabled: (_opts$ping$enabled = (_opts$ping = opts.ping) === null || _opts$ping === void 0 ? void 0 : _opts$ping.enabled) !== null && _opts$ping$enabled !== void 0 ? _opts$ping$enabled : false,
     intervalMs: (_opts$ping$intervalMs = (_opts$ping2 = opts.ping) === null || _opts$ping2 === void 0 ? void 0 : _opts$ping2.intervalMs) !== null && _opts$ping$intervalMs !== void 0 ? _opts$ping$intervalMs : 1e3
@@ -56550,7 +56550,7 @@ function sseStreamProducer(opts) {
               id: value[0],
               data: value[1]
             } : { data: value };
-            chunk.data = JSON.stringify(serialize3(chunk.data));
+            chunk.data = JSON.stringify(serialize4(chunk.data));
             yield chunk;
             value = null;
             chunk = null;
@@ -56587,7 +56587,7 @@ function sseStreamProducer(opts) {
         const data = (_opts$formatError = (_opts$formatError2 = opts.formatError) === null || _opts$formatError2 === void 0 ? void 0 : _opts$formatError2.call(opts, { error: error53 })) !== null && _opts$formatError !== void 0 ? _opts$formatError : null;
         yield {
           event: SERIALIZED_ERROR_EVENT,
-          data: JSON.stringify(serialize3(data))
+          data: JSON.stringify(serialize4(data))
         };
       }
     });
@@ -74906,6 +74906,18 @@ function parseScheduleSettings(raw2) {
     return defaultScheduleSettings;
   }
 }
+var PLAN_USER_LIMITS = {
+  free: 1,
+  essential: 3,
+  pro: 8,
+  business: Infinity
+};
+var PLAN_LABELS = {
+  free: "Gr\xE1tis",
+  essential: "Essencial",
+  pro: "Pro",
+  business: "Business"
+};
 
 // node_modules/@trpc/server/dist/initTRPC-BRf4imah.mjs
 var import_objectSpread2$2 = __toESM2(require_objectSpread2(), 1);
@@ -85231,6 +85243,7 @@ __export(schema_exports, {
   consentSignatures: () => consentSignatures,
   financialRecords: () => financialRecords,
   followUpStatusEnum: () => followUpStatusEnum,
+  inviteStatusEnum: () => inviteStatusEnum,
   localUsers: () => localUsers,
   passwordResetTokens: () => passwordResetTokens,
   paymentMethodEnum: () => paymentMethodEnum,
@@ -85239,6 +85252,7 @@ __export(schema_exports, {
   professionalPayments: () => professionalPayments,
   professionals: () => professionals,
   recordTypeEnum: () => recordTypeEnum,
+  salonInvites: () => salonInvites,
   salonSegmentEnum: () => salonSegmentEnum,
   salonUserRoleEnum: () => salonUserRoleEnum,
   salonUsers: () => salonUsers,
@@ -85336,6 +85350,11 @@ var salonSegmentEnum = pgEnum("salon_segment", [
   "barbershop",
   "aesthetic_clinic"
 ]);
+var inviteStatusEnum = pgEnum("invite_status", [
+  "pending",
+  "accepted",
+  "cancelled"
+]);
 var users = pgTable("users", {
   id: serial("id").primaryKey(),
   unionId: varchar("unionId", { length: 255 }).notNull().unique(),
@@ -85402,6 +85421,25 @@ var salonUsers = pgTable(
     userSalonIdx: index("user_salon_idx").on(table.userId, table.salonId),
     salonIdx: index("salon_users_salon_idx").on(table.salonId),
     userIdUnique: uniqueIndex("salon_users_user_id_key").on(table.userId)
+  })
+);
+var salonInvites = pgTable(
+  "salon_invites",
+  {
+    id: serial("id").primaryKey(),
+    salonId: bigint4("salonId", { mode: "number" }).notNull(),
+    email: varchar("email", { length: 320 }).notNull(),
+    role: salonUserRoleEnum("role").default("professional").notNull(),
+    token: varchar("token", { length: 36 }).notNull().unique(),
+    status: inviteStatusEnum("status").default("pending").notNull(),
+    invitedBy: bigint4("invitedBy", { mode: "number" }).notNull(),
+    expiresAt: timestamp("expiresAt").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull()
+  },
+  (table) => ({
+    salonIdx: index("salon_invites_salon_idx").on(table.salonId),
+    tokenIdx: index("salon_invites_token_idx").on(table.token),
+    statusIdx: index("salon_invites_status_idx").on(table.status)
   })
 );
 var clients = pgTable(
@@ -86718,6 +86756,15 @@ async function assertSalonAdmin(userId, salonId) {
     });
   }
 }
+async function assertSalonOwner(userId, salonId) {
+  const membership = await findMembership(userId, salonId);
+  if (!membership || membership.role !== "owner") {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Somente o dono do estabelecimento pode fazer isso."
+    });
+  }
+}
 
 // server/salon-router.ts
 var salonSegmentSchema = external_exports.enum([
@@ -86774,7 +86821,7 @@ var salonRouter = createRouter({
       }).optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonAdmin(ctx.user.id, input.id);
+    await assertSalonOwner(ctx.user.id, input.id);
     const { id, theme, clientStatus, ...schedule } = input;
     const current = await getSalonById(id);
     let existing = {};
@@ -86809,7 +86856,7 @@ var salonRouter = createRouter({
       state: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonAdmin(ctx.user.id, input.id);
+    await assertSalonOwner(ctx.user.id, input.id);
     const { id, slug, ...rest } = input;
     if (slug) {
       const current = await getSalonById(id);
@@ -86954,11 +87001,11 @@ var serviceRouter = createRouter({
       includeInactive: external_exports.boolean().default(false)
     })
   ).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getServicesBySalon(input.salonId, input.includeInactive);
   }),
   byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getServiceById(input.id, input.salonId);
   }),
   create: authedQuery.input(
@@ -86977,7 +87024,7 @@ var serviceRouter = createRouter({
       followUpServiceId: external_exports.number().optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const { salonId, price, followUpServiceId, followUpDays, ...data } = input;
     if (followUpServiceId) {
       const target = await getServiceById(followUpServiceId, salonId);
@@ -87024,7 +87071,7 @@ var serviceRouter = createRouter({
       followUpServiceId: external_exports.number().nullable().optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const { id, salonId, price, followUpServiceId, ...data } = input;
     if (followUpServiceId) {
       const target = await getServiceById(followUpServiceId, salonId);
@@ -87052,7 +87099,7 @@ var serviceRouter = createRouter({
     return result;
   }),
   delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     await deleteService(input.id, input.salonId);
     await auditAction(
       "delete",
@@ -87064,7 +87111,7 @@ var serviceRouter = createRouter({
     return { success: true };
   }),
   reactivate: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     await reactivateService(input.id, input.salonId);
     await auditAction(
       "update",
@@ -87088,11 +87135,11 @@ var professionalRouter = createRouter({
       includeInactive: external_exports.boolean().default(false)
     })
   ).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getProfessionalsBySalon(input.salonId, input.includeInactive);
   }),
   byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getProfessionalById(input.id, input.salonId);
   }),
   create: authedQuery.input(
@@ -87107,7 +87154,7 @@ var professionalRouter = createRouter({
       workingHours: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const { salonId, commissionRate, ...data } = input;
     const result = await createProfessional({
       salonId,
@@ -87139,7 +87186,7 @@ var professionalRouter = createRouter({
       isActive: external_exports.boolean().optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const { id, salonId, commissionRate, ...data } = input;
     const result = await updateProfessional(id, salonId, {
       ...data,
@@ -87157,7 +87204,7 @@ var professionalRouter = createRouter({
     return result;
   }),
   delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     await deleteProfessional(input.id, input.salonId);
     await auditAction(
       "delete",
@@ -87169,7 +87216,7 @@ var professionalRouter = createRouter({
     return { success: true };
   }),
   reactivate: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     await reactivateProfessional(input.id, input.salonId);
     await auditAction(
       "update",
@@ -89054,7 +89101,7 @@ var financialRouter = createRouter({
       toDate: external_exports.string().optional()
     })
   ).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getFinancialRecordsBySalon(
       input.salonId,
       input.fromDate,
@@ -89068,7 +89115,7 @@ var financialRouter = createRouter({
       toDate: external_exports.string().optional()
     })
   ).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getFinancialSummaryBySalon(
       input.salonId,
       input.fromDate,
@@ -89090,7 +89137,7 @@ var financialRouter = createRouter({
       notes: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const { salonId, amount, commissionAmount, recordDate, ...data } = input;
     const result = await createFinancialRecord({
       salonId,
@@ -89120,7 +89167,7 @@ var financialRouter = createRouter({
       recordDate: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const { id, salonId, amount, ...data } = input;
     const result = await updateFinancialRecord(id, salonId, {
       ...data,
@@ -89141,7 +89188,7 @@ var financialRouter = createRouter({
     return result;
   }),
   delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     await deleteFinancialRecord(input.id, input.salonId);
     await auditAction(
       "delete",
@@ -89217,11 +89264,11 @@ var communicationRouter = createRouter({
 // server/consent-router.ts
 var consentRouter = createRouter({
   list: authedQuery.input(external_exports.object({ salonId: external_exports.number() })).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getConsentFormsBySalon(input.salonId);
   }),
   byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getConsentFormById(input.id, input.salonId);
   }),
   create: authedQuery.input(
@@ -89232,7 +89279,7 @@ var consentRouter = createRouter({
       serviceId: external_exports.number().optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const result = await createConsentForm(input);
     await auditAction(
       "create",
@@ -89253,7 +89300,7 @@ var consentRouter = createRouter({
       content: external_exports.string().min(1).optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const { id, salonId, ...data } = input;
     const result = await updateConsentForm(id, salonId, data);
     await auditAction(
@@ -89268,7 +89315,7 @@ var consentRouter = createRouter({
     return result;
   }),
   delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     await deleteConsentForm(input.id, input.salonId);
     await auditAction(
       "delete",
@@ -89280,7 +89327,7 @@ var consentRouter = createRouter({
     return { success: true };
   }),
   signaturesByClient: authedQuery.input(external_exports.object({ clientId: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getConsentSignaturesByClient(input.clientId, input.salonId);
   }),
   sign: authedQuery.input(
@@ -89294,7 +89341,7 @@ var consentRouter = createRouter({
       userAgent: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const form = await getConsentFormById(input.formId, input.salonId);
     if (!form || !form.isActive) {
       throw new TRPCError({
@@ -89783,7 +89830,7 @@ var commissionRouter = createRouter({
       toDate: external_exports.string().optional()
     })
   ).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getCommissionSummary(
       input.salonId,
       input.professionalId,
@@ -89799,7 +89846,7 @@ var commissionRouter = createRouter({
       toDate: external_exports.string()
     })
   ).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getCommissionPerformance(
       input.salonId,
       input.professionalId,
@@ -89813,7 +89860,7 @@ var commissionRouter = createRouter({
       professionalId: external_exports.number().optional()
     })
   ).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getProfessionalPayments(
       input.salonId,
       input.professionalId
@@ -89829,7 +89876,7 @@ var commissionRouter = createRouter({
       notes: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const { salonId, amount, ...data } = input;
     const result = await createProfessionalPayment({
       salonId,
@@ -89851,7 +89898,7 @@ var commissionRouter = createRouter({
     return result;
   }),
   deletePayment: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     await deleteProfessionalPayment(input.id, input.salonId);
     await auditAction(
       "delete",
@@ -90018,15 +90065,15 @@ var productRouter = createRouter({
       includeInactive: external_exports.boolean().default(false)
     })
   ).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getProductsBySalon(input.salonId, input.includeInactive);
   }),
   summary: authedQuery.input(external_exports.object({ salonId: external_exports.number() })).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getProductsSummary(input.salonId);
   }),
   byId: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getProductById(input.id, input.salonId);
   }),
   create: authedQuery.input(
@@ -90038,7 +90085,7 @@ var productRouter = createRouter({
       costPrice: external_exports.string().or(external_exports.number()).default("0")
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const { salonId, minQuantity, costPrice, ...data } = input;
     const result = await createProduct({
       salonId,
@@ -90068,7 +90115,7 @@ var productRouter = createRouter({
       costPrice: external_exports.string().or(external_exports.number()).optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const { id, salonId, minQuantity, costPrice, ...data } = input;
     const result = await updateProduct(id, salonId, {
       ...data,
@@ -90084,7 +90131,7 @@ var productRouter = createRouter({
   }),
   /** Sem movimentações = exclusão física; com movimentações = inativa (soft delete) */
   delete: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const movements = await countMovementsByProduct(input.id, input.salonId);
     if (movements > 0) {
       await deactivateProduct(input.id, input.salonId);
@@ -90103,7 +90150,7 @@ var productRouter = createRouter({
     return { success: true, softDeleted: movements > 0 };
   }),
   reactivate: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     await reactivateProduct(input.id, input.salonId);
     await auditAction(
       "update",
@@ -90126,7 +90173,7 @@ var productRouter = createRouter({
       reason: external_exports.string().max(500).optional()
     })
   ).mutation(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     const { salonId, productId, type, quantity, reason } = input;
     const qty = Number(quantity);
     if (!Number.isFinite(qty) || qty <= 0) {
@@ -90154,8 +90201,289 @@ var productRouter = createRouter({
     return result;
   }),
   movements: authedQuery.input(external_exports.object({ productId: external_exports.number(), salonId: external_exports.number() })).query(async ({ input, ctx }) => {
-    await assertSalonMember(ctx.user.id, input.salonId);
+    await assertSalonAdmin(ctx.user.id, input.salonId);
     return getMovementsByProduct(input.productId, input.salonId);
+  })
+});
+
+// server/team-router.ts
+var cookie2 = __toESM(require_dist(), 1);
+import crypto5 from "node:crypto";
+var INVITE_EXPIRES_MS = 7 * 24 * 60 * 60 * 1e3;
+var inviteRoleSchema = external_exports.enum(["admin", "professional", "receptionist"]);
+function requestOrigin(ctx) {
+  return ctx.req.headers.get("origin") || env.corsOrigin || "http://localhost:3000";
+}
+async function setSessionCookie(ctx, userId, email3) {
+  const token = await signToken({ userId, email: email3 });
+  const cookieOpts = getSessionCookieOptions(ctx.req.headers);
+  ctx.resHeaders.append(
+    "Set-Cookie",
+    cookie2.serialize(Session.cookieName, token, {
+      httpOnly: cookieOpts.httpOnly,
+      path: cookieOpts.path,
+      sameSite: cookieOpts.sameSite?.toLowerCase(),
+      secure: cookieOpts.secure,
+      maxAge: 7 * 24 * 60 * 60
+      // 7 dias
+    })
+  );
+}
+var teamRouter = createRouter({
+  list: authedQuery.input(external_exports.object({ salonId: external_exports.number() })).query(async ({ ctx, input }) => {
+    await assertSalonAdmin(ctx.user.id, input.salonId);
+    const db = getDb();
+    const members = await db.select({
+      membershipId: salonUsers.id,
+      userId: salonUsers.userId,
+      role: salonUsers.role,
+      isActive: salonUsers.isActive,
+      createdAt: salonUsers.createdAt,
+      name: localUsers.name,
+      email: localUsers.email
+    }).from(salonUsers).innerJoin(localUsers, eq(localUsers.id, salonUsers.userId)).where(eq(salonUsers.salonId, input.salonId)).orderBy(desc(salonUsers.createdAt));
+    const invites = await db.select().from(salonInvites).where(
+      and(
+        eq(salonInvites.salonId, input.salonId),
+        eq(salonInvites.status, "pending")
+      )
+    ).orderBy(desc(salonInvites.createdAt));
+    return { members, invites };
+  }),
+  invite: authedQuery.input(
+    external_exports.object({
+      salonId: external_exports.number(),
+      email: external_exports.string().email(),
+      role: inviteRoleSchema
+    })
+  ).mutation(async ({ ctx, input }) => {
+    await assertSalonAdmin(ctx.user.id, input.salonId);
+    const db = getDb();
+    const salon = await db.query.salons.findFirst({
+      where: eq(salons.id, input.salonId)
+    });
+    if (!salon) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Sal\xE3o n\xE3o encontrado." });
+    }
+    const plan = salon.plan;
+    const limit = PLAN_USER_LIMITS[plan] ?? PLAN_USER_LIMITS.free;
+    if (Number.isFinite(limit)) {
+      const activeMembers = await db.select({ id: salonUsers.id }).from(salonUsers).where(
+        and(
+          eq(salonUsers.salonId, input.salonId),
+          eq(salonUsers.isActive, true)
+        )
+      );
+      if (activeMembers.length >= limit) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: `Seu plano ${PLAN_LABELS[plan]} permite at\xE9 ${limit} ${limit === 1 ? "acesso" : "acessos"}. Fa\xE7a upgrade para adicionar mais.`
+        });
+      }
+    }
+    const [existingUser] = await db.select({ id: localUsers.id }).from(localUsers).where(eq(localUsers.email, input.email)).limit(1);
+    if (existingUser) {
+      const existingMembership = await db.query.salonUsers.findFirst({
+        where: and(
+          eq(salonUsers.userId, existingUser.id),
+          eq(salonUsers.salonId, input.salonId),
+          eq(salonUsers.isActive, true)
+        )
+      });
+      if (existingMembership) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Este e-mail j\xE1 faz parte da equipe."
+        });
+      }
+    }
+    const pending = await db.query.salonInvites.findFirst({
+      where: and(
+        eq(salonInvites.salonId, input.salonId),
+        eq(salonInvites.email, input.email),
+        eq(salonInvites.status, "pending")
+      )
+    });
+    const token = crypto5.randomUUID();
+    let inviteId;
+    if (pending) {
+      await db.update(salonInvites).set({
+        role: input.role,
+        token,
+        expiresAt: new Date(Date.now() + INVITE_EXPIRES_MS)
+      }).where(eq(salonInvites.id, pending.id));
+      inviteId = pending.id;
+    } else {
+      const [created] = await db.insert(salonInvites).values({
+        salonId: input.salonId,
+        email: input.email,
+        role: input.role,
+        token,
+        invitedBy: ctx.user.id,
+        expiresAt: new Date(Date.now() + INVITE_EXPIRES_MS)
+      }).returning();
+      inviteId = created.id;
+    }
+    await auditAction(
+      "create",
+      "team_invite",
+      input.salonId,
+      ctx.user.id,
+      inviteId,
+      void 0,
+      { email: input.email, role: input.role }
+    );
+    const link = `${requestOrigin(ctx)}/convite?token=${token}`;
+    let emailSent = false;
+    if (env.resendApiKey) {
+      const { Resend: Resend2 } = await Promise.resolve().then(() => (init_dist(), dist_exports));
+      const resend = new Resend2(env.resendApiKey);
+      const { error: error53 } = await resend.emails.send({
+        from: env.resendFrom,
+        to: input.email,
+        subject: `Convite para equipe \u2014 ${salon.name}`,
+        text: `Voc\xEA foi convidado(a) para a equipe de ${salon.name} no StudioFlow.
+
+Crie sua senha e entre no sistema por este link (v\xE1lido por 7 dias):
+${link}
+
+Se n\xE3o esperava este convite, ignore este e-mail.`
+      });
+      emailSent = !error53;
+    } else if (!env.isProduction) {
+      console.log(`[team-invite] Link do convite: ${link}`);
+    }
+    return { success: true, emailSent, link: emailSent ? void 0 : link };
+  }),
+  cancelInvite: authedQuery.input(external_exports.object({ salonId: external_exports.number(), inviteId: external_exports.number() })).mutation(async ({ ctx, input }) => {
+    await assertSalonAdmin(ctx.user.id, input.salonId);
+    const db = getDb();
+    const invite = await db.query.salonInvites.findFirst({
+      where: and(
+        eq(salonInvites.id, input.inviteId),
+        eq(salonInvites.salonId, input.salonId)
+      )
+    });
+    if (!invite || invite.status !== "pending") {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Convite n\xE3o encontrado ou j\xE1 resolvido."
+      });
+    }
+    await db.update(salonInvites).set({ status: "cancelled" }).where(eq(salonInvites.id, invite.id));
+    await auditAction(
+      "update",
+      "team_invite",
+      input.salonId,
+      ctx.user.id,
+      invite.id,
+      { status: "pending" },
+      { status: "cancelled" }
+    );
+    return { success: true };
+  }),
+  removeMember: authedQuery.input(external_exports.object({ salonId: external_exports.number(), membershipId: external_exports.number() })).mutation(async ({ ctx, input }) => {
+    await assertSalonAdmin(ctx.user.id, input.salonId);
+    const db = getDb();
+    const membership = await db.query.salonUsers.findFirst({
+      where: and(
+        eq(salonUsers.id, input.membershipId),
+        eq(salonUsers.salonId, input.salonId)
+      )
+    });
+    if (!membership || !membership.isActive) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Membro n\xE3o encontrado nesta equipe."
+      });
+    }
+    if (membership.role === "owner") {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "O dono do estabelecimento n\xE3o pode ser removido."
+      });
+    }
+    await db.update(salonUsers).set({ isActive: false }).where(eq(salonUsers.id, membership.id));
+    await auditAction(
+      "delete",
+      "salon_user",
+      input.salonId,
+      ctx.user.id,
+      membership.userId,
+      { role: membership.role },
+      void 0
+    );
+    return { success: true };
+  }),
+  getInvite: publicQuery.input(external_exports.object({ token: external_exports.string().min(10) })).query(async ({ input }) => {
+    const invite = await getDb().query.salonInvites.findFirst({
+      where: eq(salonInvites.token, input.token)
+    });
+    if (!invite || invite.status !== "pending" || invite.expiresAt < /* @__PURE__ */ new Date()) {
+      return null;
+    }
+    const salon = await getDb().query.salons.findFirst({
+      where: eq(salons.id, invite.salonId),
+      columns: { name: true }
+    });
+    return { email: invite.email, role: invite.role, salonName: salon?.name ?? "" };
+  }),
+  acceptInvite: publicQuery.input(
+    external_exports.object({
+      token: external_exports.string().min(10),
+      name: external_exports.string().min(2).max(255),
+      password: external_exports.string().min(8)
+    })
+  ).mutation(async ({ ctx, input }) => {
+    const db = getDb();
+    const invite = await db.query.salonInvites.findFirst({
+      where: eq(salonInvites.token, input.token)
+    });
+    if (!invite || invite.status !== "pending") {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Convite inv\xE1lido ou j\xE1 utilizado."
+      });
+    }
+    if (invite.expiresAt < /* @__PURE__ */ new Date()) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Este convite expirou. Pe\xE7a um novo convite ao respons\xE1vel."
+      });
+    }
+    const name = capitalizeWords(input.name);
+    const passwordHash = await bcryptjs_default.hash(input.password, 12);
+    let [user] = await db.select().from(localUsers).where(eq(localUsers.email, invite.email)).limit(1);
+    if (user) {
+      await db.update(localUsers).set({
+        name: user.name ?? name,
+        passwordHash,
+        lastSignInAt: /* @__PURE__ */ new Date()
+      }).where(eq(localUsers.id, user.id));
+    } else {
+      const [created] = await db.insert(localUsers).values({ email: invite.email, name, passwordHash }).returning();
+      user = created;
+    }
+    await db.insert(salonUsers).values({ salonId: invite.salonId, userId: user.id, role: invite.role }).onConflictDoUpdate({
+      target: salonUsers.userId,
+      set: { salonId: invite.salonId, role: invite.role, isActive: true }
+    });
+    await db.update(salonInvites).set({ status: "accepted" }).where(eq(salonInvites.id, invite.id));
+    await auditAction(
+      "create",
+      "salon_user",
+      invite.salonId,
+      user.id,
+      user.id,
+      void 0,
+      { role: invite.role, via: "invite" }
+    );
+    await setSessionCookie(ctx, user.id, user.email);
+    return {
+      success: true,
+      user: { id: user.id, email: user.email, name: user.name },
+      salonId: invite.salonId
+    };
   })
 });
 
@@ -90175,6 +90503,7 @@ var appRouter = createRouter({
   product: productRouter,
   communication: communicationRouter,
   consent: consentRouter,
+  team: teamRouter,
   dashboard: dashboardRouter
 });
 

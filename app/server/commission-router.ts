@@ -8,7 +8,7 @@ import {
   deleteProfessionalPayment,
 } from "./queries/commission";
 import { auditAction } from "./lib/audit";
-import { assertSalonMember } from "./lib/tenant";
+import { assertSalonAdmin } from "./lib/tenant";
 
 export const commissionRouter = createRouter({
   summary: authedQuery
@@ -21,7 +21,7 @@ export const commissionRouter = createRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       return getCommissionSummary(
         input.salonId,
         input.professionalId,
@@ -40,7 +40,7 @@ export const commissionRouter = createRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       return getCommissionPerformance(
         input.salonId,
         input.professionalId,
@@ -57,7 +57,7 @@ export const commissionRouter = createRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       return getProfessionalPayments(
         input.salonId,
         input.professionalId
@@ -78,7 +78,7 @@ export const commissionRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       const { salonId, amount, ...data } = input;
       const result = await createProfessionalPayment({
         salonId,
@@ -103,7 +103,7 @@ export const commissionRouter = createRouter({
   deletePayment: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       await deleteProfessionalPayment(input.id, input.salonId);
       await auditAction(
         "delete",

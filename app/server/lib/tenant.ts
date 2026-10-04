@@ -2,13 +2,9 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { getDb } from "../queries/connection";
 import { salonUsers } from "@db/schema";
+import { canAccess, type PermissionArea } from "@contracts/permissions";
 
-type SalonMembership = typeof salonUsers.$inferSelect;
-
-async function findMembership(
-  userId: number,
-  salonId: number
-): Promise<SalonMembership | undefined> {
+async function findMembership(userId: number, salonId: number) {
   return getDb().query.salonUsers.findFirst({
     where: and(
       eq(salonUsers.salonId, salonId),
@@ -51,6 +47,44 @@ export async function assertSalonAdmin(
     throw new TRPCError({
       code: "FORBIDDEN",
       message: "Acesso negado a este estabelecimento.",
+    });
+  }
+}
+
+/** Exige papel owner no vínculo (ex.: edição do perfil do salão) */
+export async function assertSalonOwner(
+  userId: number,
+  salonId: number
+): Promise<void> {
+  const membership = await findMembership(userId, salonId);
+  if (!membership || membership.role !== "owner") {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Somente o dono do estabelecimento pode fazer isso.",
+    });
+  }
+}
+
+/**
+ * Guard de área: exige membro ativo do salão E papel com acesso à área
+ * conforme a matriz de permissões (contracts/permissions.ts).
+ */
+export async function assertSalonRole(
+  userId: number,
+  salonId: number,
+  area: PermissionArea
+): Promise<void> {
+  const membership = await findMembership(userId, salonId);
+  if (!membership) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Acesso negado a este estabelecimento.",
+    });
+  }
+  if (!canAccess(membership.role, area)) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Seu papel não tem permissão para acessar esta área.",
     });
   }
 }

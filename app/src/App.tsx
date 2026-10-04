@@ -12,10 +12,23 @@ import Products from "./pages/Products";
 import Communications from "./pages/Communications";
 import Consent from "./pages/Consent";
 import Settings from "./pages/Settings";
+import Team from "./pages/Team";
 import Proposal from "./pages/Proposal";
 import PublicBooking from "./pages/PublicBooking";
 import ResetPassword from "./pages/ResetPassword";
+import InviteAccept from "./pages/InviteAccept";
 import AuthLayout from "./components/AuthLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import type { PermissionArea } from "@contracts/permissions";
+import type { ReactNode } from "react";
+
+function privateRoute(area: PermissionArea, children: ReactNode) {
+  return (
+    <AuthLayout>
+      <ProtectedRoute area={area}>{children}</ProtectedRoute>
+    </AuthLayout>
+  );
+}
 
 export default function App() {
   return (
@@ -25,85 +38,38 @@ export default function App() {
       <Route path="/proposta" element={<Proposal />} />
       <Route path="/agendar/:slug" element={<PublicBooking />} />
       <Route path="/redefinir-senha" element={<ResetPassword />} />
+      <Route path="/convite" element={<InviteAccept />} />
       <Route
         path="/dashboard"
-        element={
-          <AuthLayout>
-            <Dashboard />
-          </AuthLayout>
-        }
+        element={privateRoute("dashboard", <Dashboard />)}
       />
-      <Route
-        path="/clients"
-        element={
-          <AuthLayout>
-            <Clients />
-          </AuthLayout>
-        }
-      />
+      <Route path="/clients" element={privateRoute("clients", <Clients />)} />
       <Route
         path="/appointments"
-        element={
-          <AuthLayout>
-            <Appointments />
-          </AuthLayout>
-        }
+        element={privateRoute("appointments", <Appointments />)}
       />
       <Route
         path="/services"
-        element={
-          <AuthLayout>
-            <Services />
-          </AuthLayout>
-        }
+        element={privateRoute("services", <Services />)}
       />
       <Route
         path="/professionals"
-        element={
-          <AuthLayout>
-            <Professionals />
-          </AuthLayout>
-        }
+        element={privateRoute("professionals", <Professionals />)}
       />
-      <Route
-        path="/products"
-        element={
-          <AuthLayout>
-            <Products />
-          </AuthLayout>
-        }
-      />
+      <Route path="/products" element={privateRoute("products", <Products />)} />
       <Route
         path="/financial"
-        element={
-          <AuthLayout>
-            <Financial />
-          </AuthLayout>
-        }
+        element={privateRoute("financial", <Financial />)}
       />
       <Route
         path="/communications"
-        element={
-          <AuthLayout>
-            <Communications />
-          </AuthLayout>
-        }
+        element={privateRoute("communications", <Communications />)}
       />
-      <Route
-        path="/consent"
-        element={
-          <AuthLayout>
-            <Consent />
-          </AuthLayout>
-        }
-      />
+      <Route path="/consent" element={privateRoute("consent", <Consent />)} />
+      <Route path="/equipe" element={privateRoute("team", <Team />)} />
       <Route
         path="/settings"
-        element={
-          <AuthLayout>
-            <Settings />
-          </AuthLayout>
-        }
+        element={privateRoute("settings", <Settings />)}
       />
       <Route path="*" element={<NotFound />} />
     </Routes>

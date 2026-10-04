@@ -57,7 +57,6 @@ export const defaultClientStatusSettings: ClientStatusSettings = {
 };
 
 const POSITIVE_INT = /^\d+$/;
-
 /** Lê o JSON salvo no banco e devolve a configuração de status válida (ou o padrão) */
 export function parseClientStatusSettings(
   raw: string | null | undefined
@@ -130,3 +129,24 @@ export function parseScheduleSettings(
     return defaultScheduleSettings;
   }
 }
+
+// ==========================================
+// Planos — limites de acessos (controle de equipe)
+// ==========================================
+
+export type Plan = "free" | "essential" | "pro" | "business";
+
+/** Quantidade de usuários com acesso ao salão permitida por plano */
+export const PLAN_USER_LIMITS: Record<Plan, number> = {
+  free: 1,
+  essential: 3,
+  pro: 8,
+  business: Infinity,
+};
+
+export const PLAN_LABELS: Record<Plan, string> = {
+  free: "Grátis",
+  essential: "Essencial",
+  pro: "Pro",
+  business: "Business",
+};

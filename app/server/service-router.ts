@@ -10,7 +10,7 @@ import {
   reactivateService,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
-import { assertSalonMember } from "./lib/tenant";
+import { assertSalonAdmin } from "./lib/tenant";
 import { capitalizeWords } from "./lib/format";
 
 export const serviceRouter = createRouter({
@@ -23,14 +23,14 @@ export const serviceRouter = createRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       return getServicesBySalon(input.salonId, input.includeInactive);
     }),
 
   byId: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .query(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       return getServiceById(input.id, input.salonId);
     }),
 
@@ -52,7 +52,7 @@ export const serviceRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       const { salonId, price, followUpServiceId, followUpDays, ...data } =
         input;
       // serviço do retorno precisa pertencer ao mesmo salão
@@ -104,7 +104,7 @@ export const serviceRouter = createRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       const { id, salonId, price, followUpServiceId, ...data } = input;
       if (followUpServiceId) {
         const target = await getServiceById(followUpServiceId, salonId);
@@ -135,7 +135,7 @@ export const serviceRouter = createRouter({
   delete: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       await deleteService(input.id, input.salonId);
       await auditAction(
         "delete",
@@ -150,7 +150,7 @@ export const serviceRouter = createRouter({
   reactivate: authedQuery
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
-      await assertSalonMember(ctx.user.id, input.salonId);
+      await assertSalonAdmin(ctx.user.id, input.salonId);
       await reactivateService(input.id, input.salonId);
       await auditAction(
         "update",

@@ -14,7 +14,7 @@ import { Session } from "@contracts/constants";
 
 const JWT_ALG = "HS256";
 
-async function signToken(payload: {
+export async function signToken(payload: {
   userId: number;
   email: string;
 }): Promise<string> {

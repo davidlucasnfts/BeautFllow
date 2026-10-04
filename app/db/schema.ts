@@ -106,6 +106,11 @@ export const salonSegmentEnum = pgEnum("salon_segment", [
   "barbershop",
   "aesthetic_clinic",
 ]);
+export const inviteStatusEnum = pgEnum("invite_status", [
+  "pending",
+  "accepted",
+  "cancelled",
+]);
 
 // ==========================================
 // Core Users (OAuth-authenticated)
@@ -218,6 +223,32 @@ export const salonUsers = pgTable(
 
 export type SalonUser = typeof salonUsers.$inferSelect;
 export type InsertSalonUser = typeof salonUsers.$inferInsert;
+
+// ==========================================
+// Salon Invites (convites de equipe)
+// ==========================================
+export const salonInvites = pgTable(
+  "salon_invites",
+  {
+    id: serial("id").primaryKey(),
+    salonId: bigint("salonId", { mode: "number" }).notNull(),
+    email: varchar("email", { length: 320 }).notNull(),
+    role: salonUserRoleEnum("role").default("professional").notNull(),
+    token: varchar("token", { length: 36 }).notNull().unique(),
+    status: inviteStatusEnum("status").default("pending").notNull(),
+    invitedBy: bigint("invitedBy", { mode: "number" }).notNull(),
+    expiresAt: timestamp("expiresAt").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => ({
+    salonIdx: index("salon_invites_salon_idx").on(table.salonId),
+    tokenIdx: index("salon_invites_token_idx").on(table.token),
+    statusIdx: index("salon_invites_status_idx").on(table.status),
+  })
+);
+
+export type SalonInvite = typeof salonInvites.$inferSelect;
+export type InsertSalonInvite = typeof salonInvites.$inferInsert;
 
 // ==========================================
 // Clients (CRM)
