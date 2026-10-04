@@ -386,30 +386,28 @@ export default function Appointments() {
         services={services}
       />
       <AppointmentDialog
-            open={open}
-            onOpenChange={v => {
-              if (v) {
-                // abrindo: formulário sempre limpo; a data inicial segue o
-                // contexto (dia selecionado na fila no mobile, hoje no desktop)
-                resetForm();
-                updateField(
-                  "appointmentDate",
-                  format(isMobile ? filaDate : new Date(), "yyyy-MM-dd")
-                );
-              }
-              setOpen(v);
-            }}
-            form={form}
-            onFieldChange={updateField}
-            onCreate={handleCreate}
-            isPending={createMutation.isPending}
-            clients={clients}
+        open={open}
+        onOpenChange={v => {
+          if (v) {
+            // abrindo: formulário sempre limpo; a data inicial segue o
+            // contexto (dia selecionado na fila no mobile, hoje no desktop)
+            resetForm();
+            updateField(
+              "appointmentDate",
+              format(isMobile ? filaDate : new Date(), "yyyy-MM-dd")
+            );
+          }
+          setOpen(v);
+        }}
+        form={form}
+        onFieldChange={updateField}
+        onCreate={handleCreate}
+        isPending={createMutation.isPending}
+        clients={clients}
             professionals={professionals}
             services={activeServices}
             availableSlots={availableSlots}
           />
-        </div>
-      </div>
 
       <AgendaViews
         isLoading={isLoading}
