@@ -70,10 +70,12 @@ export default function Dashboard() {
             {format(new Date(), "MMMM yyyy", { locale: ptBR })}
           </p>
         </div>
-        <Button onClick={() => navigate("/appointments")} className="shrink-0">
-          <Plus className="mr-2 h-4 w-4" />
-          <span className="hidden sm:inline">Novo agendamento</span>
-          <span className="sm:hidden">Novo</span>
+        <Button
+          onClick={() => navigate("/appointments")}
+          className="shrink-0 gap-1.5"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Novo agendamento
         </Button>
       </div>
 
