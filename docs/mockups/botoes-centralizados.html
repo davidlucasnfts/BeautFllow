@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparação: botões de ação — atual vs centralizado</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+  body { background: #f8fafc; padding: 40px 20px; color: #1e293b; }
+  h1 { text-align: center; font-size: 22px; margin-bottom: 8px; }
+  p.sub { text-align: center; color: #64748b; font-size: 14px; margin-bottom: 40px; }
+  .compare { display: flex; gap: 24px; max-width: 1100px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+  .panel { flex: 1; min-width: 320px; background: #fff; border: 1px solid #d7dce3; border-radius: 12px; padding: 24px; }
+  .panel h2 { font-size: 15px; margin-bottom: 4px; }
+  .panel .desc { font-size: 12.5px; color: #64748b; margin-bottom: 20px; line-height: 1.5; }
+  .row { display: flex; align-items: center; gap: 14px; border: 1px solid #d7dce3; border-radius: 10px; padding: 14px 16px; }
+  .row + .row { margin-top: 10px; }
+  .actions { display: flex; flex-direction: column; gap: 5px; }
+  .btn { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px; border: 1px solid; cursor: pointer; transition: background .15s; width: fit-content; }
+  .btn svg { width: 11px; height: 11px; }
+  /* Cores por ação */
+  .blue { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+  .green { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+  .amber { background: #fffbeb; border-color: #fde68a; color: #b45309; }
+  .slate { background: #f8fafc; border-color: #e2e8f0; color: #334155; }
+  .red { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+  /* PROPOSTA: mesma largura + conteúdo centralizado */
+  .panel.novo .actions { width: 96px; }
+  .panel.novo .btn { width: 100%; justify-content: center; }
+  .info { background: #f1f5f9; border-radius: 8px; padding: 12px 14px; font-size: 12.5px; color: #475569; margin-top: 20px; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <h1>Botões de ação — alinhamento do conteúdo</h1>
+  <p class="sub">Mesma coluna de ações, dois alinhamentos. Nada muda de cor ou texto — só a posição do ícone + texto dentro do botão.</p>
+
+  <div class="compare">
+    <!-- ATUAL -->
+    <div class="panel">
+      <h2>1. Atual (como está no app)</h2>
+      <p class="desc">Cada botão ocupa só o tamanho do próprio texto e fica alinhado à esquerda — cada um tem uma largura diferente ("escadinha").</p>
+      <div class="row">
+        <div class="actions">
+          <button class="btn blue"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Editar</button>
+          <button class="btn green"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14m0 0l-6-6m6 6l6-6"/></svg>Entrada</button>
+          <button class="btn amber"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 19V5m0 0l-6 6m6-6l6 6"/></svg>Saída</button>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:600;">Tinta Para Cabelo</div>
+          <div style="font-size:12px;color:#64748b;">60 un · R$ 25,00/un</div>
+        </div>
+      </div>
+      <div class="info">Perceba: as larguras variam conforme a palavra — "Saída" é mais estreito que "Editar".</div>
+    </div>
+
+    <!-- PROPOSTO -->
+    <div class="panel novo">
+      <h2>2. Proposto (centralizado)</h2>
+      <p class="desc">Todos os botões da coluna têm a mesma largura e o ícone + texto ficam centralizados — coluna reta, visual alinhado.</p>
+      <div class="row">
+        <div class="actions">
+          <button class="btn blue"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Editar</button>
+          <button class="btn green"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14m0 0l-6-6m6 6l6-6"/></svg>Entrada</button>
+          <button class="btn amber"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 19V5m0 0l-6 6m6-6l6 6"/></svg>Saída</button>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:600;">Tinta Para Cabelo</div>
+          <div style="font-size:12px;color:#64748b;">60 un · R$ 25,00/un</div>
+        </div>
+      </div>
+      <div class="info">Largura única da coluna + conteúdo centrado = os botões parecem um bloco só, mais "de sistema".</div>
+    </div>
+  </div>
+</body>
+</html>
