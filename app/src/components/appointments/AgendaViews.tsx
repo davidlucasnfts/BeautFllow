@@ -78,19 +78,26 @@ export default function AgendaViews({
 }: AgendaViewsProps) {
   if (isLoading) return <Skeleton className="h-96 w-full bg-muted" />;
 
+  // alerta de pendentes aparece em todas as visões (dia/semana/mês);
+  // "Ver dia" leva direto ao dia do pendente mais antigo, na visão Dia
+  const pendingAlert = (
+    <PendingPastAlert
+      salonId={salonId}
+      enabled
+      filterProfessional={filterProfessional}
+      filterService={filterService}
+      onGoToDay={day => {
+        setSelectedDate(() => day);
+        if (isMobile) setFilaDate(day);
+        setViewMode("day");
+      }}
+    />
+  );
+
   if (viewMode === "day") {
     return (
       <div className="space-y-4">
-        <PendingPastAlert
-          salonId={salonId}
-          enabled
-          filterProfessional={filterProfessional}
-          filterService={filterService}
-          onGoToDay={day => {
-            setSelectedDate(() => day);
-            if (isMobile) setFilaDate(day);
-          }}
-        />
+        {pendingAlert}
         {isMobile ? (
           <FilaDoDia
             selectedDay={filaDate}
@@ -121,30 +128,36 @@ export default function AgendaViews({
 
   if (viewMode === "week") {
     return (
-      <WeekView
-        weekDays={weekDays}
-        today={today}
-        appointmentsByDay={appointmentsByDay}
-        clients={clients as CalendarClient[]}
-        services={services as CalendarService[]}
-        onStart={onStart}
-        onConclude={onConclude}
-        onCancel={onCancel}
-      />
+      <div className="space-y-4">
+        {pendingAlert}
+        <WeekView
+          weekDays={weekDays}
+          today={today}
+          appointmentsByDay={appointmentsByDay}
+          clients={clients as CalendarClient[]}
+          services={services as CalendarService[]}
+          onStart={onStart}
+          onConclude={onConclude}
+          onCancel={onCancel}
+        />
+      </div>
     );
   }
 
   return (
-    <MonthView
-      monthDays={monthDays}
-      cursorMonth={monthCursor}
-      today={today}
-      appointmentsByDay={monthAppointmentsByDay}
-      onSelectDay={day => {
-        setSelectedDate(() => day);
-        if (isMobile) setFilaDate(day);
-        setViewMode("day");
-      }}
-    />
+    <div className="space-y-4">
+      {pendingAlert}
+      <MonthView
+        monthDays={monthDays}
+        cursorMonth={monthCursor}
+        today={today}
+        appointmentsByDay={monthAppointmentsByDay}
+        onSelectDay={day => {
+          setSelectedDate(() => day);
+          if (isMobile) setFilaDate(day);
+          setViewMode("day");
+        }}
+      />
+    </div>
   );
 }

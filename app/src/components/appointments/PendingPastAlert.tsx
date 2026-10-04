@@ -16,9 +16,10 @@ interface PendingPastAlertProps {
   onGoToDay: (day: Date) => void;
 }
 
-/** Aviso na visão Dia: atendimentos de dias anteriores que ficaram sem
- *  concluir e sem cancelar. Olha os últimos 90 dias, respeita o filtro de
- *  profissional/serviço ativo, e oferece ir direto ao dia mais antigo. */
+/** Aviso de atendimentos de dias anteriores que ficaram sem concluir e sem
+ *  cancelar — aparece nas visões Dia, Semana e Mês. Olha os últimos 90 dias,
+ *  respeita o filtro de profissional/serviço ativo, e oferece ir direto ao
+ *  dia mais antigo (mudando para a visão Dia). */
 export default function PendingPastAlert({
   salonId,
   enabled,
