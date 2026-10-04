@@ -154,7 +154,7 @@ export default function AppointmentFilters({
 
       {/* Linha 2: chips de profissional com cor (dia/semana, mobile + desktop) */}
       {viewMode !== "month" && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <div className="relative flex items-center justify-center gap-2">
             <button
               type="button"
