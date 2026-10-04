@@ -12,6 +12,7 @@ import {
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
 import { assertSalonMember } from "./lib/tenant";
+import { capitalizeWords } from "./lib/format";
 
 export const customerRouter = createRouter({
   list: authedQuery
@@ -41,7 +42,7 @@ export const customerRouter = createRouter({
     .input(
       z.object({
         salonId: z.number(),
-        name: z.string().min(1).max(255),
+        name: z.string().min(1).max(255).transform(capitalizeWords),
         phone: z.string().min(1).max(50),
         birthDate: z.string().optional(),
         notes: z.string().optional(),
@@ -75,7 +76,7 @@ export const customerRouter = createRouter({
       z.object({
         id: z.number(),
         salonId: z.number(),
-        name: z.string().min(1).max(255).optional(),
+        name: z.string().min(1).max(255).transform(capitalizeWords).optional(),
         phone: z.string().min(1).max(50).optional(),
         /** "" (campo limpo no form) grava NULL no banco — data é nullable */
         birthDate: z.string().nullable().optional(),

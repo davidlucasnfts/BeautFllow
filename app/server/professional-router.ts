@@ -10,6 +10,7 @@ import {
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
 import { assertSalonMember } from "./lib/tenant";
+import { capitalizeWords } from "./lib/format";
 
 export const professionalRouter = createRouter({
   list: authedQuery
@@ -36,7 +37,7 @@ export const professionalRouter = createRouter({
     .input(
       z.object({
         salonId: z.number(),
-        name: z.string().min(1).max(255),
+        name: z.string().min(1).max(255).transform(capitalizeWords),
         email: z.string().email().optional().or(z.literal("")),
         phone: z.string().optional(),
         bio: z.string().optional(),
@@ -70,7 +71,7 @@ export const professionalRouter = createRouter({
       z.object({
         id: z.number(),
         salonId: z.number(),
-        name: z.string().min(1).max(255).optional(),
+        name: z.string().min(1).max(255).transform(capitalizeWords).optional(),
         email: z.string().email().optional().or(z.literal("")),
         phone: z.string().optional(),
         bio: z.string().optional(),

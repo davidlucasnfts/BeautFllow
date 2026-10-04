@@ -286,7 +286,12 @@ Botões com funções diferentes **nunca** podem ter o mesmo estilo:
 ### Cards e Bordas
 - **Card NUNCA fica "aberto" no fundo da página** — borda sempre visível
 - Variável `--border` do tema com leveza máxima ~85% HSL (`220 13% 85%`) — acima de 88% some no branco
-- Detalhe expandido segue o padrão de borda do tema (`border-primary/40`)
+- Detalhe expandido segue o padrão de borda do tema (`border-primary/40`), sem fundo colorido
+
+### Campos de Nome — Capitalização Padrão
+- **Toda palavra de campo de nome começa com letra maiúscula** (produtos, serviços, clientes, profissionais)
+- Normalização no **backend** (Zod `.transform(capitalizeWords)` em `server/lib/format.ts`) — input do usuário nunca é confiável
+- Migration de dados (`initcap`) aplica a mesma regra nos registros antigos
 
 ### Listagens — Nome de Pessoa NUNCA Truncado
 - **PROIBIDO `truncate` em nome** de cliente/profissional/usuário → usar `break-words`

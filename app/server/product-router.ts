@@ -16,6 +16,7 @@ import {
 } from "./queries/product";
 import { auditAction } from "./lib/audit";
 import { assertSalonMember } from "./lib/tenant";
+import { capitalizeWords } from "./lib/format";
 
 export const productRouter = createRouter({
   list: authedQuery
@@ -49,7 +50,7 @@ export const productRouter = createRouter({
     .input(
       z.object({
         salonId: z.number(),
-        name: z.string().min(1).max(255),
+        name: z.string().min(1).max(255).transform(capitalizeWords),
         unit: z.string().min(1).max(20).default("un"),
         minQuantity: z.string().or(z.number()).default("0"),
         costPrice: z.string().or(z.number()).default("0"),
@@ -84,7 +85,7 @@ export const productRouter = createRouter({
       z.object({
         id: z.number(),
         salonId: z.number(),
-        name: z.string().min(1).max(255).optional(),
+        name: z.string().min(1).max(255).transform(capitalizeWords).optional(),
         unit: z.string().min(1).max(20).optional(),
         minQuantity: z.string().or(z.number()).optional(),
         costPrice: z.string().or(z.number()).optional(),

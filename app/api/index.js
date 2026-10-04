@@ -86846,6 +86846,11 @@ function auditAction(action, entityType, salonId, userId, entityId, oldValue, ne
   });
 }
 
+// server/lib/format.ts
+function capitalizeWords(value) {
+  return value.trim().replace(/\s+/g, " ").split(" ").map((word) => word.charAt(0).toLocaleUpperCase("pt-BR") + word.slice(1).toLocaleLowerCase("pt-BR")).join(" ");
+}
+
 // server/client-router.ts
 var customerRouter = createRouter({
   list: authedQuery.input(external_exports.object({ salonId: external_exports.number(), limit: external_exports.number().default(1e3) })).query(async ({ input, ctx }) => {
@@ -86864,7 +86869,7 @@ var customerRouter = createRouter({
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
-      name: external_exports.string().min(1).max(255),
+      name: external_exports.string().min(1).max(255).transform(capitalizeWords),
       phone: external_exports.string().min(1).max(50),
       birthDate: external_exports.string().optional(),
       notes: external_exports.string().optional(),
@@ -86895,7 +86900,7 @@ var customerRouter = createRouter({
     external_exports.object({
       id: external_exports.number(),
       salonId: external_exports.number(),
-      name: external_exports.string().min(1).max(255).optional(),
+      name: external_exports.string().min(1).max(255).transform(capitalizeWords).optional(),
       phone: external_exports.string().min(1).max(50).optional(),
       /** "" (campo limpo no form) grava NULL no banco — data é nullable */
       birthDate: external_exports.string().nullable().optional(),
@@ -86959,7 +86964,7 @@ var serviceRouter = createRouter({
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
-      name: external_exports.string().min(1).max(255),
+      name: external_exports.string().min(1).max(255).transform(capitalizeWords),
       description: external_exports.string().optional(),
       category: external_exports.string().optional(),
       durationMinutes: external_exports.number().min(1).max(1440),
@@ -87005,7 +87010,7 @@ var serviceRouter = createRouter({
     external_exports.object({
       id: external_exports.number(),
       salonId: external_exports.number(),
-      name: external_exports.string().min(1).max(255).optional(),
+      name: external_exports.string().min(1).max(255).transform(capitalizeWords).optional(),
       description: external_exports.string().optional(),
       category: external_exports.string().optional(),
       durationMinutes: external_exports.number().min(1).max(1440).optional(),
@@ -87093,7 +87098,7 @@ var professionalRouter = createRouter({
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
-      name: external_exports.string().min(1).max(255),
+      name: external_exports.string().min(1).max(255).transform(capitalizeWords),
       email: external_exports.string().email().optional().or(external_exports.literal("")),
       phone: external_exports.string().optional(),
       bio: external_exports.string().optional(),
@@ -87124,7 +87129,7 @@ var professionalRouter = createRouter({
     external_exports.object({
       id: external_exports.number(),
       salonId: external_exports.number(),
-      name: external_exports.string().min(1).max(255).optional(),
+      name: external_exports.string().min(1).max(255).transform(capitalizeWords).optional(),
       email: external_exports.string().email().optional().or(external_exports.literal("")),
       phone: external_exports.string().optional(),
       bio: external_exports.string().optional(),
@@ -90027,7 +90032,7 @@ var productRouter = createRouter({
   create: authedQuery.input(
     external_exports.object({
       salonId: external_exports.number(),
-      name: external_exports.string().min(1).max(255),
+      name: external_exports.string().min(1).max(255).transform(capitalizeWords),
       unit: external_exports.string().min(1).max(20).default("un"),
       minQuantity: external_exports.string().or(external_exports.number()).default("0"),
       costPrice: external_exports.string().or(external_exports.number()).default("0")
@@ -90057,7 +90062,7 @@ var productRouter = createRouter({
     external_exports.object({
       id: external_exports.number(),
       salonId: external_exports.number(),
-      name: external_exports.string().min(1).max(255).optional(),
+      name: external_exports.string().min(1).max(255).transform(capitalizeWords).optional(),
       unit: external_exports.string().min(1).max(20).optional(),
       minQuantity: external_exports.string().or(external_exports.number()).optional(),
       costPrice: external_exports.string().or(external_exports.number()).optional()

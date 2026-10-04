@@ -11,6 +11,7 @@ import {
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
 import { assertSalonMember } from "./lib/tenant";
+import { capitalizeWords } from "./lib/format";
 
 export const serviceRouter = createRouter({
   list: authedQuery
@@ -37,7 +38,7 @@ export const serviceRouter = createRouter({
     .input(
       z.object({
         salonId: z.number(),
-        name: z.string().min(1).max(255),
+        name: z.string().min(1).max(255).transform(capitalizeWords),
         description: z.string().optional(),
         category: z.string().optional(),
         durationMinutes: z.number().min(1).max(1440),
@@ -88,7 +89,7 @@ export const serviceRouter = createRouter({
       z.object({
         id: z.number(),
         salonId: z.number(),
-        name: z.string().min(1).max(255).optional(),
+        name: z.string().min(1).max(255).transform(capitalizeWords).optional(),
         description: z.string().optional(),
         category: z.string().optional(),
         durationMinutes: z.number().min(1).max(1440).optional(),
