@@ -348,25 +348,25 @@ export default function Clients() {
                 }`}
                 onClick={() => setSelectedId(expanded ? null : client.id)}
               >
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5">
-                  <div
-                    className="h-9 w-9 rounded-full flex items-center justify-center shrink-0 text-sm font-bold"
-                    style={{
-                      backgroundColor: `${palette.primary}2E`,
-                      color: palette.primary,
-                    }}
-                  >
-                    {client.name.trim().charAt(0).toUpperCase()}
-                  </div>
-                  <div className="min-w-0 flex-1 basis-44">
-                    <p className="text-sm font-medium break-words">{client.name}</p>
-                    <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
-                      <Phone className="h-3 w-3 shrink-0" />
-                      <span className="truncate">{client.phone}</span>
+                <div className="px-4 py-2.5">
+                  <div className="flex items-center gap-x-3">
+                    <div
+                      className="h-9 w-9 rounded-full flex items-center justify-center shrink-0 text-sm font-bold"
+                      style={{
+                        backgroundColor: `${palette.primary}2E`,
+                        color: palette.primary,
+                      }}
+                    >
+                      {client.name.trim().charAt(0).toLocaleUpperCase("pt-BR")}
                     </div>
-                  </div>
-                  <div className="flex shrink-0 flex-col items-end gap-1.5">
-                    <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium break-words">{client.name}</p>
+                      <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
+                        <Phone className="h-3 w-3 shrink-0" />
+                        <span className="truncate">{client.phone}</span>
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 flex-col items-end gap-1">
                       <Badge
                         variant="secondary"
                         className={segmentColors[client.segment] + " text-[10px]"}
@@ -383,30 +383,30 @@ export default function Clients() {
                         </Badge>
                       )}
                     </div>
-                    <div className="flex flex-row items-center gap-1.5">
-                      <a
-                        href={`https://wa.me/55${client.phone.replace(/\D/g, "")}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={e => e.stopPropagation()}
-                        title={`Chamar ${client.name} no WhatsApp`}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors"
-                      >
-                        <WhatsAppIcon className="h-3.5 w-3.5" />
-                        WhatsApp
-                      </a>
-                      <button
-                        type="button"
-                        onClick={e => {
-                          e.stopPropagation();
-                          handleEdit(client);
-                        }}
-                        className="flex items-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
-                      >
-                        <Edit3 className="h-3.5 w-3.5" />
-                        Editar
-                      </button>
-                    </div>
+                  </div>
+                  <div className="flex flex-row items-center gap-1.5 mt-2.5">
+                    <a
+                      href={`https://wa.me/55${client.phone.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={e => e.stopPropagation()}
+                      title={`Chamar ${client.name} no WhatsApp`}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors"
+                    >
+                      <WhatsAppIcon className="h-3.5 w-3.5" />
+                      WhatsApp
+                    </a>
+                    <button
+                      type="button"
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleEdit(client);
+                      }}
+                      className="flex items-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
+                    >
+                      <Edit3 className="h-3.5 w-3.5" />
+                      Editar
+                    </button>
                   </div>
                 </div>
                 {expanded && salon && (

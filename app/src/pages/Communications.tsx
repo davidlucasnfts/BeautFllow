@@ -216,7 +216,7 @@ export default function Communications() {
                   <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center shrink-0">
                     <Icon className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div className="min-w-0 flex-1 basis-44">
+                  <div className="min-w-0 flex-1 basis-32">
                     <span className="text-sm font-medium break-words">
                       {clientName(c.clientId)}
                     </span>
