@@ -126,6 +126,18 @@ export default function ProductsList({
     <div className="grid grid-cols-2 gap-x-4 gap-y-2 rounded-lg bg-muted/40 p-3 text-xs">
       <div>
         <p className="text-[10px] font-semibold text-muted-foreground uppercase">
+          Quantidade atual
+        </p>
+        <p
+          className={`text-sm font-semibold ${
+            isLow(p) ? "text-amber-600" : ""
+          }`}
+        >
+          {quantityDotToBR(p.quantity)} {p.unit}
+        </p>
+      </div>
+      <div>
+        <p className="text-[10px] font-semibold text-muted-foreground uppercase">
           Estoque mínimo
         </p>
         <p className="text-sm font-medium">
