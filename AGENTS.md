@@ -263,6 +263,11 @@ Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a 
 
 > A borda é obrigatória: sem ela o botão pastel some no fundo branco.
 
+#### Ações neutras — dois tons distintos
+Botões com funções diferentes **nunca** podem ter o mesmo estilo:
+- **Ação de conteúdo** (Ver, Histórico, Preview): fundo pastel slate (`bg-slate-50 border-slate-200 text-slate-700`)
+- **Ação de dispensar** (Fechar, Recolher, Cancelar secundário): **sem preenchimento** (`bg-transparent border-slate-300 text-slate-600`) — hierarquia visual inferior, nunca confundir com ação de conteúdo
+
 #### Layout — Botões com Texto (padrão preferido)
 - **Sempre com texto + ícone**, nunca ícone sozinho
 - Empilhados verticalmente (`flex-col gap-1`) na coluna de ações

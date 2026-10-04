@@ -210,7 +210,7 @@ export default function ProductsList({
                     <button
                       type="button"
                       onClick={() => setExpandedId(null)}
-                      className="flex items-center gap-1 rounded-md border border-slate-200 bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-200 transition-colors"
+                      className="flex items-center gap-1 rounded-md border border-slate-300 bg-transparent px-3 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-100 transition-colors"
                     >
                       Fechar
                     </button>
@@ -276,7 +276,7 @@ export default function ProductsList({
                             <button
                               type="button"
                               onClick={() => setExpandedId(null)}
-                              className="flex items-center justify-center gap-1 rounded-md border border-slate-200 bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-200 transition-colors"
+                              className="flex items-center justify-center gap-1 rounded-md border border-slate-300 bg-transparent px-3 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-100 transition-colors"
                             >
                               Fechar
                             </button>
