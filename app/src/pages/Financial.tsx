@@ -14,7 +14,8 @@ import FinancialFormDialog, {
 import FinancialRecordsList from "@/components/financial/FinancialRecordsList";
 import CommissionsView from "@/components/financial/CommissionsView";
 import type { FinancialRecordForList } from "@/components/financial/FinancialRecordExpanded";
-import { LayoutList, Users } from "lucide-react";
+import { LayoutList, Users, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 function formatBRL(value: string | number) {
   return Number(value).toLocaleString("pt-BR", {
@@ -216,13 +217,22 @@ export default function Financial() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Financeiro</h1>
           <p className="text-muted-foreground">
             Seus ganhos, comissões e gastos
           </p>
         </div>
+        {view === "records" && (
+          <Button
+            size="sm"
+            onClick={handleNew}
+            className="shrink-0 gap-1.5"
+          >
+            <Plus className="h-3.5 w-3.5" /> Novo lançamento
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-3">
@@ -316,7 +326,6 @@ export default function Financial() {
           anchor={anchor}
           onAnchor={setAnchor}
           monthRecords={monthRecords ?? []}
-          onNew={handleNew}
           clients={clients ?? []}
           professionals={professionals ?? []}
           selectedId={selectedId}

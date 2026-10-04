@@ -10,7 +10,6 @@ import {
   CalendarDays,
   CalendarRange,
   Calendar,
-  Plus,
 } from "lucide-react";
 import {
   Table,
@@ -21,7 +20,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import PeriodNavigator, {
@@ -55,8 +53,6 @@ interface FinancialRecordsListProps {
     amount: string | number;
     type: string;
   }[];
-  /** abre o dialog de novo lançamento (botão fica aqui, padrão agenda) */
-  onNew: () => void;
   clients: { id: number; name: string }[];
   professionals: { id: number; name: string }[];
   selectedId: number | null;
@@ -88,7 +84,6 @@ export default function FinancialRecordsList({
   anchor,
   onAnchor,
   monthRecords,
-  onNew,
   clients,
   professionals,
   selectedId,
@@ -163,11 +158,11 @@ export default function FinancialRecordsList({
               : "Registros do mês"}
         </CardTitle>
         {/* Barra no padrão da agenda (mockup financeiro-seletor-periodo.html):
-            linha 1 = visão + (desktop) navegação central + busca + Novo;
-            linha 2 (mobile) = navegação central; busca ocupa a linha de baixo */}
-        <div className="flex w-full flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center border rounded-md overflow-hidden">
+            visão Dia/Semana/Mês em linha própria centralizada, navegação de
+            data centralizada logo abaixo, busca por último; o botão Novo
+            fica no cabeçalho da página */}
+        <div className="flex w-full flex-col items-center gap-2">
+          <div className="flex items-center border rounded-md overflow-hidden">
               <button
                 type="button"
                 onClick={() => onPeriod("day")}
@@ -205,45 +200,20 @@ export default function FinancialRecordsList({
                 Mês
               </button>
             </div>
-            <div className="hidden md:block md:pl-1">
-              <PeriodNavigator
-                period={period}
-                anchor={anchor}
-                onStep={stepAnchor}
-                onPick={onAnchor}
-                weekStats={weekStats}
-              />
-            </div>
-            <div className="grow" />
-            <div className="relative hidden sm:block w-56">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-              <Input
-                value={search}
-                onChange={e => onSearch(e.target.value)}
-                placeholder="Buscar descrição ou cliente"
-                className="pl-8 h-8 text-xs"
-              />
-            </div>
-            <Button size="sm" onClick={onNew}>
-              <Plus className="mr-1.5 h-4 w-4" /> Novo
-            </Button>
-          </div>
-          <div className="md:hidden flex justify-center">
-            <PeriodNavigator
-              period={period}
-              anchor={anchor}
-              onStep={stepAnchor}
-              onPick={onAnchor}
-              weekStats={weekStats}
-            />
-          </div>
-          <div className="relative sm:hidden">
+          <PeriodNavigator
+            period={period}
+            anchor={anchor}
+            onStep={stepAnchor}
+            onPick={onAnchor}
+            weekStats={weekStats}
+          />
+          <div className="relative w-full sm:w-56">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <Input
               value={search}
               onChange={e => onSearch(e.target.value)}
               placeholder="Buscar descrição ou cliente"
-              className="pl-8"
+              className="pl-8 h-8 text-xs"
             />
           </div>
         </div>
