@@ -52,9 +52,11 @@ export default function ConsentFormCard({
       </CardHeader>
       {expanded ? (
         <CardContent className="px-4 pb-3 pt-1">
-          <p className="text-sm text-slate-700 whitespace-pre-wrap">
-            {form.content}
-          </p>
+          <div className="rounded-lg border border-primary/40 bg-muted/30 p-3">
+            <p className="text-sm text-slate-700 whitespace-pre-wrap">
+              {form.content}
+            </p>
+          </div>
           <div className="flex flex-col items-stretch sm:items-end gap-1 mt-4">
             <button
               type="button"

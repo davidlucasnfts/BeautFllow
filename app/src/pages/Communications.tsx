@@ -249,7 +249,7 @@ export default function Communications() {
                 </div>
                 {expanded && (
                   <div className="px-4 pb-4">
-                    <div className="rounded-lg bg-muted/60 p-4">
+                    <div className="rounded-lg border border-primary/40 bg-muted/30 p-4">
                       <p className="text-[10px] font-semibold text-slate-400 uppercase mb-1">
                         Conteúdo da mensagem
                       </p>

@@ -373,8 +373,8 @@ export default function FinancialRecordsList({
                           </TableCell>
                         </TableRow>
                         {expanded && (
-                          <TableRow className="bg-primary/5 hover:bg-primary/5">
-                            <TableCell colSpan={6} className="p-0">
+                          <TableRow className="hover:bg-transparent">
+                            <TableCell colSpan={6} className="p-3">
                               <FinancialRecordExpanded
                                 record={r}
                                 clientName={clientNameOf(r.clientId)}

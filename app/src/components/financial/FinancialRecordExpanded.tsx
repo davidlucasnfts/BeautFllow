@@ -74,7 +74,7 @@ export default function FinancialRecordExpanded({
   onClose: () => void;
 }) {
   return (
-    <div className="border-l-2 border-primary px-4 pb-3 pt-2 space-y-4">
+    <div className="space-y-4 rounded-lg border border-primary/40 bg-muted/30 p-3">
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <Detail
           label="Data"

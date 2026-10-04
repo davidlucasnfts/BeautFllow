@@ -77,7 +77,7 @@ export default function ProfessionalExpandedSection({
 
   return (
     <div
-      className="border-t border-slate-100 px-4 pb-3 pt-3 space-y-3"
+      className="m-3 mt-1 space-y-3 rounded-lg border border-primary/40 bg-muted/30 p-3"
       onClick={e => e.stopPropagation()}
     >
       <div className="grid grid-cols-2 gap-4">
