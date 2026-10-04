@@ -264,6 +264,7 @@ Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a 
 - **Sempre com texto + ícone**, nunca ícone sozinho
 - Empilhados verticalmente (`flex-col gap-1`) na coluna de ações
 - Tamanho compacto: `text-[10px] font-medium`, padding `px-1.5 py-0.5`
+- **Exceção (4+ ações):** separar em primárias (uso do dia a dia, sempre visíveis no item) e secundárias/destrutivas (Histórico, Excluir). No mobile, secundárias vão na área expandida da ficha; no desktop, primárias em grade 2 colunas e Excluir largura total abaixo. Nunca dropdown.
 
 ### Tabelas — Posicionamento Unificado
 - **Coluna de Ações na primeira posição** (antes do nome)

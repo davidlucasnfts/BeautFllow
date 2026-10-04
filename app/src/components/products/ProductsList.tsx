@@ -57,7 +57,7 @@ export default function ProductsList({
 }: ProductsListProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
-  const actions = (p: ProductForList) => (
+  const primaryActions = (p: ProductForList) => (
     <div className="flex flex-col gap-1" onClick={e => e.stopPropagation()}>
       <button
         type="button"
@@ -83,6 +83,11 @@ export default function ProductsList({
         <ArrowUpFromLine className="h-3 w-3" />
         Saída
       </button>
+    </div>
+  );
+
+  const secondaryActions = (p: ProductForList) => (
+    <div className="flex gap-1" onClick={e => e.stopPropagation()}>
       <button
         type="button"
         onClick={() => onHistory(p)}
@@ -183,7 +188,7 @@ export default function ProductsList({
                   expanded ? "bg-primary/5" : "hover:bg-blue-50/50"
                 }`}
               >
-                {actions(p)}
+                {primaryActions(p)}
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium break-words">{p.name}</p>
                   <p className="text-xs text-muted-foreground">
@@ -198,13 +203,16 @@ export default function ProductsList({
               {expanded && (
                 <div className="px-3 pb-3 space-y-2">
                   {detail(p)}
-                  <button
-                    type="button"
-                    onClick={() => setExpandedId(null)}
-                    className="mx-auto flex items-center gap-1 rounded-md bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-200 transition-colors"
-                  >
-                    Fechar
-                  </button>
+                  <div className="flex items-center justify-between gap-2">
+                    {secondaryActions(p)}
+                    <button
+                      type="button"
+                      onClick={() => setExpandedId(null)}
+                      className="flex items-center gap-1 rounded-md bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-200 transition-colors"
+                    >
+                      Fechar
+                    </button>
+                  </div>
                 </div>
               )}
             </Fragment>
@@ -217,7 +225,7 @@ export default function ProductsList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-24">Ações</TableHead>
+              <TableHead className="w-36">Ações</TableHead>
               <TableHead>Produto</TableHead>
               <TableHead>Estoque</TableHead>
               <TableHead>Mínimo</TableHead>
@@ -229,7 +237,52 @@ export default function ProductsList({
           <TableBody>
             {products.map(p => (
               <TableRow key={p.id} className="hover:bg-blue-50/50">
-                <TableCell>{actions(p)}</TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-1">
+                    <div className="grid grid-cols-2 gap-1">
+                      <button
+                        type="button"
+                        onClick={() => onEdit(p)}
+                        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                      >
+                        <Edit3 className="h-3 w-3" />
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onMove(p, "in")}
+                        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+                      >
+                        <ArrowDownToLine className="h-3 w-3" />
+                        Entrada
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onMove(p, "out")}
+                        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"
+                      >
+                        <ArrowUpFromLine className="h-3 w-3" />
+                        Saída
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onHistory(p)}
+                        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors"
+                      >
+                        <History className="h-3 w-3" />
+                        Histórico
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onDelete(p)}
+                      className="flex items-center justify-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Excluir
+                    </button>
+                  </div>
+                </TableCell>
                 <TableCell className="font-medium">{p.name}</TableCell>
                 <TableCell>
                   {quantityDotToBR(p.quantity)} {p.unit}
