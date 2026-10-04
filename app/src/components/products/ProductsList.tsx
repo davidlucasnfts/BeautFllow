@@ -220,83 +220,72 @@ export default function ProductsList({
         })}
       </div>
 
-      {/* Desktop: tabela */}
+      {/* Desktop: tabela — 5 colunas, clique expande faixa de detalhe */}
       <div className="hidden md:block">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-36">Ações</TableHead>
+              <TableHead className="w-24">Ações</TableHead>
               <TableHead>Produto</TableHead>
               <TableHead>Estoque</TableHead>
-              <TableHead>Mínimo</TableHead>
-              <TableHead>Custo unit.</TableHead>
-              <TableHead className="text-right">Investido</TableHead>
+              <TableHead className="text-right">Valor</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map(p => (
-              <TableRow key={p.id} className="hover:bg-blue-50/50">
-                <TableCell>
-                  <div className="flex flex-col gap-1">
-                    <div className="grid grid-cols-2 gap-1">
-                      <button
-                        type="button"
-                        onClick={() => onEdit(p)}
-                        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+            {products.map(p => {
+              const expanded = expandedId === p.id;
+              return (
+                <Fragment key={p.id}>
+                  <TableRow
+                    className={`cursor-pointer ${
+                      expanded ? "bg-primary/5" : "hover:bg-blue-50/50"
+                    }`}
+                    onClick={() => setExpandedId(expanded ? null : p.id)}
+                  >
+                    <TableCell>{primaryActions(p)}</TableCell>
+                    <TableCell className="font-medium">{p.name}</TableCell>
+                    <TableCell>
+                      <p
+                        className={`font-medium ${isLow(p) ? "text-amber-600" : ""}`}
                       >
-                        <Edit3 className="h-3 w-3" />
-                        Editar
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onMove(p, "in")}
-                        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
-                      >
-                        <ArrowDownToLine className="h-3 w-3" />
-                        Entrada
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onMove(p, "out")}
-                        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"
-                      >
-                        <ArrowUpFromLine className="h-3 w-3" />
-                        Saída
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onHistory(p)}
-                        className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors"
-                      >
-                        <History className="h-3 w-3" />
-                        Histórico
-                      </button>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => onDelete(p)}
-                      className="flex items-center justify-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                      Excluir
-                    </button>
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">{p.name}</TableCell>
-                <TableCell>
-                  {quantityDotToBR(p.quantity)} {p.unit}
-                </TableCell>
-                <TableCell>
-                  {quantityDotToBR(p.minQuantity)} {p.unit}
-                </TableCell>
-                <TableCell>{formatBRL(p.costPrice)}</TableCell>
-                <TableCell className="text-right font-medium">
-                  {formatBRL(Number(p.quantity) * Number(p.costPrice))}
-                </TableCell>
-                <TableCell>{statusBadges(p)}</TableCell>
-              </TableRow>
-            ))}
+                        {quantityDotToBR(p.quantity)} {p.unit}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        mín. {quantityDotToBR(p.minQuantity)} {p.unit}
+                      </p>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <p className="font-medium">{formatBRL(p.costPrice)}/un</p>
+                      <p className="text-xs text-muted-foreground">
+                        investido{" "}
+                        {formatBRL(Number(p.quantity) * Number(p.costPrice))}
+                      </p>
+                    </TableCell>
+                    <TableCell>{statusBadges(p)}</TableCell>
+                  </TableRow>
+                  {expanded && (
+                    <TableRow className="bg-muted/30 hover:bg-muted/30">
+                      <TableCell colSpan={5}>
+                        <div className="flex items-center justify-between gap-3 py-1">
+                          {detail(p)}
+                          <div className="flex shrink-0 flex-col gap-2">
+                            {secondaryActions(p)}
+                            <button
+                              type="button"
+                              onClick={() => setExpandedId(null)}
+                              className="flex items-center justify-center gap-1 rounded-md bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-200 transition-colors"
+                            >
+                              Fechar
+                            </button>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </Fragment>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
