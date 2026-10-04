@@ -42,7 +42,7 @@ export const salonRouter = createRouter({
       const salon = await createSalon({
         ...rest,
         segment,
-        plan: "essential",
+        plan: "free",
       });
       if (salon) {
         await addUserToSalon(salon.id, ctx.user.id, "owner");
