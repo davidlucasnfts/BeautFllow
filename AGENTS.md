@@ -291,6 +291,10 @@ Botões com funções diferentes **nunca** podem ter o mesmo estilo:
 - Variável `--border` do tema com leveza máxima ~85% HSL (`220 13% 85%`) — acima de 88% some no branco
 - Detalhe expandido segue o padrão de borda do tema (`border-primary/40`), sem fundo colorido
 
+### Ícones — Clareza para Usuário Leigo
+- **Botão de menu (mobile e sidebar recolhida): SEMPRE o hambúrguer** (`Menu` do Lucide, três linhas) — é o desenho universal reconhecido por usuários leigos. **PROIBIDO** ícones abstratos de painel (`PanelLeft` etc.), que são padrão de ferramentas de dev
+- Ícone com função destrutiva ou primária deve ser acompanhado de texto — nunca depender só do ícone quando o contexto não é óbvio
+
 ### Campos de Nome — Capitalização Padrão
 - **Toda palavra de campo de nome começa com letra maiúscula** (produtos, serviços, clientes, profissionais)
 - Normalização no **backend** (Zod `.transform(capitalizeWords)` em `server/lib/format.ts`) — input do usuário nunca é confiável

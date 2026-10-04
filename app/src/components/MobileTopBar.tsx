@@ -1,4 +1,4 @@
-import { PanelLeft } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 
 /** Barra superior exibida apenas no mobile, com botão para abrir a sidebar */
@@ -12,7 +12,7 @@ export function MobileTopBar({ title }: { title: string }) {
           className="h-9 w-9 flex items-center justify-center hover:bg-accent rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0"
           aria-label="Abrir menu"
         >
-          <PanelLeft className="h-5 w-5 text-muted-foreground" />
+          <Menu className="h-5 w-5 text-foreground" />
         </button>
         <div className="flex items-center gap-3">
           <div className="flex flex-col gap-1">
