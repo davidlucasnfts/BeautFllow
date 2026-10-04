@@ -34,6 +34,9 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - Criar `api/index.ts` como entrypoint, `vercel.json` com rewrites SPA
 - **Sempre testar local antes de produção** — toda mudança validada com `npm run dev` antes de subir. Regra global: `MestreProjects.md` seção 9 (Fluxo Local antes de Produção)
 - **Homologação local antes de qualquer deploy** — nada vai pra Vercel sem David validar visualmente rodando local (`localhost:3000`). Push/deploy só acontece quando ele pedir pra subir
+
+### Mockups e arquivos de visualização
+- **SEMPRE abrir no navegador automaticamente** — ao gerar mockup/arquivo HTML pra David visualizar, abrir na hora com `cmd //c start "" "caminho"` (Git Bash). Nunca só informar o caminho — ele não deve precisar ir até a pasta
 - **Mudanças de aparência: prévia antes de fechar** — para alteração visual, David quer ver e decidir antes de qualquer coisa ser alterada de vez; implementar em branch local, ele homologa, aí sim mescla
 
 ### Independência de IA

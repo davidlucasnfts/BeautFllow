@@ -24,6 +24,9 @@
   .amber { background: #fffbeb; border-color: #fde68a; color: #b45309; }
   .slate { background: #f8fafc; border-color: #e2e8f0; color: #334155; }
   .red { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+  /* ATUAL: mesma largura (flex estica), conteúdo à esquerda */
+  .panel.atual .actions { width: 96px; }
+  .panel.atual .btn { width: 100%; justify-content: flex-start; }
   /* PROPOSTA: mesma largura + conteúdo centralizado */
   .panel.novo .actions { width: 96px; }
   .panel.novo .btn { width: 100%; justify-content: center; }
@@ -36,9 +39,9 @@
 
   <div class="compare">
     <!-- ATUAL -->
-    <div class="panel">
+    <div class="panel atual">
       <h2>1. Atual (como está no app)</h2>
-      <p class="desc">Cada botão ocupa só o tamanho do próprio texto e fica alinhado à esquerda — cada um tem uma largura diferente ("escadinha").</p>
+      <p class="desc">Todos os botões já têm a mesma largura, mas o ícone + texto ficam colados à esquerda de cada um.</p>
       <div class="row">
         <div class="actions">
           <button class="btn blue"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Editar</button>
@@ -50,7 +53,7 @@
           <div style="font-size:12px;color:#64748b;">60 un · R$ 25,00/un</div>
         </div>
       </div>
-      <div class="info">Perceba: as larguras variam conforme a palavra — "Saída" é mais estreito que "Editar".</div>
+      <div class="info">Perceba: todos do mesmo tamanho, mas o conteúdo pende pra esquerda.</div>
     </div>
 
     <!-- PROPOSTO -->
