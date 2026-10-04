@@ -400,7 +400,7 @@ export default function Clients() {
                         e.stopPropagation();
                         handleEdit(client);
                       }}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                      className="flex items-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
                     >
                       <Edit3 className="h-3.5 w-3.5" />
                       Editar

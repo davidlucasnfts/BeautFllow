@@ -60,7 +60,7 @@ export default function ServiceCard({
           <button
             type="button"
             onClick={() => onEdit(s)}
-            className="flex flex-1 items-center justify-center gap-1 px-1.5 py-1.5 text-[11px] font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+            className="flex flex-1 items-center justify-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
           >
             <Edit3 className="h-3 w-3" />
             Editar
@@ -68,7 +68,7 @@ export default function ServiceCard({
           <button
             type="button"
             onClick={() => onDuplicate(s)}
-            className="flex flex-1 items-center justify-center gap-1 px-1.5 py-1.5 text-[11px] font-medium rounded-md bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors"
+            className="flex flex-1 items-center justify-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100"
           >
             <Copy className="h-3 w-3" />
             Duplicar
@@ -76,7 +76,7 @@ export default function ServiceCard({
           <button
             type="button"
             onClick={() => onDelete(s)}
-            className="flex flex-1 items-center justify-center gap-1 px-1.5 py-1.5 text-[11px] font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+            className="flex flex-1 items-center justify-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
           >
             <Trash2 className="h-3 w-3" />
             Excluir

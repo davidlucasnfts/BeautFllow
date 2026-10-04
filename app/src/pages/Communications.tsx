@@ -193,7 +193,7 @@ export default function Communications() {
                         });
                         setOpen(true);
                       }}
-                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+                      className="flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-green-200 bg-green-50 text-green-700 hover:bg-green-100"
                     >
                       <RotateCcw className="h-3 w-3" />
                       Reenviar
@@ -207,7 +207,7 @@ export default function Communications() {
                           label: `${clientName(c.clientId)} — ${c.content.slice(0, 40)}${c.content.length > 40 ? "…" : ""}`,
                         });
                       }}
-                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                      className="flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
                     >
                       <Trash2 className="h-3 w-3" />
                       Excluir
@@ -261,7 +261,7 @@ export default function Communications() {
                       <button
                         type="button"
                         onClick={() => setSelectedId(null)}
-                        className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+                        className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md border border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
                       >
                         Fechar
                       </button>

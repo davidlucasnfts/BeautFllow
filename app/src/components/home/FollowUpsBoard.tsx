@@ -103,7 +103,7 @@ export default function FollowUpsBoard() {
                     <button
                       type="button"
                       onClick={() => handleSchedule(fu)}
-                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                      className="flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
                     >
                       <CalendarPlus className="h-3 w-3" />
                       Agendar
@@ -114,7 +114,7 @@ export default function FollowUpsBoard() {
                         salon &&
                         dismissMutation.mutate({ id: fu.id, salonId: salon.id })
                       }
-                      className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors"
+                      className="flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
                     >
                       <X className="h-3 w-3" />
                       Dispensar

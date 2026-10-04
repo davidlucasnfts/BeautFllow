@@ -62,7 +62,7 @@ export default function ConsentFormCard({
                 e.stopPropagation();
                 onEdit();
               }}
-              className="flex items-center justify-center gap-1.5 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+              className="flex items-center justify-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
             >
               <Edit3 className="h-3.5 w-3.5" />
               Editar
@@ -73,7 +73,7 @@ export default function ConsentFormCard({
                 e.stopPropagation();
                 onDelete();
               }}
-              className="flex items-center justify-center gap-1.5 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+              className="flex items-center justify-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
             >
               <Trash2 className="h-3.5 w-3.5" />
               Excluir
@@ -86,7 +86,7 @@ export default function ConsentFormCard({
                 e.stopPropagation();
                 onToggle();
               }}
-              className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md border border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
             >
               <ChevronDown className="h-3.5 w-3.5" />
               Fechar

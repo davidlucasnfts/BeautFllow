@@ -43,7 +43,7 @@ export default function ClientExpandedSection({
             e.stopPropagation();
             onDelete();
           }}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border transition-colors border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
         >
           <Trash2 className="h-3.5 w-3.5" />
           {deleteLabel}

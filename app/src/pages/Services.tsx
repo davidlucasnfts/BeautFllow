@@ -238,7 +238,7 @@ export default function Services() {
                     salon &&
                     reactivateMutation.mutate({ id: s.id, salonId: salon.id })
                   }
-                  className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-md bg-green-50 text-green-600 hover:bg-green-100 transition-colors shrink-0"
+                  className="flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md border transition-colors shrink-0 border-green-200 bg-green-50 text-green-700 hover:bg-green-100"
                 >
                   <RotateCcw className="h-3 w-3" />
                   Reativar
