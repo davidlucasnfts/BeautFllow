@@ -283,6 +283,11 @@ Botões com funções diferentes **nunca** podem ter o mesmo estilo:
 - Botões usam `stopPropagation`
 - **Faixa/ficha expandida de detalhe: borda na cor do tema** (`rounded-lg border border-primary/40 bg-muted/30 p-3`) — identifica visualmente o card aberto
 
+### Cards e Bordas
+- **Card NUNCA fica "aberto" no fundo da página** — borda sempre visível
+- Variável `--border` do tema com leveza máxima ~85% HSL (`220 13% 85%`) — acima de 88% some no branco
+- Detalhe expandido segue o padrão de borda do tema (`border-primary/40`)
+
 ### Listagens — Nome de Pessoa NUNCA Truncado
 - **PROIBIDO `truncate` em nome** de cliente/profissional/usuário → usar `break-words`
 - **Sempre com largura mínima** na coluna de texto (`basis-32`/`basis-44`) — `break-words` sozinho esmaga o texto a 1 caractere em tela estreita
