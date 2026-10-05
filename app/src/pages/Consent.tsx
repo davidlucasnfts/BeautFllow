@@ -79,7 +79,7 @@ export default function Consent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
             Termos e Autorizações
@@ -93,7 +93,7 @@ export default function Consent() {
             setEditing(null);
             setOpen(true);
           }}
-          className="gap-1.5"
+          className="shrink-0 gap-1.5"
         >
           <Plus className="h-3.5 w-3.5" /> Novo Termo
         </Button>

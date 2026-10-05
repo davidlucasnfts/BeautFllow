@@ -156,14 +156,14 @@ export default function Services() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{label}s</h1>
           <p className="text-muted-foreground">
             Seus {label.toLowerCase()}s e preços
           </p>
         </div>
-        <Button onClick={handleNew} className="gap-1.5">
+        <Button onClick={handleNew} className="shrink-0 gap-1.5">
           <Plus className="h-3.5 w-3.5" /> Novo {label.toLowerCase()}
         </Button>
       </div>

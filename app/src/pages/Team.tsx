@@ -129,7 +129,7 @@ export default function Team() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Equipe</h1>
           <p className="text-muted-foreground">
@@ -144,9 +144,9 @@ export default function Team() {
             setManualLink(null);
             setInviteOpen(true);
           }}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="shrink-0 gap-1.5"
         >
-          <UserPlus className="h-4 w-4" />
+          <UserPlus className="h-3.5 w-3.5" />
           Convidar
         </Button>
       </div>
