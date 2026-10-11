@@ -44,14 +44,16 @@ export default function EventCard({
   variant = "week",
 }: EventCardProps) {
   const isDay = variant === "day";
-  const serviceColor = service?.color ?? null;
+  // cor do evento = cor do profissional (configuração única, já feita no
+  // cadastro de profissionais). Sem cor cadastrada, cai no visual padrão.
+  const eventColor = professional?.color ?? null;
 
-  const cardStyle = serviceColor
+  const cardStyle = eventColor
     ? {
-        backgroundColor: isDay ? `${serviceColor}18` : `${serviceColor}15`,
+        backgroundColor: isDay ? `${eventColor}18` : `${eventColor}15`,
         borderLeft: isDay
-          ? `4px solid ${serviceColor}`
-          : `3px solid ${serviceColor}`,
+          ? `4px solid ${eventColor}`
+          : `3px solid ${eventColor}`,
       }
     : undefined;
 

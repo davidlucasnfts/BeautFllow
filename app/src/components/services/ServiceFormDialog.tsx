@@ -30,7 +30,6 @@ export type ServiceFormValues = {
   category: string;
   durationMinutes: number;
   price: string;
-  color: string;
   requiresConsent: boolean;
   preCareInstructions: string;
   postCareInstructions: string;
@@ -47,7 +46,6 @@ function emptyServiceForm(): ServiceFormValues {
     category: "",
     durationMinutes: 60,
     price: "",
-    color: "#6366f1",
     requiresConsent: false,
     preCareInstructions: "",
     postCareInstructions: "",
@@ -172,32 +170,16 @@ export default function ServiceFormDialog({
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label>Preço (R$) *</Label>
-              <Input
-                value={form.price}
-                onChange={e =>
-                  setForm({ ...form, price: maskMoneyBR(e.target.value, 7) })
-                }
-                placeholder="0,00"
-                inputMode="numeric"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label>Cor do calendário</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="color"
-                  value={form.color}
-                  onChange={e => setForm({ ...form, color: e.target.value })}
-                  className="w-12 h-10 p-1"
-                />
-                <span className="text-xs text-muted-foreground">
-                  Identifica o serviço na agenda
-                </span>
-              </div>
-            </div>
+          <div className="grid gap-2">
+            <Label>Preço (R$) *</Label>
+            <Input
+              value={form.price}
+              onChange={e =>
+                setForm({ ...form, price: maskMoneyBR(e.target.value, 7) })
+              }
+              placeholder="0,00"
+              inputMode="numeric"
+            />
           </div>
           <div className="grid gap-2">
             <Label>Descrição</Label>

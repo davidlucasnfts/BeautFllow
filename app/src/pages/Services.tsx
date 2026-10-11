@@ -22,7 +22,6 @@ function formFromService(s: ServiceForCard): ServiceFormValues {
     category: s.category ?? "",
     durationMinutes: s.durationMinutes,
     price: moneyDotToBR(String(s.price)),
-    color: s.color ?? "#6366f1",
     requiresConsent: s.requiresConsent,
     preCareInstructions: s.preCareInstructions ?? "",
     postCareInstructions: s.postCareInstructions ?? "",
