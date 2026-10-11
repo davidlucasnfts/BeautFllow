@@ -210,6 +210,17 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 - `vitest.config.ts` corrigido para incluir `contracts/**` (teste de constants rodava fora do include)
 - Elimina a pendência da redirect URL no painel Kimi
 
+### Padronização visual e UX (outubro)
+- Cabeçalhos de todas as páginas internas com botão "Novo X" à direita na mesma linha (mobile e desktop)
+- Botões de ação pastel com borda em todo o projeto; badges de status no canto direito dos cards
+- Menu mobile virou hambúrguer com borda na cor do tema
+- Agenda: visão Dia/Semana/Mês + navegação de data centralizadas; chips de profissional centralizados com rolagem; alerta de pendentes em todas as visões; eventos coloridos pela cor do profissional
+- Financeiro: mesma barra de período centralizada; "Novo lançamento" no cabeçalho
+- Dialogs com header/footer fixos e corpo scrollando; seções opcionais longas recolhíveis (ex: Cuidados e retorno no serviço)
+- **Cor do serviço removida** — eventos da agenda usam a cor do profissional (configuração única)
+- Busca com mensagem de "nenhum resultado" na página de Serviços
+- Controle de acessos: convites de equipe com limite por plano e permissões por papel
+
 ### Outros
 - Favicon criado (`app/public/favicon.svg` + link no `index.html`)
 - Regra global nova no MestreProjects.md (seção 9): **sempre testar local antes de produção**
