@@ -320,6 +320,7 @@ Botões com funções diferentes **nunca** podem ter o mesmo estilo:
 - Confirmar/Salvar: `bg-blue-600 hover:bg-blue-700`
 - Excluir: `bg-red-600 hover:bg-red-700`
 - Aprovar: `bg-green-600 hover:bg-green-700`
+- Seções opcionais ou longas de formulário → recolher num botão com `ChevronDown` girando (ex: "Cuidados e retorno" no dialog de serviço). Abre sozinha quando já há dados preenchidos
 - Tamanho: `w-full max-w-lg max-h-[80vh] overflow-y-auto` (largura total no mobile, limitada no desktop)
 - **Cabeçalho e rodapé SEMPRE visíveis, apenas o corpo scrolla** — `DialogContent` com `max-h-[85vh] flex flex-col`, `DialogHeader` e `DialogFooter` com `shrink-0`, corpo com `overflow-y-auto min-h-0`. Nunca deixar o botão de ação (Criar/Salvar) escondido abaixo do fold.
 
