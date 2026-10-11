@@ -111,6 +111,9 @@ export default function Services() {
     );
   }
 
+  const activeFiltered = (active ?? []).filter(matches);
+  const inactiveFiltered = (inactive ?? []).filter(matches);
+
   function handleNew() {
     setEditing(null);
     setInitialForm(null);
@@ -189,9 +192,9 @@ export default function Services() {
           <Scissors className="h-12 w-12 mx-auto mb-4 opacity-20" />
           <p>Falha ao carregar. Atualize a página.</p>
         </div>
-      ) : active && active.length > 0 ? (
+      ) : activeFiltered.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {active.filter(matches).map(s => (
+          {activeFiltered.map(s => (
             <ServiceCard
               key={s.id}
               service={s}
@@ -204,17 +207,21 @@ export default function Services() {
       ) : (
         <div className="text-center py-20 text-muted-foreground">
           <Scissors className="h-12 w-12 mx-auto mb-4 opacity-20" />
-          <p>Nenhum {label.toLowerCase()} cadastrado.</p>
+          <p>
+            {search
+              ? `Nenhum resultado para "${search}".`
+              : `Nenhum ${label.toLowerCase()} cadastrado.`}
+          </p>
         </div>
       )}
 
-      {inactive && inactive.length > 0 && (
+      {inactiveFiltered.length > 0 && (
         <div className="space-y-3">
           <h2 className="text-sm font-semibold text-muted-foreground">
-            Inativos ({inactive.length})
+            Inativos ({inactiveFiltered.length})
           </h2>
           <div className="rounded-xl border bg-card divide-y overflow-hidden">
-            {inactive.filter(matches).map(s => (
+            {inactiveFiltered.map(s => (
               <div
                 key={s.id}
                 className="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50/50 transition-colors"
