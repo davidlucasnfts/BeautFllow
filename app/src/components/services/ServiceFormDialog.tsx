@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -83,10 +86,20 @@ export default function ServiceFormDialog({
   // sincroniza o formulário sempre que o dialog abre com outro contexto
   const [form, setForm] = useState<ServiceFormValues>(emptyServiceForm);
   const [syncedKey, setSyncedKey] = useState("");
+  const [careOpen, setCareOpen] = useState(false);
   const syncKey = `${open}|${editingId ?? "new"}|${initial?.name ?? ""}`;
   if (open && syncKey !== syncedKey) {
     setSyncedKey(syncKey);
-    setForm(initial ?? emptyServiceForm());
+    const init = initial ?? emptyServiceForm();
+    setForm(init);
+    // seção de cuidados/retorno já abre expandida quando o serviço usa esses campos
+    setCareOpen(
+      Boolean(
+        init.preCareInstructions ||
+          init.postCareInstructions ||
+          init.followUpDays > 0
+      )
+    );
   }
 
   function handleSubmit() {
@@ -180,8 +193,8 @@ export default function ServiceFormDialog({
                   onChange={e => setForm({ ...form, color: e.target.value })}
                   className="w-12 h-10 p-1"
                 />
-                <span className="text-sm text-muted-foreground">
-                  {form.color}
+                <span className="text-xs text-muted-foreground">
+                  Identifica o serviço na agenda
                 </span>
               </div>
             </div>
@@ -205,14 +218,30 @@ export default function ServiceFormDialog({
               Exige termo de autorização
             </Label>
           </div>
+          <button
+            type="button"
+            onClick={() => setCareOpen(v => !v)}
+            className="flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+          >
+            Cuidados e retorno (opcional)
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
+                careOpen && "rotate-180"
+              )}
+            />
+          </button>
+          {careOpen && (
+            <div className="grid gap-4">
           <div className="grid gap-2">
             <Label>Pré-cuidados</Label>
-            <Input
+            <Textarea
               value={form.preCareInstructions}
               onChange={e =>
                 setForm({ ...form, preCareInstructions: e.target.value })
               }
               placeholder="Evite maquiagem antes do procedimento..."
+              rows={2}
             />
             <p className="text-xs text-muted-foreground">
               Orientações registradas para passar ao cliente antes do
@@ -221,12 +250,13 @@ export default function ServiceFormDialog({
           </div>
           <div className="grid gap-2">
             <Label>Pós-cuidados</Label>
-            <Input
+            <Textarea
               value={form.postCareInstructions}
               onChange={e =>
                 setForm({ ...form, postCareInstructions: e.target.value })
               }
               placeholder="Não exponha ao sol por 24h..."
+              rows={2}
             />
             <p className="text-xs text-muted-foreground">
               Orientações registradas para passar ao cliente depois do
@@ -280,6 +310,8 @@ export default function ServiceFormDialog({
               </div>
             )}
           </div>
+            </div>
+          )}
         </div>
         <DialogFooter className="shrink-0">
           <DialogClose asChild>
