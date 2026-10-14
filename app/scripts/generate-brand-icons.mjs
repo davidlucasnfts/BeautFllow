@@ -1,5 +1,6 @@
 // Gera os PNGs da marca (favicon, apple-touch-icon, ícones PWA)
-// a partir do símbolo oficial em public/logo-icon.svg.
+// a partir da imagem original da marca em public/brand/ (gerada por
+// scripts/process-brand-logo.mjs a partir de docs/brand/logo-original.png).
 // Uso: node scripts/generate-brand-icons.mjs
 import sharp from "sharp";
 import { readFileSync } from "node:fs";
@@ -8,28 +9,46 @@ import { dirname, join } from "node:path";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const publicDir = join(root, "public");
-const iconSvg = readFileSync(join(publicDir, "logo-icon.svg"));
+const brandDir = join(publicDir, "brand");
+
+// ícones sobre fundo escuro quente (fios já escuros da versão dark)
+const iconDark = readFileSync(join(brandDir, "logo-icon-dark.png"));
+// favicon transparente usa os fios dourados originais
+const iconLight = readFileSync(join(brandDir, "logo-icon.png"));
 
 // fundo da marca para ícones de app (quadrado escuro quente)
 const BRAND_BG = "#141210";
 
-/** ícone dos fios sobre fundo opcional, com escala relativa ao canvas */
-const iconBuffer = (size, { background = null, scale = 0.62 } = {}) => {
+/** ícone centralizado num canvas quadrado, com escala relativa ao canvas */
+const iconBuffer = async (size, { background = null, scale = 0.62 } = {}) => {
+  const source = background ? iconDark : iconLight;
+  const meta = await sharp(source).metadata();
   const h = Math.round(size * scale);
-  const w = Math.round(h * 0.75); // proporção 48:64 do viewBox
+  const w = Math.round(h * (meta.width / meta.height));
   const x = Math.round((size - w) / 2);
   const y = Math.round((size - h) / 2);
-  const inner = iconSvg
-    .toString()
-    .replace('width="48" height="64"', `width="${w}" height="${h}"`);
-  const bgRect = background
-    ? `<rect width="${size}" height="${size}" fill="${background}"/>`
-    : "";
-  return sharp(
-    Buffer.from(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${bgRect}<g transform="translate(${x} ${y})">${inner}</g></svg>`
-    )
-  ).png();
+  const resized = await sharp(source)
+    .resize(w, h, { fit: "fill" })
+    .png()
+    .toBuffer();
+  const base = background
+    ? sharp({
+        create: {
+          width: size,
+          height: size,
+          channels: 4,
+          background,
+        },
+      })
+    : sharp({
+        create: {
+          width: size,
+          height: size,
+          channels: 4,
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
+        },
+      });
+  return base.composite([{ input: resized, left: x, top: y }]).png();
 };
 
 const jobs = [
@@ -38,8 +57,14 @@ const jobs = [
     "apple-touch-icon.png",
     await iconBuffer(180, { background: BRAND_BG, scale: 0.68 }),
   ],
-  ["icon-192.png", await iconBuffer(192, { background: BRAND_BG, scale: 0.68 })],
-  ["icon-512.png", await iconBuffer(512, { background: BRAND_BG, scale: 0.68 })],
+  [
+    "icon-192.png",
+    await iconBuffer(192, { background: BRAND_BG, scale: 0.68 }),
+  ],
+  [
+    "icon-512.png",
+    await iconBuffer(512, { background: BRAND_BG, scale: 0.68 }),
+  ],
   // maskable: margem de segurança maior (zona de corte do Android)
   [
     "icon-512-maskable.png",

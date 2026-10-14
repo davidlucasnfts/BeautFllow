@@ -12,7 +12,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "apple-touch-icon.png"],
+      includeAssets: ["favicon-32.png", "apple-touch-icon.png"],
       // Manifest desativado aqui — o app serve um manifest DINÂMICO pela rota
       // /api/pwa-manifest (cor/ícones seguem o tema do estabelecimento logado).
       // O <link rel="manifest"> está manual no index.html apontando pra lá.
