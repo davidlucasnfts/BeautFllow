@@ -1,6 +1,6 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 13/10/2026 (logo oficial aplicada — ver item 1 dos próximos passos)
+> **Atualizado em:** 14/10/2026 (logo usa a IMAGEM ORIGINAL do David, não recriação — ver item 1)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md`, não no histórico do chat (chat longo deixa o Kimi lento; regra nova no AGENTS.md).
 
 ---
@@ -23,8 +23,8 @@
 
 ## Onde paramos — próximos passos (ordem)
 
-1. **LOGO ✅ APLICADA (13/10):** David escolheu a marca "fios dourados em fluxo" (gerada por IA, print no chat). Kimi recriou em SVG vetorial e aplicou: `public/logo.svg` (claro), `logo-dark.svg` (escuro), `logo-icon.svg` (símbolo), PNGs via `scripts/generate-brand-icons.mjs` (sharp, devDep). Componente `src/components/BrandMark.tsx` (cor FIXA `#B3A18A`, nunca segue o tema — regra da marca). Aplicado em: favicon (svg+png32), apple-touch-icon, ícones PWA (manifest em `boot.ts` agora usa ícone padrão; só `theme_color` do navegador segue o tema), sidebar (`AuthLayout`, fonte Comfortaa via Google Fonts), navbar da landing (`Home.tsx`), rodapés e **tela de Login** (logo horizontal acima do card). Ícones antigos por tema em `public/themes/` ficaram órfãos (não usados; deletar quando conveniente). Se o David tiver o arquivo original da IA em alta qualidade, pode substituir os SVGs mantendo os mesmos caminhos
-2. **PUSH pendente:** 13 commits locais esperando autorização do David → Vercel deploya automatico.
+1. **LOGO ✅ APLICADA COM IMAGEM ORIGINAL (14/10):** David gerou a marca "fios dourados em fluxo" numa IA externa e mandou o print. Erro da sessão anterior: Kimi recriou a marca como SVG desenhado. Corrigido agora — a imagem original dele foi recuperada do chat e está em `docs/brand/logo-original.png` (fonte da verdade). Pipeline: `app/scripts/process-brand-logo.mjs` (sharp) recorta lockup e símbolo, transforma fundo branco em transparência e gera versão escura → `app/public/brand/logo.png` (lockup horizontal), `logo-icon.png` (símbolo transparente), `logo-icon-dark.png` (símbolo sobre `#141210`). `app/scripts/generate-brand-icons.mjs` compõe a partir desses PNGs: favicon-32, apple-touch-icon, icon-192/512/maskable. Pontos de uso no app (mesmos de antes): `src/components/BrandMark.tsx` (agora `<img src="/brand/logo-icon.png">`, cor FIXA, nunca segue o tema), Login.tsx (`/brand/logo.png`), favicon no index.html (só PNG; SVG removido), manifest PWA em `boot.ts` (aponta para os PNGs). **SVGs recriados apagados** (`public/logo*.svg`, `favicon.svg`). Ícones antigos por tema em `public/themes/` continuam órfãos (deletar quando conveniente). Se o David tiver o arquivo da IA em resolução maior: substituir `docs/brand/logo-original.png` e rodar `node scripts/process-brand-logo.mjs && node scripts/generate-brand-icons.mjs`
+2. **PUSH pendente:** ~20 commits locais esperando autorização do David → Vercel deploya automático.
 3. **Homologação pendente do David:** fluxo de convite da Equipe (`/equipe` → convidar → aceitar em `/convite?token=...`) — testar local antes de apresentar.
 4. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/barbearia`, `/salao-de-beleza`, `/estetica`.
 5. Depois: Fase 4 (billing Stripe/Mercado Pago + preços).
