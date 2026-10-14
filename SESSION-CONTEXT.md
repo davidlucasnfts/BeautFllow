@@ -1,6 +1,6 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 13/10/2026
+> **Atualizado em:** 13/10/2026 (logo oficial aplicada — ver item 1 dos próximos passos)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md`, não no histórico do chat (chat longo deixa o Kimi lento; regra nova no AGENTS.md).
 
 ---
@@ -23,7 +23,7 @@
 
 ## Onde paramos — próximos passos (ordem)
 
-1. **LOGO (tarefa em aberto):** David não gostou dos 3 conceitos SVG gerados pelo Kimi (nível placeholder). Decidido: gerar em ferramenta de IA (Ideogram/Looka) com o **prompt de beleza+fluxo** (está no chat; se perdido, o briefing completo está na seção "Logo" abaixo). Depois David manda prints das favoritas → Kimi avalia e **vetoriza a vencedora** (SVG: favicon, menu, login, landing). Paleta: **neutra/grafite + acento suave — NÃO travar no roxo** (temas variam por segmento).
+1. **LOGO ✅ APLICADA (13/10):** David escolheu a marca "fios dourados em fluxo" (gerada por IA, print no chat). Kimi recriou em SVG vetorial e aplicou: `public/logo.svg` (claro), `logo-dark.svg` (escuro), `logo-icon.svg` (símbolo), PNGs via `scripts/generate-brand-icons.mjs` (sharp, devDep). Componente `src/components/BrandMark.tsx` (cor FIXA `#B3A18A`, nunca segue o tema — regra da marca). Aplicado em: favicon (svg+png32), apple-touch-icon, ícones PWA (manifest em `boot.ts` agora usa ícone padrão; só `theme_color` do navegador segue o tema), sidebar (`AuthLayout`, fonte Comfortaa via Google Fonts), navbar da landing (`Home.tsx`), rodapés e **tela de Login** (logo horizontal acima do card). Ícones antigos por tema em `public/themes/` ficaram órfãos (não usados; deletar quando conveniente). Se o David tiver o arquivo original da IA em alta qualidade, pode substituir os SVGs mantendo os mesmos caminhos
 2. **PUSH pendente:** 13 commits locais esperando autorização do David → Vercel deploya automatico.
 3. **Homologação pendente do David:** fluxo de convite da Equipe (`/equipe` → convidar → aceitar em `/convite?token=...`) — testar local antes de apresentar.
 4. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/barbearia`, `/salao-de-beleza`, `/estetica`.
