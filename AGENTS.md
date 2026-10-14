@@ -88,6 +88,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - **Sempre atualizar arquivos mencionados** quando o usuário pedir remoção, alteração ou renomeação de qualquer item
 - Nunca deixar arquivo de documentação desatualizado após mudanças no projeto
 - **Nunca duplicar informação** entre arquivos de documentação — cada arquivo tem função única (ver `docs/documentacao-estrutura.md`)
+- **FIM DE SESSÃO (obrigatório):** antes de encerrar, atualizar `SESSION-CONTEXT.md` (data, resumo do que mudou com commits, próximos passos em ordem, decisões/ações manuais pendentes, bloqueios). Chat novo começa lendo `SESSION-CONTEXT.md` + `MEMORY.md` + `AGENTS.md` — o contexto do projeto vive nos arquivos, não no histórico do chat (chat muito longo fica lento e caro; sessões longas devem ser fechadas com esse registro e reabertas em chat novo)
 
 ### 📝 Onde salvar cada tipo de mudança (REGRA OBRIGATÓRIA)
 

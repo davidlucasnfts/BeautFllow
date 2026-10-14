@@ -1,270 +1,78 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 04/10/2026
-> **Sessão atual:** Fila de melhorias do David em execução — feitos: isolamento por salão (LGPD), busca de cliente, múltiplos serviços por atendimento, comissões/desempenho, retorno programado pós-procedimento, estoque de produtos (item 4) e **controle de acessos (item 3)**. Próximo: landings por segmento
+> **Atualizado em:** 13/10/2026
+> **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md`, não no histórico do chat (chat longo deixa o Kimi lento; regra nova no AGENTS.md).
 
 ---
 
-## Stack (1 linha)
-React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + Supabase (PostgreSQL) + Vercel
+## Resumo da sessão (04/10 → 13/10) — Lote de padronização visual + polimento de Serviços
+
+**13 commits locais NA `main`, ainda NÃO pushados** (push somente quando David pedir):
+1. `dea5e35` — Cabeçalhos de Clientes, Serviços, Profissionais, Produtos, Termos e Equipe padronizados (botão "Novo X" à direita na mesma linha, mobile e desktop)
+2. `7df16e7` — Serviços: mensagem de busca sem resultado + seção Inativos respeita o filtro
+3. `34b041a` + `6ee2778` — Dialog de serviço: seção recolhível "Cuidados e retorno", textareas, microcopy; regra salva no AGENTS.md (Modal/Dialog)
+4. `062f464` + `2d5db0a` — **Cor do serviço removida** — eventos da agenda passam a usar a **cor do profissional** (configuração única de cor); MEMORY.md atualizado
+5. `034673d` + `ff036f6` + `65c9464` — Card "Agendamentos de hoje" do Dashboard: botão "Ver agenda" com texto, em linha própria alinhado à direita (card estreito: título 160px + botão 95px não cabem na mesma linha de ~200px — decisão registrada)
+6. `e948cb6` — **Alerta de atendimentos pendentes também nas visões Semana e Mês** (era só Dia); botão "Ver dia" troca pra visão Dia (JÁ PUSHADO em 04/10)
+7. `0fae8f6`/`4820f73` — Financeiro: barra Dia/Semana/Mês + navegação centralizadas (padrão da Agenda), "Novo lançamento" no cabeçalho
+8. Anteriores já pushados em 04/10: controle de acessos (equipe/convites/permissoes), plano free no cadastro, menu hambúrguer com borda do tema, badges à direita em Clientes/Comunicações/Equipe, botões "Novo" com gap-1.5, centralização da agenda, nomes capitalizados (migration 013)
+
+**Arquivos de logo criados em `docs/mockups/`** (não commitados ainda, commitar na próxima ação): `logo-conceito-a/b/c` + `logo-comparativo.html`
 
 ---
 
-## Última funcionalidade trabalhada
-**Controle de acessos — equipe, convites e permissões por papel (item 3 da lista do David)** — 04/10 (commit local, aguardando homologação do David)
+## Onde paramos — próximos passos (ordem)
 
-### O que mudou (04/10 — item 3):
-- **Banco:** tabela `salon_invites` (e-mail, papel, token uuid único, status pending/accepted/cancelled, expira em 7 dias, quem convidou); enum `invite_status`; migration `014-salon-invites.sql` — **aplicada pelo Kimi direto no banco** (colunas e RLS verificados). Papel `owner` não é convidável (CHECK no banco)
-- **Limite por plano:** `PLAN_USER_LIMITS` em `contracts/constants.ts` — free 1 / essential 3 / pro 8 / business ilimitado. Ao convidar, backend conta `salon_users` ativos e rejeita com mensagem clara ("Seu plano Essencial permite até 3 acessos. Faça upgrade para adicionar mais.")
-- **Matriz de permissões** em `contracts/permissions.ts` (compartilhada front+back): owner tudo; admin tudo exceto Configurações; recepcionista = Início/Agenda/Clientes/Mensagens; profissional = Início/Agenda. 7 testes unitários (`server/lib/__tests__/permissions.test.ts`)
-- **Guards de role no backend:** novos `assertSalonOwner` e `assertSalonRole` em `server/lib/tenant.ts`. `salon.update`/`updateSettings` agora exigem **owner**; financial, products, services, professionals, consent e commission exigem **admin+** (antes aceitavam qualquer membro). Appointment/client/communication/dashboard/followup continuam member
-- **Router `team`** (`server/team-router.ts`, registrado no appRouter): list (membros + convites pendentes), invite (valida limite do plano, reaproveita convite pendente pro mesmo e-mail, audit log, **envia e-mail via Resend** com link `/convite?token=`; sem `RESEND_API_KEY` não quebra — devolve o link pra cópia manual), cancelInvite, removeMember (nunca remove owner; exclusão lógica `isActive=false`, histórico preservado), getInvite + **acceptInvite públicos** (validam token/pending/prazo; criam `local_user` se o e-mail não existe; criam o vínculo com o papel do convite; marcam accepted; fazem login com o mesmo cookie da auth local)
-- **Frontend:** menu lateral filtra itens por `canAccess(role, area)` + novo item "Equipe" (owner/admin); `ProtectedRoute` (`src/components/ProtectedRoute.tsx`) envolve todas as rotas privadas em `App.tsx` — rota direta sem permissão redireciona pro Início com toast. A role do salão ativo já vinha no provider (`salon.role` via `salon.list`)
-- **Página `/equipe`:** lista de membros (nome, e-mail, papel em pt-BR Dono/Administrador/Profissional/Recepcionista, badge Ativo/Inativo), convites pendentes (badge âmbar "Pendente"), Remover com AlertDialog (explica que o acesso fica inativo e o histórico continua), Cancelar convite com confirmação, botão Convidar (azul sólido) com dialog e-mail + papel + contador "X de Y acessos usados · Plano Z"; quando o e-mail não é enviado, mostra o link com botão Copiar
-- **Página pública `/convite`:** sem menu lateral; e-mail do convite bloqueado/pré-preenchido, formulário nome + senha (mesmas validações do cadastro), sucesso → login automático e vai pro app; token inválido/expirado → tela amigável com "Voltar pro login"
-- Check + 104 testes (97 baseline + 7 novos) + build OK; `api/index.js` regenerado
-- **Observação:** a constraint única de `salon_users` é por `userId` (1 salão por usuário — comportamento pré-existente). Se um usuário com conta em outro salão aceitar um convite, o vínculo migra para o salão novo
+1. **LOGO (tarefa em aberto):** David não gostou dos 3 conceitos SVG gerados pelo Kimi (nível placeholder). Decidido: gerar em ferramenta de IA (Ideogram/Looka) com o **prompt de beleza+fluxo** (está no chat; se perdido, o briefing completo está na seção "Logo" abaixo). Depois David manda prints das favoritas → Kimi avalia e **vetoriza a vencedora** (SVG: favicon, menu, login, landing). Paleta: **neutra/grafite + acento suave — NÃO travar no roxo** (temas variam por segmento).
+2. **PUSH pendente:** 13 commits locais esperando autorização do David → Vercel deploya automatico.
+3. **Homologação pendente do David:** fluxo de convite da Equipe (`/equipe` → convidar → aceitar em `/convite?token=...`) — testar local antes de apresentar.
+4. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/barbearia`, `/salao-de-beleza`, `/estetica`.
+5. Depois: Fase 4 (billing Stripe/Mercado Pago + preços).
 
-### O que mudou (30/09 — item 4):
-- **Banco:** tabelas `products` (nome, unidade livre, quantidade, mínimo, custo, ativo) e `stock_movements` (produto, tipo in/out, quantidade, motivo, data automática); enum `stock_movement_type`. Migration `012-estoque-produtos.sql` — **aplicada pelo Kimi direto no banco**, com RLS + policies de isolamento por tenant (padrão da 002)
-- **Backend:** novo router `product` (`product-router.ts`) registrado no `appRouter`: list (com inativos), summary (total investido, ativos, estoque baixo), create, update, reactivate, delete, movement, movements. Todas as procedures com `assertSalonMember` na 1ª linha + Zod + audit log. Saldo aplicado **atomicamente em transação Drizzle** (`db.transaction`) dentro de `createStockMovement` — saída nunca deixa saldo negativo (erro claro em pt-BR). Queries em `server/queries/product.ts`; lógica pura em `server/lib/stock.ts` com 6 testes unitários
-- **Exclusão:** sem movimentações = exclusão física; com movimentações = inativa (soft delete, histórico preservado) — com AlertDialog de confirmação citando o nome e explicando o comportamento
-- **Frontend:** nova página `/products` + item "Produtos" no menu lateral (após Profissionais, ícone `Package`). Resumo no topo: Total investido / Produtos ativos / Estoque baixo. Tabela padrão no desktop e lista estilo Fila do Dia no mobile (padrão Financeiro): ações sempre visíveis empilhadas (Editar azul, Entrada verde, Saída âmbar, Histórico slate, Excluir vermelho), badge "Baixo" quando quantidade <= mínimo, badge Ativo/Inativo, hover azul. Dialogs de cadastro, movimentação e histórico com header/footer fixos (regra do Modal/Dialog). Componentes em `src/components/products/`
-- **Campos:** estoque mínimo/quantidade usam máscara nova `maskQuantity` (até 3 casas decimais, ex.: "250,750") em `input-masks.ts`; saldo inicial do produto sempre 0 — entrada só via movimentação
-- Check + 92 testes (86 existentes + 6 novos) + build OK; roundtrip real no banco validado (criação, entrada/saída transacional, trava de saldo negativo, resumo/histórico)
+---
 
-### Histórico — retorno programado pós-procedimento (item 2 da lista do David)** — 29/09
+## Logo — briefing aprovado (pra não depender do chat)
+- **StudioFlow** — SaaS de gestão p/ salões de beleza, clínicas de estética e barbearias
+- Conceito: **beleza + fluxo** — curvas suaves/graciosas (fio de cabelo abstrato, onda, pincelada) + continuidade (a curva conecta ou leva ao nome)
+- Tom: elegante, acolhedor, premium-acessível; feminino-leaning mas sóbrio
+- Estilo: beleza com polimento tech — referências **Aesop, Glossier, Cal.com**; flat vector, liso em 16px (favicon) e elegante em sidebar escura
+- **Paleta neutra e atemporal**: grafite/carvão `#0F172A` base + UM acento suave (rose gold, índigo suave ou sálvia). Não fazer roxo forte a identidade
+- **PROIBIDO:** tesoura, pente, espelho, rosto (clichês)
+- Entregável esperado da IA: símbolo + wordmark "StudioFlow" (sans humanista; "Studio" sólido, "Flow" com acento)
 
-### O que mudou (29/09 — item 2):
-- **Banco:** `services` ganha `followUpDays` + `followUpServiceId`; nova tabela `client_follow_ups` (migration `011-client-follow-ups.sql` — **aplicada pelo Kimi direto no banco**). Enum `follow_up_status` (pending/scheduled/dismissed)
-- **Configuração:** cadastro/edição de serviço tem seção "Retorno sugerido" — quantos dias até sugerir o retorno e qual serviço sugerir (padrão: o mesmo)
-- **Automático:** ao concluir um atendimento (qualquer caminho), o servidor cria retorno pendente para cada serviço feito (principal + extras) com `followUpDays > 0`; vencimento = data do atendimento + dias; não duplica se já existe pendente/agendado para o mesmo cliente+serviço
-- **Dashboard:** novo card "Retornos pendentes" (4º card na primeira grade): cliente, serviço sugerido e vencimento ("hoje", "em N dias", "há N dias" em vermelho se atrasado). "Agendar" leva pra página de Agendamentos com o formulário pré-preenchido (cliente, profissional, serviço, data — reaproveita slots/conflitos; data passada cai em hoje); ao criar, o retorno é marcado como agendado. "Dispensar" remove da lista
-- **Backend:** novo router `followup` (list/schedule/dismiss + audit); criação dos retornos em `queries/followup.ts`, chamada no `appointment.update` quando status vira "completed" (falha não bloqueia a conclusão)
-- Check + 86 testes + build OK
+---
 
-### Ajustes do retorno (30/09 — item 2 refinado):
-- **9 dialogs reestruturados** (agendamento, checkout, serviço, financeiro, comunicação, profissional, consentimento, cliente, pagamento de comissão): `DialogContent` com `max-h-[85vh] flex flex-col`, `DialogHeader`/`DialogFooter` com `shrink-0` (sempre visíveis) e corpo com `overflow-y-auto min-h-0` — botão Criar/Salvar nunca fica escondido abaixo do fold. Regra salva no AGENTS.md (Modal/Dialog)
-- **Card "Retornos pendentes" alinhado ao padrão do Dashboard:** título `text-base font-serif` sem ícone (contador mantido), `Card` com `flex flex-col`, hover das linhas `hover:bg-blue-50/50`
-- **Regra de negócio:** cancelar um agendamento **apaga o retorno vinculado** (tanto cancelar o retorno agendado quanto o atendimento de origem — `deleteFollowUpsForCancelledAppointment` em `queries/followup.ts`, chamada no `appointment.update` quando status vira `cancelled`)
-- **Regra de negócio:** vencimento do retorno conta da **data de conclusão** do atendimento (`completedAt` em fuso `America/Sao_Paulo`), não da data agendada — atendimento agendado para hoje mas concluído amanhã gera retorno a partir de amanhã
-- Check + 86 testes + build OK
-1. ✅ Isolamento por salão (LGPD) — deployado (`559ead6`)
-2. ✅ Busca de cliente (combobox) — deployado (`b1c82d2`)
-3. ✅ Multi-serviço por atendimento — deployado (`e02ec64`)
-4. ✅ Comissões/pagamentos de funcionários + desempenho por profissional — deployado (`b2d4f52`)
-5. ✅ Retorno programado pós-procedimento — deployado (ver histórico)
-6. ✅ Estoque de produtos (aba "Produtos") — deployado (`0a9d632`)
-7. ✅ Item 3: controle de acessos — implementado 04/10, **aguardando homologação do David** (ver "O que mudou 04/10" acima)
-8. ⏳ Landings por segmento: mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/barbearia`, `/salao-de-beleza`, `/estetica` (segurado até terminar a fila)
+## Decisões pendentes / Ações manuais (David)
 
-### O que mudou (26/09):
-- **Correção crítica (bug relatado pelo David — "outra conta vê dados da primeira"):** achados 2 problemas. ① Frontend: salão ativo em localStorage persistia entre contas no mesmo navegador → agora `AuthLayout` descarta o salão salvo se ele não estiver na lista do usuário logado, e o logout limpa a memória (`SALON_STORAGE_KEY`). ② Backend (grave, IDOR): resolvers confiavam no `salonId` do input sem validar vínculo → criado `app/server/lib/tenant.ts` (`assertSalonMember`/`assertSalonAdmin`) e aplicado como 1ª linha em **43 resolvers** (8 routers); `salon.update`/`updateSettings` exigem owner/admin. Erro 012 no self-healing + regra "Isolamento por tenant" na seção de segurança do AGENTS.md
-- **Lista de melhorias do David (26/09) — análise entregue, ordem aprovada:** ① OBS segurança (feito); ② item 7 busca de cliente (combobox); ③ item 6 multi-serviço por atendimento; ④ itens 1+5 comissões/pagamentos + desempenho por profissional; ⑤ item 2 retorno programado pós-procedimento; ⑥ item 4 estoque; ⑦ item 3 controle de acessos (roles já existem no banco)
-- **Landings por segmento (23-24/09):** 3 mockups (`docs/mockups/landing-segmento-*.html`) com copy de persuasão aprovada — dor → mecanismo → prova → CTA, sem número inventado, sem jargão (seção "Copywriting" no AGENTS.md, erro 011). **Aguardando codificação das rotas `/barbearia`, `/salao-de-beleza`, `/estetica`** (segurado pelo David até terminarem as melhorias da lista)
-- **Página pública de agendamento:** overbooking resolvido — sem preferência de profissional, o backend atribui automaticamente o primeiro livre (e bloqueia se todos ocupados); `availableSlots` ganhou `freeSlots` (slot só livre se ALGUM profissional estiver livre); `startTime` não pré-seleciona mais 09:00 e limpa ao trocar serviço/profissional/data; sem flicker "Sem horários" (`keepPreviousData`); datas passadas bloqueadas; estado vazio com aviso quando não há serviços ativos
-- **Dashboard (crítico):** "hoje" calculado no SQL com `NOW() AT TIME ZONE 'America/Sao_Paulo'` — entre 21h–23h59 BRT o Dashboard mostrava o dia seguinte; SUM/COUNT do Postgres normalizados com `Number()` (KPI "R$ 3500.00" → "R$ 3.500,00")
-- **Clientes:** limite da lista 100 → 1000 (cliente 101+ sumia da tela e da busca); data de nascimento limpável na edição (grava NULL); idade corrigida (perdia 1 dia no fuso); botão WhatsApp com texto
-- **Comunicações/Termos:** horário das mensagens formatado no servidor com fuso BR (estava 3h atrasado); paginação "Carregar mais mensagens" (+50)
-- **Geral:** `isError` tratado nas 5 páginas de listagem; Settings sem `type="number"`; comissão exibida como "10%"; `MessageFormDialog` valida cliente selecionado
-- **Pendentes de decisão:** M6 (recálculo de segmentos de clientes roda 3x no Dashboard — mitigado com throttle de 60s; refactor pendente) — avaliar com David. ~~B5~~ resolvido em `fbb0a90`: sparkline de ganhos agora usa receita real por dia (`revenueByDay` no metrics) e Atividades Recentes mostra o nome do cliente sem truncar
-- **Hotfix 19/09 (`267304c`):** erro 500 do `customer.list` (cast `::date` no monthStart — regressão do C1, o type-check não pega erro de SQL); botão "Ver agenda" do Dashboard truncado no desktop (header do card em coluna); lentidão de carregamento — `refreshClientSegments` tinha throttle nenhum e UPDATEs sequenciais ao Supabase remoto em toda `customer.list` (7 telas) → throttle 60s/salão + invalidação nas mutations + UPDATEs paralelos
-- **Dashboard 20/09 (`26a93ca` + `e69ec94`):** proposta aprovada via mockups — ação "＋ Novo agendamento" no header; banner do link com Copiar + WhatsApp; alerta LGPD com botão "Resolver" → /consent; KPIs em 2 colunas no mobile; "Atendimentos hoje" mostra "X ontem" (metrics ganhou `appointmentsYesterday`); boards do desktop em grade 12 colunas (Próximos = 6, Atividades = 8, Dicas = 12); ícones dos KPIs coloridos (Lucide + `iconClassName`, emoji dos mockups era placeholder); página pública de agendamento **validada de ponta a ponta pelo David** (cliente final agendou com sucesso)
-- **Booking extraído + testes (20/09):** lógica de agendamento (slots, overlap, profissional livre, freeSlots) saiu do `public-router.ts` para `server/lib/booking.ts` (funções puras) com ~25 testes unitários (`server/lib/__tests__/booking.test.ts`) — protege o caminho do dinheiro contra regressão; suíte subiu de 65 → 86 testes
-- **Decisões do David (20/09):** ① Mensagens/Comunicação = automatizar depois (só registrado, sem código agora); ② Termos LGPD = manter histórico → `deleteConsentForm` virou **soft delete** (`isActive = false`), exclusão física de assinaturas removida; listagens já filtram ativos; mutation `sign` trava server-side (`NOT_FOUND`) se o termo estiver inativo
-- **Configurações completada (21/09):** auditoria achou `salon.update` e `logoUrl` sem tela — implementado ① card "Dados do estabelecimento" (nome, telefone, e-mail, endereço, cidade, UF + **link público editável** com validação de slug único no backend, `CONFLICT` se ocupado) e ② card "Minha conta" com **trocar senha** (`localAuth.changePassword` — valida senha atual com bcrypt, nova mín. 8). `SalonContextType` ganhou phone/email/address/city/state. Logo (upload) ficou de fora — exige bucket no Supabase (ação manual)
-- **Esqueci a senha + olhinho (21/09):** fluxo completo de recuperação — `requestPasswordReset` (token SHA-256 no banco, expira 1h, uso único, resposta genérica não revela cadastro; e-mail via **Resend**, sem chave em dev o link vai pro terminal) + `resetPassword` + página `/redefinir-senha`. Migration `008-password-reset-tokens.sql` **já aplicada no banco**. Componente `PasswordInput` (olhinho) no login, cadastro, trocar senha e redefinir senha. Testado e2e de ponta a ponta contra o banco real (registrar → pedir reset → capturar link do terminal → resetar → login nova passa / antiga falha / reuso do token falha)
-- **PWA — app instalável (22/09):** `vite-plugin-pwa` (registerType autoUpdate, generateSW, API em NetworkOnly — **sem promessa de uso offline**, app depende da API). Meta Apple + theme-color no `index.html`. Componente `InstallAppBanner` no Dashboard: Android/Chrome usa `beforeinstallprompt` → botão "Instalar agora"; guias manuais pra iOS (Safari), iOS-fora-do-Safari, Firefox (não instala — recomenda Chrome) e Android sem o evento; desktop Chromium também instala. Dispensado (X), reaparece a cada 20 min até instalar; instalado, some de vez (por aparelho). Cores do banner usam classes de tema, nunca cor fixa (erro 010 no self-healing). Check + 86 testes + build OK
-- **PWA — manifest/ícone dinâmicos por tema (23/09):** manifest estático do plugin desativado; rota `/api/pwa-manifest?theme=<id>` no `boot.ts` monta manifest com `theme_color`/`background_color`/ícones do tema do estabelecimento (ícones "S" gerados nas 9 cores do catálogo em `app/public/themes/<id>/`). `AuthLayout` troca `<link rel="manifest">`, `theme-color` e `apple-touch-icon` conforme o salão logado (iOS usa apple-touch-icon na instalação). Sem `?theme`, cai no azul padrão. Validado em produção (`?theme=rosa-choque` → `#EC4899`)
-- **Ações manuais pendentes (David):** ① ~~`RESEND_API_KEY` na Vercel~~ ✅ configurada por David em 22/09 ("Esqueci a senha" funciona em produção); ② quando quiser o logo: criar bucket no Supabase Storage
+**Novas desta sessão:**
+- [ ] Gerar logos na IA (Ideogram/Looka) com o prompt e enviar prints das favoritas pro Kimi
+- [ ] Homologar fluxo de convite da Equipe (teste local)
+- [ ] Autorizar push dos 13 commits locais
 
-### Antes, nesta mesma sessão (19/09 — polimento das 5 páginas pendentes):
-1. Auditoria página a página contra o design system: 5 ✅ já conformes (Agendamentos, Clientes, Serviços, Dashboard, Configurações), 5 ⚠️ melhoradas nesta sessão
-2. **Financeiro:** editar/excluir lançamento (`financial.update`/`financial.delete` + audit), ficha expansível, moeda pt-BR
-3. **Termos:** ver completo/editar/excluir (`consent.update`/`consent.delete` + audit; delete remove assinaturas vinculadas), checklist decorativo removido
-4. **Profissionais:** ficha expansível, desativar/reativar (soft delete), busca, input de horários de trabalho
-5. **Comunicação:** reenviar (form pré-preenchido)/excluir (`communication.delete` + audit), ficha expansível
-6. **Login/Cadastro:** ícones + toast pós-cadastro
-7. Endpoints novos seguem padrão: Zod, filtro tenant, audit log
+**Legadas (não esquecer):**
+- [ ] Remover env vars `APP_ID` e `OWNER_UNION_ID` do projeto Vercel `studioflow` (Settings → Environment Variables) — não são mais lidas pelo código. `APP_SECRET` e `DATABASE_URL` **permanecem**
+- [ ] Testar cadastro/login em produção (`studioflow-navy.vercel.app`) após o push
+- [ ] **Foto/logo do estabelecimento** (coluna `logoUrl` já existe) — falta criar bucket no Supabase Storage + upload na aba Configurações
+- [ ] Testar instalação do PWA em celular real (só funciona em produção/HTTPS)
+- [ ] Renomear repositório GitHub `BeautFllow` → `studioflow` (opcional)
+- [ ] Comprar domínio `studioflow.com.br` e configurar na Vercel (quando preparar para vender)
+- [ ] Apagar usuário de teste `teste.kimi.2026@gmail.com` no Supabase (opcional)
 
-### Débitos técnicos percebidos (não urgentes):
-- `server/queries/salon.ts` tem ~900 linhas (limite é 400) — quebrar em `queries/financial.ts`, `queries/consent.ts` etc.
-- `consent.create` aceita `serviceId` no Zod mas a tabela não tem a coluna (campo morto, nenhuma tela envia)
-- Sem FK de `consent_signatures.formId` → `consent_forms.id` no schema
-- `financial.create` exige `clientId` mas o schema permite null (despesa genérica sem cliente não é possível)
-- ~~Decisão LGPD pendente: delete de termo apaga assinaturas (exclusão física). Se a LGPD exigir retenção, migrar para exclusão lógica (`isActive` já existe)~~ → **resolvido 20/09:** soft delete implementado (ver histórico acima)
+**Migrations aplicadas direto no banco pelo Kimi** (001–014, todas ✅; convites usam `RESEND_API_KEY`/`RESEND_FROM` já configuradas)
 
-### Próximo passo definido:
-1. David roda o **smoke test completo** (roteiro da sessão: login → profissional → serviço → cliente → agendar → concluir c/ pagamento → conferir financeiro) — agora com todas as páginas polidas
-2. Se passar: **push autorizado** → `main` remota → Vercel deploya
-3. Validar cadastro/login em produção (`studioflow-navy.vercel.app`)
-4. Depois: Fase 4 (billing Stripe/Mercado Pago + landings por segmento + preços)
+---
 
-### Como testar local:
+## Débitos técnicos conhecidos (não urgentes)
+- `server/queries/salon.ts` ~900 linhas (limite 400) — quebrar em arquivos por domínio
+- `consent.create` aceita `serviceId` no Zod mas a tabela não tem a coluna (campo morto) — **ganhou propósito:** implementar vínculo termo↔serviço quando fizer o fluxo de exigência de assinatura (checkbox "Exige termo" hoje só mostra selo no card)
+- `financial.create` exige `clientId` mas o schema permite null
+- Mesma melhoria de "busca sem resultado" de Serviços (`7df16e7`) provavelmente se aplica a Produtos/Profissionais/Clientes — padronizar quando tocar nelas
+
+---
+
+## Como testar local
 `cd app && npm run dev` → `http://localhost:3000`
-
----
-
-## Stack (1 linha)
-React 19 + TypeScript strict + Tailwind + shadcn/ui + tRPC/Hono + Drizzle ORM + Supabase (PostgreSQL) + Vercel
-
----
-
-## Última funcionalidade trabalhada
-**Agendamentos — Opção 5 + filtros reais + alerta de pendentes** — 15/09 (na `main`, commit `9b748b6`)
-
-### O que mudou nesta sessão (15/09):
-1. **Mockup navegável** `docs/mockups/agendamento-seletor-visao.html` — 5 opções renderizadas; David escolheu e aprovou a **Opção 5**
-2. **Nova regra no AGENTS.md** — "Visualização externa de propostas": sempre que David pedir pra visualizar algo (botão, funcionalidade, tela), gerar HTML navegável em `docs/mockups/`, nunca só texto no chat
-3. **Layout Opção 5** — `[Dia][Semana][Mês]` + Novo em uma linha; navegação `‹ [rótulo ▾] ›` com centro clicável (pula pro dia/semana/mês escolhido); **chips de profissional com cor** em dia/semana (mobile + desktop); botão **Hoje** reseta a navegação
-4. **Fix real:** filtro por profissional/serviço **não funcionava na fila do dia (mobile)** — recebia atendimentos brutos; agora recebe filtrados
-5. **Visão Mês simplificada** — só o dia + badge com quantidade de atendimentos (chips de horário não cabiam no mobile)
-6. **Alerta de pendentes** (novo `PendingPastAlert`) — na visão Dia, aviso âmbar com atendimentos dos últimos 90 dias sem concluir/cancelar, respeitando o filtro ativo; botão "Ver dia" leva ao mais antigo
-7. **Fila mobile:** ponto indicador nos dias que têm atendimento do filtro atual (clicar no chip mostra onde aquele profissional atende)
-8. **Refactor:** seleção de visões extraída da página pra `AgendaViews.tsx` (`Appointments.tsx` estourava o limite de 400 linhas)
-
-### Como testar local:
-`cd app && npm run dev` → `http://localhost:3000` → Agendamentos → testar as 3 visões no iPhone 12 Pro e desktop: chips filtram, mês mostra contagem, alerta de pendentes aparece se houver atendimento antigo sem concluir/cancelar
-
----
-
-## Consolidação dos arquivos mestre — 05/09
-
-## Última funcionalidade trabalhada
-**Página de Clientes — ficha expandida + status híbrido dos clientes** — 08/09
-
-### O que mudou nesta sessão (08/09):
-1. **Lista de clientes padrão Fila do Dia** — ficha expande na linha (sem trocar de tela), WhatsApp com ícone oficial na lateral, Excluir só dentro do card aberto
-2. **Ficha completa** — Aniversário dd/mm + idade, Última visita, Histórico recente de atendimentos (endpoint novo `appointment.historyByClient`)
-3. **Status híbrido dos clientes** — regras automáticas configuráveis em Configurações (VIP por R$ gasto ou nº de atendimentos no mês, dias p/ Sumindo/Inativo) + seletor manual "Automático/Novo/Ativo/VIP/Sumindo/Inativo" no editar do cliente (`segmentManual`, migration 007)
-4. **Totais reais** — `totalVisits`, `totalSpent` e `lastVisitAt` são recalculados dos agendamentos concluídos sempre que a lista carrega (antes ficavam zerados)
-5. **Renomeação "Visitas" → "Atendimentos"** nas telas de cliente
-6. **Fix Tailwind v4→v3** nos componentes shadcn (sidebar fixa não cobria mais o conteúdo)
-
-### Sessão anterior (05/09):
-1. **AGENTS.md ganhou 8 padrões copiados do MandatoDigital** (commit f6c56b0): checklist pré-commit obrigatório, padrão de páginas de teste (V2/V3), padrão de preview/detalhes (ficha do item selecionado), abas/filtros, cards h-full + grids simétricos, mobile-first responsivo obrigatório, regra de senha PostgreSQL sem caracteres especiais
-2. **Auditoria de design executada** — achados pendentes de aplicação:
-   - `Clients.tsx`, `Services.tsx`, `Professionals.tsx` usam botões de ícone sozinhos (ghost, Edit3/Trash2 sem texto) — violam a regra "sempre texto + ícone" do próprio design system
-   - Cards dos grids sem `h-full` (alturas podem diferir)
-   - Dialogs sem `w-full max-h-[80vh] overflow-y-auto`
-   - Nenhuma página tem preview/ficha expandida — melhoria #2 priorizada (ficha do cliente + WhatsApp) deve seguir o novo padrão de preview
-
-### Sessão anterior (04/09):
-1. **Bug crítico corrigido** — login/logout local davam 500 `c.header is not a function` (ctx tRPC passado para `setCookie` do Hono). Agora o cookie é serializado com `cookie.serialize` e escrito em `ctx.resHeaders` (mesmo padrão do `auth-router.ts`)
-2. **Fluxo validado de ponta a ponta** — register → login → me → logout → me (null), tudo via API no servidor local
-3. **Favicon criado** — `app/public/favicon.svg` + link no `index.html` (eliminava o 404 do console)
-4. **Regra global nova** — MestreProjects.md seção 9: sempre testar local antes de produção (referenciada no AGENTS.md)
-5. **AGENTS.md sincronizado** — estrutura de diretórios e regras técnicas agora refletem `server/` (backend migrou de `api/` nesta sessão)
-6. Deploy de produção `studioflow-navy.vercel.app` funcional (3 deploys Ready)
-7. **OAuth Kimi removido do app** — router `auth-router.ts`, queries OAuth mortas (`queries/users.ts`), fallback no `useAuth.ts`, plugin `kimi-plugin-inspect-react`, env vars `APP_ID`/`OWNER_UNION_ID`/`VITE_APP_ID`/`KIMI_*`. Cookie de sessão renomeado `kimi_sid` → `studioflow_sid`. App 100% independente de plataforma (regra do AGENTS.md)
-
-### Arquivos modificados nesta sessão:
-- `app/server/local-auth-router.ts` — correção do cookie (login/logout)
-- `app/server/auth-router.ts` — **deletado** (OAuth legado)
-- `app/server/queries/users.ts` — **deletado** (só usado pelo OAuth)
-- `app/server/router.ts` — registro do `authRouter` removido
-- `app/server/boot.ts` — rate limit de `/api/trpc/auth.*` removido
-- `app/server/lib/env.ts` — `appId` e `ownerUnionId` removidos
-- `app/src/hooks/useAuth.ts` — fallback OAuth removido
-- `app/contracts/constants.ts` — `oauthCallback` removido; cookie renomeado
-- `app/vite.config.ts` — plugin `kimi-plugin-inspect-react` removido
-- `app/package.json` — dependência `kimi-plugin-inspect-react` removida
-- `app/vitest.config.ts` — `contracts/**` incluído nos testes
-- `app/.env.example` — vars OAuth removidas
-- `app/public/favicon.svg` — criado
-- `app/index.html` — link do favicon
-- `app/api/index.js` — bundle regenerado (sem OAuth)
-- `AGENTS.md` — regra de fluxo local → produção + sincronização `server/`
-- `MestreProjects.md` — regra global de fluxo local → produção (fora do repo)
-
----
-
-## Consolidação dos arquivos mestre — 05/09
-
-A pasta `PROJETOS IA` tinha 3 fontes de regras globais: `MestreProjects.md`, a pasta fatiada `MestreProjects/` (13 arquivos) e `MASTER_NOVO_PROJETO.md` (template). Consolidado tudo no `MestreProjects.md` (v2.0.0, seções 15 e 16 novas + tabela de 20 erros no Self-Healing). Originais arquivados em `PROJETOS IA/_arquivamento-2026-09/` — David pode apagar a pasta quando conferir.
-
----
-
-## Funcionalidade entregue nesta sessão
-**Correção do auth local (login/logout) + favicon + regra de fluxo local → produção** — 04/09
-
----
-
-## Próximo passo definido
-**Validar com David no navegador local (cadastro → login → dashboard), depois subir para produção:**
-1. David testa o fluxo completo local (`npm run dev`): cadastro, login, logout
-2. Testar cadastro/login em produção (`https://studioflow-navy.vercel.app`) — deploy automático a cada push
-3. Cobrar redirect URL do OAuth Kimi e destino do projeto Vercel antigo
-
-Próximas funcionalidades (após validação):
-- Landing pages específicas por segmento (`/salao-de-beleza`, `/barbearia`, `/estetica`)
-- Templates de comunicação usados nas mensagens automáticas
-
----
+Validações rápidas: `npm run check` (type-check) · `npm run test` (104 testes) · `npm run build`
 
 ## Bloqueios
 Nenhum.
-
----
-
-## Estrutura de pastas (resumida)
-```
-app/
-  src/           → Frontend React (pages, components, hooks, providers)
-  server/        → Backend tRPC/Hono (routers, middleware, context, lib/audit.ts)
-  api/           → Entrypoint serverless Vercel (só index.js, bundle gerado)
-  db/            → Schema Drizzle (schema.ts, relations.ts)
-docs/            → ADRs + requirements + runbooks + DOR/DOD/LGPD
-supabase/        → schema_safe.sql + migrations/ (001-003)
-.github/         → Workflows CI/CD
-```
-
----
-
-## Decisões pendentes
-- [x] Rodar migration 002 no Supabase (RLS policies)
-- [x] Configurar `VERCEL_TOKEN` no GitHub Secrets
-- [x] Configurar env vars na Vercel (DATABASE_URL, APP_ID, APP_SECRET, NODE_ENV, OWNER_UNION_ID)
-- [x] Criar testes (24 testes, 3 arquivos, threshold 40%)
-- [x] Sentry configurado (@sentry/react + @sentry/node)
-- [x] Escolher novo nome do app: **StudioFlow**
-- [x] Verificar disponibilidade de domínio `studioflow.com.br` — **disponível**
-- [x] Rodar migration 003-salon-segment.sql no Supabase
-- [x] Criar novo projeto Vercel `studioflow` com env vars (CORS_ORIGIN=https://studioflow-navy.vercel.app)
-- [x] Commit + push de todo o código local (estava só no PC desde agosto)
-- [x] Corrigir erro de build Vercel (backend migrado para `server/`, entrypoint `api/index.js` bundle esbuild, versionado no Git)
-- [x] Reativar projeto Supabase (estava pausado) + rodar migration 003
-- [x] Corrigir fluxo de login/logout local (cookie em `ctx.resHeaders`)
-- [x] **Remover OAuth Kimi do app** (aprovado por David) — elimina a pendência da redirect URL no painel Kimi
-- [ ] **Remover env vars `APP_ID` e `OWNER_UNION_ID` do projeto Vercel `studioflow`** (Settings → Environment Variables) — não são mais lidas pelo código. `APP_SECRET` e `DATABASE_URL` **permanecem**
-- [ ] **Testar cadastro/login em `https://studioflow-navy.vercel.app`** após o push destas correções
-- [x] **Deletar o projeto Vercel antigo (`beaut-flow`)** — deletado por David no painel Vercel em 06/09
-- [ ] **Foto do estabelecimento no perfil** (coluna `logoUrl` já existe no banco) — falta criar bucket no Supabase Storage e implementar o upload na aba Configurações
-- [ ] **Testar instalação do PWA em celular real** (David): Android/Chrome → banner "Instalar agora" no Dashboard; iPhone/Safari → seguir o passo a passo do banner. Só funciona em produção (HTTPS) após o push
-- [ ] Renomear repositório GitHub `BeautFllow` → `studioflow` (opcional)
-- [ ] Comprar domínio `studioflow.com.br` e configurar na Vercel (quando preparar para vender)
-- [ ] Adicionar `SENTRY_DSN` e `VITE_SENTRY_DSN` na Vercel (opcional — só se quiser usar)
-- [x] Rodar migration 006-remove-client-cpf-email.sql no Supabase (SQL Editor) — remove CPF e e-mail do cadastro de cliente. O app já funciona sem esses campos antes da migration; ela só apaga as colunas
-- [x] Rodar migration 005-rls-salons.sql no Supabase (SQL Editor) — fecha lacuna: tabela `salons` estava sem RLS. App não é afetado (backend acessa como owner), mas testar o fluxo local depois
-- [ ] Apagar usuário de teste `teste.kimi.2026@gmail.com` na tabela `local_users` do Supabase (opcional)
-- [x] Rodar migration 007-client-segment-manual.sql no Supabase — **aplicada pelo Kimi direto no banco em 09/09** (coluna `segmentManual` na tabela `clients`). Sem ela, listagem e cadastro de clientes quebravam com erro 500
-- [x] Rodar migration 009-appointment-extra-services.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (coluna `extraServices` em `appointments` verificada)
-- [x] Rodar migration 010-professional-payments.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (tabela `professional_payments` verificada)
-- [x] Rodar migration 011-client-follow-ups.sql no Supabase — **aplicada pelo Kimi direto no banco em 29/09** (tabela `client_follow_ups`, colunas `followUpDays`/`followUpServiceId` e enum `follow_up_status` verificados)
-- [x] Rodar migration 012-estoque-produtos.sql no Supabase — **aplicada pelo Kimi direto no banco em 30/09** (tabelas `products`/`stock_movements`, enum `stock_movement_type` e policies RLS verificados)
-- [x] Rodar migration 014-salon-invites.sql no Supabase — **aplicada pelo Kimi direto no banco em 04/10** (tabela `salon_invites`, enum `invite_status` e RLS verificados). Convites usam a mesma `RESEND_API_KEY`/`RESEND_FROM` já configuradas na Vercel (sem nova ação manual)
-
----
-
-## Ações Manuais — REGRA PARA O KIMI
-> Sempre que uma funcionalidade exigir ação manual (rodar SQL no Supabase, configurar secret no GitHub/Vercel, criar bucket, env var, etc.), **adicionar na seção "Decisões pendentes" acima** e **avisar David no final da resposta** com destaque em negrito e emoji ⚠️.
-
----
-
-## Como atualizar este arquivo
-No final de cada sessão, substitua:
-1. **Data** no topo
-2. **Última funcionalidade trabalhada** — o que foi feito
-3. **Próximo passo definido** — o que faremos na próxima sessão
-4. **Bloqueios** — se houver
-5. **Decisões pendentes** — marcar como [x] quando concluído
