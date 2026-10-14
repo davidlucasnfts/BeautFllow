@@ -39,6 +39,7 @@ import {
 } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { AuthLayoutSkeleton } from "./AuthLayoutSkeleton";
+import { BrandMark } from "./BrandMark";
 import { Button } from "./ui/button";
 import { MobileTopBar } from "./MobileTopBar";
 import MobileSidebarCloser from "./MobileSidebarCloser";
@@ -60,45 +61,7 @@ const planLabels: Record<string, string> = {
 };
 
 function Logo({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M6 2C6 2 3 6 3 9C3 12 5 14 7 14C9 14 11 12 11 9C11 6 8 2 8 2"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="text-primary"
-      />
-      <path
-        d="M18 2C18 2 21 6 21 9C21 12 19 14 17 14C15 14 13 12 13 9C13 6 16 2 16 2"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="text-secondary"
-      />
-      <circle
-        cx="7"
-        cy="18"
-        r="2"
-        fill="currentColor"
-        className="text-primary"
-      />
-      <circle
-        cx="17"
-        cy="18"
-        r="2"
-        fill="currentColor"
-        className="text-secondary"
-      />
-    </svg>
-  );
+  return <BrandMark className={className} />;
 }
 
 function getMenuItems(segment: SalonSegment) {
@@ -221,15 +184,8 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     );
     const previousThemeColor = themeColorMeta?.getAttribute("content") ?? null;
     if (theme) themeColorMeta?.setAttribute("content", theme.palette.primary);
-    // iPhone usa o apple-touch-icon (link estático) na instalação — troca também
-    const appleIconLink = document.querySelector<HTMLLinkElement>(
-      'link[rel="apple-touch-icon"]'
-    );
-    const previousAppleIcon = appleIconLink?.getAttribute("href") ?? null;
-    appleIconLink?.setAttribute(
-      "href",
-      theme ? `/themes/${theme.id}/apple-touch-icon.png` : "/apple-touch-icon.png"
-    );
+    // apple-touch-icon é o símbolo padrão da marca em TODOS os temas
+    // (regra: logo não muda por estabelecimento) — link estático do index.html
 
     return () => {
       for (const key of Object.keys(vars)) {
@@ -241,9 +197,6 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       }
       if (previousThemeColor !== null) {
         themeColorMeta?.setAttribute("content", previousThemeColor);
-      }
-      if (previousAppleIcon !== null) {
-        appleIconLink?.setAttribute("href", previousAppleIcon);
       }
     };
   }, [salon]);
@@ -400,8 +353,14 @@ function AuthLayoutContent({
               </button>
               {!isCollapsed ? (
                 <div className="flex items-center gap-2 min-w-0">
-                  <Logo className="h-5 w-5" />
-                  <span className="font-serif font-semibold tracking-tight truncate">
+                  <Logo className="h-5" />
+                  <span
+                    className="font-semibold tracking-tight truncate"
+                    style={{
+                      fontFamily:
+                        "'Comfortaa', 'Segoe UI Rounded', sans-serif",
+                    }}
+                  >
                     StudioFlow
                   </span>
                 </div>

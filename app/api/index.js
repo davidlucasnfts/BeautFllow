@@ -90596,7 +90596,6 @@ app.get("/health", async (c) => {
 app.get("/api/pwa-manifest", (c) => {
   const themeParam = c.req.query("theme");
   const theme = themeParam ? getTheme(themeParam) : void 0;
-  const base = theme ? `/themes/${theme.id}` : "";
   return c.json({
     name: "StudioFlow",
     short_name: "StudioFlow",
@@ -90607,12 +90606,12 @@ app.get("/api/pwa-manifest", (c) => {
     display: "standalone",
     orientation: "portrait",
     theme_color: theme ? theme.palette.primary : "#2563eb",
-    background_color: theme ? theme.palette.background : "#ffffff",
+    background_color: "#141210",
     icons: [
-      { src: `${base}/icon-192.png`, sizes: "192x192", type: "image/png" },
-      { src: `${base}/icon-512.png`, sizes: "512x512", type: "image/png" },
+      { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
       {
-        src: `${base}/icon-512-maskable.png`,
+        src: "/icon-512-maskable.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable"

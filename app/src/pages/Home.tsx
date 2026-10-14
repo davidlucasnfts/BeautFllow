@@ -152,8 +152,11 @@ export default function Home() {
       {/* Navbar */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
-          <Logo className="h-6 w-6" />
-          <span className="text-xl font-serif font-bold tracking-tight">
+          <Logo className="h-6" />
+          <span
+            className="text-xl font-semibold tracking-tight"
+            style={{ fontFamily: "'Comfortaa', 'Segoe UI Rounded', sans-serif" }}
+          >
             StudioFlow
           </span>
         </div>
@@ -363,7 +366,7 @@ export default function Home() {
       <footer className="px-6 py-10 border-t">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Logo className="h-5 w-5" />
+            <Logo className="h-5" />
             <span className="font-serif font-bold">StudioFlow</span>
           </div>
           <p className="text-sm text-muted-foreground">

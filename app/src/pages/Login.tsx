@@ -79,7 +79,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 gap-8">
+      <img src="/logo.svg" alt="StudioFlow" className="h-12 w-auto" />
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <CardTitle className="font-serif text-2xl">{titles[mode]}</CardTitle>

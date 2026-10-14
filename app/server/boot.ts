@@ -109,14 +109,13 @@ app.get("/health", async c => {
   }
 });
 
-// Manifest PWA dinâmico — cor e ícones seguem o tema do estabelecimento.
-// Fica em /api/* porque o rewrite da Vercel só encaminha /api/* ao servidor
-// (qualquer outra rota cai no index.html da SPA). O app autenticado aponta o
-// <link rel="manifest"> para cá com ?theme=<id>; sem parâmetro, usa o azul padrão.
+// Manifest PWA — ícones são o SÍMBOLO PADRÃO DA MARCA em todos os temas
+// (regra: logo não muda por estabelecimento); só o theme_color (tinta do
+// navegador) segue o tema. Fica em /api/* porque o rewrite da Vercel só
+// encaminha /api/* ao servidor (qualquer outra rota cai no index.html da SPA).
 app.get("/api/pwa-manifest", c => {
   const themeParam = c.req.query("theme");
   const theme = themeParam ? getTheme(themeParam) : undefined;
-  const base = theme ? `/themes/${theme.id}` : "";
   return c.json({
     name: "StudioFlow",
     short_name: "StudioFlow",
@@ -128,12 +127,12 @@ app.get("/api/pwa-manifest", c => {
     display: "standalone",
     orientation: "portrait",
     theme_color: theme ? theme.palette.primary : "#2563eb",
-    background_color: theme ? theme.palette.background : "#ffffff",
+    background_color: "#141210",
     icons: [
-      { src: `${base}/icon-192.png`, sizes: "192x192", type: "image/png" },
-      { src: `${base}/icon-512.png`, sizes: "512x512", type: "image/png" },
+      { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
       {
-        src: `${base}/icon-512-maskable.png`,
+        src: "/icon-512-maskable.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable",
