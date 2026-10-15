@@ -154,7 +154,7 @@ export default function Home() {
           <img
             src="/brand/logo.png"
             alt="StudioFlow"
-            className="h-8 w-auto"
+            className="h-11 w-auto"
             draggable={false}
           />
         </div>
@@ -367,7 +367,7 @@ export default function Home() {
             <img
               src="/brand/logo.png"
               alt="StudioFlow"
-              className="h-6 w-auto"
+              className="h-8 w-auto"
               draggable={false}
             />
           </div>
