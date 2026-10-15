@@ -19,15 +19,16 @@ export type FinancialRecordForList = {
   notes: string | null;
 };
 
-const typeLabels: Record<FinancialRecordType, string> = {
+export const typeLabels: Record<FinancialRecordType, string> = {
   service: "Serviço",
   product: "Produto",
   package: "Pacote",
   refund: "Reembolso",
+  expense: "Despesa",
   other: "Outro",
 };
 
-const paymentLabels: Record<FinancialPaymentMethod, string> = {
+export const paymentLabels: Record<FinancialPaymentMethod, string> = {
   pix: "Pix",
   credit_card: "Cartão de Crédito",
   debit_card: "Cartão de Débito",

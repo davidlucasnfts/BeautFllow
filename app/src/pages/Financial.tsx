@@ -187,7 +187,6 @@ export default function Financial() {
   function handleSubmit(values: FinancialFormValues) {
     if (!salon) return;
     if (editing) {
-      // edição só altera valor, descrição, pagamento e data (contrato do backend)
       updateMutation.mutate({
         id: editing,
         salonId: salon.id,
@@ -195,11 +194,20 @@ export default function Financial() {
         amount: values.amount,
         paymentMethod: values.paymentMethod,
         recordDate: values.recordDate,
+        // vínculos editáveis (ex.: profissional lançado errado)
+        professionalId: values.professionalId
+          ? Number(values.professionalId)
+          : null,
+        commissionAmount: values.commissionAmount || "0.00",
       });
     } else {
       createMutation.mutate({
         salonId: salon.id,
-        clientId: Number(values.clientId),
+        // despesa não tem cliente
+        clientId:
+          values.type !== "expense" && values.clientId
+            ? Number(values.clientId)
+            : undefined,
         professionalId: values.professionalId
           ? Number(values.professionalId)
           : undefined,
@@ -235,7 +243,7 @@ export default function Financial() {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-4">
         <Card className="h-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ganho líquido</CardTitle>
@@ -244,7 +252,25 @@ export default function Financial() {
           <CardContent>
             {summary ? (
               <div className="text-2xl font-bold">
-                {formatBRL(summary.totalRevenue)}
+                {formatBRL(summary.netIncome)}
+              </div>
+            ) : (
+              <Skeleton className="h-8 w-24" />
+            )}
+            <p className="text-[10px] text-muted-foreground mt-1">
+              após comissões e despesas
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="h-full">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Despesas</CardTitle>
+            <TrendingDown className="h-4 w-4 text-orange-500" />
+          </CardHeader>
+          <CardContent>
+            {summary ? (
+              <div className="text-2xl font-bold">
+                {formatBRL(summary.totalExpenses)}
               </div>
             ) : (
               <Skeleton className="h-8 w-24" />
@@ -266,7 +292,7 @@ export default function Financial() {
             )}
           </CardContent>
         </Card>
-        <Card className="h-full col-span-2 md:col-span-1">
+        <Card className="h-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total Comissões

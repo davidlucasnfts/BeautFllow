@@ -28,6 +28,7 @@ export type FinancialRecordType =
   | "product"
   | "package"
   | "refund"
+  | "expense"
   | "other";
 
 export type FinancialPaymentMethod =
@@ -66,7 +67,7 @@ export function emptyFinancialForm(): FinancialFormValues {
 interface FinancialFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** null = criação; number = edição (só valor, descrição, pagamento e data são editáveis) */
+  /** null = criação; number = edição (cliente e tipo ficam fixos) */
   editingId: number | null;
   /** Pré-preenchimento na edição; null = formulário em branco */
   initial: FinancialFormValues | null;
@@ -108,12 +109,15 @@ export default function FinancialFormDialog({
       toast.error("Informe o valor do registro.");
       return;
     }
-    if (!editingId && !form.clientId) {
+    // despesa não tem cliente; os demais tipos exigem
+    if (!editingId && form.type !== "expense" && !form.clientId) {
       toast.error("Selecione o cliente do registro.");
       return;
     }
     onSubmit({ ...form, amount: moneyBRToDot(form.amount) });
   }
+
+  const isExpense = form.type === "expense";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -126,19 +130,21 @@ export default function FinancialFormDialog({
         <div className="grid gap-4 py-4 overflow-y-auto min-h-0">
           {editingId && (
             <p className="text-xs text-muted-foreground">
-              Na edição, apenas valor, descrição, forma de pagamento e data
-              podem ser alterados.
+              Na edição, cliente e tipo ficam fixos; os demais campos podem ser
+              alterados.
             </p>
           )}
-          <div className="grid gap-2">
-            <Label>Cliente</Label>
-            <ClientCombobox
-              clients={clients}
-              value={form.clientId}
-              onChange={v => setForm({ ...form, clientId: v })}
-              disabled={!!editingId}
-            />
-          </div>
+          {!isExpense && (
+            <div className="grid gap-2">
+              <Label>Cliente</Label>
+              <ClientCombobox
+                clients={clients}
+                value={form.clientId}
+                onChange={v => setForm({ ...form, clientId: v })}
+                disabled={!!editingId}
+              />
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>Tipo</Label>
@@ -157,6 +163,7 @@ export default function FinancialFormDialog({
                   <SelectItem value="product">Produto</SelectItem>
                   <SelectItem value="package">Pacote</SelectItem>
                   <SelectItem value="refund">Reembolso</SelectItem>
+                  <SelectItem value="expense">Despesa</SelectItem>
                   <SelectItem value="other">Outro</SelectItem>
                 </SelectContent>
               </Select>
@@ -194,47 +201,49 @@ export default function FinancialFormDialog({
                 inputMode="numeric"
               />
             </div>
-            <div className="grid gap-2">
-              <Label>Comissão (R$)</Label>
-              <Input
-                value={form.commissionAmount}
-                onChange={e =>
-                  setForm({
-                    ...form,
-                    commissionAmount: maskMoneyBR(e.target.value),
-                  })
-                }
-                placeholder="0,00"
-                inputMode="numeric"
-                disabled={!!editingId}
-              />
-            </div>
+            {!isExpense && (
+              <div className="grid gap-2">
+                <Label>Comissão (R$)</Label>
+                <Input
+                  value={form.commissionAmount}
+                  onChange={e =>
+                    setForm({
+                      ...form,
+                      commissionAmount: maskMoneyBR(e.target.value),
+                    })
+                  }
+                  placeholder="0,00"
+                  inputMode="numeric"
+                />
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label>Profissional</Label>
-              <Select
-                value={form.professionalId}
-                onValueChange={v =>
-                  setForm({ ...form, professionalId: v })
-                }
-                disabled={!!editingId}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder="Opcional"
-                    className="truncate"
-                  />
-                </SelectTrigger>
-                <SelectContent className="z-[60]">
-                  {professionals?.map(p => (
-                    <SelectItem key={p.id} value={String(p.id)}>
-                      {p.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {!isExpense && (
+              <div className="grid gap-2">
+                <Label>Profissional</Label>
+                <Select
+                  value={form.professionalId}
+                  onValueChange={v =>
+                    setForm({ ...form, professionalId: v })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder="Opcional"
+                      className="truncate"
+                    />
+                  </SelectTrigger>
+                  <SelectContent className="z-[60]">
+                    {professionals?.map(p => (
+                      <SelectItem key={p.id} value={String(p.id)}>
+                        {p.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="grid gap-2">
               <Label>Pagamento</Label>
               <Select

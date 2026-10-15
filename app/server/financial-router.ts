@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { createRouter, authedQuery } from "./middleware";
 import {
   createFinancialRecord,
@@ -50,10 +51,11 @@ export const financialRouter = createRouter({
       z.object({
         salonId: z.number(),
         appointmentId: z.number().optional(),
-        clientId: z.number(),
+        // despesa não tem cliente — obrigatório só para os demais tipos
+        clientId: z.number().optional(),
         professionalId: z.number().optional(),
         type: z
-          .enum(["service", "product", "package", "refund", "other"])
+          .enum(["service", "product", "package", "refund", "expense", "other"])
           .default("service"),
         description: z.string().min(1).max(255),
         amount: z.string().or(z.number()),
@@ -67,6 +69,12 @@ export const financialRouter = createRouter({
     )
     .mutation(async ({ input, ctx }) => {
       await assertSalonAdmin(ctx.user.id, input.salonId);
+      if (input.type !== "expense" && !input.clientId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Selecione o cliente do registro.",
+        });
+      }
       const { salonId, amount, commissionAmount, recordDate, ...data } = input;
       const result = await createFinancialRecord({
         salonId,
@@ -98,14 +106,20 @@ export const financialRouter = createRouter({
           .enum(["pix", "credit_card", "debit_card", "cash", "other"])
           .optional(),
         recordDate: z.string().optional(),
+        // edição de vínculos (ex.: profissional/comissão lançados errados)
+        professionalId: z.number().nullable().optional(),
+        commissionAmount: z.string().or(z.number()).optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       await assertSalonAdmin(ctx.user.id, input.salonId);
-      const { id, salonId, amount, ...data } = input;
+      const { id, salonId, amount, commissionAmount, ...data } = input;
       const result = await updateFinancialRecord(id, salonId, {
         ...data,
         ...(amount !== undefined ? { amount: String(amount) } : {}),
+        ...(commissionAmount !== undefined
+          ? { commissionAmount: String(commissionAmount) }
+          : {}),
       });
       await auditAction(
         "update",

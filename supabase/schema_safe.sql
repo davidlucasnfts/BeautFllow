@@ -21,7 +21,7 @@ CREATE TYPE IF NOT EXISTS communication_channel AS ENUM ('whatsapp', 'sms', 'ema
 CREATE TYPE IF NOT EXISTS communication_direction AS ENUM ('outbound', 'inbound');
 CREATE TYPE IF NOT EXISTS communication_type AS ENUM ('confirmation', 'reminder', 'check_in', 'post_care', 'reactivation', 'campaign', 'manual');
 CREATE TYPE IF NOT EXISTS communication_status AS ENUM ('pending', 'sent', 'delivered', 'read', 'failed');
-CREATE TYPE IF NOT EXISTS record_type AS ENUM ('service', 'product', 'package', 'refund', 'other');
+CREATE TYPE IF NOT EXISTS record_type AS ENUM ('service', 'product', 'package', 'refund', 'expense', 'other');
 CREATE TYPE IF NOT EXISTS payment_method AS ENUM ('pix', 'credit_card', 'debit_card', 'cash', 'other');
 
 -- Core Users (OAuth)

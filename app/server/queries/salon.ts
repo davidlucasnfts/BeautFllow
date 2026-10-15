@@ -373,8 +373,10 @@ export async function getFinancialSummaryBySalon(
 
   const [row] = await getDb()
     .select({
-      totalRevenue: sql<number>`COALESCE(SUM(CASE WHEN ${financialRecords.type} != 'refund' THEN ${financialRecords.amount} ELSE 0 END), 0)`,
+      // receita = entradas (serviço/produto/pacote/outro) — fora reembolso e despesa
+      totalRevenue: sql<number>`COALESCE(SUM(CASE WHEN ${financialRecords.type} NOT IN ('refund', 'expense') THEN ${financialRecords.amount} ELSE 0 END), 0)`,
       totalRefunds: sql<number>`COALESCE(SUM(CASE WHEN ${financialRecords.type} = 'refund' THEN ABS(${financialRecords.amount}) ELSE 0 END), 0)`,
+      totalExpenses: sql<number>`COALESCE(SUM(CASE WHEN ${financialRecords.type} = 'expense' THEN ABS(${financialRecords.amount}) ELSE 0 END), 0)`,
       totalCommission: sql<number>`COALESCE(SUM(${financialRecords.commissionAmount}), 0)`,
       count: sql<number>`COUNT(*)`,
     })
@@ -382,10 +384,16 @@ export async function getFinancialSummaryBySalon(
     .where(and(...conditions));
 
   // SUM/COUNT do Postgres voltam como string (numeric) — normalizar p/ número
+  const totalRevenue = Number(row?.totalRevenue ?? 0);
+  const totalCommission = Number(row?.totalCommission ?? 0);
+  const totalExpenses = Number(row?.totalExpenses ?? 0);
   return {
-    totalRevenue: Number(row?.totalRevenue ?? 0),
+    totalRevenue,
     totalRefunds: Number(row?.totalRefunds ?? 0),
-    totalCommission: Number(row?.totalCommission ?? 0),
+    totalExpenses,
+    totalCommission,
+    // ganho líquido de verdade: o que entrou menos comissões e despesas
+    netIncome: totalRevenue - totalCommission - totalExpenses,
     count: Number(row?.count ?? 0),
   };
 }

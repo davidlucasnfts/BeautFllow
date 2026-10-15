@@ -85336,6 +85336,7 @@ var recordTypeEnum = pgEnum("record_type", [
   "product",
   "package",
   "refund",
+  "expense",
   "other"
 ]);
 var paymentMethodEnum = pgEnum("payment_method", [
@@ -86336,15 +86337,23 @@ async function getFinancialSummaryBySalon(salonId, fromDate, toDate2) {
     conditions.push(sql`${financialRecords.recordDate} >= ${fromDate}`);
   if (toDate2) conditions.push(sql`${financialRecords.recordDate} <= ${toDate2}`);
   const [row] = await getDb().select({
-    totalRevenue: sql`COALESCE(SUM(CASE WHEN ${financialRecords.type} != 'refund' THEN ${financialRecords.amount} ELSE 0 END), 0)`,
+    // receita = entradas (serviço/produto/pacote/outro) — fora reembolso e despesa
+    totalRevenue: sql`COALESCE(SUM(CASE WHEN ${financialRecords.type} NOT IN ('refund', 'expense') THEN ${financialRecords.amount} ELSE 0 END), 0)`,
     totalRefunds: sql`COALESCE(SUM(CASE WHEN ${financialRecords.type} = 'refund' THEN ABS(${financialRecords.amount}) ELSE 0 END), 0)`,
+    totalExpenses: sql`COALESCE(SUM(CASE WHEN ${financialRecords.type} = 'expense' THEN ABS(${financialRecords.amount}) ELSE 0 END), 0)`,
     totalCommission: sql`COALESCE(SUM(${financialRecords.commissionAmount}), 0)`,
     count: sql`COUNT(*)`
   }).from(financialRecords).where(and(...conditions));
+  const totalRevenue = Number(row?.totalRevenue ?? 0);
+  const totalCommission = Number(row?.totalCommission ?? 0);
+  const totalExpenses = Number(row?.totalExpenses ?? 0);
   return {
-    totalRevenue: Number(row?.totalRevenue ?? 0),
+    totalRevenue,
     totalRefunds: Number(row?.totalRefunds ?? 0),
-    totalCommission: Number(row?.totalCommission ?? 0),
+    totalExpenses,
+    totalCommission,
+    // ganho líquido de verdade: o que entrou menos comissões e despesas
+    netIncome: totalRevenue - totalCommission - totalExpenses,
     count: Number(row?.count ?? 0)
   };
 }
@@ -87127,6 +87136,24 @@ var serviceRouter = createRouter({
 });
 
 // server/professional-router.ts
+var PROFESSIONAL_COLORS = [
+  "#8B5CF6",
+  // violeta
+  "#10B981",
+  // esmeralda
+  "#F59E0B",
+  // âmbar
+  "#3B82F6",
+  // azul
+  "#EC4899",
+  // rosa
+  "#14B8A6",
+  // turquesa
+  "#F97316",
+  // laranja
+  "#6366F1"
+  // índigo
+];
 var professionalRouter = createRouter({
   list: authedQuery.input(
     external_exports.object({
@@ -87150,15 +87177,18 @@ var professionalRouter = createRouter({
       phone: external_exports.string().optional(),
       bio: external_exports.string().optional(),
       commissionRate: external_exports.string().or(external_exports.number()).default("0.00"),
-      color: external_exports.string().default("#10b981"),
+      color: external_exports.string().optional(),
       workingHours: external_exports.string().optional()
     })
   ).mutation(async ({ input, ctx }) => {
     await assertSalonAdmin(ctx.user.id, input.salonId);
     const { salonId, commissionRate, ...data } = input;
+    const team = await getProfessionalsBySalon(salonId, true);
+    const color = data.color ?? PROFESSIONAL_COLORS[team.length % PROFESSIONAL_COLORS.length];
     const result = await createProfessional({
       salonId,
       ...data,
+      color,
       commissionRate: String(commissionRate)
     });
     await auditAction(
@@ -89126,9 +89156,10 @@ var financialRouter = createRouter({
     external_exports.object({
       salonId: external_exports.number(),
       appointmentId: external_exports.number().optional(),
-      clientId: external_exports.number(),
+      // despesa não tem cliente — obrigatório só para os demais tipos
+      clientId: external_exports.number().optional(),
       professionalId: external_exports.number().optional(),
-      type: external_exports.enum(["service", "product", "package", "refund", "other"]).default("service"),
+      type: external_exports.enum(["service", "product", "package", "refund", "expense", "other"]).default("service"),
       description: external_exports.string().min(1).max(255),
       amount: external_exports.string().or(external_exports.number()),
       commissionAmount: external_exports.string().or(external_exports.number()).optional(),
@@ -89138,6 +89169,12 @@ var financialRouter = createRouter({
     })
   ).mutation(async ({ input, ctx }) => {
     await assertSalonAdmin(ctx.user.id, input.salonId);
+    if (input.type !== "expense" && !input.clientId) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Selecione o cliente do registro."
+      });
+    }
     const { salonId, amount, commissionAmount, recordDate, ...data } = input;
     const result = await createFinancialRecord({
       salonId,
@@ -89164,14 +89201,18 @@ var financialRouter = createRouter({
       amount: external_exports.string().or(external_exports.number()).optional(),
       description: external_exports.string().min(1).max(255).optional(),
       paymentMethod: external_exports.enum(["pix", "credit_card", "debit_card", "cash", "other"]).optional(),
-      recordDate: external_exports.string().optional()
+      recordDate: external_exports.string().optional(),
+      // edição de vínculos (ex.: profissional/comissão lançados errados)
+      professionalId: external_exports.number().nullable().optional(),
+      commissionAmount: external_exports.string().or(external_exports.number()).optional()
     })
   ).mutation(async ({ input, ctx }) => {
     await assertSalonAdmin(ctx.user.id, input.salonId);
-    const { id, salonId, amount, ...data } = input;
+    const { id, salonId, amount, commissionAmount, ...data } = input;
     const result = await updateFinancialRecord(id, salonId, {
       ...data,
-      ...amount !== void 0 ? { amount: String(amount) } : {}
+      ...amount !== void 0 ? { amount: String(amount) } : {},
+      ...commissionAmount !== void 0 ? { commissionAmount: String(commissionAmount) } : {}
     });
     await auditAction(
       "update",

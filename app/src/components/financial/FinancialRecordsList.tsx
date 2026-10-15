@@ -30,6 +30,7 @@ import { dateToBR, toISODate } from "@/lib/input-masks";
 import FinancialRecordExpanded, {
   type FinancialRecordForList,
 } from "./FinancialRecordExpanded";
+import { paymentLabels } from "./FinancialRecordExpanded";
 
 export type FinancialPeriod = Period;
 
@@ -119,8 +120,11 @@ export default function FinancialRecordsList({
       const key = format(startOfWeek(d, { weekStartsOn: 1 }), "yyyy-MM-dd");
       const s = map.get(key) ?? { count: 0, total: 0 };
       s.count += 1;
+      // reembolso e despesa saem do caixa; entradas entram
       s.total +=
-        r.type === "refund" ? -Math.abs(Number(r.amount)) : Number(r.amount);
+        r.type === "refund" || r.type === "expense"
+          ? -Math.abs(Number(r.amount))
+          : Number(r.amount);
       map.set(key, s);
     }
     return map;
@@ -269,17 +273,17 @@ export default function FinancialRecordsList({
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {r.recordDate ? dateToBR(r.recordDate) : "Sem data"}{" "}
-                          · {r.paymentMethod.replace("_", " ")}
+                          · {paymentLabels[r.paymentMethod]}
                         </p>
                       </div>
                       <span
                         className={`shrink-0 text-sm font-semibold ${
-                          r.type === "refund"
+                          r.type === "refund" || r.type === "expense"
                             ? "text-rose-500"
                             : "text-emerald-600"
                         }`}
                       >
-                        {r.type === "refund" ? "-" : ""}
+                        {r.type === "refund" || r.type === "expense" ? "-" : ""}
                         {formatBRL(r.amount)}
                       </span>
                     </div>
@@ -332,13 +336,13 @@ export default function FinancialRecordsList({
                             {r.description}
                           </TableCell>
                           <TableCell>{clientNameOf(r.clientId)}</TableCell>
-                          <TableCell className="capitalize">
-                            {r.paymentMethod.replace("_", " ")}
-                          </TableCell>
+                          <TableCell>{paymentLabels[r.paymentMethod]}</TableCell>
                           <TableCell
-                            className={`text-right font-medium ${r.type === "refund" ? "text-rose-500" : "text-emerald-600"}`}
+                            className={`text-right font-medium ${r.type === "refund" || r.type === "expense" ? "text-rose-500" : "text-emerald-600"}`}
                           >
-                            {r.type === "refund" ? "-" : ""}
+                            {r.type === "refund" || r.type === "expense"
+                              ? "-"
+                              : ""}
                             {formatBRL(r.amount)}
                           </TableCell>
                         </TableRow>

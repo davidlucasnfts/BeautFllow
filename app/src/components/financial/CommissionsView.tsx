@@ -29,9 +29,12 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { format, startOfMonth, endOfMonth, addMonths } from "date-fns";
-import { ChevronLeft, ChevronRight, DollarSign } from "lucide-react";
+import { format, startOfMonth, endOfMonth } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { DollarSign } from "lucide-react";
 import { moneyBRToDot, moneyDotToBR, maskMoneyBR } from "@/lib/input-masks";
+import DatePicker from "@/components/DatePicker";
+import { paymentLabels } from "./FinancialRecordExpanded";
 
 function formatBRL(value: string | number) {
   return Number(value).toLocaleString("pt-BR", {
@@ -77,6 +80,20 @@ export default function CommissionsView(_props: CommissionsViewProps) {
     { enabled: !!salon }
   );
 
+  const [professionalFilter, setProfessionalFilter] = useState<number | "all">(
+    "all"
+  );
+
+  const filteredSummary = useMemo(
+    () =>
+      professionalFilter === "all"
+        ? (summary ?? [])
+        : (summary ?? []).filter(
+            pro => pro.professionalId === professionalFilter
+          ),
+    [summary, professionalFilter]
+  );
+
   const { data: payments, isLoading: paymentsLoading } =
     trpc.commission.payments.useQuery(
       { salonId: salon?.id ?? 0 },
@@ -101,24 +118,42 @@ export default function CommissionsView(_props: CommissionsViewProps) {
             Valores devidos e pagamentos já feitos
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setAnchor(addMonths(anchor, -1))}
-            className="flex h-8 w-8 items-center justify-center rounded-md border hover:bg-slate-50"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <span className="text-sm font-medium min-w-[100px] text-center">
-            {format(anchor, "MMMM/yyyy", { locale: undefined })}
-          </span>
-          <button
-            type="button"
-            onClick={() => setAnchor(addMonths(anchor, 1))}
-            className="flex h-8 w-8 items-center justify-center rounded-md border hover:bg-slate-50"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* chips de filtro por profissional (padrão dos filtros da agenda) */}
+          <div className="flex items-center gap-1 overflow-x-auto max-w-full">
+            <button
+              type="button"
+              onClick={() => setProfessionalFilter("all")}
+              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                professionalFilter === "all"
+                  ? "bg-primary text-primary-foreground"
+                  : "border bg-background hover:bg-accent"
+              }`}
+            >
+              Todos
+            </button>
+            {summary?.map(pro => (
+              <button
+                key={pro.professionalId}
+                type="button"
+                onClick={() => setProfessionalFilter(pro.professionalId)}
+                className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  professionalFilter === pro.professionalId
+                    ? "bg-primary text-primary-foreground"
+                    : "border bg-background hover:bg-accent"
+                }`}
+              >
+                {pro.name}
+              </button>
+            ))}
+          </div>
+          <DatePicker
+            value={format(startOfMonth(anchor), "yyyy-MM-dd")}
+            onChange={iso => setAnchor(new Date(`${iso}T00:00:00`))}
+            onMonthChange={iso => setAnchor(new Date(`${iso}T00:00:00`))}
+            hideSelectedDay
+            label={format(anchor, "MMMM 'de' yyyy", { locale: ptBR })}
+          />
         </div>
       </div>
 
@@ -128,13 +163,17 @@ export default function CommissionsView(_props: CommissionsViewProps) {
             <Skeleton key={i} className="h-32 bg-muted" />
           ))}
         </div>
-      ) : summary?.length === 0 ? (
+      ) : filteredSummary.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          <p>Nenhum profissional cadastrado para calcular comissões.</p>
+          <p>
+            {summary && summary.length > 0
+              ? "Nenhum profissional para o filtro escolhido."
+              : "Nenhum profissional cadastrado para calcular comissões."}
+          </p>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {summary?.map(pro => (
+          {filteredSummary.map(pro => (
             <Card key={pro.professionalId} className="h-full">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base font-medium">
@@ -215,8 +254,10 @@ export default function CommissionsView(_props: CommissionsViewProps) {
                           "pt-BR"
                         )}
                       </TableCell>
-                      <TableCell className="capitalize">
-                        {p.paymentMethod.replace("_", " ")}
+                      <TableCell>
+                        {paymentLabels[
+                          p.paymentMethod as keyof typeof paymentLabels
+                        ] ?? p.paymentMethod}
                       </TableCell>
                       <TableCell className="text-right font-medium">
                         {formatBRL(p.amount)}

@@ -92,6 +92,7 @@ export const recordTypeEnum = pgEnum("record_type", [
   "product",
   "package",
   "refund",
+  "expense",
   "other",
 ]);
 export const paymentMethodEnum = pgEnum("payment_method", [
