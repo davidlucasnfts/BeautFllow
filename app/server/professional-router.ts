@@ -12,6 +12,19 @@ import { auditAction } from "./lib/audit";
 import { assertSalonAdmin } from "./lib/tenant";
 import { capitalizeWords } from "./lib/format";
 
+/** Paleta rotativa das cores de profissional na agenda (ordem = sequência
+ *  de contratação). Atribuída automaticamente — sem configuração manual. */
+const PROFESSIONAL_COLORS = [
+  "#8B5CF6", // violeta
+  "#10B981", // esmeralda
+  "#F59E0B", // âmbar
+  "#3B82F6", // azul
+  "#EC4899", // rosa
+  "#14B8A6", // turquesa
+  "#F97316", // laranja
+  "#6366F1", // índigo
+];
+
 export const professionalRouter = createRouter({
   list: authedQuery
     .input(
@@ -42,16 +55,21 @@ export const professionalRouter = createRouter({
         phone: z.string().optional(),
         bio: z.string().optional(),
         commissionRate: z.string().or(z.number()).default("0.00"),
-        color: z.string().default("#10b981"),
+        color: z.string().optional(),
         workingHours: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       await assertSalonAdmin(ctx.user.id, input.salonId);
       const { salonId, commissionRate, ...data } = input;
+      // cor automática: próxima da paleta rotativa conforme o tamanho da equipe
+      const team = await getProfessionalsBySalon(salonId, true);
+      const color =
+        data.color ?? PROFESSIONAL_COLORS[team.length % PROFESSIONAL_COLORS.length];
       const result = await createProfessional({
         salonId,
         ...data,
+        color,
         commissionRate: String(commissionRate),
       });
       await auditAction(

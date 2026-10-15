@@ -25,7 +25,6 @@ function formFromProfessional(p: ProfessionalForCard): ProfessionalFormValues {
     phone: p.phone ?? "",
     bio: p.bio ?? "",
     commissionRate: String(p.commissionRate),
-    color: p.color ?? "#10b981",
     workingHours: p.workingHours ?? "",
   };
 }

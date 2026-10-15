@@ -19,7 +19,6 @@ export type ProfessionalFormValues = {
   phone: string;
   bio: string;
   commissionRate: string;
-  color: string;
   workingHours: string;
 };
 
@@ -30,7 +29,6 @@ function emptyProfessionalForm(): ProfessionalFormValues {
     phone: "",
     bio: "",
     commissionRate: "0",
-    color: "#10b981",
     workingHours: "",
   };
 }
@@ -114,35 +112,22 @@ export default function ProfessionalFormDialog({
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label>Comissão (%)</Label>
-              <Input
-                value={form.commissionRate}
-                onChange={e =>
-                  setForm({
-                    ...form,
-                    commissionRate: onlyDigits(e.target.value).slice(0, 3),
-                  })
-                }
-                inputMode="numeric"
-                placeholder="0"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label>Cor do calendário</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="color"
-                  value={form.color}
-                  onChange={e => setForm({ ...form, color: e.target.value })}
-                  className="w-12 h-10 p-1"
-                />
-                <span className="text-sm text-muted-foreground">
-                  {form.color}
-                </span>
-              </div>
-            </div>
+          <div className="grid gap-2">
+            <Label>Comissão (%)</Label>
+            <Input
+              value={form.commissionRate}
+              onChange={e =>
+                setForm({
+                  ...form,
+                  commissionRate: onlyDigits(e.target.value).slice(0, 3),
+                })
+              }
+              inputMode="numeric"
+              placeholder="0"
+            />
+            <p className="text-xs text-muted-foreground">
+              Cor na agenda atribuída automaticamente pelo sistema.
+            </p>
           </div>
           <div className="grid gap-2">
             <Label>Especialidades</Label>
