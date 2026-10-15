@@ -18,7 +18,6 @@ import {
   Calendar,
 } from "lucide-react";
 import { Link } from "react-router";
-import { Logo } from "@/components/landing/Logo";
 
 const painPoints = [
   {
@@ -166,11 +165,13 @@ export default function Proposal() {
       <header className="bg-white border-b">
         <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Logo className="h-8 w-8" />
+            <img
+              src="/brand/logo.png"
+              alt="StudioFlow"
+              className="h-11 w-auto"
+              draggable={false}
+            />
             <div>
-              <h1 className="text-xl font-serif font-bold tracking-tight">
-                StudioFlow
-              </h1>
               <p className="text-xs text-muted-foreground">
                 Gestão simples para salões
               </p>
@@ -454,10 +455,12 @@ export default function Proposal() {
       <footer className="border-t bg-white mt-10">
         <div className="max-w-5xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
-            <Logo className="h-5 w-5" />
-            <span className="font-serif font-bold text-foreground">
-              StudioFlow
-            </span>
+            <img
+              src="/brand/logo.png"
+              alt="StudioFlow"
+              className="h-6 w-auto"
+              draggable={false}
+            />
           </div>
           <p>Proposta feita para o seu negócio</p>
           <p>&copy; {new Date().getFullYear()} StudioFlow</p>

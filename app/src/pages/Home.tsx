@@ -11,7 +11,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Link } from "react-router";
-import { Logo } from "@/components/landing/Logo";
 import { DashboardMockup } from "@/components/landing/DashboardMockup";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
@@ -152,13 +151,12 @@ export default function Home() {
       {/* Navbar */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
-          <Logo className="h-6" />
-          <span
-            className="text-xl font-semibold tracking-tight"
-            style={{ fontFamily: "'Comfortaa', 'Segoe UI Rounded', sans-serif" }}
-          >
-            StudioFlow
-          </span>
+          <img
+            src="/brand/logo.png"
+            alt="StudioFlow"
+            className="h-8 w-auto"
+            draggable={false}
+          />
         </div>
         <div className="flex items-center gap-4">
           <Link to="/login">
@@ -366,8 +364,12 @@ export default function Home() {
       <footer className="px-6 py-10 border-t">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Logo className="h-5" />
-            <span className="font-serif font-bold">StudioFlow</span>
+            <img
+              src="/brand/logo.png"
+              alt="StudioFlow"
+              className="h-6 w-auto"
+              draggable={false}
+            />
           </div>
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} StudioFlow. Todos os direitos
