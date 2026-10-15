@@ -353,7 +353,7 @@ function AuthLayoutContent({
                 <img
                   src="/brand/logo.png"
                   alt="StudioFlow"
-                  className="h-7 w-auto shrink-0"
+                  className="h-9 w-auto shrink-0"
                   draggable={false}
                 />
               ) : null}
