@@ -32,19 +32,26 @@ export default function ProfessionalCard({
         <CardHeader className="p-4">
           <div className="flex items-center gap-3 min-w-0">
             <div
-              className="h-10 w-10 rounded-full flex items-center justify-center shrink-0"
-              style={{ backgroundColor: (p.color ?? "#10b981") + "20" }}
+              className="h-10 w-10 rounded-full flex items-center justify-center shrink-0 text-xs font-semibold"
+              style={{
+                backgroundColor: (p.color ?? "#10b981") + "20",
+                color: p.color ?? "#10b981",
+              }}
             >
-              <span
-                className="h-3 w-3 rounded-full"
-                style={{ backgroundColor: p.color ?? "#10b981" }}
-              />
+              {p.name
+                .split(" ")
+                .filter(Boolean)
+                .slice(0, 2)
+                .map(part => part[0]!.toUpperCase())
+                .join("")}
             </div>
             <div className="min-w-0">
               <CardTitle className="text-base truncate">{p.name}</CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Comissão {p.commissionRate}%
-              </p>
+              {Number(p.commissionRate) > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  Comissão {Number(p.commissionRate)}%
+                </p>
+              )}
             </div>
           </div>
         </CardHeader>
