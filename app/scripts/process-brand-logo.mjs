@@ -12,9 +12,10 @@ const src = join(root, "docs", "brand", "logo-original.png");
 const brandDir = join(root, "app", "public", "brand");
 mkdirSync(brandDir, { recursive: true });
 
-// origem 1248x832 — região do logo medida na imagem original
-const LOCKUP_CROP = { left: 385, top: 330, width: 490, height: 150 };
-const ICON_CROP = { left: 390, top: 335, width: 90, height: 140 };
+// origem 1024x1024 — região do logo medida na imagem original
+// (lockup: x188-835, y389-635 | símbolo: x188-260, y389-635; +10px de margem)
+const LOCKUP_CROP = { left: 178, top: 379, width: 668, height: 267 };
+const ICON_CROP = { left: 178, top: 379, width: 93, height: 267 };
 const BRAND_BG = { r: 20, g: 18, b: 16 }; // #141210
 
 /** converte fundo branco em transparência (com leve pena de 1px) */
