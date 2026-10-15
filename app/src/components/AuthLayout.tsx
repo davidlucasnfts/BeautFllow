@@ -39,7 +39,6 @@ import {
 } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { AuthLayoutSkeleton } from "./AuthLayoutSkeleton";
-import { BrandMark } from "./BrandMark";
 import { Button } from "./ui/button";
 import { MobileTopBar } from "./MobileTopBar";
 import MobileSidebarCloser from "./MobileSidebarCloser";
@@ -59,10 +58,6 @@ const planLabels: Record<string, string> = {
   pro: "Pro",
   business: "Business",
 };
-
-function Logo({ className }: { className?: string }) {
-  return <BrandMark className={className} />;
-}
 
 function getMenuItems(segment: SalonSegment) {
   const labels = getSegmentLabel;
@@ -355,18 +350,12 @@ function AuthLayoutContent({
                 <Menu className="h-4 w-4 text-muted-foreground" />
               </button>
               {!isCollapsed ? (
-                <div className="flex items-center gap-2 min-w-0">
-                  <Logo className="h-5" />
-                  <span
-                    className="font-semibold tracking-tight truncate"
-                    style={{
-                      fontFamily:
-                        "'Comfortaa', 'Segoe UI Rounded', sans-serif",
-                    }}
-                  >
-                    StudioFlow
-                  </span>
-                </div>
+                <img
+                  src="/brand/logo.png"
+                  alt="StudioFlow"
+                  className="h-7 w-auto shrink-0"
+                  draggable={false}
+                />
               ) : null}
             </div>
           </SidebarHeader>
