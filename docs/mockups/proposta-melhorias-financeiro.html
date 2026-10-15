@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Proposta — Melhorias no Financeiro</title>
+<style>
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 24px; line-height: 1.6; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  .sub { color: #64748b; margin-bottom: 24px; }
+  h2 { font-size: 1.15rem; margin-top: 32px; border-left: 4px solid #8b5cf6; padding-left: 10px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin: 12px 0; }
+  .tag-bug { display: inline-block; background: #fee2e2; color: #b91c1c; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-right: 6px; }
+  .tag-melhoria { display: inline-block; background: #fef3c7; color: #b45309; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-right: 6px; }
+  .tag-recomendado { display: inline-block; background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .antes { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 0.9rem; }
+  .depois { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 0.9rem; }
+  .como-funciona { background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 12px; padding: 16px 20px; margin: 16px 0; }
+  .como-funciona li { margin-bottom: 6px; }
+  .esforco { color: #64748b; font-size: 0.85rem; margin-top: 6px; }
+  .decisao { background: #f5f3ff; border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px 20px; margin-top: 32px; }
+  code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Proposta — Melhorias no Financeiro</h1>
+  <p class="sub">Gerado em 15/10/2026 · Aguardando autorização do David para implementar · Nenhum código alterado</p>
+
+  <div class="como-funciona">
+    <strong>Como o Financeiro funciona hoje (análise do código):strong>
+    <ul>
+      <li><strong>Resumo do topo</strong> — 3 cards (Ganho líquido, Reembolsos, Total Comissões) que acompanham o período escolhido (dia/semana/mês)</li>
+      <li><strong>Lançamentos</strong> — registro manual de entrada: tipo (Serviço/Pacote/Reembolso), cliente, valor, comissão opcional, profissional e forma de pagamento. Serve pra lançar venda avulsa ou pacote fechado no balcão</li>
+      <li><strong>Comissões</strong> — soma o que cada profissional tem a receber (comissões lançadas nos registros), mostra Devido / Pago / A pagar, e permite registrar o pagamento com histórico</li>
+      <li>Quando um atendimento é concluído na agenda, o sistema já gera o lançamento financeiro automaticamente com a comissão — a aba Financeiro é o complemento (vendas avulsas e pagamentos de comissão)</li>
+    </ul>
+  </div>
+
+  <h2>1. Mês aparecendo em inglês na aba Comissões</h2>
+  <div class="card">
+    <span class="tag-bug">BUG VISUAL</span><span class="tag-recomendado">Recomendado corrigir</span>
+    <div class="antes"><strong>Hoje:</strong> o seletor de mês da aba Comissões mostra <code>October/2026</code> (em inglês, conforme seu print)</div>
+    <div class="depois"><strong>Proposta:</strong> mostrar <code>Outubro/2026</code> em português, igual ao restante do app</div>
+    <p class="esforco">Esforço: pequeno · Só troca a formatação da data, nada mais muda</p>
+  </div>
+
+  <h2>2. "Ganho líquido" não é líquido — é bruto</h2>
+  <div class="card">
+    <span class="tag-melhoria">MELHORIA</span>
+    <div class="antes"><strong>Hoje:</strong> o card "Ganho líquido" soma tudo que não é reembolso, <em>sem descontar as comissões</em>. O nome promete o valor que sobrou no caixa, mas mostra o faturamento bruto</div>
+    <div class="depois"><strong>Proposta (escolha uma):</strong><br>
+      <strong>A)</strong> Renomear o card para "Faturamento" — o cálculo continua igual, mas o nome fica honesto (esforço pequeno)<br>
+      <strong>B)</strong> Manter o nome "Ganho líquido" e descontar as comissões no cálculo — aí o valor mostra o que realmente sobrou pro dono (esforço pequeno, muda o cálculo do resumo)
+    </div>
+    <p class="esforco">Minha recomendação: <strong>opção B</strong> — é o número que o dono do salão realmente quer ver</p>
+  </div>
+
+  <h2>3. Não existe lançamento de DESPESA</h2>
+  <div class="card">
+    <span class="tag-melhoria">MELHORIA</span>
+    <div class="antes"><strong>Hoje:</strong> o subtítulo da página diz "ganhos, comissões e <strong>gastos</strong>", mas só é possível lançar entrada (serviço/pacote) e reembolso. Não dá pra lançar aluguel, luz, compra de produto — gastos do negócio ficam de fora</div>
+    <div class="depois"><strong>Proposta:</strong> adicionar o tipo "Despesa" no novo lançamento. Despesas aparecem no resumo (card próprio ou descontando do líquido) e na lista com cor vermelha</div>
+    <p class="esforco">Esforço: médio · Exige ajuste no banco (novo tipo no enum), no cálculo do resumo e no formulário. É a melhoria de maior valor da lista — sem ela, o Financeiro não fecha o caixa do mês</p>
+  </div>
+
+  <h2>4. Forma de pagamento em inglês no histórico</h2>
+  <div class="card">
+    <span class="tag-bug">BUG VISUAL</span>
+    <div class="antes"><strong>Hoje:</strong> no histórico de pagamentos de comissão, a forma aparece como <code>credit card</code> / <code>debit card</code> em inglês</div>
+    <div class="depois"><strong>Proposta:</strong> mostrar "Cartão de crédito", "Cartão de débito", "Pix", "Dinheiro" em português (usar a mesma lista de opções do diálogo de pagamento)</div>
+    <p class="esforco">Esforço: pequeno</p>
+  </div>
+
+  <h2>5. Seletor de mês da aba Comissões diferente da aba Lançamentos</h2>
+  <div class="card">
+    <span class="tag-melhoria">PADRONIZAÇÃO</span>
+    <div class="antes"><strong>Hoje:</strong> Lançamentos usa o seletor de mês padrão do app (campo clicável com calendário); Comissões usa botões &lt; &gt; com texto — dois padrões diferentes na mesma tela</div>
+    <div class="depois"><strong>Proposta:</strong> usar o mesmo seletor de mês do Lançamentos na aba Comissões</div>
+    <p class="esforco">Esforço: pequeno</p>
+  </div>
+
+  <h2>6. Edição de lançamento limitada</h2>
+  <div class="card">
+    <span class="tag-melhoria">MELHORIA</span>
+    <div class="antes"><strong>Hoje:</strong> ao editar um lançamento, só dá pra mudar valor, descrição, forma de pagamento e data. Se você errar o profissional ou a comissão na hora de lançar, precisa excluir e criar de novo</div>
+    <div class="depois"><strong>Proposta:</strong> permitir editar também profissional e comissão (cliente e tipo continuam fixos, pois afetam vínculos)</div>
+    <p class="esforco">Esforço: médio · Muda o contrato de edição no backend + formulário</p>
+  </div>
+
+  <div class="decisao">
+    <strong>Resumo pra decisão:</strong>
+    <ul>
+      <li><strong>Correções visuais (1 e 4):</strong> bugs pequenos, recomendo fazer</li>
+      <li><strong>Ganho líquido (2):</strong> escolher A (renomear) ou B (descontar comissões) — recomendo B</li>
+      <li><strong>Despesa (3):</strong> a mais importante pro Financeiro fechar o caixa — recomendo fazer</li>
+      <li><strong>Padronização (5):</strong> opcional, rápida</li>
+      <li><strong>Edição (6):</strong> opcional, pode ficar pra depois</li>
+    </ul>
+    <p><strong>Me diga quais quer que eu implemente (ex.: "faz 1, 2B, 3 e 4") que eu executo na sequência.</strong></p>
+  </div>
+</div>
+</body>
+</html>

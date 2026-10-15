@@ -16,6 +16,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 - Quando David pedir para **visualizar algo externamente** (botão, funcionalidade, layout, tela nova), gerar um **documento HTML navegável em `docs/mockups/`** com as opções renderizadas de verdade — nunca apenas descrever em texto/ASCII no chat
 - O mockup deve conter: contexto, cada opção com prévia (mobile ~390px e desktop), prós/contras e recomendação
 - David escolhe a opção no navegador; só então implementar em branch local para homologação
+- **Escopo ampliado (15/10/2026):** a regra vale para QUALQUER melhoria em tela existente. Quando David perguntar "o que pode melhorar?", o fluxo é: (1) analisar, (2) gerar arquivo de proposta em `docs/mockups/` com as melhorias descritas e prévias, (3) AGUARDAR autorização explícita, (4) só então alterar código. Nunca implementar melhoria sem o "pode fazer" do David. Correção de bug que impede o funcionamento é a única exceção (avisar depois)
 
 ## Regras de código
 - **Limite de 400 linhas por arquivo.** Se ultrapassar, redistribuir em componentes/utilitários menores.
