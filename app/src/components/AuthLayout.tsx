@@ -267,13 +267,16 @@ function AuthLayoutContent({
   const location = useLocation();
   const navigate = useNavigate();
   const { state, toggleSidebar } = useSidebar();
-  const isCollapsed = state === "collapsed";
+  const isMobile = useIsMobile();
+  // No mobile o drawer (Sheet) tem largura fixa e sempre exibe conteúdo
+  // expandido — o `state` do provider reflete a sidebar do DESKTOP, então
+  // usá-lo aqui esconderia a logo/cartão do salão no drawer mobile.
+  const isCollapsed = !isMobile && state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeMenuItem = getMenuItems(salon?.segment ?? "beauty_salon").find(
     item => item.path === location.pathname
   );
-  const isMobile = useIsMobile();
   const visibleMenuItems = getMenuItems(salon?.segment ?? "beauty_salon").filter(
     item => !salon || canAccess(salon.role, item.area)
   );
