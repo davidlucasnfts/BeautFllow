@@ -507,7 +507,7 @@ npm run db:migrate # Aplicar migrations (prod)
 7. Operações críticas (create/update/delete) devem gerar audit log via `server/lib/audit.ts`
 8. Rate limiting ativo: 100 req/min por IP, 5 req/min em auth endpoints
 9. Sempre validar inputs com Zod antes de processar
-10. Migrations manuais em `supabase/migrations/NNN-descricao.sql`. `schema_safe.sql` é gerado juntando todas
+10. Migrations manuais em `supabase/migrations/NNN-descricao.sql`. `schema_safe.sql` é gerado juntando todas. **O Kimi APLICA as migrations sozinho** (15/10/2026): `cd app && node scripts/apply-migration.mjs ../supabase/migrations/NNN-arquivo.sql` — roda o SQL via `DATABASE_URL` do `.env` (mesmo driver do app, sem psql/Supabase CLI). Sempre que uma funcionalidade exigir migration, o Kimi cria o arquivo E aplica no banco na sequência, sem ação manual do David; depois confere o resultado (ex.: enum atualizado). Só pedir ação manual se a migration falhar por permissão/credencial
 11. Cookies de sessão são escritos em `ctx.resHeaders` (adapter fetch tRPC) — nunca chamar `setCookie` do Hono com o ctx tRPC
 
 **Frontend:**

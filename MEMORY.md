@@ -94,6 +94,13 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Dialogs com cabeçalho/rodapé fixos (9 telas): ação principal nunca escondida; cancelar agendamento apaga retorno vinculado; vencimento do retorno pela data de conclusão | 30/09 |
 | Estoque de produtos: aba "Produtos" com cadastro, entradas/saídas transacionais (sem saldo negativo), alerta de estoque baixo, histórico e resumo investido (migration 012) | 30/09 |
 | Controle de acessos: equipe com convites por e-mail (migration 014), limite por plano (Free 1 / Essencial 3 / Pro 8), matriz de permissões por papel, guards de role no backend, página Equipe e aceite público de convite | 04/10 |
+| Marca StudioFlow oficial: logo gerada por IA do David é a fonte de tudo (`docs/brand/logo-original.png` → pipeline `scripts/process-brand-logo.mjs` → `public/brand/` + ícones PWA via `generate-brand-icons.mjs`); lockup completo em sidebar (desktop+mobile), landing, login, proposta, rodapés e skeleton; SVGs recriados descartados | 13/10 |
+| Drawer mobile sempre exibe logo + cartão do salão (state do provider era do desktop e escondia o conteúdo) | 14/10 |
+| Card de profissional: avatar com iniciais na cor do profissional, comissão oculta quando zero | 15/10 |
+| Cor do profissional automática: paleta rotativa atribuída no backend (PROFESSIONAL_COLORS), campo removido do formulário — igual ao padrão da remoção da cor do serviço | 15/10 |
+| Produtos: resumo em 3 colunas no mobile, filtro "Só estoque baixo", badge "Ativo" redundante removido, card de alerta destacado | 15/10 |
+| Financeiro completo (proposta aprovada `docs/mockups/proposta-melhorias-financeiro.html`): tipo Despesa (migration 015), ganho líquido real (receita − comissões − despesas) + card Despesas, edição de profissional/comissão no lançamento, mês e formas de pagamento em pt-BR, seletor de mês padronizado (DatePicker), filtro por profissional (chips) na aba Comissões | 15/10 |
+| Script `app/scripts/apply-migration.mjs`: Kimi aplica migrations sozinho via DATABASE_URL do `.env` — regra no AGENTS.md, sem ação manual do David | 15/10 |
 
 ---
 
