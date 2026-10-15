@@ -116,16 +116,14 @@ export default function ProductsList({
           Baixo
         </Badge>
       )}
-      <Badge
-        variant="secondary"
-        className={`text-[10px] ${
-          p.isActive
-            ? "bg-green-50 text-green-700"
-            : "bg-slate-100 text-slate-600"
-        }`}
-      >
-        {p.isActive ? "Ativo" : "Inativo"}
-      </Badge>
+      {!p.isActive && (
+        <Badge
+          variant="secondary"
+          className="text-[10px] bg-slate-100 text-slate-600"
+        >
+          Inativo
+        </Badge>
+      )}
     </div>
   );
 

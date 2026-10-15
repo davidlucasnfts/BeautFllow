@@ -44,6 +44,7 @@ function formatBRL(value: number) {
 export default function Products() {
   const { salon } = useSalon();
   const [search, setSearch] = useState("");
+  const [lowOnly, setLowOnly] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<{
     id: number;
@@ -133,7 +134,8 @@ export default function Products() {
   const inactive = (products ?? []).filter(p => !p.isActive);
   const term = search.trim().toLowerCase();
   const matches = (p: ProductForList) =>
-    !term || p.name.toLowerCase().includes(term);
+    (!term || p.name.toLowerCase().includes(term)) &&
+    (!lowOnly || Number(p.quantity) <= Number(p.minQuantity));
   const visibleActive = active.filter(matches);
 
   function handleSubmit(values: ProductFormValues) {
@@ -172,31 +174,41 @@ export default function Products() {
       </div>
 
       {/* Resumo do estoque */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <Card className="gap-1.5 py-2.5">
-          <CardHeader className="p-4 pb-1">
-            <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+          <CardHeader className="p-3 pb-1">
+            <CardTitle className="text-[10px] sm:text-xs font-medium text-muted-foreground flex items-center gap-1.5">
               <Package className="h-3.5 w-3.5" />
               Total investido
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-4 pb-3">
-            <p className="text-xl font-bold">{formatBRL(summary?.totalInvested ?? 0)}</p>
+          <CardContent className="px-3 pb-2">
+            <p className="text-sm sm:text-xl font-bold truncate">
+              {formatBRL(summary?.totalInvested ?? 0)}
+            </p>
           </CardContent>
         </Card>
         <Card className="gap-1.5 py-2.5">
-          <CardHeader className="p-4 pb-1">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
+          <CardHeader className="p-3 pb-1">
+            <CardTitle className="text-[10px] sm:text-xs font-medium text-muted-foreground">
               Produtos ativos
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-4 pb-3">
-            <p className="text-xl font-bold">{summary?.activeCount ?? 0}</p>
+          <CardContent className="px-3 pb-2">
+            <p className="text-sm sm:text-xl font-bold">
+              {summary?.activeCount ?? 0}
+            </p>
           </CardContent>
         </Card>
-        <Card className="gap-1.5 py-2.5">
-          <CardHeader className="p-4 pb-1">
-            <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+        <Card
+          className={`gap-1.5 py-2.5 ${
+            (summary?.lowStockCount ?? 0) > 0
+              ? "border-amber-300 bg-amber-50/50"
+              : ""
+          }`}
+        >
+          <CardHeader className="p-3 pb-1">
+            <CardTitle className="text-[10px] sm:text-xs font-medium text-muted-foreground flex items-center gap-1.5">
               <AlertTriangle
                 className={`h-3.5 w-3.5 ${
                   (summary?.lowStockCount ?? 0) > 0
@@ -207,9 +219,9 @@ export default function Products() {
               Estoque baixo
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-4 pb-3">
+          <CardContent className="px-3 pb-2">
             <p
-              className={`text-xl font-bold ${
+              className={`text-sm sm:text-xl font-bold ${
                 (summary?.lowStockCount ?? 0) > 0 ? "text-amber-600" : ""
               }`}
             >
@@ -219,7 +231,7 @@ export default function Products() {
         </Card>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Search className="h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Buscar produto..."
@@ -227,6 +239,18 @@ export default function Products() {
           onChange={e => setSearch(e.target.value)}
           className="max-w-sm"
         />
+        <button
+          type="button"
+          onClick={() => setLowOnly(v => !v)}
+          className={`flex items-center gap-1 text-[11px] font-medium px-2.5 py-1.5 rounded-md border transition-colors ${
+            lowOnly
+              ? "border-amber-300 bg-amber-100 text-amber-800"
+              : "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"
+          }`}
+        >
+          <AlertTriangle className="h-3 w-3" />
+          Só estoque baixo
+        </button>
       </div>
 
       {isLoading ? (
