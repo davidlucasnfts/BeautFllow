@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Proposta — Melhorias na tela de Termos e Autorizações</title>
+<style>
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 24px; line-height: 1.6; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  .sub { color: #64748b; margin-bottom: 24px; }
+  h2 { font-size: 1.15rem; margin-top: 32px; border-left: 4px solid #8b5cf6; padding-left: 10px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin: 12px 0; }
+  .card.bom { background: #f0fdf4; border-color: #bbf7d0; }
+  .prioridade { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .p-alta { background: #fee2e2; color: #b91c1c; }
+  .p-media { background: #fef9c3; color: #a16207; }
+  .p-baixa { background: #e2e8f0; color: #475569; }
+  .melhoria { background: #fff; border: 1px solid #e2e8f0; border-left: 4px solid #8b5cf6; border-radius: 10px; padding: 14px 18px; margin: 10px 0; }
+  .melhoria h3 { margin: 0 0 6px; font-size: 1rem; }
+  .melhoria p { margin: 4px 0; font-size: 0.9rem; color: #475569; }
+  .melhoria .esforco { font-size: 0.8rem; color: #64748b; margin-top: 8px; }
+  .decisao { background: #f5f3ff; border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px 20px; margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Proposta — Melhorias na tela de Termos e Autorizações</h1>
+  <p class="sub">16/10/2026 · Aguardando autorização · Nenhum código alterado</p>
+
+  <h2>O que já está bom</h2>
+  <div class="card bom">
+    Estrutura limpa (título + ação, cards informativos LGPD, lista expansível), padrão visual consistente com o resto do app, modelos prontos no diálogo de criação (entregue hoje) e assinatura coletável na ficha do cliente. A base é sólida — as melhorias abaixo são incrementais.
+  </div>
+
+  <h2>Melhorias propostas</h2>
+
+  <div class="melhoria">
+    <h3>1. Estado vazio que aproveita os modelos prontos <span class="prioridade p-alta">PRIORIDADE ALTA</span></h3>
+    <p><strong>Hoje:</strong> com zero termos, a tela diz apenas "Nenhum termo cadastrado" — sendo que acabamos de criar 4 modelos jurídicos prontos. O dono não descobre que existe atalho.</p>
+    <p><strong>Proposta:</strong> no estado vazio, mostrar 4 botões diretos: "Começar pelo modelo LGPD", "Capilares químicos", "Estéticos", "Uso de imagem" — um clique já cria o termo completo, sem nem abrir o diálogo. Mesma lógica dentro do diálogo, mas direto na lista.</p>
+    <p class="esforco">Esforço: pequeno — reusa consent-templates.ts + mutation de create existente.</p>
+  </div>
+
+  <div class="melhoria">
+    <h3>2. Desativar termo em vez de só excluir <span class="prioridade p-alta">PRIORIDADE ALTA</span></h3>
+    <p><strong>Hoje:</strong> o schema tem <code>isActive</code> e a assinatura só vale para termo ativo — mas a tela só oferece <strong>Excluir</strong>. Se o dono excluir um termo que já tem assinaturas, perde o histórico jurídico (e as assinaturas ficam órfãs).</p>
+    <p><strong>Proposta:</strong> trocar "Excluir" por "Desativar" (soft delete: termo some da coleta de assinaturas mas fica salvo com histórico), igual ao padrão já usado em Produtos e Serviços do app. Excluir só se nunca teve assinatura.</p>
+    <p class="esforco">Esforço: pequeno/médio — coluna já existe; backend ganha endpoint de toggle; UI segue padrão de Produtos.</p>
+  </div>
+
+  <div class="melhoria">
+    <h3>3. Contador de assinaturas em cada termo <span class="prioridade p-media">PRIORIDADE MÉDIA</span></h3>
+    <p><strong>Hoje:</strong> o card do termo mostra só título + data de criação. Com o ciclo fechado, o dono vai querer saber: "quantos clientes já assinaram esse termo?"</p>
+    <p><strong>Proposta:</strong> badge no card: "X assinaturas" (e talvez "última em DD/MM"). Dado já existe em <code>consent_signatures</code> — só contar.</p>
+    <p class="esforco">Esforço: pequeno — query de count no backend + badge na UI.</p>
+  </div>
+
+  <div class="melhoria">
+    <h3>4. Cards informativos ocupam muito espaço no mobile <span class="prioridade p-baixa">PRIORIDADE BAIXA</span></h3>
+    <p><strong>Hoje:</strong> os 3 cards educativos (LGPD, Termos Digitais, Cópia dos dados) somam ~40% da primeira dobra no celular, antes da lista que é o que importa no dia a dia.</p>
+    <p><strong>Proposta:</strong> recolher em um único card expansível "Sobre a LGPD e as assinaturas" (aberto por padrão só quando a lista está vazia). Pureza visual, sem perder o conteúdo.</p>
+    <p class="esforco">Esforço: pequeno — só reorganização JSX.</p>
+  </div>
+
+  <div class="decisao">
+    <strong>Minha recomendação:</strong> itens 1 e 2 juntos (estado vazio com atalhos + desativar no lugar de excluir) — são os que mais protegem o dono juridicamente e aproveitam o que já entregamos. Item 3 é o próximo mais útil.<br><br>
+    <strong>Me diz:</strong> "faz tudo" para os 4; "faz 1, 2 e 3"; ou escolhe à la carte. Sem autorização não mexo em código.
+  </div>
+</div>
+</body>
+</html>
