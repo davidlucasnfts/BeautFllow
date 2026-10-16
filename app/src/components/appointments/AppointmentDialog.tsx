@@ -19,6 +19,7 @@ import {
 import DatePicker from "@/components/DatePicker";
 import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import { ServiceMultiSelect } from "./ServiceMultiSelect";
+import { ShieldAlert } from "lucide-react";
 import type { AppointmentFormData } from "./useAppointmentForm";
 import type { Client, Professional, Service } from "@db/schema";
 
@@ -36,6 +37,8 @@ interface AppointmentDialogProps {
   professionals?: Professional[];
   services?: Service[];
   availableSlots?: string[];
+  /** termos ativos que o cliente escolhido ainda não assinou (serviço exige) */
+  unsignedConsentCount?: number;
 }
 
 export default function AppointmentDialog({
@@ -49,6 +52,7 @@ export default function AppointmentDialog({
   professionals,
   services,
   availableSlots,
+  unsignedConsentCount = 0,
 }: AppointmentDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -121,6 +125,19 @@ export default function AppointmentDialog({
               excludeIds={form.serviceId ? [form.serviceId] : []}
             />
           </div>
+
+          {unsignedConsentCount > 0 && (
+            <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+              <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
+              <p>
+                Este serviço exige termo de autorização assinado.{" "}
+                {unsignedConsentCount === 1
+                  ? "O cliente ainda não assinou 1 termo ativo."
+                  : `O cliente ainda não assinou ${unsignedConsentCount} termos ativos.`}{" "}
+                Registre a assinatura na ficha do cliente.
+              </p>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">

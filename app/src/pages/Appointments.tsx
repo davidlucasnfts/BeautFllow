@@ -156,7 +156,26 @@ export default function Appointments() {
     { enabled: !!salon && open && !!form.appointmentDate }
   );
 
+  // Termos ativos e assinaturas do cliente escolhido — só com o diálogo
+  // aberto, para o aviso de serviço que exige autorização assinada
+  const { data: consentForms } = trpc.consent.list.useQuery(
+    { salonId: salon?.id ?? 0 },
+    { enabled: !!salon && open }
+  );
+  const { data: clientSignatures } = trpc.consent.signaturesByClient.useQuery(
+    { salonId: salon?.id ?? 0, clientId: Number(form.clientId) },
+    { enabled: !!salon && open && !!form.clientId }
+  );
+
   const formService = activeServices.find(s => s.id === Number(form.serviceId));
+  // Serviço exige termo assinado e o cliente ainda tem termos ativos pendentes
+  // (aviso informativo — não bloqueia o agendamento)
+  const unsignedConsentCount =
+    formService?.requiresConsent && consentForms && clientSignatures
+      ? consentForms.filter(
+          f => !clientSignatures.some(s => s.formId === f.id)
+        ).length
+      : 0;
   // Duração total = serviço principal + adicionais (ocupa mais slots na agenda)
   const formTotalDuration =
     (formService?.durationMinutes ?? 30) +
@@ -407,6 +426,7 @@ export default function Appointments() {
             professionals={professionals}
             services={activeServices}
             availableSlots={availableSlots}
+            unsignedConsentCount={unsignedConsentCount}
           />
 
       <AgendaViews

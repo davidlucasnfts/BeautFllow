@@ -101,7 +101,7 @@ export default function Dashboard() {
             size="sm"
             variant="outline"
             className="shrink-0 border-amber-300 bg-white text-amber-900 hover:bg-amber-100"
-            onClick={() => navigate("/consent")}
+            onClick={() => navigate("/clients")}
           >
             Resolver
           </Button>

@@ -1,7 +1,9 @@
 import { Trash2 } from "lucide-react";
 import { trpc } from "@/providers/trpc";
+import { useSalon } from "@/providers/useSalon";
 import ClientCardDetails from "./ClientCardDetails";
 import ClientHistory from "./ClientHistory";
+import ClientConsentSection from "./ClientConsentSection";
 
 type Client = {
   id: number;
@@ -25,6 +27,7 @@ export default function ClientExpandedSection({
   deleteLabel: string;
   onDelete: () => void;
 }) {
+  const { salon } = useSalon();
   const { data: history } = trpc.appointment.historyByClient.useQuery({
     salonId,
     clientId: client.id,
@@ -36,6 +39,11 @@ export default function ClientExpandedSection({
     <div className="mx-3 mb-3 space-y-3 rounded-lg border border-primary/40 p-3">
       <ClientCardDetails client={client} lastVisit={lastVisit} />
       <ClientHistory history={history} />
+      <ClientConsentSection
+        client={client}
+        salonId={salonId}
+        salonName={salon?.name ?? ""}
+      />
       <div className="flex justify-end">
         <button
           type="button"
