@@ -11,6 +11,14 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CONSENT_TEMPLATES } from "./consent-templates";
 
 type EditingForm = { id: number; title: string; content: string } | null;
 
@@ -49,6 +57,32 @@ export default function ConsentFormDialog({
           </DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4 overflow-y-auto min-h-0">
+          {!editing && (
+            <div className="grid gap-2">
+              <Label>Começar de um modelo</Label>
+              <Select
+                key={syncKey}
+                onValueChange={id => {
+                  const tpl = CONSENT_TEMPLATES.find(t => t.id === id);
+                  if (tpl) setForm({ title: tpl.title, content: tpl.content });
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Termo em branco (escrever do zero)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CONSENT_TEMPLATES.map(tpl => (
+                    <SelectItem key={tpl.id} value={tpl.id}>
+                      {tpl.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2 py-1.5">
+                Modelo base — revise com um advogado para procedimentos de risco.
+              </p>
+            </div>
+          )}
           <div className="grid gap-2">
             <Label>Título *</Label>
             <Input
