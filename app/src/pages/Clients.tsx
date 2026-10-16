@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -81,6 +82,7 @@ export default function Clients() {
     notes: "",
     tags: "",
     segment: "",
+    consentGiven: false,
   });
 
   const utils = trpc.useUtils();
@@ -140,6 +142,7 @@ export default function Clients() {
       notes: "",
       tags: "",
       segment: "",
+      consentGiven: false,
     });
   }
 
@@ -153,6 +156,7 @@ export default function Clients() {
       tags: client.tags ?? "",
       // só pré-seleciona status manual se o dono já tiver escolhido na mão
       segment: client.segmentManual ? client.segment : "",
+      consentGiven: client.consentGiven,
     });
     setOpen(true);
   }
@@ -270,6 +274,28 @@ export default function Clients() {
                   onChange={e => setForm({ ...form, tags: e.target.value })}
                   placeholder="Ex: loiro, corte curto"
                 />
+              </div>
+              <div className="flex items-start gap-2 rounded-md border border-slate-200 bg-slate-50 p-3">
+                <Checkbox
+                  id="consent-given"
+                  checked={form.consentGiven}
+                  onCheckedChange={checked =>
+                    setForm({ ...form, consentGiven: checked === true })
+                  }
+                  className="mt-0.5"
+                />
+                <div className="grid gap-0.5">
+                  <Label
+                    htmlFor="consent-given"
+                    className="text-sm font-medium leading-none cursor-pointer"
+                  >
+                    Cliente autoriza o uso dos dados (LGPD)
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Marque quando o cliente aceitar, no balcão, o uso dos dados
+                    para agendamento e histórico.
+                  </p>
+                </div>
               </div>
               {editing && (
                 <div className="grid gap-2">

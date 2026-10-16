@@ -47,16 +47,20 @@ export const customerRouter = createRouter({
         birthDate: z.string().optional(),
         notes: z.string().optional(),
         tags: z.string().optional(),
+        /** true = cliente autorizou o uso dos dados (LGPD) no cadastro */
+        consentGiven: z.boolean().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       await assertSalonMember(ctx.user.id, input.salonId);
-      const { salonId, ...data } = input;
+      const { salonId, consentGiven, ...data } = input;
       const result = await createClient({
         salonId,
         ...data,
         birthDate: data.birthDate || null,
         segment: "new",
+        consentGiven: consentGiven ?? false,
+        consentGivenAt: consentGiven ? new Date() : null,
       });
       invalidateClientSegments(salonId);
       await auditAction(
@@ -87,17 +91,26 @@ export const customerRouter = createRouter({
           .optional(),
         /** true = dono escolheu o status na mão (não mexe mais sozinho) */
         segmentManual: z.boolean().optional(),
+        /** atualizar o aceite LGPD no cadastro (true grava data, false limpa) */
+        consentGiven: z.boolean().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       await assertSalonMember(ctx.user.id, input.salonId);
-      const { id, salonId, birthDate, segmentManual, ...data } = input;
+      const { id, salonId, birthDate, segmentManual, consentGiven, ...data } =
+        input;
       const result = await updateClient(id, salonId, {
         ...data,
         ...(birthDate !== undefined
           ? { birthDate: birthDate === "" ? null : birthDate }
           : {}),
         ...(segmentManual !== undefined ? { segmentManual } : {}),
+        ...(consentGiven !== undefined
+          ? {
+              consentGiven,
+              consentGivenAt: consentGiven ? new Date() : null,
+            }
+          : {}),
       });
       invalidateClientSegments(salonId);
       await auditAction(
@@ -107,7 +120,7 @@ export const customerRouter = createRouter({
         ctx.user?.id,
         id,
         undefined,
-        data
+        { ...data, ...(consentGiven !== undefined ? { consentGiven } : {}) }
       );
       return result;
     }),
