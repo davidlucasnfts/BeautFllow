@@ -1,16 +1,16 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 16/10/2026 (modelos de termos + ciclo de consentimento fechado — commits LOCAIS, push pendente)
+> **Atualizado em:** 16/10/2026 (modelos de termos + ciclo de consentimento fechado + tela de Termos aprimorada — TUDO PUSHADO)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md`, não no histórico do chat (chat longo deixa o Kimi lento; regra nova no AGENTS.md).
 
 ---
 
 ## Resumo da sessão (04/10 → 15/10) — Marca aplicada + Financeiro completo + polimentos
 
-**Lote 16/10 — Ciclo de consentimento completo (commits `12af77c`→`d3416ee`, LOCAIS, push pendente):**
+**Lote 16/10 — Ciclo de consentimento completo (commits `12af77c`→`d3416ee`):**
 - Modelos prontos de Termos: seletor "Começar de um modelo" no Novo Termo, 4 textos jurídicos em `src/components/consent/consent-templates.ts`
 - Ciclo fechado (proposta `docs/mockups/proposta-ciclo-consentimento.html`): checkbox LGPD no cadastro/edição de cliente (`consentGiven`/`consentGivenAt` via client-router); aceite obrigatório no agendamento público (cliente novo entra consentido); coleta de assinatura na ficha do cliente (`ClientConsentSection.tsx` — termo renderizado com nome do cliente e do salão via `render-term.ts`, `signatureData` guarda texto + agreedAt, responsável = usuário logado); aviso âmbar de `requiresConsent` no agendamento interno; botão "Resolver" do alerta LGPD → `/clients`
-**Lote 16/10 — Tela de Termos aprimorada (commits `9f73acc`→`a2a3d18`, LOCAIS, push pendente):** proposta `docs/mockups/proposta-melhorias-termos.html` aprovada na íntegra. Estado vazio com 4 atalhos que criam termo direto do modelo; desativar/reativar (coluna `isActive` que já existia) com trava: termo com assinaturas não pode ser excluído; badge "X assinaturas" por termo; card educativo LGPD recolhível. `consent.list` agora retorna inativos + count — consumidores filtram (`ClientConsentSection` filtra só ativos).
+**Lote 16/10 — Tela de Termos aprimorada (commits `9f73acc`→`a2a3d18`):** proposta `docs/mockups/proposta-melhorias-termos.html` aprovada na íntegra. Estado vazio com 4 atalhos que criam termo direto do modelo; desativar/reativar (coluna `isActive` que já existia) com trava: termo com assinaturas não pode ser excluído; badge "X assinaturas" por termo; card educativo LGPD recolhível. `consent.list` agora retorna inativos + count — consumidores filtram (`ClientConsentSection` filtra só ativos).
 - Antes disso o alerta LGPD nunca zerava (nenhum código gravava `consentGiven = true`) e os endpoints `consent.sign`/`signaturesByClient` não tinham tela
 
 **TUDO PUSHADO para produção em 15/10** (~31 commits). Lotes:
@@ -24,8 +24,7 @@
 
 ## Onde paramos — próximos passos (ordem)
 
-0. **Push pendente** — lote 16/10 (modelos de termos) está commitado localmente; push quando o David pedir.
-1. **PUSH feito em 15/10** — tudo em produção, Vercel deploya automático.
+1. **PUSH feito em 16/10** — lote de consentimento completo (modelos, ciclo, tela de Termos, contraste) em produção; Vercel deploya automático.
 2. **Homologação pendente do David:** fluxo de convite da Equipe (`/equipe` → convidar → aceitar em `/convite?token=...`) — testar local antes de apresentar.
 4. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/barbearia`, `/salao-de-beleza`, `/estetica`.
 5. Depois: Fase 4 (billing Stripe/Mercado Pago + preços).
