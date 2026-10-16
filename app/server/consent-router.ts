@@ -7,6 +7,8 @@ import {
   getConsentFormById,
   updateConsentForm,
   deleteConsentForm,
+  setConsentFormActive,
+  countConsentSignaturesByForm,
   createConsentSignature,
   getConsentSignaturesByClient,
 } from "./queries/salon";
@@ -81,6 +83,19 @@ export const consentRouter = createRouter({
     .input(z.object({ id: z.number(), salonId: z.number() }))
     .mutation(async ({ input, ctx }) => {
       await assertSalonAdmin(ctx.user.id, input.salonId);
+      // trava LGPD: termo com assinaturas não pode ser excluído — o dono
+      // deve desativar (soft delete) para preservar o histórico jurídico
+      const signatureCount = await countConsentSignaturesByForm(
+        input.id,
+        input.salonId
+      );
+      if (signatureCount > 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "Este termo já tem assinaturas e não pode ser excluído. Desative-o para manter o histórico.",
+        });
+      }
       await deleteConsentForm(input.id, input.salonId);
       await auditAction(
         "delete",
@@ -90,6 +105,33 @@ export const consentRouter = createRouter({
         input.id
       );
       return { success: true };
+    }),
+
+  setActive: authedQuery
+    .input(
+      z.object({
+        id: z.number(),
+        salonId: z.number(),
+        isActive: z.boolean(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      await assertSalonAdmin(ctx.user.id, input.salonId);
+      const result = await setConsentFormActive(
+        input.id,
+        input.salonId,
+        input.isActive
+      );
+      await auditAction(
+        "update",
+        "consent_form",
+        input.salonId,
+        ctx.user?.id,
+        input.id,
+        undefined,
+        { isActive: input.isActive }
+      );
+      return result;
     }),
 
   signaturesByClient: authedQuery

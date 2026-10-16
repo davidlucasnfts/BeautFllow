@@ -493,7 +493,7 @@ export async function createConsentForm(data: InsertConsentForm) {
 }
 
 export async function getConsentFormsBySalon(salonId: number) {
-  return getDb()
+  const rows = await getDb()
     .select({
       id: consentForms.id,
       salonId: consentForms.salonId,
@@ -501,15 +501,50 @@ export async function getConsentFormsBySalon(salonId: number) {
       content: consentForms.content,
       isRequired: consentForms.isRequired,
       isActive: consentForms.isActive,
+      // COUNT vem como string do Postgres — normaliza para number
+      signatureCount: sql<number>`COUNT(${consentSignatures.id})`,
       // timestamp gravado em UTC — formatar no servidor com o fuso do Brasil
       createdAt: sql<string>`TO_CHAR(${consentForms.createdAt} AT TIME ZONE 'America/Sao_Paulo', 'DD/MM/YYYY')`,
       updatedAt: consentForms.updatedAt,
     })
     .from(consentForms)
-    .where(
-      and(eq(consentForms.salonId, salonId), eq(consentForms.isActive, true))
+    .leftJoin(
+      consentSignatures,
+      eq(consentSignatures.formId, consentForms.id)
     )
-    .orderBy(consentForms.title);
+    .where(eq(consentForms.salonId, salonId))
+    .groupBy(consentForms.id)
+    .orderBy(desc(consentForms.isActive), consentForms.title);
+  return rows.map(r => ({ ...r, signatureCount: Number(r.signatureCount) }));
+}
+
+export async function countConsentSignaturesByForm(
+  formId: number,
+  salonId: number
+) {
+  const [row] = await getDb()
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(consentSignatures)
+    .where(
+      and(
+        eq(consentSignatures.formId, formId),
+        eq(consentSignatures.salonId, salonId)
+      )
+    );
+  return Number(row?.count ?? 0);
+}
+
+/** Ativa/desativa termo (soft delete — histórico e assinaturas preservados) */
+export async function setConsentFormActive(
+  id: number,
+  salonId: number,
+  isActive: boolean
+) {
+  await getDb()
+    .update(consentForms)
+    .set({ isActive })
+    .where(and(eq(consentForms.id, id), eq(consentForms.salonId, salonId)));
+  return getConsentFormById(id, salonId);
 }
 
 export async function getConsentFormById(id: number, salonId: number) {
@@ -532,8 +567,10 @@ export async function updateConsentForm(
 
 export async function deleteConsentForm(id: number, salonId: number) {
   // Soft-delete (decisão LGPD 20/09): o termo e as assinaturas ficam no
-  // histórico — só some das listagens (todas filtram isActive = true).
-  // Antes apagava as assinaturas em cascata (exclusão física).
+  // histórico — só some da coleta de assinaturas e das listagens que
+  // filtram isActive = true. Antes apagava as assinaturas em cascata
+  // (exclusão física). Só é chamado pelo router quando o termo nunca
+  // teve assinaturas (trava no consent-router).
   await getDb()
     .update(consentForms)
     .set({ isActive: false })
