@@ -70,9 +70,7 @@ export function ServiceMultiSelect({
             disabled={disabled}
             className="w-full justify-between font-normal"
           >
-            <span className="truncate text-muted-foreground">
-              {placeholder}
-            </span>
+            <span className="truncate opacity-60">{placeholder}</span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -100,7 +98,7 @@ export function ServiceMultiSelect({
                       )}
                     />
                     <span className="truncate">{s.name}</span>
-                    <span className="ml-2 shrink-0 text-xs text-muted-foreground">
+                    <span className="ml-2 shrink-0 text-xs opacity-60">
                       R$ {s.price}
                     </span>
                   </CommandItem>

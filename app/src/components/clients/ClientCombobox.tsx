@@ -85,7 +85,7 @@ export function ClientCombobox({
                   />
                   <span className="truncate">{c.name}</span>
                   {c.phone && (
-                    <span className="ml-2 truncate text-xs text-muted-foreground">
+                    <span className="ml-2 truncate text-xs opacity-60">
                       {c.phone}
                     </span>
                   )}
