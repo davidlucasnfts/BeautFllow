@@ -10,6 +10,7 @@
 **Lote 16/10 — Ciclo de consentimento completo (commits `12af77c`→`d3416ee`, LOCAIS, push pendente):**
 - Modelos prontos de Termos: seletor "Começar de um modelo" no Novo Termo, 4 textos jurídicos em `src/components/consent/consent-templates.ts`
 - Ciclo fechado (proposta `docs/mockups/proposta-ciclo-consentimento.html`): checkbox LGPD no cadastro/edição de cliente (`consentGiven`/`consentGivenAt` via client-router); aceite obrigatório no agendamento público (cliente novo entra consentido); coleta de assinatura na ficha do cliente (`ClientConsentSection.tsx` — termo renderizado com nome do cliente e do salão via `render-term.ts`, `signatureData` guarda texto + agreedAt, responsável = usuário logado); aviso âmbar de `requiresConsent` no agendamento interno; botão "Resolver" do alerta LGPD → `/clients`
+**Lote 16/10 — Tela de Termos aprimorada (commits `9f73acc`→`a2a3d18`, LOCAIS, push pendente):** proposta `docs/mockups/proposta-melhorias-termos.html` aprovada na íntegra. Estado vazio com 4 atalhos que criam termo direto do modelo; desativar/reativar (coluna `isActive` que já existia) com trava: termo com assinaturas não pode ser excluído; badge "X assinaturas" por termo; card educativo LGPD recolhível. `consent.list` agora retorna inativos + count — consumidores filtram (`ClientConsentSection` filtra só ativos).
 - Antes disso o alerta LGPD nunca zerava (nenhum código gravava `consentGiven = true`) e os endpoints `consent.sign`/`signaturesByClient` não tinham tela
 
 **TUDO PUSHADO para produção em 15/10** (~31 commits). Lotes:
