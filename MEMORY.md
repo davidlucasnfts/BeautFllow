@@ -101,6 +101,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Produtos: resumo em 3 colunas no mobile, filtro "Só estoque baixo", badge "Ativo" redundante removido, card de alerta destacado | 15/10 |
 | Financeiro completo (proposta aprovada `docs/mockups/proposta-melhorias-financeiro.html`): tipo Despesa (migration 015), ganho líquido real (receita − comissões − despesas) + card Despesas, edição de profissional/comissão no lançamento, mês e formas de pagamento em pt-BR, seletor de mês padronizado (DatePicker), filtro por profissional (chips) na aba Comissões | 15/10 |
 | Script `app/scripts/apply-migration.mjs`: Kimi aplica migrations sozinho via DATABASE_URL do `.env` — regra no AGENTS.md, sem ação manual do David | 15/10 |
+| Modelos prontos de Termos de Autorização (proposta aprovada `docs/mockups/proposta-termos-modelos.html`): seletor "Começar de um modelo" no diálogo Novo Termo com 4 textos jurídicos (LGPD, capilares químicos, estéticos, uso de imagem antes/depois) + aviso "revise com advogado"; textos fixos em `src/components/consent/consent-templates.ts`, cada uso gera cópia isolada por salonId | 16/10 |
 
 ---
 

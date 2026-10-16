@@ -1,11 +1,13 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 15/10/2026 (lote Financeiro completo + marca + polimentos — TUDO PUSHADO para produção)
+> **Atualizado em:** 16/10/2026 (modelos prontos de Termos de Autorização — commit local, ainda NÃO pushado)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md`, não no histórico do chat (chat longo deixa o Kimi lento; regra nova no AGENTS.md).
 
 ---
 
 ## Resumo da sessão (04/10 → 15/10) — Marca aplicada + Financeiro completo + polimentos
+
+**Lote 16/10 — Modelos prontos de Termos (commit `0446830`, LOCAL, push pendente):** Opção A da proposta aprovada `docs/mockups/proposta-termos-modelos.html`. Seletor "Começar de um modelo" no diálogo Novo Termo (`ConsentFormDialog.tsx`) com 4 textos jurídicos completos em `src/components/consent/consent-templates.ts`: LGPD, capilares químicos, estéticos e uso de imagem antes/depois. Textos fixos no frontend, sem migration; cada uso gera cópia isolada por salonId em `consent_forms`. Aviso interno: "modelo base — revise com um advogado para procedimentos de risco". Check + 104 testes verdes.
 
 **TUDO PUSHADO para produção em 15/10** (~31 commits). Lotes:
 - **Marca (13-14/10):** logo original da IA do David é a fonte de tudo (pipeline `process-brand-logo.mjs` → `public/brand/` + ícones PWA); lockup em sidebar (desktop+mobile, drawer mobile corrigido pra sempre mostrar logo+cartão), landing, login, proposta, rodapés; SVGs recriados descartados
@@ -18,6 +20,7 @@
 
 ## Onde paramos — próximos passos (ordem)
 
+0. **Push pendente** — lote 16/10 (modelos de termos) está commitado localmente; push quando o David pedir.
 1. **PUSH feito em 15/10** — tudo em produção, Vercel deploya automático.
 2. **Homologação pendente do David:** fluxo de convite da Equipe (`/equipe` → convidar → aceitar em `/convite?token=...`) — testar local antes de apresentar.
 4. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/barbearia`, `/salao-de-beleza`, `/estetica`.
