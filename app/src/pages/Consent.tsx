@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   Download,
+  ChevronDown,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
@@ -17,12 +18,16 @@ import ConsentFormDialog from "@/components/consent/ConsentFormDialog";
 import ConsentFormCard, {
   type ConsentFormItem,
 } from "@/components/consent/ConsentFormCard";
+import ConsentEmptyState from "@/components/consent/ConsentEmptyState";
+import type { ConsentTemplate } from "@/components/consent/consent-templates";
 
 export default function Consent() {
   const { salon } = useSalon();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<ConsentFormItem | null>(null);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  // null = ainda não tocado — aberto por padrão só quando a lista está vazia
+  const [infoOpen, setInfoOpen] = useState<boolean | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{
     id: number;
     title: string;
@@ -33,6 +38,8 @@ export default function Consent() {
     { salonId: salon?.id ?? 0 },
     { enabled: !!salon }
   );
+
+  const infoExpanded = infoOpen ?? (forms?.length === 0);
 
   const createMutation = trpc.consent.create.useMutation({
     onSuccess: () => {
@@ -63,6 +70,14 @@ export default function Consent() {
     onError: e => toast.error(e.message),
   });
 
+  const setActiveMutation = trpc.consent.setActive.useMutation({
+    onSuccess: result => {
+      utils.consent.list.invalidate();
+      toast.success(result?.isActive ? "Termo reativado" : "Termo desativado");
+    },
+    onError: e => toast.error(e.message),
+  });
+
   function handleEdit(form: ConsentFormItem) {
     setEditing(form);
     setOpen(true);
@@ -75,6 +90,16 @@ export default function Consent() {
     } else {
       createMutation.mutate({ salonId: salon.id, ...data });
     }
+  }
+
+  /** Estado vazio: um clique cria o termo direto a partir do modelo */
+  function handleCreateFromTemplate(tpl: ConsentTemplate) {
+    if (!salon) return;
+    createMutation.mutate({
+      salonId: salon.id,
+      title: tpl.title,
+      content: tpl.content,
+    });
   }
 
   return (
@@ -99,50 +124,62 @@ export default function Consent() {
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="p-4 border-emerald-200 bg-emerald-50/30">
-          <div className="flex items-start gap-3">
-            <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-emerald-800">
-                Proteção de dados (LGPD)
-              </p>
-              <p className="text-xs text-emerald-700 mt-1">
-                Coleta só o necessário, autorização clara do cliente, e tudo
-                fica registrado com data e hora.
-              </p>
+      <Card className="gap-0 py-0">
+        <button
+          type="button"
+          onClick={() => setInfoOpen(!infoExpanded)}
+          className="flex w-full items-center justify-between gap-3 p-4 text-left"
+        >
+          <span className="text-sm font-medium text-slate-700">
+            Sobre a LGPD e as assinaturas
+          </span>
+          <ChevronDown
+            className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${
+              infoExpanded ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+        {infoExpanded && (
+          <div className="grid gap-3 sm:grid-cols-3 px-4 pb-4">
+            <div className="flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50/30 p-3">
+              <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-emerald-800">
+                  Proteção de dados (LGPD)
+                </p>
+                <p className="text-xs text-emerald-700 mt-1">
+                  Coleta só o necessário, autorização clara do cliente, e tudo
+                  fica registrado com data e hora.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50/30 p-3">
+              <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-amber-800">
+                  Termos Digitais
+                </p>
+                <p className="text-xs text-amber-700 mt-1">
+                  Assinatura pelo celular com data, hora e registro do aparelho.
+                  Vale por lei para procedimentos estéticos.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50/30 p-3">
+              <Download className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-blue-800">
+                  Cópia dos dados
+                </p>
+                <p className="text-xs text-blue-700 mt-1">
+                  Cliente pode pedir uma cópia de tudo que guardamos, fácil de
+                  ler.
+                </p>
+              </div>
             </div>
           </div>
-        </Card>
-        <Card className="p-4 border-amber-200 bg-amber-50/30">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-amber-800">
-                Termos Digitais
-              </p>
-              <p className="text-xs text-amber-700 mt-1">
-                Assinatura pelo celular com data, hora e registro do aparelho.
-                Vale por lei para procedimentos estéticos.
-              </p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4 border-blue-200 bg-blue-50/30">
-          <div className="flex items-start gap-3">
-            <Download className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-blue-800">
-                Cópia dos dados
-              </p>
-              <p className="text-xs text-blue-700 mt-1">
-                Cliente pode pedir uma cópia de tudo que guardamos, fácil de
-                ler.
-              </p>
-            </div>
-          </div>
-        </Card>
-      </div>
+        )}
+      </Card>
 
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">
@@ -170,21 +207,23 @@ export default function Consent() {
                   setExpandedId(expandedId === f.id ? null : f.id)
                 }
                 onEdit={() => handleEdit(f)}
+                onToggleActive={() => {
+                  if (!salon) return;
+                  setActiveMutation.mutate({
+                    id: f.id,
+                    salonId: salon.id,
+                    isActive: !f.isActive,
+                  });
+                }}
                 onDelete={() =>
                   setDeleteTarget({ id: f.id, title: f.title })
                 }
+                isPendingActive={setActiveMutation.isPending}
               />
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 text-muted-foreground border rounded-lg">
-            <ShieldCheck className="h-10 w-10 mx-auto mb-3 opacity-20" />
-            <p>Nenhum termo cadastrado.</p>
-            <p className="text-sm">
-              Crie termos de autorização para procedimentos que exigem
-              autorização.
-            </p>
-          </div>
+          <ConsentEmptyState onPick={handleCreateFromTemplate} />
         )}
       </div>
 

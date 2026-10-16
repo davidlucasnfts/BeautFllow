@@ -7,6 +7,8 @@
 export interface ConsentTemplate {
   id: string;
   label: string;
+  /** micro-descrição curta usada nos atalhos do estado vazio */
+  hint: string;
   title: string;
   content: string;
 }
@@ -15,6 +17,7 @@ export const CONSENT_TEMPLATES: ConsentTemplate[] = [
   {
     id: "lgpd",
     label: "Uso de Dados Pessoais (LGPD)",
+    hint: "Obrigatório para todos os clientes",
     title: "Autorização de Uso de Dados Pessoais (LGPD)",
     content: `Eu, [NOME DO CLIENTE], CPF [___], autorizo o [NOME DO ESTABELECIMENTO] a coletar, armazenar e utilizar meus dados pessoais (nome, telefone, e-mail, histórico de atendimentos e registros fotográficos de procedimentos) exclusivamente para: agendamento de atendimentos, histórico técnico dos serviços realizados, comunicações sobre meus agendamentos e envio de ofertas e novidades (quando autorizado).
 
@@ -28,6 +31,7 @@ Estou ciente de que a assinatura deste termo é válida por prazo indeterminado,
   {
     id: "capilares-quimicos",
     label: "Procedimentos Capilares Químicos",
+    hint: "Coloração, descoloração e alisamento",
     title: "Termo de Ciência e Autorização — Procedimentos Capilares Químicos",
     content: `Eu, [NOME DO CLIENTE], declaro que fui informado(a) sobre as características do procedimento químico a ser realizado (coloração, descoloração, alisamento ou relaxamento) e estou ciente de que:
 
@@ -42,6 +46,7 @@ Autorizo a realização do procedimento e isento o estabelecimento de responsabi
   {
     id: "esteticos",
     label: "Procedimentos Estéticos",
+    hint: "Procedimentos estéticos em geral",
     title: "Termo de Ciência e Autorização — Procedimentos Estéticos",
     content: `Eu, [NOME DO CLIENTE], declaro estar ciente e de acordo com a realização do procedimento estético [DESCREVER PROCEDIMENTO], tendo recebido as seguintes informações:
 
@@ -56,6 +61,7 @@ Autorizo a realização do procedimento e confirmo que as informações prestada
   {
     id: "imagem",
     label: "Uso de Imagem (Antes/Depois)",
+    hint: "Antes/depois para redes sociais",
     title: "Autorização de Uso de Imagem (Antes/Depois)",
     content: `Eu, [NOME DO CLIENTE], autorizo o [NOME DO ESTABELECIMENTO] a utilizar minhas imagens (fotos e vídeos de antes e depois dos procedimentos realizados) nas seguintes finalidades: portfólio do estabelecimento, redes sociais (Instagram, Facebook, WhatsApp Business) e material promocional.
 

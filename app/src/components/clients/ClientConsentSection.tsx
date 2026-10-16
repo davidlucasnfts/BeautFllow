@@ -61,6 +61,9 @@ export default function ClientConsentSection({
     clientId: client.id,
   });
 
+  // a coleta de assinatura só vale para termos ativos (desativados ficam no histórico)
+  const activeForms = (forms ?? []).filter(f => f.isActive);
+
   const signMutation = trpc.consent.sign.useMutation({
     onSuccess: () => {
       utils.consent.signaturesByClient.invalidate();
@@ -95,13 +98,13 @@ export default function ClientConsentSection({
       <p className="text-[10px] font-semibold text-slate-400 uppercase">
         Termos e autorizações
       </p>
-      {!forms || forms.length === 0 ? (
+      {activeForms.length === 0 ? (
         <p className="text-xs text-muted-foreground">
           Nenhum termo cadastrado. Crie em Termos e Autorizações.
         </p>
       ) : (
         <ul className="space-y-1.5">
-          {forms.map(form => {
+          {activeForms.map(form => {
             const signature = signatureFor(form.id);
             return (
               <li
