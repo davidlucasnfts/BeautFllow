@@ -1,13 +1,16 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 16/10/2026 (modelos prontos de Termos de Autorização — commit local, ainda NÃO pushado)
+> **Atualizado em:** 16/10/2026 (modelos de termos + ciclo de consentimento fechado — commits LOCAIS, push pendente)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md`, não no histórico do chat (chat longo deixa o Kimi lento; regra nova no AGENTS.md).
 
 ---
 
 ## Resumo da sessão (04/10 → 15/10) — Marca aplicada + Financeiro completo + polimentos
 
-**Lote 16/10 — Modelos prontos de Termos (commit `0446830`, LOCAL, push pendente):** Opção A da proposta aprovada `docs/mockups/proposta-termos-modelos.html`. Seletor "Começar de um modelo" no diálogo Novo Termo (`ConsentFormDialog.tsx`) com 4 textos jurídicos completos em `src/components/consent/consent-templates.ts`: LGPD, capilares químicos, estéticos e uso de imagem antes/depois. Textos fixos no frontend, sem migration; cada uso gera cópia isolada por salonId em `consent_forms`. Aviso interno: "modelo base — revise com um advogado para procedimentos de risco". Check + 104 testes verdes.
+**Lote 16/10 — Ciclo de consentimento completo (commits `12af77c`→`d3416ee`, LOCAIS, push pendente):**
+- Modelos prontos de Termos: seletor "Começar de um modelo" no Novo Termo, 4 textos jurídicos em `src/components/consent/consent-templates.ts`
+- Ciclo fechado (proposta `docs/mockups/proposta-ciclo-consentimento.html`): checkbox LGPD no cadastro/edição de cliente (`consentGiven`/`consentGivenAt` via client-router); aceite obrigatório no agendamento público (cliente novo entra consentido); coleta de assinatura na ficha do cliente (`ClientConsentSection.tsx` — termo renderizado com nome do cliente e do salão via `render-term.ts`, `signatureData` guarda texto + agreedAt, responsável = usuário logado); aviso âmbar de `requiresConsent` no agendamento interno; botão "Resolver" do alerta LGPD → `/clients`
+- Antes disso o alerta LGPD nunca zerava (nenhum código gravava `consentGiven = true`) e os endpoints `consent.sign`/`signaturesByClient` não tinham tela
 
 **TUDO PUSHADO para produção em 15/10** (~31 commits). Lotes:
 - **Marca (13-14/10):** logo original da IA do David é a fonte de tudo (pipeline `process-brand-logo.mjs` → `public/brand/` + ícones PWA); lockup em sidebar (desktop+mobile, drawer mobile corrigido pra sempre mostrar logo+cartão), landing, login, proposta, rodapés; SVGs recriados descartados
