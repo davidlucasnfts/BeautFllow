@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Proposta — Fechar o ciclo de consentimento (cadastro, agendamento, assinatura)</title>
+<style>
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 24px; line-height: 1.6; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  .sub { color: #64748b; margin-bottom: 24px; }
+  h2 { font-size: 1.15rem; margin-top: 32px; border-left: 4px solid #8b5cf6; padding-left: 10px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin: 12px 0; }
+  .card.critico { background: #fef2f2; border-color: #fecaca; }
+  .card.ok { background: #f0fdf4; border-color: #bbf7d0; }
+  .tag-recomendado { display: inline-block; background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .pros, .contras { margin: 8px 0; font-size: 0.92rem; }
+  .pros li, .contras li { margin-bottom: 4px; }
+  .pros strong { color: #15803d; }
+  .contras strong { color: #b91c1c; }
+  .gap { background: #fff7ed; border: 1px solid #fed7aa; border-left: 4px solid #f97316; border-radius: 10px; padding: 12px 16px; margin: 10px 0; font-size: 0.92rem; }
+  .gap strong { color: #c2410c; }
+  .entrega { background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 12px 16px; margin: 10px 0; }
+  .entrega h3 { margin: 0 0 6px; font-size: 0.98rem; }
+  .entrega p { margin: 0; font-size: 0.88rem; color: #475569; }
+  .decisao { background: #f5f3ff; border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px 20px; margin-top: 32px; }
+  .esforco { color: #64748b; font-size: 0.85rem; margin-top: 6px; }
+  code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Proposta — Fechar o ciclo de consentimento</h1>
+  <p class="sub">16/10/2026 · Aguardando autorização · Nenhum código alterado</p>
+
+  <div class="card critico">
+    <strong>Constatação da análise:</strong> os modelos de termos (entregue hoje) resolvem a criação, mas o ciclo completo é: <em>criar termo → apresentar ao cliente → coletar assinatura → alerta zera</em>. Hoje só a primeira etapa existe. A ponta de assinatura está morta no código.
+  </div>
+
+  <h2>O que a análise encontrou (baseado no código real)</h2>
+
+  <div class="gap">
+    <strong>Gap 1 — Alerta LGPD do Dashboard nunca zera.</strong> O cliente é cadastrado com <code>consentGiven = false</code> e <strong>nenhum código no projeto inteiro jamais grava esse campo como <code>true</code></strong> (grep global confirmou). Ou seja: todo cliente entra "pendente", o alerta "N clientes não assinaram a LGPD" é permanente e o botão "Resolver" leva para a página de gestão de termos — onde não existe ação que resolva.
+  </div>
+
+  <div class="gap">
+    <strong>Gap 2 — Backend de assinatura pronto, sem tela.</strong> Os endpoints <code>consent.sign</code> e <code>consent.signaturesByClient</code> existem no backend (com audit log, IP, user-agent), mas <strong>nenhum componente os chama</strong>. Não existe modal de assinatura em lugar nenhum — a ficha do cliente não mostra quais termos ele assinou.
+  </div>
+
+  <div class="gap">
+    <strong>Gap 3 — Agendamento público (/agendar/:slug) sem consentimento.</strong> O cliente final preenche nome + WhatsApp e agenda, mas não aceita nada sobre LGPD. Clientes vindos do link entram sempre pendentes — justamente os que o salão quase nunca vê pessoalmente.
+  </div>
+
+  <div class="gap">
+    <strong>Gap 4 — <code>services.requiresConsent</code> é decorativo.</strong> O flag existe no cadastro de serviço e aparece no card, mas não é verificado em nenhum fluxo de agendamento (nem público, nem interno).
+  </div>
+
+  <h2>Proposta — 4 entregas pra fechar o ciclo <span class="tag-recomendado">RECOMENDADA</span></h2>
+
+  <div class="entrega">
+    <h3>1. Checkbox LGPD no cadastro de cliente + edição</h3>
+    <p>No diálogo "Novo cliente" e na edição: checkbox <em>"Cliente autoriza o uso dos dados (LGPD)"</em> marcado → grava <code>consentGiven = true</code> + <code>consentGivenAt</code>. <strong>Zero migration</strong> — usa colunas que já existem. A badge "Dados autorizados" passa a funcionar de verdade.</p>
+  </div>
+
+  <div class="entrega">
+    <h3>2. Checkbox de aceite obrigatório no agendamento público</h3>
+    <p>Em <code>/agendar/:slug</code>, antes de confirmar: checkbox obrigatório <em>"Aceito o uso dos meus dados para agendamento, conforme a política do estabelecimento"</em>. Se o cliente é novo, entra cadastrado com <code>consentGiven = true</code>; se já existia, atualiza. Resolve o Gap 3.</p>
+  </div>
+
+  <div class="entrega">
+    <h3>3. Coleta de assinatura de termo na ficha do cliente</h3>
+    <p>Na ficha expandida do cliente, nova seção "Termos assinados": lista os termos ativos do salão com status (assinado/não) via <code>signaturesByClient</code> + botão "Registrar assinatura" → modal exibe o texto do termo, o atendente confirma verbalmente e clica em confirmar → chama <code>consent.sign</code> (grava data/hora + usuário logado como responsável). Ativa o backend que já está pronto — aí os 4 modelos de termo entregues hoje passam a ter utilidade real.</p>
+  </div>
+
+  <div class="entrega">
+    <h3>4. Aviso de serviço que exige termo (requiresConsent) + destino do botão "Resolver"</h3>
+    <p>Ao criar/editar agendamento interno de serviço com <code>requiresConsent = true</code> para cliente sem assinatura: banner âmbar "serviço exige termo assinado" com atalho pra coletar (não bloqueia — só alerta, padrão MVP). E o botão "Resolver" do Dashboard passa a levar para a lista de clientes pendentes, onde a entrega 1 resolve em 1 clique.</p>
+  </div>
+
+  <div class="card">
+    <ul class="pros">
+      <li><strong>Prós:</strong> ciclo completo fecha; alerta do Dashboard zera e passa a significar algo; os 4 modelos de termo ganham uso real; agendamento por link fica aderente à LGPD; tudo com colunas/endpoints que já existem (no máximo 1 migration pequena se quisermos marcar o termo-LGPD padrão — evitável no MVP)</li>
+      <li><strong>Contras:</strong> a assinatura via modal é "confirmada pelo atendente" (assinatura digital desenhada fica pra uma fase futura); o termo assinado no app não é gerado como PDF</li>
+    </ul>
+    <p class="esforco">Esforço: médio — 4 telas/componentes tocados, nenhuma migration obrigatória, backend quase todo pronto.</p>
+  </div>
+
+  <div class="decisao">
+    <strong>Minha recomendação:</strong> implementar as 4 entregas juntas — sozinha, a biblioteca de modelos (entregue hoje) fica inútil, porque o termo criado não pode ser apresentado a ninguém.<br><br>
+    <strong>Me diz:</strong> "pode fazer" que implemento as 4; ou escolhe um recorte (ex: "só 1 e 2" pra resolver o alerta do Dashboard); ou "não faz nada" se preferir manter como está.
+  </div>
+</div>
+</body>
+</html>
