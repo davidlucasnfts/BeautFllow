@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -47,6 +48,7 @@ export default function PublicBooking() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
+  const [lgpdAccepted, setLgpdAccepted] = useState(false);
   const [result, setResult] = useState<BookResult | null>(null);
 
   const { data, isLoading, error } = trpc.public.bookingPage.useQuery(
@@ -150,6 +152,10 @@ export default function PublicBooking() {
     }
     if (!/^\(\d{2}\) \d{4,5}-\d{4}$/.test(phone)) {
       toast.error("Informe um telefone válido com DDD.");
+      return;
+    }
+    if (!lgpdAccepted) {
+      toast.error("Aceite o uso dos dados para continuar.");
       return;
     }
     bookMutation.mutate({
@@ -398,11 +404,27 @@ export default function PublicBooking() {
                 />
               </div>
 
+              <div className="flex items-start gap-2 rounded-md border border-slate-200 bg-slate-50 p-3">
+                <Checkbox
+                  id="lgpd-accept"
+                  checked={lgpdAccepted}
+                  onCheckedChange={checked => setLgpdAccepted(checked === true)}
+                  className="mt-0.5"
+                />
+                <Label
+                  htmlFor="lgpd-accept"
+                  className="text-xs text-slate-600 leading-snug cursor-pointer"
+                >
+                  Aceito o uso dos meus dados para agendamento, conforme a
+                  política do estabelecimento *
+                </Label>
+              </div>
+
               <Button
                 className="w-full text-white"
                 style={{ backgroundColor: palette.primary }}
                 onClick={handleSubmit}
-                disabled={bookMutation.isPending}
+                disabled={bookMutation.isPending || !lgpdAccepted}
               >
                 <CalendarCheck className="mr-2 h-4 w-4" />
                 {bookMutation.isPending ? "Enviando..." : "Agendar"}

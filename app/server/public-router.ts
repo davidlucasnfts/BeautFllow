@@ -10,6 +10,7 @@ import {
   getClientByPhone,
   getAppointmentsBySalon,
   createClient,
+  updateClient,
   createAppointment,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
@@ -232,12 +233,20 @@ export const publicRouter = createRouter({
       }
 
       // Cliente já existe (pelo telefone)? Reutiliza. Se não, cria.
+      // Em ambos os casos o aceite LGPD do formulário público é registrado
       let client = await getClientByPhone(salon.id, input.phone);
       if (!client) {
         client = await createClient({
           salonId: salon.id,
           name: input.name,
           phone: input.phone,
+          consentGiven: true,
+          consentGivenAt: new Date(),
+        });
+      } else if (!client.consentGiven) {
+        client = await updateClient(client.id, salon.id, {
+          consentGiven: true,
+          consentGivenAt: new Date(),
         });
       }
       if (!client) {
