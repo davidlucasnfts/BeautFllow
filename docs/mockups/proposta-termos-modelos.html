@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Proposta — Termos e Autorizações prontos pra usar</title>
+<style>
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 24px; line-height: 1.6; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  .sub { color: #64748b; margin-bottom: 24px; }
+  h2 { font-size: 1.15rem; margin-top: 32px; border-left: 4px solid #8b5cf6; padding-left: 10px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin: 12px 0; }
+  .tag-recomendado { display: inline-block; background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .tag-alternativa { display: inline-block; background: #e2e8f0; color: #475569; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .pros, .contras { margin: 8px 0; font-size: 0.92rem; }
+  .pros li, .contras li { margin-bottom: 4px; }
+  .pros strong { color: #15803d; }
+  .contras strong { color: #b91c1c; }
+  .termo { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 18px; margin: 10px 0; }
+  .termo h3 { margin: 0 0 6px; font-size: 1rem; }
+  .termo p { font-size: 0.85rem; color: #475569; white-space: pre-line; margin: 0; max-height: 180px; overflow-y: auto; }
+  .termo .uso { font-size: 0.78rem; color: #8b5cf6; font-weight: 600; margin-top: 8px; }
+  .decisao { background: #f5f3ff; border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px 20px; margin-top: 32px; }
+  .esforco { color: #64748b; font-size: 0.85rem; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Proposta — Termos e Autorizações prontos pra usar</h1>
+  <p class="sub">16/10/2026 · Aguardando autorização · Nenhum código alterado</p>
+
+  <div class="card" style="background:#eef2ff;border-color:#c7d2fe">
+    <strong>O problema hoje:</strong> a página de Termos é uma folha em branco. O proprietário abre "Novo Termo" e precisa escrever título + conteúdo do zero — e termo de autorização é um documento jurídico: a maioria das donas de salão não sabe o que escrever, e termo mal escrito não protege ninguém (nem cobre o estabelecimento em caso de processo).
+  </div>
+
+  <h2>Opção A — Biblioteca de modelos prontos dentro do app <span class="tag-recomendado">RECOMENDADA</span></h2>
+  <div class="card">
+    <p>No diálogo "Novo Termo", adicionar um seletor <strong>"Começar de um modelo"</strong> com os termos abaixo já escritos. O proprietário escolhe o modelo, o título e o conteúdo vêm preenchidos, ele pode ajustar o que quiser e salvar. Zero escrita do zero.</p>
+    <ul class="pros">
+      <li><strong>Prós:</strong> pronto em 2 cliques; textos revisados e adequados à LGPD; modelos diferentes por segmento (salão, barbearia, estética); o dono ainda pode personalizar</li>
+      <li><strong>Contras:</strong> os textos são genéricos — para procedimentos de risco alto (lasers, injetáveis) o ideal é revisão de advogado</li>
+    </ul>
+    <p class="esforco">Esforço: pequeno/médio — textos fixos no frontend + pré-preenchimento do formulário (não mexe no banco)</p>
+  </div>
+
+  <h2>Opção B — Eu escrevo os termos e você cadastra manualmente</h2>
+  <div class="card">
+    <p>Eu entrego os 4 textos prontos (estão logo abaixo) e você cola na tela de Novo Termo, um por um.</p>
+    <ul class="pros"><li><strong>Prós:</strong> resolve hoje, sem mexer em código</li></ul>
+    <ul class="contras"><li><strong>Contras:</strong> cada salão novo que se cadastrar vai ter a mesma folha em branco; não escala pro produto</li></ul>
+  </div>
+
+  <h2>Os 4 modelos de termo (conteúdo da Opção A — também serve pra Opção B)</h2>
+
+  <div class="termo">
+    <h3>1. Autorização de Uso de Dados Pessoais (LGPD)</h3>
+    <p>Eu, [NOME DO CLIENTE], CPF [___], autorizo o [NOME DO ESTABELECIMENTO] a coletar, armazenar e utilizar meus dados pessoais (nome, telefone, e-mail, histórico de atendimentos e registros fotográficos de procedimentos) exclusivamente para: agendamento de atendimentos, histórico técnico dos serviços realizados, comunicações sobre meus agendamentos e envio de ofertas e novidades (quando autorizado).
+
+Declaro que fui informado(a) de que:
+1. Meus dados são protegidos conforme a Lei Geral de Proteção de Dados (Lei nº 13.709/2018);
+2. Posso solicitar a qualquer momento a correção, a portabilidade ou a exclusão dos meus dados, bastando solicitar ao estabelecimento;
+3. Imagens de antes/depois só serão usadas para divulgação com autorização específica e separada.
+
+Estou ciente de que a assinatura deste termo é válida por prazo indeterminado, podendo ser revogada a qualquer momento.</p>
+    <p class="uso">📌 Uso: obrigatório pra TODOS os estabelecimentos. É o termo que aparece no alerta amarelo do Dashboard ("clientes que não assinaram a LGPD").</p>
+  </div>
+
+  <div class="termo">
+    <h3>2. Termo de Ciência e Autorização — Procedimentos Capilares Químicos</h3>
+    <p>Eu, [NOME DO CLIENTE], declaro que fui informado(a) sobre as características do procedimento químico a ser realizado (coloração, descoloração, alisamento ou relaxamento) e estou ciente de que:
+
+1. Cabelos anteriormente processados (colorações, alisamentos, descolorações) podem apresentar resultados diferentes e reações imprevisíveis;
+2. Foi realizada a avaliação de mecha quando solicitado, e seu resultado foi esclarecido;
+3. É recomendado não lavar o cabelo nas 24h anteriores e posteriores ao procedimento;
+4. Durabilidade e resultado podem variar conforme tipo de fio, rotina de cuidados e exposição solar;
+5. O não cumprimento das orientações de cuidado pode comprometer o resultado.
+
+Autorizo a realização do procedimento e isento o estabelecimento de responsabilidade por reações decorrentes de informações incorretas sobre histórico químico do meu cabelo, declarado por mim neste atendimento.</p>
+    <p class="uso">📌 Uso: salões e barbearias (coloração, descoloração, alisamento, relaxamento).</p>
+  </div>
+
+  <div class="termo">
+    <h3>3. Termo de Ciência e Autorização — Procedimentos Estéticos</h3>
+    <p>Eu, [NOME DO CLIENTE], declaro estar ciente e de acordo com a realização do procedimento estético [DESCREVER PROCEDIMENTO], tendo recebido as seguintes informações:
+
+1. Objetivo do procedimento, número de sessões recomendado e resultados esperados;
+2. Cuidados pré e pós-procedimento que devo seguir;
+3. Possíveis reações adversas: vermelhidão, sensibilidade, irritação leve e, em casos raros, reação alérgica — devendo comunicar o estabelecimento imediatamente;
+4. Contraindicações informadas por mim (gestação, alergias, uso de medicamentos, doenças de pele);
+5. O resultado pode variar de pessoa para pessoa e não há garantia de resultado absoluto.
+
+Autorizo a realização do procedimento e confirmo que as informações prestadas sobre minha saúde são verdadeiras.</p>
+    <p class="uso">📌 Uso: clínicas de estética (limpeza de pele, peeling, drenagem, design de sobrancelhas com henna etc.).</p>
+  </div>
+
+  <div class="termo">
+    <h3>4. Autorização de Uso de Imagem (Antes/Depois)</h3>
+    <p>Eu, [NOME DO CLIENTE], autorizo o [NOME DO ESTABELECIMENTO] a utilizar minhas imagens (fotos e vídeos de antes e depois dos procedimentos realizados) nas seguintes finalidades: portfólio do estabelecimento, redes sociais (Instagram, Facebook, WhatsApp Business) e material promocional.
+
+Estou ciente de que:
+1. Esta autorização é livre, espontânea e gratuita, não gerando qualquer remuneração;
+2. Posso revogar esta autorização a qualquer momento, solicitando a remoção das imagens, que será feita em até 30 dias;
+3. As imagens serão utilizadas apenas para as finalidades descritas neste termo.
+
+Local, data e assinatura do(a) cliente.</p>
+    <p class="uso">📌 Uso: todos os segmentos que postam antes/depois. É separado do termo 1 porque a LGPD exige consentimento específico pra imagem.</p>
+  </div>
+
+  <div class="decisao">
+    <strong>Minha recomendação:</strong> implementar a <strong>Opção A</strong> (modelos no app) com os 4 textos acima — resolve pra sempre, pra todo cliente que se cadastrar, e ainda deixo um aviso dentro do app: "modelo base — revise com um advogado para procedimentos de risco".<br><br>
+    <strong>Me diz:</strong> "faz a A" que implemento; ou "só quero os textos" (Opção B, você cadastra manualmente e eu não mexo em código).
+  </div>
+</div>
+</body>
+</html>
