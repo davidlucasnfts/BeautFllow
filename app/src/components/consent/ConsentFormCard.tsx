@@ -43,7 +43,7 @@ export default function ConsentFormCard({
 }: ConsentFormCardProps) {
   return (
     <Card
-      className={`h-full cursor-pointer gap-1.5 py-2.5 transition-colors ${
+      className={`min-w-0 w-full cursor-pointer gap-1.5 py-2.5 transition-colors ${
         expanded ? "bg-primary/5" : "hover:bg-blue-50/50"
       } ${form.isActive ? "" : "opacity-60"}`}
       onClick={onToggle}
@@ -90,7 +90,7 @@ export default function ConsentFormCard({
       {expanded ? (
         <CardContent className="px-4 pb-3 pt-1">
           <div className="rounded-lg border border-primary/40 p-3">
-            <p className="text-sm text-slate-700 whitespace-pre-wrap">
+            <p className="text-sm text-slate-700 whitespace-pre-wrap break-words">
               {form.content}
             </p>
           </div>
@@ -163,7 +163,7 @@ export default function ConsentFormCard({
         </CardContent>
       ) : (
         <CardContent className="px-4">
-          <p className="text-sm text-muted-foreground line-clamp-3">
+          <p className="text-sm text-muted-foreground line-clamp-3 break-words">
             {form.content}
           </p>
         </CardContent>
