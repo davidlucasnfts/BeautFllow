@@ -1,51 +1,22 @@
 import { z } from "zod";
-import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
-import * as cookie from "cookie";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq } from "drizzle-orm";
-import { createRouter, publicQuery, authedQuery } from "./middleware";
+import { createRouter, authedQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { localUsers, salonInvites, salonUsers, salons } from "@db/schema";
 import {
   PLAN_USER_LIMITS,
   PLAN_LABELS,
-  Session,
   type Plan,
 } from "@contracts/constants";
-import { env } from "./lib/env";
 import { auditAction } from "./lib/audit";
-import { capitalizeWords } from "./lib/format";
 import { assertSalonAdmin } from "./lib/tenant";
-import { signToken } from "./local-auth-router";
-import { getSessionCookieOptions } from "./lib/cookies";
+import { requestOrigin, sendInviteEmail } from "./team-invite-mail";
 
 const INVITE_EXPIRES_MS = 7 * 24 * 60 * 60 * 1000; // 7 dias
 
 const inviteRoleSchema = z.enum(["admin", "professional", "receptionist"]);
-
-function requestOrigin(ctx: { req: Request }): string {
-  return (
-    ctx.req.headers.get("origin") ||
-    env.corsOrigin ||
-    "http://localhost:3000"
-  );
-}
-
-async function setSessionCookie(ctx: { req: Request; resHeaders: Headers }, userId: number, email: string) {
-  const token = await signToken({ userId, email });
-  const cookieOpts = getSessionCookieOptions(ctx.req.headers);
-  ctx.resHeaders.append(
-    "Set-Cookie",
-    cookie.serialize(Session.cookieName, token, {
-      httpOnly: cookieOpts.httpOnly,
-      path: cookieOpts.path,
-      sameSite: cookieOpts.sameSite?.toLowerCase() as "lax" | "none",
-      secure: cookieOpts.secure,
-      maxAge: 7 * 24 * 60 * 60, // 7 dias
-    })
-  );
-}
 
 export const teamRouter = createRouter({
   list: authedQuery
@@ -195,22 +166,74 @@ export const teamRouter = createRouter({
       );
 
       const link = `${requestOrigin(ctx)}/convite?token=${token}`;
+      const emailSent = await sendInviteEmail({
+        salonName: salon.name,
+        email: input.email,
+        link,
+      });
 
-      // Sem chave do Resend: não quebra — devolve o link para cópia manual
-      let emailSent = false;
-      if (env.resendApiKey) {
-        const { Resend } = await import("resend");
-        const resend = new Resend(env.resendApiKey);
-        const { error } = await resend.emails.send({
-          from: env.resendFrom,
-          to: input.email,
-          subject: `Convite para equipe — ${salon.name}`,
-          text: `Você foi convidado(a) para a equipe de ${salon.name} no StudioFlow.\n\nCrie sua senha e entre no sistema por este link (válido por 7 dias):\n${link}\n\nSe não esperava este convite, ignore este e-mail.`,
+      return { success: true, emailSent, link: emailSent ? undefined : link };
+    }),
+
+  // Reenvia o e-mail do convite com o MESMO token/link (não regenera).
+  resend: authedQuery
+    .input(z.object({ salonId: z.number(), inviteId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      await assertSalonAdmin(ctx.user.id, input.salonId);
+      const db = getDb();
+
+      const invite = await db.query.salonInvites.findFirst({
+        where: and(
+          eq(salonInvites.id, input.inviteId),
+          eq(salonInvites.salonId, input.salonId)
+        ),
+      });
+      if (!invite) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Convite não encontrado nesta equipe.",
         });
-        emailSent = !error;
-      } else if (!env.isProduction) {
-        console.log(`[team-invite] Link do convite: ${link}`);
       }
+      if (invite.status === "accepted") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Este convite já foi aceito.",
+        });
+      }
+      if (invite.status !== "pending") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Este convite foi cancelado. Crie um novo convite.",
+        });
+      }
+      if (invite.expiresAt < new Date()) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Este convite expirou. Cancele e crie um novo convite.",
+        });
+      }
+
+      const salon = await db.query.salons.findFirst({
+        where: eq(salons.id, input.salonId),
+        columns: { name: true },
+      });
+
+      const link = `${requestOrigin(ctx)}/convite?token=${invite.token}`;
+      const emailSent = await sendInviteEmail({
+        salonName: salon?.name ?? "sua equipe",
+        email: invite.email,
+        link,
+      });
+
+      await auditAction(
+        "update",
+        "team_invite",
+        input.salonId,
+        ctx.user.id,
+        invite.id,
+        undefined,
+        { resent: true, email: invite.email }
+      );
 
       return { success: true, emailSent, link: emailSent ? undefined : link };
     }),
@@ -295,107 +318,5 @@ export const teamRouter = createRouter({
       );
 
       return { success: true };
-    }),
-
-  getInvite: publicQuery
-    .input(z.object({ token: z.string().min(10) }))
-    .query(async ({ input }) => {
-      const invite = await getDb().query.salonInvites.findFirst({
-        where: eq(salonInvites.token, input.token),
-      });
-      if (!invite || invite.status !== "pending" || invite.expiresAt < new Date()) {
-        return null;
-      }
-      const salon = await getDb().query.salons.findFirst({
-        where: eq(salons.id, invite.salonId),
-        columns: { name: true },
-      });
-      return { email: invite.email, role: invite.role, salonName: salon?.name ?? "" };
-    }),
-
-  acceptInvite: publicQuery
-    .input(
-      z.object({
-        token: z.string().min(10),
-        name: z.string().min(2).max(255),
-        password: z.string().min(8),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const db = getDb();
-
-      const invite = await db.query.salonInvites.findFirst({
-        where: eq(salonInvites.token, input.token),
-      });
-      if (!invite || invite.status !== "pending") {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Convite inválido ou já utilizado.",
-        });
-      }
-      if (invite.expiresAt < new Date()) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Este convite expirou. Peça um novo convite ao responsável.",
-        });
-      }
-
-      const name = capitalizeWords(input.name);
-      const passwordHash = await bcrypt.hash(input.password, 12);
-
-      // Conta já existe? Só atualiza nome/senha. Senão, cria.
-      let [user] = await db
-        .select()
-        .from(localUsers)
-        .where(eq(localUsers.email, invite.email))
-        .limit(1);
-
-      if (user) {
-        await db
-          .update(localUsers)
-          .set({
-            name: user.name ?? name,
-            passwordHash,
-            lastSignInAt: new Date(),
-          })
-          .where(eq(localUsers.id, user.id));
-      } else {
-        const [created] = await db
-          .insert(localUsers)
-          .values({ email: invite.email, name, passwordHash })
-          .returning();
-        user = created;
-      }
-
-      await db
-        .insert(salonUsers)
-        .values({ salonId: invite.salonId, userId: user.id, role: invite.role })
-        .onConflictDoUpdate({
-          target: salonUsers.userId,
-          set: { salonId: invite.salonId, role: invite.role, isActive: true },
-        });
-
-      await db
-        .update(salonInvites)
-        .set({ status: "accepted" })
-        .where(eq(salonInvites.id, invite.id));
-
-      await auditAction(
-        "create",
-        "salon_user",
-        invite.salonId,
-        user.id,
-        user.id,
-        undefined,
-        { role: invite.role, via: "invite" }
-      );
-
-      await setSessionCookie(ctx, user.id, user.email);
-
-      return {
-        success: true,
-        user: { id: user.id, email: user.email, name: user.name },
-        salonId: invite.salonId,
-      };
     }),
 });

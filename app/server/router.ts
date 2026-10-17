@@ -14,6 +14,7 @@ import { commissionRouter } from "./commission-router";
 import { followupRouter } from "./followup-router";
 import { productRouter } from "./product-router";
 import { teamRouter } from "./team-router";
+import { inviteRouter } from "./invite-router";
 
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
@@ -31,6 +32,7 @@ export const appRouter = createRouter({
   communication: communicationRouter,
   consent: consentRouter,
   team: teamRouter,
+  invite: inviteRouter,
   dashboard: dashboardRouter,
 });
 

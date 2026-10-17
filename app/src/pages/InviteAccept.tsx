@@ -20,12 +20,12 @@ export default function InviteAccept() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const { data: invite, isLoading } = trpc.team.getInvite.useQuery(
+  const { data: invite, isLoading } = trpc.invite.getInvite.useQuery(
     { token },
     { enabled: token.length >= 10, retry: false }
   );
 
-  const acceptMutation = trpc.team.acceptInvite.useMutation({
+  const acceptMutation = trpc.invite.acceptInvite.useMutation({
     onSuccess: () => {
       toast.success("Bem-vindo(a)! Sua conta está pronta.");
       // Recarrega para o app reconhecer a sessão nova e abrir no salão certo
