@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Proposta — Reenviar convite da equipe</title>
+<style>
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 24px; line-height: 1.6; }
+  .wrap { max-width: 820px; margin: 0 auto; }
+  h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  .sub { color: #64748b; margin-bottom: 20px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin: 12px 0; }
+  .passo { background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 12px 16px; margin: 10px 0; font-size: 0.92rem; }
+  .passo strong { color: #6d28d9; }
+  .decisao { background: #f5f3ff; border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px 20px; margin-top: 28px; }
+  .esforco { color: #64748b; font-size: 0.85rem; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Proposta — Reenviar convite da equipe</h1>
+  <p class="sub">17/10/2026 · Aguardando autorização · Nenhum código alterado</p>
+
+  <div class="card">
+    <strong>Solicitação do David:</strong> na lista "Convites pendentes" da aba Equipe, hoje só existe "Cancelar convite". Quando a pessoa não encontra o e-mail ou não recebeu, o dono não tem como reenviar — precisa cancelar e criar outro convite do zero.
+  </div>
+
+  <div class="passo">
+    <strong>O que muda na tela:</strong> cada convite pendente ganha um botão <strong>"Reenviar"</strong> (com ícone, ao lado de "Cancelar convite"). Nada mais muda.
+  </div>
+
+  <div class="passo">
+    <strong>Comportamento do Reenviar:</strong>
+    <ul style="margin:6px 0;padding-left:20px">
+      <li><strong>Se o e-mail estiver configurado (Resend):</strong> reenvia o e-mail com o mesmo link pro mesmo endereço. Toast: "Convite reenviado para fulano@gmail.com".</li>
+      <li><strong>Se NÃO estiver configurado (seu caso hoje):</strong> reabre a caixinha âmbar com o link do convite + botão "Copiar" — igual ao que aparece na hora de convidar. Assim o Reenviar resolve o problema real de hoje: recuperar o link pra mandar de novo no WhatsApp.</li>
+    </ul>
+  </div>
+
+  <div class="passo">
+    <strong>Backend:</strong> novo endpoint <code>invite.resend</code> — recebe o id do convite, valida que está pendente e não expirado, e devolve <code>{ emailSent, link }</code> (mesmo contrato do create). Mesmo token, mesmo prazo de expiração (não gera convite novo).
+  </div>
+
+  <div class="passo">
+    <strong>Bônus sugerido (mesmo esforço):</strong> adicionar também um botão "Copiar link" direto na linha do convite pendente — assim nem precisa abrir nada pra pegar o link de novo.
+  </div>
+
+  <p class="esforco">Esforço: pequeno — 1 endpoint + 1-2 botões na lista de pendentes. Sem migration.</p>
+
+  <div class="decisao">
+    <strong>Me diz:</strong> "pode fazer" que implemento; ou "só o reenviar" se não quiser o bônus do copiar link.
+  </div>
+</div>
+</body>
+</html>
