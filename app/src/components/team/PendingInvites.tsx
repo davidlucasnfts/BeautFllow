@@ -101,7 +101,7 @@ export default function PendingInvites({
               <button
                 onClick={() => handleResend(invite)}
                 disabled={resendMutation.isPending}
-                className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50"
               >
                 <Send className="h-3 w-3" />
                 Reenviar
