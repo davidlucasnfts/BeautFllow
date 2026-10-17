@@ -233,6 +233,11 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 
 ## 🎨 Regras de Design UX/UI
 
+### Skill de design — OBRIGATÓRIA em trabalho visual (17/10/2026)
+- Sempre que for **criar ou alterar componentes visuais** (botões, cards, telas, modais, landings), **ler antes a skill** `C:\Users\David Lucas\.claude\skills\frontend-design\SKILL.md` — ela não carrega automaticamente na sessão, o Kimi deve ler o arquivo manualmente
+- A tabela de cores/botões abaixo define o **padrão do projeto**; a skill define a **qualidade visual** (hierarquia, espaçamento, contraste). As duas se aplicam juntas
+- A regra de "botões empilhados verticalmente" vale para **coluna de ações em tabelas/listas**; em cards de linha única (ex: convite pendente), botões ficam em linha com `flex-wrap`
+
 ### Design System Base
 - **shadcn/ui** como biblioteca principal de componentes
 - **Tailwind CSS** para estilização

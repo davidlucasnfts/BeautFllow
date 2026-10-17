@@ -97,27 +97,27 @@ export default function PendingInvites({
             <Badge className="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-50">
               Pendente
             </Badge>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => handleResend(invite)}
                 disabled={resendMutation.isPending}
-                className="inline-flex items-center justify-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-50"
               >
-                <Send className="h-3 w-3" />
+                <Send className="h-3.5 w-3.5" />
                 Reenviar
               </button>
               <button
                 onClick={() => handleCopyLink(invite)}
-                className="inline-flex items-center justify-center gap-1 rounded-md border border-purple-200 bg-purple-50 px-1.5 py-0.5 text-[10px] font-medium text-purple-600 hover:bg-purple-100"
+                className="inline-flex items-center gap-1.5 rounded-md border border-purple-200 bg-purple-50 px-2.5 py-1.5 text-xs font-medium text-purple-700 hover:bg-purple-100"
               >
-                <Link2 className="h-3 w-3" />
+                <Link2 className="h-3.5 w-3.5" />
                 Copiar link
               </button>
               <button
                 onClick={() => setCancelTarget(invite.id)}
-                className="inline-flex items-center justify-center gap-1 rounded-md border border-red-200 bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-600 hover:bg-red-100"
+                className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100"
               >
-                <XCircle className="h-3 w-3" />
+                <XCircle className="h-3.5 w-3.5" />
                 Cancelar convite
               </button>
             </div>
