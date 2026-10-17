@@ -233,9 +233,15 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 
 ## 🎨 Regras de Design UX/UI
 
-### Skill de design — OBRIGATÓRIA em trabalho visual (17/10/2026)
-- Sempre que for **criar ou alterar componentes visuais** (botões, cards, telas, modais, landings), **ler antes a skill** `C:\Users\David Lucas\.claude\skills\frontend-design\SKILL.md` — ela não carrega automaticamente na sessão, o Kimi deve ler o arquivo manualmente
-- A tabela de cores/botões abaixo define o **padrão do projeto**; a skill define a **qualidade visual** (hierarquia, espaçamento, contraste). As duas se aplicam juntas
+### Princípios de design — aplicar em TODO trabalho visual (consolidado da skill frontend-design, 17/10/2026)
+- **Hierarquia visual:** um elemento principal por tela (título/CTA); fontes em escala (12, 14, 16, 20, 24, 32); letter-spacing negativo em títulos grandes
+- **Espaçamento:** escala de 4px (4, 8, 12, 16, 24, 32); padding consistente por tipo de componente; whitespace generoso comunica qualidade
+- **Contraste:** mínimo WCAG AA 4.5:1 para texto normal — texto secundário nunca pode ficar sumido no fundo
+- **Cores:** nunca preto puro (`slate-900` no máximo); nunca branco puro em superfícies grandes (`slate-50`/`#FAFAFA`); paleta já definida na tabela de cores do projeto abaixo
+- **Tipografia:** máx. 2 famílias (Inter + Playfair Display já configuradas); line-height 1.5 corpo / 1.2 títulos
+- **Estados:** todo componente novo cobre default, hover, active, disabled, loading
+- **Responsivo:** mobile-first sempre; testar mentalmente a 375px antes de considerar pronto
+- A skill completa (`C:\Users\David Lucas\.claude\skills\frontend-design\SKILL.md`) é referência para trabalhos maiores (landing page do zero, design system novo); no dia a dia estes princípios aqui bastam
 - A regra de "botões empilhados verticalmente" vale para **coluna de ações em tabelas/listas**; em cards de linha única (ex: convite pendente), botões ficam em linha com `flex-wrap`
 
 ### Design System Base
