@@ -7,6 +7,12 @@
 
 ## Resumo da sessão (04/10 → 15/10) — Marca aplicada + Financeiro completo + polimentos
 
+**Lote 17/10 — Contraste + fix mobile + reenvio de convite (commits `d412131`→`82245fa`, LOCAIS, push pendente):**
+- Fix contraste: textos secundários dos comboboxes herdam cor do contexto; `--muted-foreground` mais escuro (45%→32%)
+- Fix mobile: card de termo estourava a tela (título e conteúdo) — `min-w-0` + `break-words` no padrão do ServiceCard
+- Reenviar convite da equipe (proposta `docs/mockups/proposta-reenviar-convite.html`): `team.resend` (mesmo token, valida pendente/não expirado); botões "Reenviar" e "Copiar link" na lista de pendentes; sem e-mail configurado reabre a caixa do link — resolve o fluxo atual que é WhatsApp
+- Infra: fluxos públicos de convite movidos pra `invite-router.ts` (regra 400 linhas), envio de e-mail extraído pra `team-invite-mail.ts`
+
 **Lote 16/10 — Ciclo de consentimento completo (commits `12af77c`→`d3416ee`):**
 - Modelos prontos de Termos: seletor "Começar de um modelo" no Novo Termo, 4 textos jurídicos em `src/components/consent/consent-templates.ts`
 - Ciclo fechado (proposta `docs/mockups/proposta-ciclo-consentimento.html`): checkbox LGPD no cadastro/edição de cliente (`consentGiven`/`consentGivenAt` via client-router); aceite obrigatório no agendamento público (cliente novo entra consentido); coleta de assinatura na ficha do cliente (`ClientConsentSection.tsx` — termo renderizado com nome do cliente e do salão via `render-term.ts`, `signatureData` guarda texto + agreedAt, responsável = usuário logado); aviso âmbar de `requiresConsent` no agendamento interno; botão "Resolver" do alerta LGPD → `/clients`
@@ -46,9 +52,9 @@
 
 **Novas desta sessão:**
 - [ ] Gerar logos na IA (Ideogram/Looka) com o prompt e enviar prints das favoritas pro Kimi
-- [ ] Homologar fluxo de convite da Equipe (teste local)
+- [ ] Homologar fluxo de convite da Equipe (teste local: convidar → reenviar/copiar link → aceitar em aba anônima)
 - [ ] **Configurar envio de e-mail (Resend) pra convites da Equipe:** criar conta em resend.com (plano free: 100 e-mails/dia), gerar API key e cadastrar `RESEND_API_KEY` no Vercel (Settings → Environment Variables). Enquanto não configurar, o app já mostra o link pra copiar e mandar por WhatsApp — funciona, só não envia e-mail automático. Opcional: `RESEND_FROM` com domínio verificado (senão usa o remetente de teste `onboarding@resend.dev`)
-- [ ] Autorizar push do commit `6dcce64` (fix do título dos termos no mobile)
+- [ ] Autorizar push dos commits locais `6dcce64`→`82245fa` (fix título termos + reenviar convite)
 
 **Legadas (não esquecer):**
 - [ ] Remover env vars `APP_ID` e `OWNER_UNION_ID` do projeto Vercel `studioflow` (Settings → Environment Variables) — não são mais lidas pelo código. `APP_SECRET` e `DATABASE_URL` **permanecem**
