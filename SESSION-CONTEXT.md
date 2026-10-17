@@ -1,13 +1,13 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 16/10/2026 (modelos de termos + ciclo de consentimento fechado + tela de Termos aprimorada — TUDO PUSHADO)
+> **Atualizado em:** 17/10/2026 (lote completo: consentimento + reenvio de convite + fixes mobile e botões — TUDO PUSHADO)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md`, não no histórico do chat (chat longo deixa o Kimi lento; regra nova no AGENTS.md).
 
 ---
 
 ## Resumo da sessão (04/10 → 15/10) — Marca aplicada + Financeiro completo + polimentos
 
-**Lote 17/10 — Contraste + fix mobile + reenvio de convite (commits `d412131`→`82245fa`, LOCAIS, push pendente):**
+**Lote 17/10 — Contraste + fix mobile + reenvio de convite (commits `d412131`→`82245fa`):**
 - Fix contraste: textos secundários dos comboboxes herdam cor do contexto; `--muted-foreground` mais escuro (45%→32%)
 - Fix mobile: card de termo estourava a tela (título e conteúdo) — `min-w-0` + `break-words` no padrão do ServiceCard
 - Reenviar convite da equipe (proposta `docs/mockups/proposta-reenviar-convite.html`): `team.resend` (mesmo token, valida pendente/não expirado); botões "Reenviar" e "Copiar link" na lista de pendentes; sem e-mail configurado reabre a caixa do link — resolve o fluxo atual que é WhatsApp
@@ -30,7 +30,7 @@
 
 ## Onde paramos — próximos passos (ordem)
 
-1. **PUSH feito em 16/10** — lote de consentimento completo (modelos, ciclo, tela de Termos, contraste) em produção; Vercel deploya automático.
+1. **PUSH feito em 17/10** — tudo em produção (consentimento completo, reenvio de convite, fixes mobile e botões); Vercel deploya automático.
 2. **Homologação pendente do David:** fluxo de convite da Equipe (`/equipe` → convidar → aceitar em `/convite?token=...`) — testar local antes de apresentar.
 4. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/barbearia`, `/salao-de-beleza`, `/estetica`.
 5. Depois: Fase 4 (billing Stripe/Mercado Pago + preços).
@@ -54,7 +54,6 @@
 - [ ] Gerar logos na IA (Ideogram/Looka) com o prompt e enviar prints das favoritas pro Kimi
 - [ ] Homologar fluxo de convite da Equipe (teste local: convidar → reenviar/copiar link → aceitar em aba anônima)
 - [ ] **Configurar envio de e-mail (Resend) pra convites da Equipe:** criar conta em resend.com (plano free: 100 e-mails/dia), gerar API key e cadastrar `RESEND_API_KEY` no Vercel (Settings → Environment Variables). Enquanto não configurar, o app já mostra o link pra copiar e mandar por WhatsApp — funciona, só não envia e-mail automático. Opcional: `RESEND_FROM` com domínio verificado (senão usa o remetente de teste `onboarding@resend.dev`)
-- [ ] Autorizar push dos commits locais `6dcce64`→`82245fa` (fix título termos + reenviar convite)
 
 **Legadas (não esquecer):**
 - [ ] Remover env vars `APP_ID` e `OWNER_UNION_ID` do projeto Vercel `studioflow` (Settings → Environment Variables) — não são mais lidas pelo código. `APP_SECRET` e `DATABASE_URL` **permanecem**
