@@ -141,6 +141,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 003 | Duplicar informação de segurança | 10/05/2026 | Expandir arquivo existente, nunca criar duplicata |
 | 004 | Salvar no `MestreProjects.md` em vez de `AGENTS.md` | 11/05/2026 | Só salvar no global quando David disser "para todos os projetos" |
 | 005 | Criar schema_safe.sql manual em vez de migrations | 12/05/2026 | Usar `supabase/migrations/NNN-descricao.sql`, gerar schema_safe.sql juntando |
+| 006 | Aplicar regra de botões sem olhar o contexto visual (empilhou 3 botões minúsculos em card de linha) | 17/10/2026 | Regra do AGENTS é guia de cor/ação; layout e tamanho seguem os princípios de design + bom senso visual — antes de commitar UI, revisar como ficou a 375px |
 | 006 | Trocar `truncate` por `break-words` sem largura mínima (texto esmagou a 1 caractere no tablet) | 22/09/2026 | `break-words` SEMPRE junto de `basis-XX` + container `flex-wrap` (regra "Listagens" no MestreProjects.md) |
 | 007 | Achar que `fromDate` do DatePicker bloqueia dias passados (só restringe navegação — dia de ontem continuava clicável) | 22/09/2026 | Data passada exige `minDate`/`disabled={{before}}` + trava no backend (regra "Agendamentos" no MestreProjects.md) |
 | 006 | Excluir registro sem confirmação (clique sem querer apagou cliente) | 06/09/2026 | **SEMPRE** AlertDialog de confirmação antes de qualquer delete, mostrando o nome do item. Nunca chamar mutation de delete direto no clique do botão |
