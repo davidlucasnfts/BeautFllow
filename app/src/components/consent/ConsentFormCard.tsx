@@ -49,7 +49,7 @@ export default function ConsentFormCard({
       onClick={onToggle}
     >
       <CardHeader className="p-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <div className="h-9 w-9 rounded-md bg-amber-100 flex items-center justify-center shrink-0">
             <FileText className="h-5 w-5 text-amber-600" />
           </div>
