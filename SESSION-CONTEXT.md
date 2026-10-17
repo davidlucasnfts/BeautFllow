@@ -47,7 +47,8 @@
 **Novas desta sessão:**
 - [ ] Gerar logos na IA (Ideogram/Looka) com o prompt e enviar prints das favoritas pro Kimi
 - [ ] Homologar fluxo de convite da Equipe (teste local)
-- [ ] Autorizar push dos 13 commits locais
+- [ ] **Configurar envio de e-mail (Resend) pra convites da Equipe:** criar conta em resend.com (plano free: 100 e-mails/dia), gerar API key e cadastrar `RESEND_API_KEY` no Vercel (Settings → Environment Variables). Enquanto não configurar, o app já mostra o link pra copiar e mandar por WhatsApp — funciona, só não envia e-mail automático. Opcional: `RESEND_FROM` com domínio verificado (senão usa o remetente de teste `onboarding@resend.dev`)
+- [ ] Autorizar push do commit `6dcce64` (fix do título dos termos no mobile)
 
 **Legadas (não esquecer):**
 - [ ] Remover env vars `APP_ID` e `OWNER_UNION_ID` do projeto Vercel `studioflow` (Settings → Environment Variables) — não são mais lidas pelo código. `APP_SECRET` e `DATABASE_URL` **permanecem**
