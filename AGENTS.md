@@ -182,12 +182,21 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | Skill | Quando usar |
 |-------|-------------|
 | **security** | Revisão de segurança, auditoria, vulnerabilidades |
-| **frontend-design** | Design de UI, componentes, landing pages |
+| **frontend-design** | Design de UI, componentes, landing pages — **princípios já consolidados na seção de Design acima** |
 | **scalability** | Problemas de performance, otimização |
 | **cost-reducer** | Reduzir custos de infraestrutura |
 | **researcher** | Pesquisa de mercado, concorrência, tecnologias |
-| **self-healing** | Debugging, resolver bugs complexos |
+| **self-healing** | Debugging, resolver bugs complexos — **erros e checklist já estão neste AGENTS.md** |
 | **customer-support** | Atendimento, FAQ, documentação de suporte |
+
+### Métodos das skills (consolidado 17/10/2026)
+O essencial de cada skill já está aqui; ler o SKILL.md completo só em trabalho aprofundado da área.
+
+- **security (revisão):** mapear a superfície de ataque (web, API, banco, infra) → aplicizar o checklist do ADR-005 → classificar cada achado por severidade (crítica: exposição de dados · alta: bypass de auth, injection · média: CSRF, rate limit ausente · baixa: headers, mensagens verbosas) → priorizar por risco real (probabilidade × impacto)
+- **scalability:** identificar o gargalo primeiro (CPU? DB? I/O? rede?) → propor a solução de MENOR impacto antes → definir métrica de sucesso antes de implementar → documentar limite atual vs. projeção
+- **cost-reducer:** antes de auditar, pedir contexto (provider, serviços em uso, volume/mês, custo atual) → mapear cada ponto de custo como problema + impacto em R$ + solução → priorizar por ROI (maior economia, menor esforço)
+- **researcher:** escopo (pergunta central, até 5 subtemas) → coleta (fontes primárias primeiro) → síntese (separar fatos de opiniões, consenso vs. divergência) → output estruturado por relevância pra decisão, terminando em recomendação acionável
+- **customer-support:** estrutura da resposta = reconhecimento (1-2 frases) → solução concreta → próximos passos → abertura para dúvidas. Evitar: desculpa vazia sem solução, culpar o cliente, resposta genérica, prometer o que não pode entregar
 
 ---
 
