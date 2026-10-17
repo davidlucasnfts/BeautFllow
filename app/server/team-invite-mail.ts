@@ -39,5 +39,8 @@ export async function sendInviteEmail({
     subject: `Convite para equipe — ${salonName}`,
     text: `Você foi convidado(a) para a equipe de ${salonName} no StudioFlow.\n\nCrie sua senha e entre no sistema por este link (válido por 7 dias):\n${link}\n\nSe não esperava este convite, ignore este e-mail.`,
   });
+  if (error) {
+    console.error("[team-invite] Falha ao enviar e-mail:", error);
+  }
   return !error;
 }
