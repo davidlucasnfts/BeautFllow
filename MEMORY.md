@@ -111,6 +111,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Card de horário de funcionamento redesenhado: dias da semana como botões-pílula toggle, seções agrupadas com ícones (funcionamento/pausa/agendamento online) | 17/10 |
 | Acessibilidade tipográfica no desktop: fonte base 18px apenas em telas ≥1024px (`@media` no `index.css`) — mobile mantém 16px; como o Tailwind usa rem, todo o app escala proporcionalmente (público mais velho) | 18/10 |
 | Fix erro intermitente "Failed query" (ex.: editar lançamento no Financeiro): causa era conexão ociosa morta pelo Supabase sendo reusada; adicionado `idle_timeout`/`max_lifetime`/`connect_timeout` na conexão (`server/queries/connection.ts`) — podia ocorrer em qualquer tela | 18/10 |
+| Fix real do erro ao editar lançamento no Financeiro: `commissionAmount` ia com vírgula ("0,00") sem conversão pro formato do banco em `FinancialFormDialog.tsx` (só `amount` era convertido); Postgres rejeita vírgula em numeric. Verificado que Serviços, Produtos, Checkout e Comissões já convertiam certo | 18/10 |
 
 ---
 

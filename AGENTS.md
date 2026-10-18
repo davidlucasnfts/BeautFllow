@@ -153,6 +153,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 015 | Aplicar regra de botões sem olhar o contexto visual (empilhou 3 botões minúsculos em card de linha) | 17/10/2026 | Regra do AGENTS é guia de cor/ação; layout e tamanho seguem os princípios de design + bom senso visual — antes de commitar UI, revisar como ficou a 375px |
 | 016 | `SelectItem` com `value=""` quebrou a tela (Radix não aceita string vazia — Configurações não abria) | 17/10/2026 | Opção "vazia" de Select usa sentinel (ex: `value="none"`) convertido no `onValueChange`; NUNCA `value=""` em SelectItem |
 | 017 | Investigar "Failed query" intermitente no código/DB quando a causa era o dev server do usuário rodando há dias com pool de conexões mortas | 18/10/2026 | Erro intermitente de query → testar via HTTP no processo real primeiro; após mudança em `server/`, avisar David pra **reiniciar o `npm run dev`** (HMR não reseta pool de conexão) |
+| 018 | Assumir que "Failed query" intermitente era só conexão — a causa real era `commissionAmount` com vírgula ("0,00") não convertida no submit de edição | 18/10/2026 | Ler a lista de `params` do erro do drizzle contando os valores: vírgula dentro de um valor BR aparece como separador e "cria" params a mais — isso denuncia valor monetário não convertido. Todo campo com `maskMoneyBR` DEVE ter `moneyBRToDot` no submit (conferir todos, não só o principal) |
 
 ### Checklist Obrigatório (executar antes de QUALQUER ação)
 
