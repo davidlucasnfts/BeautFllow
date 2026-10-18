@@ -4,7 +4,6 @@ import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -13,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Clock } from "lucide-react";
+import { CalendarDays, Clock, Coffee, Globe } from "lucide-react";
 import { toast } from "sonner";
 import {
   type ScheduleSettings,
@@ -123,88 +122,99 @@ export default function ScheduleSettingsCard() {
           Horário de funcionamento
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="grid gap-2">
-            <Label>Abre às</Label>
+      <CardContent className="space-y-6">
+        {/* Funcionamento */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-1.5">
+              <Label className="text-xs text-muted-foreground">Abre às</Label>
+              <Select
+                value={current.dayStart}
+                onValueChange={v => setForm({ ...current, dayStart: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  {START_OPTIONS.map(slot => (
+                    <SelectItem key={slot} value={slot}>
+                      {slot}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-1.5">
+              <Label className="text-xs text-muted-foreground">Fecha às</Label>
+              <Select
+                value={current.dayEnd}
+                onValueChange={v => setForm({ ...current, dayEnd: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  {END_OPTIONS.map(slot => (
+                    <SelectItem key={slot} value={slot}>
+                      {slot}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid gap-1.5">
+            <Label className="text-xs text-muted-foreground">
+              Intervalo entre horários
+            </Label>
             <Select
-              value={current.dayStart}
-              onValueChange={v => setForm({ ...current, dayStart: v })}
+              value={String(current.slotMinutes)}
+              onValueChange={v =>
+                setForm({ ...current, slotMinutes: Number(v) })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
               <SelectContent>
-                {START_OPTIONS.map(slot => (
-                  <SelectItem key={slot} value={slot}>
-                    {slot}
+                {SLOT_OPTIONS.map(opt => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div className="grid gap-2">
-            <Label>Fecha às</Label>
-            <Select
-              value={current.dayEnd}
-              onValueChange={v => setForm({ ...current, dayEnd: v })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                {END_OPTIONS.map(slot => (
-                  <SelectItem key={slot} value={slot}>
-                    {slot}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <p className="text-xs text-muted-foreground">
+              Ex: com 30 minutos, os clientes veem 13:00, 13:30, 14:00...
+            </p>
           </div>
         </div>
 
-        <div className="grid gap-2">
-          <Label>Intervalo entre horários</Label>
-          <Select
-            value={String(current.slotMinutes)}
-            onValueChange={v =>
-              setForm({ ...current, slotMinutes: Number(v) })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione" />
-            </SelectTrigger>
-            <SelectContent>
-              {SLOT_OPTIONS.map(opt => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">
-            Ex: com 30 minutos, os clientes veem 13:00, 13:30, 14:00...
-          </p>
-        </div>
-
-        <div className="grid gap-2">
-          <Label>Dias de funcionamento</Label>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
-            {WORK_DAYS.map(({ day, label }) => (
-              <div key={day} className="flex items-center gap-1.5">
-                <Checkbox
-                  id={`workday-${day}`}
-                  checked={current.workDays.includes(day)}
-                  onCheckedChange={checked => toggleWorkDay(day, checked === true)}
-                />
-                <Label
-                  htmlFor={`workday-${day}`}
-                  className="text-sm font-normal cursor-pointer"
+        {/* Dias de funcionamento */}
+        <div className="space-y-2.5 border-t border-slate-100 pt-5">
+          <div className="flex items-center gap-2">
+            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+            <p className="text-sm font-medium">Dias de funcionamento</p>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {WORK_DAYS.map(({ day, label }) => {
+              const active = current.workDays.includes(day);
+              return (
+                <button
+                  key={day}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => toggleWorkDay(day, !active)}
+                  className={`h-8 min-w-11 rounded-full border px-3 text-xs font-medium transition-colors ${
+                    active
+                      ? "border-transparent bg-primary text-primary-foreground"
+                      : "border-slate-200 bg-background text-muted-foreground hover:bg-slate-50 hover:text-foreground"
+                  }`}
                 >
                   {label}
-                </Label>
-              </div>
-            ))}
+                </button>
+              );
+            })}
           </div>
           <p className="text-xs text-muted-foreground">
             Dias desmarcados não aparecem na sua agenda nem no agendamento
@@ -212,59 +222,73 @@ export default function ScheduleSettingsCard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="grid gap-2">
-            <Label>Pausa começa</Label>
-            <Select
-              value={current.breakStart === "" ? "none" : current.breakStart}
-              onValueChange={v =>
-                setForm({ ...current, breakStart: v === "none" ? "" : v })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sem pausa" className="truncate" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Sem pausa</SelectItem>
-                {BREAK_OPTIONS.map(slot => (
-                  <SelectItem key={slot} value={slot}>
-                    {slot}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        {/* Pausa diária */}
+        <div className="space-y-3 border-t border-slate-100 pt-5">
+          <div className="flex items-center gap-2">
+            <Coffee className="h-4 w-4 text-muted-foreground" />
+            <p className="text-sm font-medium">Pausa diária (opcional)</p>
           </div>
-          <div className="grid gap-2">
-            <Label>Pausa termina</Label>
-            <Select
-              value={current.breakEnd === "" ? "none" : current.breakEnd}
-              onValueChange={v =>
-                setForm({ ...current, breakEnd: v === "none" ? "" : v })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sem pausa" className="truncate" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Sem pausa</SelectItem>
-                {BREAK_OPTIONS.map(slot => (
-                  <SelectItem key={slot} value={slot}>
-                    {slot}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2">
+            <div className="grid gap-1.5">
+              <Label className="text-xs text-muted-foreground">das</Label>
+              <Select
+                value={current.breakStart === "" ? "none" : current.breakStart}
+                onValueChange={v =>
+                  setForm({ ...current, breakStart: v === "none" ? "" : v })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Sem pausa" className="truncate" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Sem pausa</SelectItem>
+                  {BREAK_OPTIONS.map(slot => (
+                    <SelectItem key={slot} value={slot}>
+                      {slot}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <span className="pb-2.5 text-sm text-muted-foreground">às</span>
+            <div className="grid gap-1.5">
+              <Label className="text-xs text-muted-foreground">&nbsp;</Label>
+              <Select
+                value={current.breakEnd === "" ? "none" : current.breakEnd}
+                onValueChange={v =>
+                  setForm({ ...current, breakEnd: v === "none" ? "" : v })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Sem pausa" className="truncate" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Sem pausa</SelectItem>
+                  {BREAK_OPTIONS.map(slot => (
+                    <SelectItem key={slot} value={slot}>
+                      {slot}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+          <p className="text-xs text-muted-foreground">
+            Ex: 12:00 às 13:00 — nenhum horário é oferecido nesse intervalo.
+            Deixe "Sem pausa" nos dois se não houver.
+          </p>
         </div>
-        <p className="text-xs text-muted-foreground -mt-2">
-          Ex: 12:00 às 13:00 — nenhum horário é oferecido nesse intervalo.
-          Deixe "Sem pausa" nos dois se não houver.
-        </p>
 
-        <div className="border-t border-slate-100 pt-4 space-y-4">
-          <p className="text-sm font-medium">Agendamento online</p>
-          <div className="grid gap-2">
-            <Label>Antecedência mínima</Label>
+        {/* Agendamento online */}
+        <div className="space-y-4 border-t border-slate-100 pt-5">
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4 text-muted-foreground" />
+            <p className="text-sm font-medium">Agendamento online</p>
+          </div>
+          <div className="grid gap-1.5">
+            <Label className="text-xs text-muted-foreground">
+              Antecedência mínima
+            </Label>
             <Select
               value={String(current.minAdvanceMinutes)}
               onValueChange={v =>
@@ -287,8 +311,10 @@ export default function ScheduleSettingsCard() {
               a menos de 2 horas.
             </p>
           </div>
-          <div className="grid gap-2">
-            <Label>Até quantos dias à frente</Label>
+          <div className="grid gap-1.5">
+            <Label className="text-xs text-muted-foreground">
+              Até quantos dias à frente
+            </Label>
             <Select
               value={String(current.maxAdvanceDays)}
               onValueChange={v =>
@@ -331,7 +357,7 @@ export default function ScheduleSettingsCard() {
           </div>
         </div>
 
-        <div className="flex justify-end pt-2">
+        <div className="flex justify-end border-t border-slate-100 pt-4">
           <Button
             onClick={handleSave}
             disabled={updateMutation.isPending || !form}
