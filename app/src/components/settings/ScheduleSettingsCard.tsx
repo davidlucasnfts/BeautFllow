@@ -216,14 +216,16 @@ export default function ScheduleSettingsCard() {
           <div className="grid gap-2">
             <Label>Pausa começa</Label>
             <Select
-              value={current.breakStart}
-              onValueChange={v => setForm({ ...current, breakStart: v })}
+              value={current.breakStart === "" ? "none" : current.breakStart}
+              onValueChange={v =>
+                setForm({ ...current, breakStart: v === "none" ? "" : v })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sem pausa" className="truncate" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Sem pausa</SelectItem>
+                <SelectItem value="none">Sem pausa</SelectItem>
                 {BREAK_OPTIONS.map(slot => (
                   <SelectItem key={slot} value={slot}>
                     {slot}
@@ -235,14 +237,16 @@ export default function ScheduleSettingsCard() {
           <div className="grid gap-2">
             <Label>Pausa termina</Label>
             <Select
-              value={current.breakEnd}
-              onValueChange={v => setForm({ ...current, breakEnd: v })}
+              value={current.breakEnd === "" ? "none" : current.breakEnd}
+              onValueChange={v =>
+                setForm({ ...current, breakEnd: v === "none" ? "" : v })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sem pausa" className="truncate" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Sem pausa</SelectItem>
+                <SelectItem value="none">Sem pausa</SelectItem>
                 {BREAK_OPTIONS.map(slot => (
                   <SelectItem key={slot} value={slot}>
                     {slot}
