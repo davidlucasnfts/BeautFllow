@@ -13,7 +13,15 @@ export function getDb() {
   // Recria conexão se DATABASE_URL mudar (evita cache de senha antiga)
   if (!instance || currentDatabaseUrl !== env.databaseUrl) {
     currentDatabaseUrl = env.databaseUrl;
-    const client = postgres(env.databaseUrl, { prepare: false });
+    // idle_timeout: fecha conexões ociosas antes do Supabase encerrar,
+    // evitando erro "Failed query" ao reusar conexão morta (pooler mata
+    // conexões paradas; sem isso a 1ª query após um tempo parado falhava)
+    const client = postgres(env.databaseUrl, {
+      prepare: false,
+      idle_timeout: 20,
+      max_lifetime: 60 * 5,
+      connect_timeout: 30,
+    });
     instance = drizzle(client, { schema: fullSchema });
   }
   return instance;
