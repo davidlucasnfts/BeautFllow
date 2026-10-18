@@ -243,15 +243,18 @@ export default function Financial() {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-4">
-        <Card className="h-full">
+      {/* KPIs: 4 colunas só no xl — no "vale do tablet" (md-lg, com sidebar
+          aberta) 4 cards não cabem e o valor clipa; 2x2 respira. O valor
+          encolhe pra text-xl no xl pra nunca cortar "R$ 100.000,00" */}
+      <div className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
+        <Card className="h-full min-w-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ganho líquido</CardTitle>
             <TrendingUp className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
             {summary ? (
-              <div className="text-2xl font-bold">
+              <div className="text-2xl xl:text-xl 2xl:text-2xl font-bold whitespace-nowrap">
                 {formatBRL(summary.netIncome)}
               </div>
             ) : (
@@ -262,14 +265,14 @@ export default function Financial() {
             </p>
           </CardContent>
         </Card>
-        <Card className="h-full">
+        <Card className="h-full min-w-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Despesas</CardTitle>
             <TrendingDown className="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
             {summary ? (
-              <div className="text-2xl font-bold">
+              <div className="text-2xl xl:text-xl 2xl:text-2xl font-bold whitespace-nowrap">
                 {formatBRL(summary.totalExpenses)}
               </div>
             ) : (
@@ -277,14 +280,14 @@ export default function Financial() {
             )}
           </CardContent>
         </Card>
-        <Card className="h-full">
+        <Card className="h-full min-w-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Reembolsos</CardTitle>
             <TrendingDown className="h-4 w-4 text-rose-500" />
           </CardHeader>
           <CardContent>
             {summary ? (
-              <div className="text-2xl font-bold">
+              <div className="text-2xl xl:text-xl 2xl:text-2xl font-bold whitespace-nowrap">
                 {formatBRL(summary.totalRefunds)}
               </div>
             ) : (
@@ -292,7 +295,7 @@ export default function Financial() {
             )}
           </CardContent>
         </Card>
-        <Card className="h-full">
+        <Card className="h-full min-w-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total Comissões
@@ -301,7 +304,7 @@ export default function Financial() {
           </CardHeader>
           <CardContent>
             {summary ? (
-              <div className="text-2xl font-bold">
+              <div className="text-2xl xl:text-xl 2xl:text-2xl font-bold whitespace-nowrap">
                 {formatBRL(summary.totalCommission)}
               </div>
             ) : (

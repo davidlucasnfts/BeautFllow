@@ -168,8 +168,8 @@ export default function ProductsList({
 
   return (
     <>
-      {/* Mobile: lista (padrão Fila do Dia) */}
-      <div className="md:hidden divide-y rounded-lg border">
+      {/* Mobile/tablet: lista (padrão Fila do Dia) — tabela só no desktop largo */}
+      <div className="lg:hidden divide-y rounded-lg border">
         {products.map(p => {
           const expanded = expandedId === p.id;
           return (
@@ -220,8 +220,8 @@ export default function ProductsList({
         })}
       </div>
 
-      {/* Desktop: tabela — 5 colunas, clique expande faixa de detalhe */}
-      <div className="hidden md:block">
+      {/* Desktop largo: tabela — 5 colunas, clique expande faixa de detalhe */}
+      <div className="hidden lg:block">
         <Table>
           <TableHeader>
             <TableRow>

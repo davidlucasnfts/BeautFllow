@@ -71,8 +71,9 @@ function formatBRL(value: string | number) {
 
 const PER_PAGE = 20;
 
-/** Lista de lançamentos: tabela no desktop, lista estilo Fila do Dia no mobile
- *  (tabela estoura a largura no celular e esconde o valor — padrão do app). */
+/** Lista de lançamentos: tabela no desktop largo, lista estilo Fila do Dia
+ *  no mobile E tablet (tabela de 6 colunas fica espremida com a sidebar
+ *  aberta até ~1024px — padrão do app: touch recebe lista). */
 export default function FinancialRecordsList({
   isLoading,
   isError,
@@ -246,8 +247,8 @@ export default function FinancialRecordsList({
           </div>
         ) : (
           <>
-            {/* Mobile: lista com valor visível (padrão Fila do Dia) */}
-            <div className="md:hidden divide-y rounded-lg border">
+            {/* Mobile/tablet: lista com valor visível (padrão Fila do Dia) */}
+            <div className="lg:hidden divide-y rounded-lg border">
               {pageRecords.map(r => {
                 const expanded = selectedId === r.id;
                 return (
@@ -304,8 +305,8 @@ export default function FinancialRecordsList({
               })}
             </div>
 
-            {/* Desktop: tabela */}
-            <div className="hidden md:block">
+            {/* Desktop largo: tabela */}
+            <div className="hidden lg:block">
               <Table>
                 <TableHeader>
                   <TableRow>
