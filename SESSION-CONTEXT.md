@@ -53,7 +53,7 @@
 **Novas desta sessão:**
 - [ ] Gerar logos na IA (Ideogram/Looka) com o prompt e enviar prints das favoritas pro Kimi
 - [ ] Homologar fluxo de convite da Equipe (teste local: convidar → reenviar/copiar link → aceitar em aba anônima)
-- [ ] **Configurar envio de e-mail (Resend) pra convites da Equipe:** criar conta em resend.com (plano free: 100 e-mails/dia), gerar API key e cadastrar `RESEND_API_KEY` no Vercel (Settings → Environment Variables). Enquanto não configurar, o app já mostra o link pra copiar e mandar por WhatsApp — funciona, só não envia e-mail automático. Opcional: `RESEND_FROM` com domínio verificado (senão usa o remetente de teste `onboarding@resend.dev`)
+- [x] **Configurar envio de e-mail (Resend) pra convites da Equipe** — FEITO em 17/10: `RESEND_API_KEY` cadastrada na Vercel. **Limitação conhecida:** sem domínio verificado, o Resend (modo teste) só entrega e-mails para o próprio e-mail da conta — convites para terceiros caem na caixinha âmbar com link pra copiar (fluxo WhatsApp). **Pendente quando comprar o domínio:** verificar `studioflow.com.br` no Resend (criar registros DNS, ~10 min) e configurar `RESEND_FROM=StudioFlow <contato@studioflow.com.br>`
 
 **Legadas (não esquecer):**
 - [ ] Remover env vars `APP_ID` e `OWNER_UNION_ID` do projeto Vercel `studioflow` (Settings → Environment Variables) — não são mais lidas pelo código. `APP_SECRET` e `DATABASE_URL` **permanecem**
