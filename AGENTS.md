@@ -152,6 +152,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | 014 | Resolver tRPC confiava no `salonId` do input sem validar vínculo do usuário (IDOR — qualquer conta acessava qualquer salão, LGPD) | 26/09/2026 | **TODO** resolver com `salonId` no input deve começar com `await assertSalonMember(ctx.user.id, input.salonId)` (ou `assertSalonAdmin` em operações administrativas) — `app/server/lib/tenant.ts`. Nunca confiar em identificador de tenant vindo do cliente |
 | 015 | Aplicar regra de botões sem olhar o contexto visual (empilhou 3 botões minúsculos em card de linha) | 17/10/2026 | Regra do AGENTS é guia de cor/ação; layout e tamanho seguem os princípios de design + bom senso visual — antes de commitar UI, revisar como ficou a 375px |
 | 016 | `SelectItem` com `value=""` quebrou a tela (Radix não aceita string vazia — Configurações não abria) | 17/10/2026 | Opção "vazia" de Select usa sentinel (ex: `value="none"`) convertido no `onValueChange`; NUNCA `value=""` em SelectItem |
+| 017 | Investigar "Failed query" intermitente no código/DB quando a causa era o dev server do usuário rodando há dias com pool de conexões mortas | 18/10/2026 | Erro intermitente de query → testar via HTTP no processo real primeiro; após mudança em `server/`, avisar David pra **reiniciar o `npm run dev`** (HMR não reseta pool de conexão) |
 
 ### Checklist Obrigatório (executar antes de QUALQUER ação)
 
