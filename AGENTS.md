@@ -263,6 +263,7 @@ O essencial de cada skill já está aqui; ler o SKILL.md completo só em trabalh
 - **Radix UI** como base de acessibilidade
 - **Lucide React** para ícones
 - **Fonte base 18px só no desktop** (`@media (min-width: 1024px) { html { font-size: 112.5% } }` no `src/index.css`, 18/10/2026): acessibilidade para público mais velho. Mobile fica em 16px (já estava bom). Como o Tailwind usa rem, tudo escala junto — **não reduzir** esse valor e não contornar com px fixos em textos
+- **"Vale do tablet" (768–1280px) — regra de breakpoint (18/10/2026):** com a sidebar aberta, o conteúdo fica com ~500–1000px. Por isso: **grades de 4 colunas só a partir de `xl`** (nunca `md:grid-cols-4` em página autenticada), **tabela só a partir de `lg`** (abaixo disso usa a lista de cards estilo Fila do Dia), cards de grade sempre com `min-w-0`, e valores monetários de KPI com `whitespace-nowrap` + tamanho fluido (`text-2xl xl:text-xl 2xl:text-2xl`) — dinheiro NUNCA pode clipar nem truncar
 
 ### Barra de Páginas com Lista + Período (padrão do sistema, 19/09/2026)
 Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a mesma barra:
