@@ -68,6 +68,13 @@
 }
 
 @layer base {
+  /* Acessibilidade: base 18px (padrao dos navegadores e 16px).
+     Como o Tailwind usa rem em tudo, isso escala textos, botoes
+     e espacamentos proporcionalmente em todas as telas. */
+  html {
+    font-size: 112.5%;
+  }
+
   * {
     @apply border-border;
   }
