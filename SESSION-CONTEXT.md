@@ -1,13 +1,15 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 17/10/2026 (lote completo: consentimento + reenvio de convite + fixes mobile e botões — TUDO PUSHADO)
+> **Atualizado em:** 18/10/2026 (lote 17/10b + 18/10 PUSHADO: Configurações v1, fonte 18px desktop, fixes Financeiro/conexão)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md`, não no histórico do chat (chat longo deixa o Kimi lento; regra nova no AGENTS.md).
 
 ---
 
-## Resumo da sessão (04/10 → 15/10) — Marca aplicada + Financeiro completo + polimentos
+## Resumo da sessão (18/10) — Push completo + fixes Financeiro
 
-**Lote 17/10b — Configurações v1 (commits `b62cd98`→`4e6b974`, LOCAIS, push pendente):** proposta `docs/mockups/proposta-melhorias-configuracoes.html`. Sem migration (tudo em `salons.settings` JSON): dias de funcionamento (`workDays`), pausa/almoço (`breakStart`/`breakEnd`), antecedência mín/máx do agendamento online (só no público), toggle "pausar agendamento online" (página pública mostra aviso + CTA WhatsApp), troca de segmento com reset de tema. Settings.tsx dividida em cards. **Ficaram pra depois (anotados abaixo nas pendências):** logo (item 3), WhatsApp separado + Instagram (7), lembretes automáticos (8), CNPJ/plano (9).
+**PUSH em 18/10 (`072ccb1`→`4faf262`, 17 commits):** Configurações v1 completa, fix Select vazio, redesign do card de horário (dias como botões-pílula), fonte base 18px só no desktop (acessibilidade), fix conexão ociosa Supabase (`idle_timeout` em `server/queries/connection.ts`) e **fix real do erro ao editar lançamento**: `commissionAmount` ia com vírgula sem conversão em `FinancialFormDialog.tsx` (erro 018 no AGENTS.md + regra global no `MestreProjects.md` §3.1).
+
+**Lote 17/10b — Configurações v1 (commits `b62cd98`→`4e6b974`):** proposta `docs/mockups/proposta-melhorias-configuracoes.html`. Sem migration (tudo em `salons.settings` JSON): dias de funcionamento (`workDays`), pausa/almoço (`breakStart`/`breakEnd`), antecedência mín/máx do agendamento online (só no público), toggle "pausar agendamento online" (página pública mostra aviso + CTA WhatsApp), troca de segmento com reset de tema. Settings.tsx dividida em cards. **Ficaram pra depois (anotados abaixo nas pendências):** logo (item 3), WhatsApp separado + Instagram (7), lembretes automáticos (8), CNPJ/plano (9).
 
 **Lote 17/10 — Contraste + fix mobile + reenvio de convite (commits `d412131`→`82245fa`):**
 - Fix contraste: textos secundários dos comboboxes herdam cor do contexto; `--muted-foreground` mais escuro (45%→32%)
@@ -54,7 +56,8 @@
 
 **Novas desta sessão:**
 - [ ] **Configurações — ficou pra depois (da proposta `docs/mockups/proposta-melhorias-configuracoes.html`):** ① upload de logo do estabelecimento (coluna `logoUrl` já existe — precisa criar bucket no Supabase Storage + exibir na página pública e header do app); ② WhatsApp público separado do telefone + link de Instagram na página pública; ③ lembretes automáticos de WhatsApp D-1/D-0 (projeto maior: Vercel Cron + integração WhatsApp); ④ CNPJ/razão social + desativar salão + ver plano atual (quando entrar cobrança/NF)
-- [ ] Autorizar push dos commits locais `b62cd98`→`4e6b974` (Configurações v1)
+- [ ] ~~Autorizar push dos commits locais~~ FEITO em 18/10 — tudo em produção (17 commits)
+- [ ] **Homologar em produção após push 18/10:** editar lançamento no Financeiro (bug da vírgula), Configurações (dias/pausa/segmento), fonte maior no desktop
 - [ ] Gerar logos na IA (Ideogram/Looka) com o prompt e enviar prints das favoritas pro Kimi
 - [ ] Homologar fluxo de convite da Equipe (teste local: convidar → reenviar/copiar link → aceitar em aba anônima)
 - [x] **Configurar envio de e-mail (Resend) pra convites da Equipe** — FEITO em 17/10: `RESEND_API_KEY` cadastrada na Vercel. **Limitação conhecida:** sem domínio verificado, o Resend (modo teste) só entrega e-mails para o próprio e-mail da conta — convites para terceiros caem na caixinha âmbar com link pra copiar (fluxo WhatsApp). **Pendente quando comprar o domínio:** verificar `studioflow.com.br` no Resend (criar registros DNS, ~10 min) e configurar `RESEND_FROM=StudioFlow <contato@studioflow.com.br>`
