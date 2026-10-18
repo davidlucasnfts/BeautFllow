@@ -260,7 +260,7 @@ O essencial de cada skill já está aqui; ler o SKILL.md completo só em trabalh
 - **Tailwind CSS** para estilização
 - **Radix UI** como base de acessibilidade
 - **Lucide React** para ícones
-- **Fonte base 18px** (`html { font-size: 112.5% }` no `src/index.css`, 18/10/2026): acessibilidade para público mais velho. Como o Tailwind usa rem, tudo escala junto — **não reduzir** esse valor e não contornar com px fixos em textos
+- **Fonte base 18px só no desktop** (`@media (min-width: 1024px) { html { font-size: 112.5% } }` no `src/index.css`, 18/10/2026): acessibilidade para público mais velho. Mobile fica em 16px (já estava bom). Como o Tailwind usa rem, tudo escala junto — **não reduzir** esse valor e não contornar com px fixos em textos
 
 ### Barra de Páginas com Lista + Período (padrão do sistema, 19/09/2026)
 Toda tela com visão Dia/Semana/Mês (Agendamento, Financeiro, e futuras) usa a mesma barra:

@@ -109,7 +109,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Reenviar convite da equipe (proposta aprovada `docs/mockups/proposta-reenviar-convite.html`): `team.resend` (mesmo token/link, valida pendente/não expirado, audit log); botões "Reenviar" e "Copiar link" na lista de pendentes (`PendingInvites.tsx`); e-mail extraído pra `team-invite-mail.ts`; fluxos públicos movidos pra `invite-router.ts` (regra 400 linhas) | 17/10 |
 | Configurações v1 (proposta aprovada `docs/mockups/proposta-melhorias-configuracoes.html`, sem migration — tudo no JSON `salons.settings`): dias de funcionamento (checkboxes 7 dias, `workDays`), pausa/almoço bloqueando slots (`breakStart`/`breakEnd`), antecedência mínima e máxima do agendamento online (`minAdvanceMinutes`/`maxAdvanceDays`, só no público), toggle "pausar agendamento online" (`onlineBookingPaused`, página pública mostra aviso com CTA WhatsApp), troca de segmento (salão/barbearia/estética) com reset de tema; regras aplicadas no público (`public-router.ts`) e na agenda interna; Settings.tsx dividido em cards (`ScheduleSettingsCard.tsx`, `AppearanceCard.tsx`) | 17/10 |
 | Card de horário de funcionamento redesenhado: dias da semana como botões-pílula toggle, seções agrupadas com ícones (funcionamento/pausa/agendamento online) | 17/10 |
-| Acessibilidade tipográfica global: fonte base 18px (`html { font-size: 112.5% }` no `index.css`) — como o Tailwind usa rem, todo o app escala proporcionalmente (público mais velho) | 18/10 |
+| Acessibilidade tipográfica no desktop: fonte base 18px apenas em telas ≥1024px (`@media` no `index.css`) — mobile mantém 16px; como o Tailwind usa rem, todo o app escala proporcionalmente (público mais velho) | 18/10 |
 
 ---
 
