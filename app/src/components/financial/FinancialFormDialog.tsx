@@ -114,7 +114,12 @@ export default function FinancialFormDialog({
       toast.error("Selecione o cliente do registro.");
       return;
     }
-    onSubmit({ ...form, amount: moneyBRToDot(form.amount) });
+    // amount e comissão estão em formato BR (vírgula) — converter pro banco
+    onSubmit({
+      ...form,
+      amount: moneyBRToDot(form.amount),
+      commissionAmount: moneyBRToDot(form.commissionAmount),
+    });
   }
 
   const isExpense = form.type === "expense";
