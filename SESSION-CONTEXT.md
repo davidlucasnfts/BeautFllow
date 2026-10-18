@@ -7,6 +7,8 @@
 
 ## Resumo da sessão (04/10 → 15/10) — Marca aplicada + Financeiro completo + polimentos
 
+**Lote 17/10b — Configurações v1 (commits `b62cd98`→`4e6b974`, LOCAIS, push pendente):** proposta `docs/mockups/proposta-melhorias-configuracoes.html`. Sem migration (tudo em `salons.settings` JSON): dias de funcionamento (`workDays`), pausa/almoço (`breakStart`/`breakEnd`), antecedência mín/máx do agendamento online (só no público), toggle "pausar agendamento online" (página pública mostra aviso + CTA WhatsApp), troca de segmento com reset de tema. Settings.tsx dividida em cards. **Ficaram pra depois (anotados abaixo nas pendências):** logo (item 3), WhatsApp separado + Instagram (7), lembretes automáticos (8), CNPJ/plano (9).
+
 **Lote 17/10 — Contraste + fix mobile + reenvio de convite (commits `d412131`→`82245fa`):**
 - Fix contraste: textos secundários dos comboboxes herdam cor do contexto; `--muted-foreground` mais escuro (45%→32%)
 - Fix mobile: card de termo estourava a tela (título e conteúdo) — `min-w-0` + `break-words` no padrão do ServiceCard
@@ -51,6 +53,8 @@
 ## Decisões pendentes / Ações manuais (David)
 
 **Novas desta sessão:**
+- [ ] **Configurações — ficou pra depois (da proposta `docs/mockups/proposta-melhorias-configuracoes.html`):** ① upload de logo do estabelecimento (coluna `logoUrl` já existe — precisa criar bucket no Supabase Storage + exibir na página pública e header do app); ② WhatsApp público separado do telefone + link de Instagram na página pública; ③ lembretes automáticos de WhatsApp D-1/D-0 (projeto maior: Vercel Cron + integração WhatsApp); ④ CNPJ/razão social + desativar salão + ver plano atual (quando entrar cobrança/NF)
+- [ ] Autorizar push dos commits locais `b62cd98`→`4e6b974` (Configurações v1)
 - [ ] Gerar logos na IA (Ideogram/Looka) com o prompt e enviar prints das favoritas pro Kimi
 - [ ] Homologar fluxo de convite da Equipe (teste local: convidar → reenviar/copiar link → aceitar em aba anônima)
 - [x] **Configurar envio de e-mail (Resend) pra convites da Equipe** — FEITO em 17/10: `RESEND_API_KEY` cadastrada na Vercel. **Limitação conhecida:** sem domínio verificado, o Resend (modo teste) só entrega e-mails para o próprio e-mail da conta — convites para terceiros caem na caixinha âmbar com link pra copiar (fluxo WhatsApp). **Pendente quando comprar o domínio:** verificar `studioflow.com.br` no Resend (criar registros DNS, ~10 min) e configurar `RESEND_FROM=StudioFlow <contato@studioflow.com.br>`

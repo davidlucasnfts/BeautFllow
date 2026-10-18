@@ -107,6 +107,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Fix contraste: telefone/preço nos comboboxes herdam cor do contexto (`opacity-60`), `--muted-foreground` mais escuro no tema claro (45%→32%) | 17/10 |
 | Fix mobile: texto e título do card de termo estouravam a largura (`min-w-0` + `break-words`, mesmo padrão do ServiceCard) | 17/10 |
 | Reenviar convite da equipe (proposta aprovada `docs/mockups/proposta-reenviar-convite.html`): `team.resend` (mesmo token/link, valida pendente/não expirado, audit log); botões "Reenviar" e "Copiar link" na lista de pendentes (`PendingInvites.tsx`); e-mail extraído pra `team-invite-mail.ts`; fluxos públicos movidos pra `invite-router.ts` (regra 400 linhas) | 17/10 |
+| Configurações v1 (proposta aprovada `docs/mockups/proposta-melhorias-configuracoes.html`, sem migration — tudo no JSON `salons.settings`): dias de funcionamento (checkboxes 7 dias, `workDays`), pausa/almoço bloqueando slots (`breakStart`/`breakEnd`), antecedência mínima e máxima do agendamento online (`minAdvanceMinutes`/`maxAdvanceDays`, só no público), toggle "pausar agendamento online" (`onlineBookingPaused`, página pública mostra aviso com CTA WhatsApp), troca de segmento (salão/barbearia/estética) com reset de tema; regras aplicadas no público (`public-router.ts`) e na agenda interna; Settings.tsx dividido em cards (`ScheduleSettingsCard.tsx`, `AppearanceCard.tsx`) | 17/10 |
 
 ---
 
