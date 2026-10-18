@@ -22,6 +22,7 @@ import CheckoutDialog, {
 } from "@/components/appointments/CheckoutDialog";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import { useAppointmentForm } from "@/components/appointments/useAppointmentForm";
+import { defaultScheduleSettings } from "@contracts/constants";
 import {
   generateTimeSlots,
   filterAvailableSlots,
@@ -204,7 +205,22 @@ export default function Appointments() {
     const cutoff = form.appointmentDate
       ? pastCutoffForDate(form.appointmentDate)
       : null;
-    return !cutoff || slot >= cutoff;
+    if (cutoff && slot < cutoff) return false;
+    // dia fora do funcionamento ou dentro da pausa/almoço: sem slots
+    const scheduleSettings = salon?.schedule ?? defaultScheduleSettings;
+    if (form.appointmentDate) {
+      const day = new Date(`${form.appointmentDate}T12:00:00`).getDay();
+      if (!scheduleSettings.workDays.includes(day)) return false;
+    }
+    if (
+      scheduleSettings.breakStart &&
+      scheduleSettings.breakEnd &&
+      slot >= scheduleSettings.breakStart &&
+      slot < scheduleSettings.breakEnd
+    ) {
+      return false;
+    }
+    return true;
   });
 
   const createMutation = trpc.appointment.create.useMutation({

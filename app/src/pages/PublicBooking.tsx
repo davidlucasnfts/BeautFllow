@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarCheck, Clock, MapPin, Phone } from "lucide-react";
+import { CalendarCheck, Clock, Phone } from "lucide-react";
 import { toast } from "sonner";
 import {
   getTheme,
@@ -27,17 +27,13 @@ import {
   dateBRToISO,
   moneyDotToBR,
 } from "@/lib/input-masks";
-import DatePicker from "@/components/DatePicker";
 import { generateTimeSlots, filterAvailableSlots } from "@/lib/time-slots";
-
-type BookResult = {
-  salonName: string;
-  serviceName: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  clientName: string;
-};
+import PublicBookingHeader from "@/components/public-booking/PublicBookingHeader";
+import PublicBookingPaused from "@/components/public-booking/PublicBookingPaused";
+import PublicBookingResult, {
+  type BookResult,
+} from "@/components/public-booking/PublicBookingResult";
+import BookingDateTimeFields from "@/components/public-booking/BookingDateTimeFields";
 
 export default function PublicBooking() {
   const { slug } = useParams<{ slug: string }>();
@@ -112,9 +108,39 @@ export default function PublicBooking() {
     return new Date(`${isoDate}T${slot}:00`) >= nowBR;
   });
 
+  // Regras do estabelecimento: antecedência mínima e pausa/almoço
+  // (o backend já filtra no fluxo "sem preferência" — aqui cobre o fluxo
+  //  com profissional escolhido, com os mesmos dados)
+  const schedule = data?.salon.schedule;
+  const slotsRespectingRules = schedule
+    ? availableSlots.filter(slot => {
+        const start = new Date(`${isoDate}T${slot}:00`);
+        if (start < new Date(nowBR.getTime() + schedule.minAdvanceMinutes * 60_000))
+          return false;
+        if (
+          schedule.breakStart &&
+          schedule.breakEnd &&
+          slot >= schedule.breakStart &&
+          slot < schedule.breakEnd
+        )
+          return false;
+        return true;
+      })
+    : availableSlots;
+
+  // dia fora do funcionamento (ex.: domingo fechado)
+  const closedDay =
+    !!schedule &&
+    !!isoDate &&
+    !schedule.workDays.includes(new Date(`${isoDate}T12:00:00`).getDay());
+
+  // limite de antecedência máxima no seletor de data
+  const maxBookingDate = new Date(nowBR);
+  if (schedule) maxBookingDate.setDate(maxBookingDate.getDate() + schedule.maxAdvanceDays);
+
   // horário efetivo: se o escolhido saiu da lista (trocou serviço/profissional/
   // data), trata como não escolhido — impede enviar horário inválido ao backend
-  const effectiveStartTime = availableSlots.includes(startTime)
+  const effectiveStartTime = slotsRespectingRules.includes(startTime)
     ? startTime
     : "";
 
@@ -193,78 +219,30 @@ export default function PublicBooking() {
     );
   }
 
+  // agendamento online pausado (férias/reforma): link continua ativo,
+  // mas ninguém consegue agendar
+  if (data.salon.schedule.onlineBookingPaused) {
+    return <PublicBookingPaused salon={data.salon} primaryColor={palette.primary} />;
+  }
+
   if (result) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border p-8 text-center space-y-4">
-          <div
-            className="mx-auto h-14 w-14 rounded-full flex items-center justify-center"
-            style={{ backgroundColor: palette.primary + "22" }}
-          >
-            <CalendarCheck
-              className="h-7 w-7"
-              style={{ color: palette.primary }}
-            />
-          </div>
-          <h1 className="text-xl font-bold text-slate-800">
-            Agendamento enviado!
-          </h1>
-          <p className="text-slate-500 text-sm">
-            <strong>{result.salonName}</strong> vai confirmar seu horário pelo
-            WhatsApp.
-          </p>
-          <div className="rounded-lg bg-slate-50 p-4 text-sm text-left space-y-2">
-            <p>
-              <strong>Serviço:</strong> {result.serviceName}
-            </p>
-            <p>
-              <strong>Data:</strong>{" "}
-              {result.date.split("-").reverse().join("/")}
-            </p>
-            <p>
-              <strong>Horário:</strong> {result.startTime} às {result.endTime}
-            </p>
-            <p>
-              <strong>Nome:</strong> {result.clientName}
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => setResult(null)}
-          >
-            Fazer outro agendamento
-          </Button>
-        </div>
-      </div>
+      <PublicBookingResult
+        result={result}
+        primaryColor={palette.primary}
+        onReset={() => setResult(null)}
+      />
     );
   }
 
   return (
     <div className="min-h-screen bg-slate-50 py-8 px-4">
       <div className="mx-auto max-w-md space-y-6">
-        <header className="text-center space-y-2">
-          <h1
-            className="text-2xl font-bold tracking-tight"
-            style={{ color: palette.primary }}
-          >
-            {data.salon.name}
-          </h1>
-          {(data.salon.address || data.salon.city) && (
-            <p className="text-sm text-slate-500 flex items-center justify-center gap-1">
-              <MapPin className="h-3.5 w-3.5" />
-              {[data.salon.address, data.salon.city, data.salon.state]
-                .filter(Boolean)
-                .join(", ")}
-            </p>
-          )}
-          {data.salon.phone && (
-            <p className="text-sm text-slate-500 flex items-center justify-center gap-1">
-              <Phone className="h-3.5 w-3.5" /> {data.salon.phone}
-            </p>
-          )}
-          <p className="text-slate-600">Agende seu horário abaixo</p>
-        </header>
+        <PublicBookingHeader
+          salon={data.salon}
+          primaryColor={palette.primary}
+          tagline="Agende seu horário abaixo"
+        />
 
         <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-5">
           {data.services.length === 0 ? (
@@ -327,53 +305,20 @@ export default function PublicBooking() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Data *</Label>
-                  <DatePicker
-                    value={date}
-                    onChange={v => {
-                      setDate(v);
-                      setStartTime(""); // horários do dia mudam
-                    }}
-                    placeholder="Escolha a data"
-                    fromDate={new Date()}
-                    minDate={new Date()}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Horário *</Label>
-                  <Select
-                    value={effectiveStartTime}
-                    onValueChange={setStartTime}
-                    disabled={!serviceId || !isoDate}
-                  >
-                    <SelectTrigger>
-                      <SelectValue
-                        className="truncate"
-                        placeholder={
-                          !serviceId
-                            ? "Escolha o serviço"
-                            : !isoDate
-                              ? "Informe a data"
-                              : isFetchingSlots
-                                ? "Carregando..."
-                                : availableSlots.length === 0
-                                  ? "Sem horários"
-                                  : "Selecione"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableSlots.map(slot => (
-                        <SelectItem key={slot} value={slot}>
-                          {slot}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+              <BookingDateTimeFields
+                date={date}
+                onDateChange={v => {
+                  setDate(v);
+                  setStartTime(""); // horários do dia mudam
+                }}
+                effectiveStartTime={effectiveStartTime}
+                onStartTimeChange={setStartTime}
+                hasService={!!serviceId}
+                isFetchingSlots={isFetchingSlots}
+                slots={slotsRespectingRules}
+                closedDay={closedDay}
+                maxBookingDate={maxBookingDate}
+              />
 
               <div className="grid gap-2">
                 <Label>Seu nome *</Label>
