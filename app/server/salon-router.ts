@@ -67,9 +67,29 @@ export const salonRouter = createRouter({
     .input(
       z.object({
         id: z.number(),
-        dayStart: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
-        dayEnd: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
-        slotMinutes: z.number().int().min(15).max(120),
+        dayStart: z
+          .string()
+          .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+          .optional(),
+        dayEnd: z
+          .string()
+          .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+          .optional(),
+        slotMinutes: z.number().int().min(15).max(120).optional(),
+        workDays: z.array(z.number().int().min(0).max(6)).min(1).max(7).optional(),
+        breakStart: z
+          .string()
+          .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+          .or(z.literal(""))
+          .optional(),
+        breakEnd: z
+          .string()
+          .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+          .or(z.literal(""))
+          .optional(),
+        minAdvanceMinutes: z.number().int().min(0).max(1440).optional(),
+        maxAdvanceDays: z.number().int().min(1).max(365).optional(),
+        onlineBookingPaused: z.boolean().optional(),
         theme: z.string().optional(),
         clientStatus: z
           .object({
@@ -83,8 +103,9 @@ export const salonRouter = createRouter({
     )
     .mutation(async ({ input, ctx }) => {
       await assertSalonOwner(ctx.user.id, input.id);
-      const { id, theme, clientStatus, ...schedule } = input;
-      // merge: preserva chaves desconhecidas já salvas em settings
+      const { id, theme, clientStatus, ...rest } = input;
+      // merge: preserva chaves desconhecidas já salvas em settings; cada
+      // seção da tela de Configurações salva só as próprias chaves
       const current = await getSalonById(id);
       let existing: Record<string, unknown> = {};
       try {
@@ -93,14 +114,26 @@ export const salonRouter = createRouter({
       } catch {
         existing = {};
       }
-      return updateSalon(id, {
-        settings: JSON.stringify({
-          ...existing,
-          ...schedule,
-          ...(theme ? { theme } : {}),
-          ...(clientStatus ? { clientStatus } : {}),
-        }),
-      });
+      const merged: Record<string, unknown> = { ...existing };
+      for (const [key, value] of Object.entries(rest)) {
+        if (value !== undefined) merged[key] = value;
+      }
+      if (theme) merged.theme = theme;
+      if (clientStatus) merged.clientStatus = clientStatus;
+      // valida pausa contra o resultado do merge (breakEnd > breakStart)
+      const schedule = parseScheduleSettings(JSON.stringify(merged));
+      if (
+        schedule.breakStart &&
+        schedule.breakEnd &&
+        schedule.breakEnd <= schedule.breakStart
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "O fim da pausa deve ser depois do início. Deixe os dois campos vazios se não houver pausa.",
+        });
+      }
+      return updateSalon(id, { settings: JSON.stringify(merged) });
     }),
 
   update: authedQuery

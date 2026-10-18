@@ -29,12 +29,30 @@ export interface ScheduleSettings {
   dayEnd: string;
   /** Espaço entre horários, em minutos (30 ou 60) */
   slotMinutes: number;
+  /** Dias de funcionamento (0 = domingo ... 6 = sábado) */
+  workDays: number[];
+  /** Início da pausa/almoço ("HH:mm"); "" = sem pausa */
+  breakStart: string;
+  /** Fim da pausa/almoço ("HH:mm"); "" = sem pausa */
+  breakEnd: string;
+  /** Antecedência mínima do agendamento online, em minutos (0 = sem limite) */
+  minAdvanceMinutes: number;
+  /** Até quantos dias à frente o cliente pode agendar online */
+  maxAdvanceDays: number;
+  /** true = link público continua ativo, mas ninguém consegue agendar */
+  onlineBookingPaused: boolean;
 }
 
 export const defaultScheduleSettings: ScheduleSettings = {
   dayStart: Schedule.dayStart,
   dayEnd: Schedule.dayEnd,
   slotMinutes: Schedule.slotMinutes,
+  workDays: [1, 2, 3, 4, 5, 6],
+  breakStart: "",
+  breakEnd: "",
+  minAdvanceMinutes: 0,
+  maxAdvanceDays: 60,
+  onlineBookingPaused: false,
 };
 
 // Configuração dos status automáticos dos clientes (salva em salons.settings como JSON)
@@ -105,28 +123,57 @@ export function parseThemeSettings(
 export function parseScheduleSettings(
   raw: string | null | undefined
 ): ScheduleSettings {
+  const d = defaultScheduleSettings;
   try {
     const parsed = raw ? JSON.parse(raw) : null;
-    if (!parsed || typeof parsed !== "object") return defaultScheduleSettings;
+    if (!parsed || typeof parsed !== "object") return d;
     const s = parsed as Partial<ScheduleSettings>;
+    const workDays = Array.isArray(s.workDays)
+      ? Array.from(
+          new Set(
+            s.workDays.filter(
+              (v): v is number =>
+                typeof v === "number" && Number.isInteger(v) && v >= 0 && v <= 6
+            )
+          )
+        )
+      : [];
+    const timeOrEmpty = (v: unknown): string =>
+      typeof v === "string" && TIME_REGEX.test(v) ? v : "";
     return {
       dayStart:
         typeof s.dayStart === "string" && TIME_REGEX.test(s.dayStart)
           ? s.dayStart
-          : defaultScheduleSettings.dayStart,
+          : d.dayStart,
       dayEnd:
         typeof s.dayEnd === "string" && TIME_REGEX.test(s.dayEnd)
           ? s.dayEnd
-          : defaultScheduleSettings.dayEnd,
+          : d.dayEnd,
       slotMinutes:
         typeof s.slotMinutes === "number" &&
         s.slotMinutes >= 15 &&
         s.slotMinutes <= 120
           ? Math.floor(s.slotMinutes)
-          : defaultScheduleSettings.slotMinutes,
+          : d.slotMinutes,
+      workDays: workDays.length > 0 ? workDays : d.workDays,
+      breakStart: timeOrEmpty(s.breakStart),
+      breakEnd: timeOrEmpty(s.breakEnd),
+      minAdvanceMinutes:
+        typeof s.minAdvanceMinutes === "number" &&
+        s.minAdvanceMinutes >= 0 &&
+        s.minAdvanceMinutes <= 1440
+          ? Math.floor(s.minAdvanceMinutes)
+          : d.minAdvanceMinutes,
+      maxAdvanceDays:
+        typeof s.maxAdvanceDays === "number" &&
+        s.maxAdvanceDays >= 1 &&
+        s.maxAdvanceDays <= 365
+          ? Math.floor(s.maxAdvanceDays)
+          : d.maxAdvanceDays,
+      onlineBookingPaused: s.onlineBookingPaused === true,
     };
   } catch {
-    return defaultScheduleSettings;
+    return d;
   }
 }
 

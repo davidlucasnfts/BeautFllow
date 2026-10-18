@@ -54,6 +54,7 @@ export const publicRouter = createRouter({
           theme:
             parseThemeSettings(salon.settings) ??
             defaultThemeForSegment(salon.segment).id,
+          schedule: parseScheduleSettings(salon.settings),
         },
         services,
         professionals,
@@ -88,6 +89,27 @@ export const publicRouter = createRouter({
       }
 
       const schedule = parseScheduleSettings(salon.settings);
+      // "agora" no fuso de Brasília (mesma base das regras de antecedência)
+      const nowBR = new Date(
+        new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
+      );
+      const isoDay = (dt: Date) =>
+        `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+      // dia fechado ou além da antecedência máxima: não gera slots
+      const maxDate = new Date(nowBR);
+      maxDate.setDate(maxDate.getDate() + schedule.maxAdvanceDays);
+      const isWorkDay = schedule.workDays.includes(
+        new Date(`${input.date}T12:00:00`).getDay()
+      );
+      if (!isWorkDay || input.date > isoDay(maxDate)) {
+        return {
+          slotMinutes: schedule.slotMinutes,
+          dayStart: schedule.dayStart,
+          dayEnd: schedule.dayEnd,
+          busyIntervals: [],
+          freeSlots: [],
+        };
+      }
       const [dayAppointments, professionals] = await Promise.all([
         getAppointmentsBySalon(salon.id, input.date, input.date),
         getPublicProfessionals(salon.id),
@@ -119,6 +141,27 @@ export const publicRouter = createRouter({
           service.durationMinutes
         );
       }
+
+      // regras do estabelecimento: antecedência mínima e pausa/almoço
+      // (no fluxo com profissional escolhido quem filtra é o frontend,
+      //  com os mesmos dados do bookingPage)
+      const minStart = new Date(
+        nowBR.getTime() + schedule.minAdvanceMinutes * 60_000
+      );
+      const blockedByRules = (slot: string) => {
+        const start = new Date(`${input.date}T${slot}:00`);
+        if (start < minStart) return true;
+        if (
+          schedule.breakStart &&
+          schedule.breakEnd &&
+          slot >= schedule.breakStart &&
+          slot < schedule.breakEnd
+        ) {
+          return true;
+        }
+        return false;
+      };
+      if (freeSlots) freeSlots = freeSlots.filter(s => !blockedByRules(s));
 
       return {
         slotMinutes: schedule.slotMinutes,
@@ -156,6 +199,16 @@ export const publicRouter = createRouter({
         });
       }
 
+      // Regras do agendamento online (dias, antecedência, pausa, pausa geral)
+      const schedule = parseScheduleSettings(salon.settings);
+      if (schedule.onlineBookingPaused) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "Agendamento online temporariamente pausado. Entre em contato com o estabelecimento pelo WhatsApp.",
+        });
+      }
+
       const services = await getPublicServices(salon.id);
       const service = services.find(s => s.id === input.serviceId);
       if (!service) {
@@ -185,6 +238,47 @@ export const publicRouter = createRouter({
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Esse horário já passou. Escolha uma data futura.",
+        });
+      }
+      // Revalida as regras (o cliente pode ter aberto a página antes delas mudarem)
+      const isoDay = (dt: Date) =>
+        `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+      if (
+        !schedule.workDays.includes(
+          new Date(`${input.date}T12:00:00`).getDay()
+        )
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Não atendemos neste dia da semana. Escolha outra data.",
+        });
+      }
+      const maxDate = new Date(nowBR);
+      maxDate.setDate(maxDate.getDate() + schedule.maxAdvanceDays);
+      if (input.date > isoDay(maxDate)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Só é possível agendar com até ${schedule.maxAdvanceDays} dias de antecedência.`,
+        });
+      }
+      const minStart = new Date(
+        nowBR.getTime() + schedule.minAdvanceMinutes * 60_000
+      );
+      if (requestedStart < minStart) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `É preciso agendar com pelo menos ${schedule.minAdvanceMinutes} minutos de antecedência.`,
+        });
+      }
+      if (
+        schedule.breakStart &&
+        schedule.breakEnd &&
+        input.startTime >= schedule.breakStart &&
+        input.startTime < schedule.breakEnd
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Este horário está no intervalo de pausa do estabelecimento.",
         });
       }
 
