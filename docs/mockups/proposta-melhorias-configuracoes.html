@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Proposta — O que falta na aba Configurações</title>
+<style>
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 24px; line-height: 1.6; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  .sub { color: #64748b; margin-bottom: 24px; }
+  h2 { font-size: 1.15rem; margin-top: 32px; border-left: 4px solid #8b5cf6; padding-left: 10px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin: 12px 0; }
+  .card.ok { background: #f0fdf4; border-color: #bbf7d0; }
+  .item { background: #fff; border: 1px solid #e2e8f0; border-left: 4px solid #8b5cf6; border-radius: 10px; padding: 12px 16px; margin: 10px 0; }
+  .item h3 { margin: 0 0 4px; font-size: 0.98rem; }
+  .item p { margin: 2px 0; font-size: 0.88rem; color: #475569; }
+  .prioridade { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .p-alta { background: #fee2e2; color: #b91c1c; }
+  .p-media { background: #fef9c3; color: #a16207; }
+  .p-baixa { background: #e2e8f0; color: #475569; }
+  .esforco { color: #64748b; font-size: 0.8rem; margin-top: 6px; }
+  .decisao { background: #f5f3ff; border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px 20px; margin-top: 32px; }
+  code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Proposta — O que falta na aba Configurações</h1>
+  <p class="sub">17/10/2026 · Auditoria completa · Aguardando autorização · Nenhum código alterado</p>
+
+  <h2>O que já existe (está bom)</h2>
+  <div class="card ok">
+    5 seções funcionais: <strong>Dados do estabelecimento</strong> (nome, WhatsApp, e-mail, endereço, cidade, UF, slug do link) · <strong>Horário</strong> (abre/fecha, intervalo 30/60min) · <strong>Status dos clientes</strong> (critério VIP, sumindo, inativo) · <strong>Aparência</strong> (3 temas do segmento) · <strong>Minha conta</strong> (troca de senha). A base está sólida — o problema são as lacunas abaixo.
+  </div>
+
+  <h2>Lacunas — suportadas pelo backend, só falta a tela</h2>
+
+  <div class="item">
+    <h3>1. Trocar o segmento (salão → barbearia → estética) <span class="prioridade p-media">MÉDIA</span></h3>
+    <p>Backend pronto (<code>salon.update</code> aceita <code>segment</code>), mas só dá pra escolher na criação. Se o estabelecimento pivotar, precisa escolher outro segmento pra liberar os 3 temas dele.</p>
+    <p class="esforco">Esforço: pequeno — 1 select + aviso de que os temas mudam.</p>
+  </div>
+
+  <div class="item">
+    <h3>2. Dias de funcionamento (ex: "fecha domingo") <span class="prioridade p-alta">ALTA</span></h3>
+    <p><strong>Lacuna funcional mais visível:</strong> hoje o cliente consegue agendar online qualquer dia da semana, no mesmo horário, inclusive domingo. Não há como dizer "não atendo sábado à tarde" nem "fecho domingo e segunda".</p>
+    <p>Cabe no JSON <code>salons.settings</code> sem migration (o padrão já usado pro clientStatus — o merge do backend preserva chaves novas).</p>
+    <p class="esforco">Esforço: médio — checkboxes dos 7 dias + filtro nos slots públicos e internos.</p>
+  </div>
+
+  <div class="item">
+    <h3>3. Upload de logo do estabelecimento <span class="prioridade p-alta">ALTA</span></h3>
+    <p>A coluna <code>logoUrl</code> existe no banco há meses — <strong>morta</strong>. Não existe upload em lugar nenhum. O estabelecimento quer mostrar sua marca na página pública de agendamento.</p>
+    <p class="esforco">Esforço: médio — criar bucket no Supabase Storage + upload + exibir em PublicBooking e no header do app.</p>
+  </div>
+
+  <h2>Lacunas — não existe nem no backend (sugestões novas)</h2>
+
+  <div class="item">
+    <h3>4. Antecedência mínima do agendamento online <span class="prioridade p-media">MÉDIA</span></h3>
+    <p>"Só aceito marcação com 2h de antecedência" / "até 30 dias à frente". Hoje o cliente pode marcar pro mesmo minuto ou pra daqui 1 ano.</p>
+    <p class="esforco">Esforço: pequeno/médio — 2 campos em settings + validação nos slots e no booking.</p>
+  </div>
+
+  <div class="item">
+    <h3>5. Pausa/almoço bloqueando slots <span class="prioridade p-media">MÉDIA</span></h3>
+    <p>Ex: 12h–13h nunca agenda. Hoje só dá criando agendamento falso no meio do dia.</p>
+    <p class="esforco">Esforço: pequeno/médio — 2 campos (início/fim da pausa) + filtro nos slots.</p>
+  </div>
+
+  <div class="item">
+    <h3>6. Toggle "pausar agendamento online" <span class="prioridade p-media">MÉDIA</span></h3>
+    <p>Férias/reforma sem perder o link: a página pública mostra "agendamento temporariamente pausado".</p>
+    <p class="esforco">Esforço: pequeno — 1 toggle em settings + aviso na página pública.</p>
+  </div>
+
+  <div class="item">
+    <h3>7. WhatsApp público separado + Instagram <span class="prioridade p-baixa">BAIXA</span></h3>
+    <p>Hoje o campo "Telefone/WhatsApp" faz papel duplo. Algumas clínicas têm telefone fixo + WhatsApp. E Instagram é onde esse público vive — link na página pública aumenta conversão.</p>
+    <p class="esforco">Esforço: pequeno — 2 campos novos no card de dados do estabelecimento.</p>
+  </div>
+
+  <div class="item">
+    <h3>8. Lembretes automáticos de WhatsApp (D-1/D-0) <span class="prioridade p-alta">ALTA — mas é projeto maior</span></h3>
+    <p>Pilar do produto ("reengajamento automático"), mas exige job agendado (Vercel Cron) + integração WhatsApp. Não cabe num lote de configurações — fica como item separado do roadmap.</p>
+  </div>
+
+  <div class="item">
+    <h3>9. CNPJ/razão social, desativar salão, ver plano atual <span class="prioridade p-baixa">BAIXA</span></h3>
+    <p>Necessários quando entrar cobrança/NF. Colunas <code>plan</code> e <code>isActive</code> já existem.</p>
+  </div>
+
+  <div class="decisao">
+    <strong>Minha recomendação — lote Configurações v1:</strong> itens 1, 2, 4, 5, 6 (dias de funcionamento + antecedência + pausa/almoço + pausar online + trocar segmento). Resolvem as reclamações mais prováveis do cliente final, todos sem migration.<br><br>
+    <strong>Separados:</strong> item 3 (logo) exige Supabase Storage; item 8 (lembretes) é um projeto maior.<br><br>
+    <strong>Me diz:</strong> "faz o v1" / "faz v1 + logo" / escolhe à la carte.
+  </div>
+</div>
+</body>
+</html>
