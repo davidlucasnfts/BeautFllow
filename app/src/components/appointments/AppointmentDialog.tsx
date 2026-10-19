@@ -21,7 +21,6 @@ import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import { ServiceMultiSelect } from "./ServiceMultiSelect";
 import { ShieldAlert } from "lucide-react";
 import { useState } from "react";
-import { Plus } from "lucide-react";
 import ClientQuickCreate from "@/components/clients/ClientQuickCreate";
 import OnboardingChecklist from "@/components/appointments/OnboardingChecklist";
 import type { AppointmentFormData } from "./useAppointmentForm";
@@ -111,21 +110,6 @@ export default function AppointmentDialog({
                   setCreatingClient(true);
                 }}
               />
-            )}
-            {hasNoClients && !creatingClient && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="w-full gap-1"
-                onClick={() => {
-                  setQuickClientName("");
-                  setCreatingClient(true);
-                }}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Cadastrar primeiro cliente
-              </Button>
             )}
           </div>
 
