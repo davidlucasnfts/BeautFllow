@@ -59,6 +59,7 @@ function isMobile(): boolean {
  */
 export function InstallAppBanner() {
   const [visible, setVisible] = useState(false);
+  const [showSteps, setShowSteps] = useState(false);
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
 
@@ -72,10 +73,8 @@ export function InstallAppBanner() {
     };
     window.addEventListener("beforeinstallprompt", onBeforeInstall);
 
-    // Navegadores nem sempre disparam o evento — no mobile mostra o guia
-    // manual como fallback (se o evento chegar depois, o botão nativo
-    // substitui o guia). No desktop sem evento, não mostra nada — evita
-    // instrução errada em navegador que não instala.
+    // Navegadores nem sempre disparam o evento — no mobile mostra o banner
+    // com o botão "Como instalar" como fallback.
     let timer: ReturnType<typeof setTimeout> | undefined;
     if (isMobile()) {
       timer = setTimeout(() => setVisible(true), 2500);
@@ -100,6 +99,22 @@ export function InstallAppBanner() {
     setVisible(false);
   };
 
+  const buttonLabel = deferredPrompt
+    ? "Instalar agora"
+    : isIos() && !isIosSafari()
+      ? "Abrir no Safari"
+      : isFirefox()
+        ? "Usar Chrome"
+        : "Como instalar";
+
+  const buttonAction = () => {
+    if (deferredPrompt) {
+      install();
+    } else {
+      setShowSteps(s => !s);
+    }
+  };
+
   if (!visible) return null;
 
   return (
@@ -115,73 +130,76 @@ export function InstallAppBanner() {
           navegador.
         </p>
 
-        {deferredPrompt ? (
-          <Button size="sm" className="mt-2" onClick={install}>
-            <Download className="mr-2 h-4 w-4" />
-            Instalar agora
-          </Button>
-        ) : isIos() && !isIosSafari() ? (
-          <div className="mt-2 text-xs text-muted-foreground space-y-1">
-            <p>
-              No iPhone, só o <strong>Safari</strong> instala aplicativos.
-            </p>
-            <ol className="space-y-1 list-decimal list-inside">
-              <li>
-                Copie o endereço desta página (toque na barra de endereço →
-                Copiar)
-              </li>
-              <li>
-                Abra o <strong>Safari</strong> e cole o endereço
-              </li>
-              <li>
-                Faça login — o guia de instalação vai aparecer aqui no
-                Dashboard
-              </li>
-            </ol>
+        <Button size="sm" className="mt-2" onClick={buttonAction}>
+          <Download className="mr-2 h-4 w-4" />
+          {buttonLabel}
+        </Button>
+
+        {showSteps && (
+          <div className="mt-3 text-xs text-muted-foreground space-y-1">
+            {isIos() && !isIosSafari() ? (
+              <>
+                <p>
+                  No iPhone, só o <strong>Safari</strong> instala aplicativos.
+                </p>
+                <ol className="space-y-1 list-decimal list-inside">
+                  <li>
+                    Copie o endereço desta página (toque na barra de endereço →
+                    Copiar)
+                  </li>
+                  <li>
+                    Abra o <strong>Safari</strong> e cole o endereço
+                  </li>
+                  <li>
+                    Faça login — o botão "Instalar agora" vai aparecer aqui
+                  </li>
+                </ol>
+              </>
+            ) : isIos() ? (
+              <ol className="space-y-1 list-decimal list-inside">
+                <li>
+                  Toque no botão{" "}
+                  <Share className="inline h-3.5 w-3.5 -mt-0.5" /> Compartilhar
+                  do Safari
+                </li>
+                <li>
+                  Role as opções e toque em{" "}
+                  <strong>Adicionar à Tela de Início</strong>
+                </li>
+                <li>
+                  Toque em <strong>Adicionar</strong> — o ícone do StudioFlow
+                  vai aparecer na sua tela inicial
+                </li>
+              </ol>
+            ) : isFirefox() ? (
+              <>
+                <p>
+                  O Firefox não instala aplicativos (PWA) — essa função ainda
+                  não existe nele.
+                </p>
+                <p>
+                  Para ter o StudioFlow como app no aparelho, acesse pelo{" "}
+                  <strong>Chrome</strong> — o botão "Instalar agora" vai
+                  aparecer aqui no Dashboard.
+                </p>
+              </>
+            ) : (
+              <ol className="space-y-1 list-decimal list-inside">
+                <li>
+                  Toque nos <strong>3 pontinhos</strong> (menu) no canto
+                  superior do navegador
+                </li>
+                <li>
+                  Toque em <strong>Instalar app</strong> (ou{" "}
+                  <strong>Adicionar à tela inicial</strong>)
+                </li>
+                <li>
+                  Confirme em <strong>Instalar</strong> — o ícone do StudioFlow
+                  vai aparecer na sua tela inicial
+                </li>
+              </ol>
+            )}
           </div>
-        ) : isIos() ? (
-          <ol className="mt-2 text-xs text-muted-foreground space-y-1 list-decimal list-inside">
-            <li>
-              Toque no botão{" "}
-              <Share className="inline h-3.5 w-3.5 -mt-0.5" /> Compartilhar do
-              Safari
-            </li>
-            <li>
-              Role as opções e toque em{" "}
-              <strong>Adicionar à Tela de Início</strong>
-            </li>
-            <li>
-              Toque em <strong>Adicionar</strong> — o ícone do StudioFlow vai
-              aparecer na sua tela inicial
-            </li>
-          </ol>
-        ) : isFirefox() ? (
-          <div className="mt-2 text-xs text-muted-foreground space-y-1">
-            <p>
-              O Firefox não instala aplicativos (PWA) — essa função ainda não
-              existe nele.
-            </p>
-            <p>
-              Para ter o StudioFlow como app no aparelho, acesse pelo{" "}
-              <strong>Chrome</strong> — o botão de instalar vai aparecer aqui
-              no Dashboard.
-            </p>
-          </div>
-        ) : (
-          <ol className="mt-2 text-xs text-muted-foreground space-y-1 list-decimal list-inside">
-            <li>
-              Toque nos <strong>3 pontinhos</strong> (menu) no canto superior
-              do navegador
-            </li>
-            <li>
-              Toque em <strong>Instalar app</strong> (ou{" "}
-              <strong>Adicionar à tela inicial</strong>)
-            </li>
-            <li>
-              Confirme em <strong>Instalar</strong> — o ícone do StudioFlow
-              vai aparecer na sua tela inicial
-            </li>
-          </ol>
         )}
       </div>
       <button
