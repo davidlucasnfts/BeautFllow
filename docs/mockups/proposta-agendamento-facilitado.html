@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Proposta — Agendamento sem atrito (cadastro inline + primeiro uso)</title>
+<style>
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 24px; line-height: 1.6; }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  .sub { color: #64748b; margin-bottom: 20px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin: 12px 0; }
+  .passo { background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 12px 16px; margin: 10px 0; font-size: 0.92rem; }
+  .passo strong { color: #6d28d9; }
+  .decisao { background: #f5f3ff; border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px 20px; margin-top: 28px; }
+  .esforco { color: #64748b; font-size: 0.85rem; margin-top: 6px; }
+  .mock { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px; margin: 10px 0; font-size: 0.85rem; font-family: ui-monospace, monospace; white-space: pre; overflow-x: auto; }
+  .nao { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px; padding: 12px 16px; margin: 10px 0; font-size: 0.92rem; }
+  .nao strong { color: #c2410c; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Proposta — Agendamento sem atrito</h1>
+  <p class="sub">19/10/2026 · Aguardando autorização · Nenhum código alterado</p>
+
+  <div class="card">
+    <strong>Solicitação do David:</strong> hoje, para agendar, o dono precisa antes cadastrar cliente, profissional e serviço em telas separadas. Preocupação: o usuário pode achar trabalhoso/estranho e desistir. Pesquisa de mercado: cadastro prévio de <em>serviço e profissional</em> é padrão (Booksy, Trinks, Fresha — é setup único), mas <em>cliente</em> os apps bons criam na hora, sem sair do agendamento.
+  </div>
+
+  <h2 style="font-size:1.1rem;margin-top:24px">Item 1 — Cadastrar cliente sem sair do agendamento ⭐ (principal)</h2>
+
+  <div class="passo">
+    <strong>O que muda na tela:</strong> no campo "Cliente" do Novo Agendamento, ao digitar um nome que não existe, aparece a opção <strong>"+ Cadastrar Maria Silva"</strong> logo abaixo da busca.
+  </div>
+
+  <div class="mock">Cliente
+┌─────────────────────────────────────────────┐
+│ maria silva                                 │
+├─────────────────────────────────────────────┤
+│ Nenhum cliente encontrado.                  │
+│ ┌─────────────────────────────────────────┐ │
+│ │ ＋ Cadastrar "maria silva"              │ │ ← clique abre o mini-form
+│ └─────────────────────────────────────────┘ │
+└─────────────────────────────────────────────┘</div>
+
+  <div class="passo">
+    <strong>Mini-formulário (dentro do próprio dialog, sem sair da tela):</strong>
+    <ul style="margin:6px 0;padding-left:20px">
+      <li><strong>Nome</strong> — já vem preenchido com o que foi digitado</li>
+      <li><strong>Telefone</strong> — máscara (99) 99999-9999 (padrão do app)</li>
+      <li><strong>Checkbox LGPD</strong> — "Cliente autorizou o uso dos dados" (mesmo checkbox do cadastro completo, obrigatório pra cumprir a regra de consentimento que já existe)</li>
+      <li>Botão verde <strong>"Cadastrar e selecionar"</strong> — cria o cliente e já preenche o campo do agendamento</li>
+    </ul>
+    Tempo total pro dono: ~10 segundos. O cadastro completo (e-mail, aniversário, observações) continua existindo na aba Cliente pra quem quiser completar depois.
+  </div>
+
+  <div class="mock">┌─ Cadastrar cliente rápido ─────────────────┐
+│ Nome      [ Maria Silva                   ] │
+│ Telefone  [ (98) 98765-4321               ] │
+│ ☑ Cliente autorizou o uso dos dados (LGPD)│
+│                                             │
+│        [ ✓ Cadastrar e selecionar ]         │
+└─────────────────────────────────────────────┘</div>
+
+  <div class="passo">
+    <strong>Backend:</strong> nenhum endpoint novo — reutiliza o <code>client.create</code> que já existe (já valida, já tem audit log). O frontend chama, recebe o id e seleciona automaticamente.
+  </div>
+
+  <h2 style="font-size:1.1rem;margin-top:24px">Item 2 — Assistente de primeiro uso (checklist de configuração)</h2>
+
+  <div class="passo">
+    <strong>Problema que resolve:</strong> o dono novo abre a agenda vazia, clica "Novo agendamento" e trava (não tem serviço nem profissional). Em vez da frustração, ele vê um guia.
+  </div>
+
+  <div class="passo">
+    <strong>O que muda na tela:</strong> enquanto o salão não tiver pelo menos 1 serviço E 1 profissional, a agenda mostra um card-checklist no topo:
+  </div>
+
+  <div class="mock">┌─ Configure seu StudioFlow em 2 passos ──────────────────┐
+│                                                          │
+│  ☐ 1. Cadastre seu primeiro serviço    [ + Cadastrar ]   │
+│        Ex: Corte, Escova, Barba... (leva 30 segundos)    │
+│                                                          │
+│  ☐ 2. Quem atende?                                       │
+│        [ Sou eu mesmo ]  [ + Cadastrar profissional ]    │
+│        ↑ 1 clique: cria o profissional com seu nome      │
+│                                                          │
+└──────────────────────────────────────────────────────────┘</div>
+
+  <div class="passo">
+    <strong>Comportamento:</strong>
+    <ul style="margin:6px 0;padding-left:20px">
+      <li>Os botões abrem os <strong>dialogs que já existem</strong> (Serviço, Profissional) — nenhuma tela nova</li>
+      <li>"Sou eu mesmo" cria o profissional com o nome do dono logado em 1 clique (comissão 0%, editável depois)</li>
+      <li>Cada passo concluído vira ✅ na hora; quando os 2 estiverem ok, o card <strong>some sozinho para sempre</strong></li>
+      <li>Sem migration: o checklist é derivado dos dados (conta serviços/profissionais do salão) — não precisa salvar nada no banco</li>
+    </ul>
+  </div>
+
+  <h2 style="font-size:1.1rem;margin-top:24px">O que eu NÃO recomendo fazer</h2>
+
+  <div class="nao">
+    <strong>Serviço e profissional "inline" no agendamento:</strong> serviço tem preço, duração e categoria; profissional tem comissão e horários. Um mini-form disso ficaria ruim e geraria cadastros incompletos. O checklist (item 2) resolve o caso real, porque serviço/profissional se cadastra <em>uma vez só</em> — diferente do cliente, que nasce todo dia.
+  </div>
+
+  <p class="esforco">Esforço: médio. Item 1 = opção no combobox de cliente + mini-form (reusa client.create). Item 2 = card-checklist derivado de dados + botão "Sou eu mesmo" (1 mutation nova pequena ou reuse do professional.create). Sem migration, sem tabela nova, sem mudança visual nas demais telas.</p>
+
+  <div class="decisao">
+    <strong>Me diz:</strong> "pode fazer" → implemento os 2 itens. "só o item 1" → faço só o cadastro inline de cliente. Ou ajusta o que quiser antes.
+  </div>
+</div>
+</body>
+</html>
