@@ -300,6 +300,7 @@ function AuthLayoutContent({
         schedule: first.schedule,
         theme: first.theme,
         clientStatus: first.clientStatus,
+        showOnboarding: first.showOnboarding,
       });
     }
   }, [salonsData, salon, setSalon]);

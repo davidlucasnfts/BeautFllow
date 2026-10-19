@@ -31,16 +31,19 @@ export function ClientCombobox({
   clients,
   value,
   onChange,
+  onCreate,
   placeholder = "Selecione",
   disabled,
 }: {
   clients: ClientOption[] | undefined;
   value: string;
   onChange: (clientId: string) => void;
+  onCreate?: (name: string) => void;
   placeholder?: string;
   disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const selected = clients?.find(c => String(c.id) === value);
 
   return (
@@ -64,7 +67,11 @@ export function ClientCombobox({
         align="start"
       >
         <Command>
-          <CommandInput placeholder="Buscar cliente..." />
+          <CommandInput
+            placeholder="Buscar cliente..."
+            value={search}
+            onValueChange={setSearch}
+          />
           <CommandList>
             <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
             <CommandGroup>
@@ -75,6 +82,7 @@ export function ClientCombobox({
                   onSelect={() => {
                     onChange(String(c.id));
                     setOpen(false);
+                    setSearch("");
                   }}
                 >
                   <Check
@@ -93,6 +101,22 @@ export function ClientCombobox({
               ))}
             </CommandGroup>
           </CommandList>
+          {onCreate && search.trim() && (
+            <div className="border-t p-1">
+              <button
+                type="button"
+                onClick={() => {
+                  onCreate(search.trim());
+                  setOpen(false);
+                  setSearch("");
+                }}
+                className="w-full flex items-center gap-2 rounded px-2 py-1.5 text-sm text-primary hover:bg-primary/5"
+              >
+                <span>＋</span>
+                Cadastrar "{search.trim()}"
+              </button>
+            </div>
+          )}
         </Command>
       </PopoverContent>
     </Popover>

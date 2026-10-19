@@ -17,6 +17,7 @@ import AppointmentFilters from "@/components/appointments/AppointmentFilters";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import AppointmentDialog from "@/components/appointments/AppointmentDialog";
+import OnboardingChecklist from "@/components/appointments/OnboardingChecklist";
 import CheckoutDialog, {
   type CheckoutTarget,
 } from "@/components/appointments/CheckoutDialog";
@@ -403,6 +404,14 @@ export default function Appointments() {
           Novo agendamento
         </Button>
       </div>
+
+      {salon && salon.showOnboarding !== false &&
+        (activeServices.length < 3 || (professionals?.length ?? 0) < 3) && (
+          <OnboardingChecklist
+            serviceCount={activeServices.length}
+            professionalCount={professionals?.length ?? 0}
+          />
+        )}
 
       <AppointmentFilters
         viewMode={viewMode}

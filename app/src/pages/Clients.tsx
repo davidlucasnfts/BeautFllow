@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { Button } from "@/components/ui/button";
@@ -126,6 +126,8 @@ export default function Clients() {
     onError: e => toast.error(e.message),
   });
 
+  const [filterMissingBirthday, setFilterMissingBirthday] = useState(false);
+
   const filtered = search
     ? clients?.filter(
         c =>
@@ -133,6 +135,14 @@ export default function Clients() {
           c.phone.includes(search)
       )
     : clients;
+
+  const displayed = useMemo(() => {
+    if (!filterMissingBirthday) return filtered;
+    return filtered?.filter(c => !c.birthDate) ?? [];
+  }, [filtered, filterMissingBirthday]);
+
+  const missingBirthdayCount =
+    clients?.filter(c => !c.birthDate).length ?? 0;
 
   function resetForm() {
     setForm({
@@ -350,7 +360,34 @@ export default function Clients() {
           onChange={e => setSearch(e.target.value)}
           className="max-w-sm"
         />
+        {filterMissingBirthday && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setFilterMissingBirthday(false)}
+          >
+            Limpar filtro
+          </Button>
+        )}
       </div>
+
+      {missingBirthdayCount > 0 && !filterMissingBirthday && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+          <p>
+            🎂 {missingBirthdayCount}{" "}
+            {missingBirthdayCount === 1 ? "cliente" : "clientes"} sem data de
+            nascimento — complete para campanhas de aniversário.
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="shrink-0"
+            onClick={() => setFilterMissingBirthday(true)}
+          >
+            Ver
+          </Button>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="rounded-xl border bg-card divide-y overflow-hidden">
@@ -363,9 +400,9 @@ export default function Clients() {
           <Users className="h-12 w-12 mx-auto mb-4 opacity-20" />
           <p>Falha ao carregar. Atualize a página.</p>
         </div>
-      ) : filtered && filtered.length > 0 ? (
+      ) : displayed && displayed.length > 0 ? (
         <div className="rounded-xl border bg-card divide-y overflow-hidden">
-          {filtered.map(client => {
+          {displayed.map(client => {
             const expanded = selectedId === client.id;
             return (
               <div
@@ -407,6 +444,14 @@ export default function Clients() {
                         >
                           <ShieldCheck className="w-3 h-3 mr-0.5" />
                           Dados autorizados
+                        </Badge>
+                      )}
+                      {!client.birthDate && (
+                        <Badge
+                          variant="secondary"
+                          className="bg-amber-100 text-amber-700 text-[10px]"
+                        >
+                          Sem nascimento
                         </Badge>
                       )}
                     </div>

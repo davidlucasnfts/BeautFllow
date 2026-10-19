@@ -20,6 +20,7 @@ export type SalonContextType = {
   schedule: ScheduleSettings;
   theme?: string | null;
   clientStatus: ClientStatusSettings;
+  showOnboarding: boolean;
   phone?: string | null;
   email?: string | null;
   address?: string | null;
@@ -48,6 +49,7 @@ export function SalonProvider({ children }: { children: ReactNode }) {
             ...defaultClientStatusSettings,
             ...(parsed.clientStatus ?? {}),
           },
+          showOnboarding: parsed.showOnboarding !== false,
         };
       }
     } catch {

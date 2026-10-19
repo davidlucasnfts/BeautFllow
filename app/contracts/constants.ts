@@ -177,6 +177,20 @@ export function parseScheduleSettings(
   }
 }
 
+/** Lê o JSON salvo no banco e devolve se o onboarding deve ser exibido.
+ *  Padrão: true (mostrar). Só some se o usuário desligar em Configurações. */
+export function parseOnboardingSettings(
+  raw: string | null | undefined
+): boolean {
+  try {
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (!parsed || typeof parsed !== "object") return true;
+    return parsed.showOnboarding !== false;
+  } catch {
+    return true;
+  }
+}
+
 // ==========================================
 // Planos — limites de acessos (controle de equipe)
 // ==========================================

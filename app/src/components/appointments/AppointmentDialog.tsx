@@ -20,6 +20,8 @@ import DatePicker from "@/components/DatePicker";
 import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import { ServiceMultiSelect } from "./ServiceMultiSelect";
 import { ShieldAlert } from "lucide-react";
+import { useState } from "react";
+import ClientQuickCreate from "@/components/clients/ClientQuickCreate";
 import type { AppointmentFormData } from "./useAppointmentForm";
 import type { Client, Professional, Service } from "@db/schema";
 
@@ -54,6 +56,9 @@ export default function AppointmentDialog({
   availableSlots,
   unsignedConsentCount = 0,
 }: AppointmentDialogProps) {
+  const [creatingClient, setCreatingClient] = useState(false);
+  const [quickClientName, setQuickClientName] = useState("");
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
@@ -63,11 +68,30 @@ export default function AppointmentDialog({
         <div className="grid gap-4 py-4 overflow-y-auto min-h-0">
           <div className="grid gap-2">
             <Label>Cliente</Label>
-            <ClientCombobox
-              clients={clients}
-              value={form.clientId}
-              onChange={v => onFieldChange("clientId", v)}
-            />
+            {creatingClient ? (
+              <ClientQuickCreate
+                initialName={quickClientName}
+                onCreated={id => {
+                  onFieldChange("clientId", id);
+                  setCreatingClient(false);
+                  setQuickClientName("");
+                }}
+                onCancel={() => {
+                  setCreatingClient(false);
+                  setQuickClientName("");
+                }}
+              />
+            ) : (
+              <ClientCombobox
+                clients={clients}
+                value={form.clientId}
+                onChange={v => onFieldChange("clientId", v)}
+                onCreate={name => {
+                  setQuickClientName(name);
+                  setCreatingClient(true);
+                }}
+              />
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

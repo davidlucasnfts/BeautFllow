@@ -23,6 +23,7 @@ import SalonProfileCard from "@/components/settings/SalonProfileCard";
 import ScheduleSettingsCard from "@/components/settings/ScheduleSettingsCard";
 import AppearanceCard from "@/components/settings/AppearanceCard";
 import AccountCard from "@/components/settings/AccountCard";
+import OnboardingSettingsCard from "@/components/settings/OnboardingSettingsCard";
 
 export default function Settings() {
   const { salon, setSalon } = useSalon();
@@ -66,6 +67,10 @@ export default function Settings() {
       <SalonProfileCard />
 
       <ScheduleSettingsCard />
+
+      <OnboardingSettingsCard />
+
+      <AppearanceCard />
 
       <Card className="max-w-xl">
         <CardHeader className="pb-3">
