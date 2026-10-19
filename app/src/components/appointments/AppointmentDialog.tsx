@@ -21,7 +21,9 @@ import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import { ServiceMultiSelect } from "./ServiceMultiSelect";
 import { ShieldAlert } from "lucide-react";
 import { useState } from "react";
+import { Plus } from "lucide-react";
 import ClientQuickCreate from "@/components/clients/ClientQuickCreate";
+import OnboardingChecklist from "@/components/appointments/OnboardingChecklist";
 import type { AppointmentFormData } from "./useAppointmentForm";
 import type { Client, Professional, Service } from "@db/schema";
 
@@ -59,6 +61,11 @@ export default function AppointmentDialog({
   const [creatingClient, setCreatingClient] = useState(false);
   const [quickClientName, setQuickClientName] = useState("");
 
+  const hasNoClients = (clients?.length ?? 0) === 0;
+  const hasNoServices = (services?.length ?? 0) === 0;
+  const hasNoProfessionals = (professionals?.length ?? 0) === 0;
+  const showSetup = hasNoClients || hasNoServices || hasNoProfessionals;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
@@ -66,6 +73,19 @@ export default function AppointmentDialog({
           <DialogTitle>Novo Agendamento</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4 overflow-y-auto min-h-0">
+          {showSetup && (
+            <OnboardingChecklist
+              compact
+              clientCount={clients?.length ?? 0}
+              serviceCount={services?.length ?? 0}
+              professionalCount={professionals?.length ?? 0}
+              onCreateClient={() => {
+                setQuickClientName("");
+                setCreatingClient(true);
+              }}
+            />
+          )}
+
           <div className="grid gap-2">
             <Label>Cliente</Label>
             {creatingClient ? (
@@ -91,6 +111,21 @@ export default function AppointmentDialog({
                   setCreatingClient(true);
                 }}
               />
+            )}
+            {hasNoClients && !creatingClient && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-full gap-1"
+                onClick={() => {
+                  setQuickClientName("");
+                  setCreatingClient(true);
+                }}
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Cadastrar primeiro cliente
+              </Button>
             )}
           </div>
 

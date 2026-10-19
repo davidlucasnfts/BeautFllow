@@ -19,14 +19,24 @@ const MAX_ITEMS = 3;
 interface OnboardingChecklistProps {
   serviceCount: number;
   professionalCount: number;
+  /** modo compacto: usado DENTRO do dialog de Novo Agendamento */
+  compact?: boolean;
+  clientCount?: number;
+  /** chamado no modo compacto quando o dono clica em cadastrar cliente */
+  onCreateClient?: () => void;
 }
 
 /** Card que guia o dono novo a cadastrar os 3 primeiros serviços e 3
  *  primeiros profissionais antes de começar a agendar. Só some quando
- *  completar 3+3 ou quando desligado em Configurações. */
+ *  completar 3+3 ou quando desligado em Configurações.
+ *  No modo compacto vira um aviso dentro do dialog de agendamento,
+ *  listando o que ainda falta (cliente, serviço, profissional). */
 export default function OnboardingChecklist({
   serviceCount,
   professionalCount,
+  compact,
+  clientCount = 0,
+  onCreateClient,
 }: OnboardingChecklistProps) {
   const { salon } = useSalon();
   const utils = trpc.useUtils();
@@ -85,6 +95,121 @@ export default function OnboardingChecklist({
   const categories = Array.from(
     new Set(servicesQuery.data?.map(s => s.category).filter(Boolean) as string[])
   );
+
+  const missingClient = clientCount === 0;
+  const missingService = serviceCount === 0;
+  const missingProfessional = professionalCount === 0;
+  const nothingMissing =
+    !missingClient && !missingService && !missingProfessional;
+
+  if (compact) {
+    if (nothingMissing) return null;
+    return (
+      <>
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 space-y-2 text-sm">
+          <p className="font-medium text-amber-900">
+            Faltam cadastros para agendar:
+          </p>
+          {missingClient && (
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-amber-800">Nenhum cliente cadastrado</span>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 text-xs"
+                onClick={onCreateClient}
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                Cadastrar cliente
+              </Button>
+            </div>
+          )}
+          {missingService && (
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-amber-800">
+                Nenhum {serviceLabel} cadastrado
+              </span>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 text-xs"
+                onClick={() => setServiceOpen(true)}
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                Cadastrar {serviceLabel}
+              </Button>
+            </div>
+          )}
+          {missingProfessional && (
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-amber-800">
+                Nenhum {professionalLabel} cadastrado
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 text-xs"
+                  onClick={() => setProfessionalOpen(true)}
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Cadastrar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="h-7 text-xs"
+                  onClick={handleCreateMe}
+                  disabled={createProfessional.isPending}
+                >
+                  <UserCheck className="h-3 w-3 mr-1" />
+                  Sou eu
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <ServiceFormDialog
+          open={serviceOpen}
+          onOpenChange={setServiceOpen}
+          editingId={null}
+          initial={null}
+          categories={categories}
+          services={
+            servicesQuery.data?.map(s => ({ id: s.id, name: s.name })) ?? []
+          }
+          serviceLabel={serviceLabel}
+          isPending={createService.isPending}
+          onSubmit={(values: ServiceFormValues) =>
+            createService.mutate({
+              salonId: salon?.id ?? 0,
+              ...values,
+              followUpServiceId: values.followUpServiceId
+                ? Number(values.followUpServiceId)
+                : undefined,
+            })
+          }
+        />
+
+        <ProfessionalFormDialog
+          open={professionalOpen}
+          onOpenChange={setProfessionalOpen}
+          editingId={null}
+          initial={null}
+          professionalLabel={professionalLabel}
+          isPending={createProfessional.isPending}
+          onSubmit={(values: ProfessionalFormValues) =>
+            createProfessional.mutate({
+              salonId: salon?.id ?? 0,
+              ...values,
+              commissionRate: values.commissionRate,
+            })
+          }
+        />
+      </>
+    );
+  }
 
   return (
     <>
