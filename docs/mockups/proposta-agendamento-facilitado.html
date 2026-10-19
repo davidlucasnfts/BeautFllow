@@ -67,34 +67,51 @@
     <strong>Backend:</strong> nenhum endpoint novo — reutiliza o <code>client.create</code> que já existe (já valida, já tem audit log). O frontend chama, recebe o id e seleciona automaticamente.
   </div>
 
-  <h2 style="font-size:1.1rem;margin-top:24px">Item 2 — Assistente de primeiro uso (checklist de configuração)</h2>
+  <h2 style="font-size:1.1rem;margin-top:24px">Item 1b — Lembrete de completar cadastro (data de nascimento) 🎂</h2>
 
-  <div class="passo">
-    <strong>Problema que resolve:</strong> o dono novo abre a agenda vazia, clica "Novo agendamento" e trava (não tem serviço nem profissional). Em vez da frustração, ele vê um guia.
+  <div class="card">
+    <strong>Ponto do David:</strong> o cliente criado no cadastro rápido fica sem data de nascimento — e esse dado vai alimentar relatórios e mensagens de WhatsApp com promoções/aniversário. Precisa de um jeito de lembrar de preencher depois.
   </div>
 
   <div class="passo">
-    <strong>O que muda na tela:</strong> enquanto o salão não tiver pelo menos 1 serviço E 1 profissional, a agenda mostra um card-checklist no topo:
+    <strong>O que muda na tela (aba Cliente):</strong>
+    <ul style="margin:6px 0;padding-left:20px">
+      <li>Cliente sem data de nascimento ganha um <strong>badge âmbar "Sem nascimento"</strong> na lista (visível de relance, no padrão dos badges de status que já existem)</li>
+      <li>Quando houver pelo menos 1 nesse caso, aparece um <strong>aviso no topo da lista</strong>: "🎂 X clientes sem data de nascimento — complete para campanhas de aniversário" com botão <strong>"Ver"</strong> que filtra a lista só pra esses clientes</li>
+      <li>Pra preencher: clicar no cliente → Editar (o formulário completo já tem o campo de nascimento — zero tela nova)</li>
+    </ul>
   </div>
 
-  <div class="mock">┌─ Configure seu StudioFlow em 2 passos ──────────────────┐
+  <div class="passo">
+    <strong>Por que assim (e não popup obrigatório):</strong> obrigar o preenchimento na hora quebraria o fluxo rápido (o cliente está na frente do dono querendo agendar). O badge + filtro deixa a pendência visível sem atrapalhar — e cria a base pra futura campanha automática de aniversário no WhatsApp (já está no backlog de lembretes automáticos).
+  </div>
+
+  <h2 style="font-size:1.1rem;margin-top:24px">Item 2 — Assistente de primeiro uso (até 3 serviços + 3 profissionais, com opção de desligar)</h2>
+
+  <div class="passo">
+    <strong>Problema que resolve:</strong> o dono novo abre a agenda vazia, clica "Novo agendamento" e trava (não tem serviço nem profissional). Em vez da frustração, ele vê um guia — e o guia incentiva o mínimo viável de catálogo (3+3), não só 1+1.
+  </div>
+
+  <div class="passo">
+    <strong>O que muda na tela:</strong> enquanto o salão não tiver 3 serviços E 3 profissionais (e o guia não estiver desativado), a agenda mostra um card-checklist no topo com progresso:
+  </div>
+
+  <div class="mock">┌─ Configure seu StudioFlow ──────────────────────────────┐
 │                                                          │
-│  ☐ 1. Cadastre seu primeiro serviço    [ + Cadastrar ]   │
-│        Ex: Corte, Escova, Barba... (leva 30 segundos)    │
+│  Serviços       ✅✅⬜  2 de 3      [ + Cadastrar ]        │
+│  Profissionais  ✅⬜⬜  1 de 3      [ + Cadastrar ]        │
+│                                    [ Sou eu mesmo ]      │
 │                                                          │
-│  ☐ 2. Quem atende?                                       │
-│        [ Sou eu mesmo ]  [ + Cadastrar profissional ]    │
-│        ↑ 1 clique: cria o profissional com seu nome      │
-│                                                          │
+│  Dica: 3+3 cobre o básico (ex: Corte, Escova, Barba)     │
 └──────────────────────────────────────────────────────────┘</div>
 
   <div class="passo">
     <strong>Comportamento:</strong>
     <ul style="margin:6px 0;padding-left:20px">
       <li>Os botões abrem os <strong>dialogs que já existem</strong> (Serviço, Profissional) — nenhuma tela nova</li>
-      <li>"Sou eu mesmo" cria o profissional com o nome do dono logado em 1 clique (comissão 0%, editável depois)</li>
-      <li>Cada passo concluído vira ✅ na hora; quando os 2 estiverem ok, o card <strong>some sozinho para sempre</strong></li>
-      <li>Sem migration: o checklist é derivado dos dados (conta serviços/profissionais do salão) — não precisa salvar nada no banco</li>
+      <li>"Sou eu mesmo" cria o profissional com o nome do dono logado em 1 clique (comissão 0%, editável depois) — conta como 1 dos 3</li>
+      <li>Progresso atualiza na hora (✅ a cada cadastro); ao chegar em 3+3, o card <strong>some sozinho</strong></li>
+      <li><strong>Opção de desligar:</strong> nova chave em Configurações — toggle "Mostrar guia de primeiros passos" (padrão: ligado). Desligou, o card não aparece mais mesmo sem completar; ligou de volta, ele retorna. Fica no JSON <code>salons.settings</code> — <strong>sem migration</strong></li>
     </ul>
   </div>
 
@@ -104,10 +121,10 @@
     <strong>Serviço e profissional "inline" no agendamento:</strong> serviço tem preço, duração e categoria; profissional tem comissão e horários. Um mini-form disso ficaria ruim e geraria cadastros incompletos. O checklist (item 2) resolve o caso real, porque serviço/profissional se cadastra <em>uma vez só</em> — diferente do cliente, que nasce todo dia.
   </div>
 
-  <p class="esforco">Esforço: médio. Item 1 = opção no combobox de cliente + mini-form (reusa client.create). Item 2 = card-checklist derivado de dados + botão "Sou eu mesmo" (1 mutation nova pequena ou reuse do professional.create). Sem migration, sem tabela nova, sem mudança visual nas demais telas.</p>
+  <p class="esforco">Esforço: médio. Item 1 = opção no combobox de cliente + mini-form (reusa client.create). Item 1b = badge + filtro na lista de clientes (só frontend, campo birthDate já existe). Item 2 = card-checklist com progresso 3+3 derivado de dados + botão "Sou eu mesmo" + toggle no JSON salons.settings. Sem migration, sem tabela nova, sem mudança visual nas demais telas.</p>
 
   <div class="decisao">
-    <strong>Me diz:</strong> "pode fazer" → implemento os 2 itens. "só o item 1" → faço só o cadastro inline de cliente. Ou ajusta o que quiser antes.
+    <strong>Me diz:</strong> "pode fazer" → implemento os 3 itens (1, 1b e 2). Ou ajusta o que quiser antes.
   </div>
 </div>
 </body>
