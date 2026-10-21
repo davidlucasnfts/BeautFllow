@@ -13,18 +13,31 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import DatePicker from "@/components/DatePicker";
 import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import { ServiceMultiSelect } from "./ServiceMultiSelect";
-import { ShieldAlert } from "lucide-react";
+import { Plus, ShieldAlert } from "lucide-react";
 import { useState } from "react";
 import ClientQuickCreate from "@/components/clients/ClientQuickCreate";
+import ProfessionalQuickCreate from "@/components/professionals/ProfessionalQuickCreate";
+import ServiceQuickCreate from "@/components/services/ServiceQuickCreate";
 import OnboardingChecklist from "@/components/appointments/OnboardingChecklist";
 import type { AppointmentFormData } from "./useAppointmentForm";
 import type { Client, Professional, Service } from "@db/schema";
+
+/** Valor especial nos Selects: abre o mini-formulário de cadastro rápido */
+const CREATE_NEW = "__create__";
+
+/** Só um mini-formulário aberto por vez — abrir um fecha o anterior */
+type QuickCreateTarget =
+  | "client"
+  | "professional"
+  | "service-main"
+  | "service-extra";
 
 interface AppointmentDialogProps {
   open: boolean;
@@ -57,7 +70,9 @@ export default function AppointmentDialog({
   availableSlots,
   unsignedConsentCount = 0,
 }: AppointmentDialogProps) {
-  const [creatingClient, setCreatingClient] = useState(false);
+  const [quickCreate, setQuickCreate] = useState<QuickCreateTarget | null>(
+    null
+  );
   const [quickClientName, setQuickClientName] = useState("");
 
   const hasNoClients = (clients?.length ?? 0) === 0;
@@ -66,7 +81,17 @@ export default function AppointmentDialog({
   const showSetup = hasNoClients || hasNoServices || hasNoProfessionals;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={v => {
+        if (!v) {
+          // fecha qualquer mini-formulário aberto junto com o dialog
+          setQuickCreate(null);
+          setQuickClientName("");
+        }
+        onOpenChange(v);
+      }}
+    >
       <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
         <DialogHeader className="shrink-0">
           <DialogTitle>Novo Agendamento</DialogTitle>
@@ -80,34 +105,36 @@ export default function AppointmentDialog({
               professionalCount={professionals?.length ?? 0}
               onCreateClient={() => {
                 setQuickClientName("");
-                setCreatingClient(true);
+                setQuickCreate("client");
               }}
             />
           )}
 
+          {/* Selects ficam sempre montados — trocar select por mini-form no
+              mesmo lugar deixava o dropdown órfão aberto no mobile. O
+              mini-form aparece em largura total logo abaixo do campo. */}
           <div className="grid gap-2">
             <Label>Cliente</Label>
-            {creatingClient ? (
+            <ClientCombobox
+              clients={clients}
+              value={form.clientId}
+              onChange={v => onFieldChange("clientId", v)}
+              onCreate={name => {
+                setQuickClientName(name);
+                setQuickCreate("client");
+              }}
+            />
+            {quickCreate === "client" && (
               <ClientQuickCreate
                 initialName={quickClientName}
                 onCreated={id => {
                   onFieldChange("clientId", id);
-                  setCreatingClient(false);
+                  setQuickCreate(null);
                   setQuickClientName("");
                 }}
                 onCancel={() => {
-                  setCreatingClient(false);
+                  setQuickCreate(null);
                   setQuickClientName("");
-                }}
-              />
-            ) : (
-              <ClientCombobox
-                clients={clients}
-                value={form.clientId}
-                onChange={v => onFieldChange("clientId", v)}
-                onCreate={name => {
-                  setQuickClientName(name);
-                  setCreatingClient(true);
                 }}
               />
             )}
@@ -118,7 +145,13 @@ export default function AppointmentDialog({
               <Label>Profissional</Label>
               <Select
                 value={form.professionalId}
-                onValueChange={v => onFieldChange("professionalId", v)}
+                onValueChange={v => {
+                  if (v === CREATE_NEW) {
+                    setQuickCreate("professional");
+                    return;
+                  }
+                  onFieldChange("professionalId", v);
+                }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
@@ -129,6 +162,16 @@ export default function AppointmentDialog({
                       {p.name}
                     </SelectItem>
                   ))}
+                  {(professionals?.length ?? 0) > 0 && <SelectSeparator />}
+                  <SelectItem
+                    value={CREATE_NEW}
+                    className="text-primary focus:text-primary"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <Plus className="h-3.5 w-3.5" />
+                      Cadastrar novo
+                    </span>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -137,6 +180,10 @@ export default function AppointmentDialog({
               <Select
                 value={form.serviceId}
                 onValueChange={v => {
+                  if (v === CREATE_NEW) {
+                    setQuickCreate("service-main");
+                    return;
+                  }
                   onFieldChange("serviceId", v);
                   // o serviço principal não pode aparecer como adicional
                   onFieldChange(
@@ -154,10 +201,44 @@ export default function AppointmentDialog({
                       {s.name} - R$ {s.price}
                     </SelectItem>
                   ))}
+                  {(services?.length ?? 0) > 0 && <SelectSeparator />}
+                  <SelectItem
+                    value={CREATE_NEW}
+                    className="text-primary focus:text-primary"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <Plus className="h-3.5 w-3.5" />
+                      Cadastrar novo
+                    </span>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
+
+          {quickCreate === "professional" && (
+            <ProfessionalQuickCreate
+              onCreated={id => {
+                onFieldChange("professionalId", id);
+                setQuickCreate(null);
+              }}
+              onCancel={() => setQuickCreate(null)}
+            />
+          )}
+          {quickCreate === "service-main" && (
+            <ServiceQuickCreate
+              onCreated={id => {
+                onFieldChange("serviceId", id);
+                // o serviço principal não pode aparecer como adicional
+                onFieldChange(
+                  "extraServiceIds",
+                  form.extraServiceIds.filter(x => x !== id)
+                );
+                setQuickCreate(null);
+              }}
+              onCancel={() => setQuickCreate(null)}
+            />
+          )}
 
           <div className="grid gap-2">
             <Label>Serviços adicionais (opcional)</Label>
@@ -166,7 +247,21 @@ export default function AppointmentDialog({
               selectedIds={form.extraServiceIds}
               onChange={ids => onFieldChange("extraServiceIds", ids)}
               excludeIds={form.serviceId ? [form.serviceId] : []}
+              onCreate={() => setQuickCreate("service-extra")}
             />
+            {quickCreate === "service-extra" && (
+              <ServiceQuickCreate
+                onCreated={id => {
+                  // já entra marcado como adicional do atendimento
+                  onFieldChange("extraServiceIds", [
+                    ...form.extraServiceIds,
+                    id,
+                  ]);
+                  setQuickCreate(null);
+                }}
+                onCancel={() => setQuickCreate(null)}
+              />
+            )}
           </div>
 
           {unsignedConsentCount > 0 && (

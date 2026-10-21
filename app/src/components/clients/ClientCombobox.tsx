@@ -101,7 +101,7 @@ export function ClientCombobox({
               ))}
             </CommandGroup>
           </CommandList>
-          {onCreate && search.trim() && (
+          {onCreate && (
             <div className="border-t p-1">
               <button
                 type="button"
@@ -113,7 +113,9 @@ export function ClientCombobox({
                 className="w-full flex items-center gap-2 rounded px-2 py-1.5 text-sm text-primary hover:bg-primary/5"
               >
                 <span>＋</span>
-                Cadastrar "{search.trim()}"
+                {search.trim()
+                  ? `Cadastrar "${search.trim()}"`
+                  : "Cadastrar novo cliente"}
               </button>
             </div>
           )}

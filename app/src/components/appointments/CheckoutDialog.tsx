@@ -23,6 +23,7 @@ import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { maskMoneyBR, moneyBRToDot, moneyDotToBR } from "@/lib/input-masks";
 import { ServiceMultiSelect } from "./ServiceMultiSelect";
+import ServiceQuickCreate from "@/components/services/ServiceQuickCreate";
 import type { CalendarAppointment } from "@/components/calendar/types";
 import type { Service } from "@db/schema";
 
@@ -93,6 +94,7 @@ function CheckoutForm({
       .map(e => String(e.id))
       .filter(id => available.has(id));
   });
+  const [creatingService, setCreatingService] = useState(false);
 
   // Preço do serviço principal = valor sugerido inicial − extras já registrados
   const mainPrice =
@@ -108,6 +110,19 @@ function CheckoutForm({
       .filter(s => ids.includes(String(s.id)))
       .reduce((acc, s) => acc + Number(s.price), 0);
     setValor(moneyDotToBR((mainPrice + extrasTotal).toFixed(2)));
+  }
+
+  // Serviço criado na hora ainda não está na lista carregada — o preço dele
+  // entra na soma direto, sem esperar o refetch
+  function handleServiceCreated(id: string, price: string) {
+    const ids = [...extraIds, id];
+    setExtraIds(ids);
+    const extrasTotal =
+      (services ?? [])
+        .filter(s => ids.includes(String(s.id)))
+        .reduce((acc, s) => acc + Number(s.price), 0) + Number(price);
+    setValor(moneyDotToBR((mainPrice + extrasTotal).toFixed(2)));
+    setCreatingService(false);
   }
 
   const updateMutation = trpc.appointment.update.useMutation({
@@ -197,13 +212,22 @@ function CheckoutForm({
 
         <div className="space-y-1.5">
           <Label>Serviços adicionais realizados</Label>
+          {/* multi-select sempre montado — desmontar com o dropdown aberto
+              deixava o portal órfão na tela (bug no mobile) */}
           <ServiceMultiSelect
             services={services}
             selectedIds={extraIds}
             onChange={handleExtrasChange}
             excludeIds={[String(target.appointment.serviceId)]}
             placeholder="Nenhum — tocar para adicionar"
+            onCreate={() => setCreatingService(true)}
           />
+          {creatingService && (
+            <ServiceQuickCreate
+              onCreated={handleServiceCreated}
+              onCancel={() => setCreatingService(false)}
+            />
+          )}
         </div>
 
         <div className="space-y-1.5">

@@ -35,6 +35,7 @@ export function ServiceMultiSelect({
   excludeIds = [],
   placeholder = "Adicionar serviços...",
   disabled,
+  onCreate,
 }: {
   services: ServiceOption[] | undefined;
   selectedIds: string[];
@@ -42,6 +43,8 @@ export function ServiceMultiSelect({
   excludeIds?: string[];
   placeholder?: string;
   disabled?: boolean;
+  /** quando definido, mostra "Cadastrar novo serviço" no rodapé do dropdown */
+  onCreate?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const options = (services ?? []).filter(
@@ -105,6 +108,21 @@ export function ServiceMultiSelect({
                 ))}
               </CommandGroup>
             </CommandList>
+            {onCreate && (
+              <div className="border-t p-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onCreate();
+                    setOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2 rounded px-2 py-1.5 text-sm text-primary hover:bg-primary/5"
+                >
+                  <span>＋</span>
+                  Cadastrar novo serviço
+                </button>
+              </div>
+            )}
           </Command>
         </PopoverContent>
       </Popover>
