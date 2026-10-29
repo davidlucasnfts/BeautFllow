@@ -11,7 +11,10 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 
 ## ✅ Entregues
 
+> **Novo formato (a partir de outubro/2026):** cada linha descreve PRIMEIRO o valor de negócio (o que mudou para o usuário/proprietário). Detalhes técnicos (componentes, endpoints, migrations) aparecem apenas entre parênteses para quem precisar consultar depois.
+
 | Funcionalidade | Data |
+|---|---|
 |---|---|
 | Auth OAuth 2.0 Kimi + JWT sessions | — |
 | Auth local (email + senha) | — |
@@ -67,53 +70,52 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Tema primário global azul-600 (design system) + avatar com inicial na cor do segmento + "Cliente desde" + campo tags no form | 06/09 |
 | Catálogo de 9 temas (3 por segmento) com escolha do proprietário em Configurações — aplica no painel e no link de agendamento (estética deixou de ser verde → lilás) | 06/09 |
 | Widget Aniversariantes do mês na Dashboard (Fase 1) | 06/09 |
-| Fix Tailwind v4→v3 nos componentes shadcn (110 ocorrências, 27 arquivos) — sidebar fixa não cobre mais o conteúdo ao reduzir a tela | 08/09 |
-| Clientes em lista padrão Fila do Dia (Opção A): ficha expande na linha, ações na lateral | 08/09 |
-| Ícone oficial do WhatsApp (WhatsAppIcon) em toda a ficha/lista de clientes | 08/09 |
-| Ficha do cliente: Aniversário dd/mm + idade, Última visita e Histórico recente de atendimentos (endpoint `appointment.historyByClient`) | 08/09 |
-| Status dos clientes híbrido: regras automáticas configuráveis (VIP por gasto ou atendimentos no mês, dias p/ Sumindo/Inativo) + seletor manual por cliente + totais reais de visitas/gasto recalculados ao listar (migration 007) | 08/09 |
-| Renomeação "Visitas" → "Atendimentos" nas telas de cliente | 08/09 |
-| DatePicker com seletor de mês e ano (dropdowns) em todas as telas — nascimento bloqueia datas futuras | 09/09 |
-| Página de Serviços: preço no padrão Brasil (R$ 100,00), botões no design system (fundo suave), busca por nome/categoria, sugestão de categorias, duplicar serviço, seção Inativos com Reativar, checkbox shadcn, form extraído p/ componente | 12/09 |
-| Ciclo da agenda completo: Concluir com check-out financeiro vinculado, board "Agendamentos de hoje" na Dashboard, cancelar com confirmação | 07/09 |
-| Ciclo da agenda: `Agendado → (Iniciar) → Em andamento → (Concluir) → Completo`, com Cancelar até o fim (outline); removido "Confirmar"; badge "Chegou" virou "Em andamento" na cor do tema; DatePicker calendário em todos os campos de data; ações da fila do dia compactas alinhadas à direita | 08/09 |
-| Fix crítico: componentes shadcn convertidos de sintaxe Tailwind v4 para v3 (110 ocorrências, 27 arquivos) — sidebar fixa não cobre mais o conteúdo, selects/menus com max-height e origem de animação corretos | 08/09 |
-| Clientes em lista padrão Fila do Dia (Opção A aprovada via `docs/clientes-preview.html`): ficha expande na linha com borda lilás, WhatsApp ícone oficial sozinho, Editar azul, Excluir outline; grid de cards removido | 08/09 |
-| Agenda Opção 5: linha única estilo Google Calendar + chips de profissional com cor (dia/semana, mobile+desktop) + navegação central clicável + mês com contagem + alerta de pendentes (últimos 90 dias) + fix filtro na fila mobile (mockup `docs/mockups/agendamento-seletor-visao.html`) | 15/09 |
-| Agenda: botão "Hoje" removido, checkout bloqueia valor zerado, cabeçalhos S3+D2 (semana com número grande + contagem; dia com hierarquia tipográfica) — mockup `docs/mockups/agenda-cabecalhos-dia-semana.html` | 17/09 |
-| Financeiro padrão design system: editar/excluir lançamento (endpoints `financial.update`/`financial.delete` + audit), ficha expansível, moeda pt-BR, ações na primeira coluna, form extraído | 19/09 |
-| Termos de Consentimento: ver texto completo/ editar/ excluir (endpoints `consent.update`/`consent.delete` + audit, delete remove assinaturas vinculadas), checklist LGPD decorativo removido | 19/09 |
-| Profissionais padrão design system: ficha expansível, desativar/reativar (soft delete, endpoints `professional.delete`/`professional.reactivate` + audit), busca, ícone correto no campo bio, input de horários de trabalho | 19/09 |
-| Comunicação: reenviar (form pré-preenchido) / excluir mensagem (endpoint `communication.delete` + audit), ficha expansível com conteúdo, cards de marketing reduzidos a 1 hint | 19/09 |
-| Login/Cadastro: ícone nos botões principais + toast de sucesso após criar conta | 19/09 |
-| Trava de isolamento por salão: `assertSalonMember/Admin` na 1ª linha de todos os resolvers + limpeza do salão ativo na troca de conta (LGPD) | 26/09 |
-| Campo de cliente com busca (combobox) em agendamento, financeiro e mensagens | 26/09 |
-| Múltiplos serviços por atendimento (serviço principal + extras) | 26/09 |
-| Comissões/pagamentos de funcionários + desempenho por profissional (itens 1+5 da fila) | 29/09 |
-| Retorno programado pós-procedimento: `client_follow_ups`, dias/serviço sugerido por serviço, card no dashboard com Agendar/Dispensar (migration 011) | 29/09 |
-| Dialogs com cabeçalho/rodapé fixos (9 telas): ação principal nunca escondida; cancelar agendamento apaga retorno vinculado; vencimento do retorno pela data de conclusão | 30/09 |
-| Estoque de produtos: aba "Produtos" com cadastro, entradas/saídas transacionais (sem saldo negativo), alerta de estoque baixo, histórico e resumo investido (migration 012) | 30/09 |
-| Controle de acessos: equipe com convites por e-mail (migration 014), limite por plano (Free 1 / Essencial 3 / Pro 8), matriz de permissões por papel, guards de role no backend, página Equipe e aceite público de convite | 04/10 |
-| Marca StudioFlow oficial: logo gerada por IA do David é a fonte de tudo (`docs/brand/logo-original.png` → pipeline `scripts/process-brand-logo.mjs` → `public/brand/` + ícones PWA via `generate-brand-icons.mjs`); lockup completo em sidebar (desktop+mobile), landing, login, proposta, rodapés e skeleton; SVGs recriados descartados | 13/10 |
-| Drawer mobile sempre exibe logo + cartão do salão (state do provider era do desktop e escondia o conteúdo) | 14/10 |
-| Card de profissional: avatar com iniciais na cor do profissional, comissão oculta quando zero | 15/10 |
-| Cor do profissional automática: paleta rotativa atribuída no backend (PROFESSIONAL_COLORS), campo removido do formulário — igual ao padrão da remoção da cor do serviço | 15/10 |
-| Produtos: resumo em 3 colunas no mobile, filtro "Só estoque baixo", badge "Ativo" redundante removido, card de alerta destacado | 15/10 |
-| Financeiro completo (proposta aprovada `docs/mockups/proposta-melhorias-financeiro.html`): tipo Despesa (migration 015), ganho líquido real (receita − comissões − despesas) + card Despesas, edição de profissional/comissão no lançamento, mês e formas de pagamento em pt-BR, seletor de mês padronizado (DatePicker), filtro por profissional (chips) na aba Comissões | 15/10 |
-| Script `app/scripts/apply-migration.mjs`: Kimi aplica migrations sozinho via DATABASE_URL do `.env` — regra no AGENTS.md, sem ação manual do David | 15/10 |
-| Modelos prontos de Termos de Autorização (proposta aprovada `docs/mockups/proposta-termos-modelos.html`): seletor "Começar de um modelo" no diálogo Novo Termo com 4 textos jurídicos (LGPD, capilares químicos, estéticos, uso de imagem antes/depois) + aviso "revise com advogado"; textos fixos em `src/components/consent/consent-templates.ts`, cada uso gera cópia isolada por salonId | 16/10 |
-| Ciclo de consentimento fechado (proposta aprovada `docs/mockups/proposta-ciclo-consentimento.html`): checkbox LGPD no cadastro/edição de cliente grava `consentGiven`/`consentGivenAt` (client-router); aceite obrigatório no agendamento público `/agendar/:slug` (cliente novo entra consentido); coleta de assinatura na ficha do cliente (`ClientConsentSection.tsx` — termo exibido com `[NOME DO CLIENTE]`/`[NOME DO ESTABELECIMENTO]` substituídos via `render-term.ts`, confirmação grava `signatureData` com texto renderizado + agreedAt); aviso âmbar de `requiresConsent` no diálogo de agendamento interno; botão "Resolver" do alerta LGPD leva para `/clients` | 16/10 |
-| Tela de Termos aprimorada (proposta aprovada `docs/mockups/proposta-melhorias-termos.html`): estado vazio com 4 atalhos que criam termo direto do modelo (`ConsentEmptyState.tsx`); desativar/reativar com histórico preservado (`setActive` + trava: termo com assinaturas não pode ser excluído); badge "X assinaturas" por termo (`signatureCount` no list); card LGPD recolhível aberto por padrão só quando a lista está vazia | 16/10 |
-| Fix contraste: telefone/preço nos comboboxes herdam cor do contexto (`opacity-60`), `--muted-foreground` mais escuro no tema claro (45%→32%) | 17/10 |
-| Fix mobile: texto e título do card de termo estouravam a largura (`min-w-0` + `break-words`, mesmo padrão do ServiceCard) | 17/10 |
-| Reenviar convite da equipe (proposta aprovada `docs/mockups/proposta-reenviar-convite.html`): `team.resend` (mesmo token/link, valida pendente/não expirado, audit log); botões "Reenviar" e "Copiar link" na lista de pendentes (`PendingInvites.tsx`); e-mail extraído pra `team-invite-mail.ts`; fluxos públicos movidos pra `invite-router.ts` (regra 400 linhas) | 17/10 |
-| Configurações v1 (proposta aprovada `docs/mockups/proposta-melhorias-configuracoes.html`, sem migration — tudo no JSON `salons.settings`): dias de funcionamento (checkboxes 7 dias, `workDays`), pausa/almoço bloqueando slots (`breakStart`/`breakEnd`), antecedência mínima e máxima do agendamento online (`minAdvanceMinutes`/`maxAdvanceDays`, só no público), toggle "pausar agendamento online" (`onlineBookingPaused`, página pública mostra aviso com CTA WhatsApp), troca de segmento (salão/barbearia/estética) com reset de tema; regras aplicadas no público (`public-router.ts`) e na agenda interna; Settings.tsx dividido em cards (`ScheduleSettingsCard.tsx`, `AppearanceCard.tsx`) | 17/10 |
-| Card de horário de funcionamento redesenhado: dias da semana como botões-pílula toggle, seções agrupadas com ícones (funcionamento/pausa/agendamento online) | 17/10 |
-| Cadastro inline de cliente no agendamento + onboarding 3+3 + lembrete de nascimento (proposta `docs/mockups/proposta-agendamento-facilitado.html`): `ClientQuickCreate.tsx` (mini-form nome/telefone/LGPD dentro do `AppointmentDialog`), `OnboardingChecklist.tsx` na agenda (progresso 3 serviços + 3 profissionais, botão "Sou eu mesmo"), badge/filtro "Sem nascimento" na aba Clientes, toggle "Mostrar guia de primeiros passos" em Configurações (`showOnboarding` em `salons.settings`) | 19/10 |
-| Fix erro intermitente "Failed query" (ex.: editar lançamento no Financeiro): causa era conexão ociosa morta pelo Supabase sendo reusada; adicionado `idle_timeout`/`max_lifetime`/`connect_timeout` na conexão (`server/queries/connection.ts`) — podia ocorrer em qualquer tela | 18/10 |
-| Fix real do erro ao editar lançamento no Financeiro: `commissionAmount` ia com vírgula ("0,00") sem conversão pro formato do banco em `FinancialFormDialog.tsx` (só `amount` era convertido); Postgres rejeita vírgula em numeric. Verificado que Serviços, Produtos, Checkout e Comissões já convertiam certo | 18/10 |
-| Fix responsivo "vale do tablet" (768–1280px com sidebar): KPIs do Financeiro em 4 colunas só no `xl` (antes `md` → valores clipavam), valores monetários com tamanho fluido + `whitespace-nowrap` + `min-w-0`, tabelas do Financeiro e Produtos só aparecem no `lg` (tablet usa lista de cards); validado com screenshots automatizados (Playwright) a 950px e 1280px | 18/10 |
-| Cadastro rápido de profissional e serviço dentro do agendamento e checkout: `ProfessionalQuickCreate.tsx` (nome + comissão + "Sou eu"), `ServiceQuickCreate.tsx` (nome + preço + duração), item "＋ Cadastrar novo" sempre visível nos selects/comboboxes (padrão Booksy/AgendaPro), serviço criado no checkout já soma no valor; só um mini-form aberto por vez (estado único), campos sempre montados (desmontar select com dropdown aberto deixava portal órfão no mobile = "drop fixo") | 21/10 |
+| Clientes exibidos em lista expansível na Fila do Dia, com WhatsApp e ações rápidas na lateral | 08/09 |
+| Ícone oficial do WhatsApp em toda a ficha e lista de clientes | 08/09 |
+| Ficha do cliente mostra aniversário com idade, última visita e histórico recente de atendimentos | 08/09 |
+| Clientes ganham status automático (VIP, Sumindo, Inativo) baseado em gasto/frequência, com possibilidade de ajuste manual | 08/09 |
+| Termo "Visitas" trocado por "Atendimentos" nas telas de cliente | 08/09 |
+| Seletor de mês e ano em campos de data; nascimento bloqueia datas futuras | 09/09 |
+| Catálogo de serviços com preço em reais, busca por nome/categoria, sugestão de categorias, duplicar serviço e seção de inativos | 12/09 |
+| Ciclo completo do agendamento: iniciar atendimento, concluir com check-out financeiro, cancelar com confirmação; Dashboard mostra atendimentos do dia | 07/09 |
+| Fluxo de status do atendimento simplificado: Agendado → Em andamento → Completo/Cancelado | 08/09 |
+| Correção crítica na biblioteca de componentes que fazia a sidebar cobrir o conteúdo e menus não abrirem corretamente | 08/09 |
+| Fila do Dia redesenhada: lista de clientes com ficha expansível, WhatsApp, Editar e Excluir — grid de cards removido | 08/09 |
+| Agenda redesenhada no estilo Google Calendar, com chips coloridos por profissional, navegação central, alerta de agendamentos pendentes | 15/09 |
+| Cabeçalhos da agenda ajustados para semana/dia/mês; checkout não permite valor zerado | 17/09 |
+| Financeiro permite editar e excluir lançamentos, mostrar valores em real, e filtrar comissões por profissional | 19/09 |
+| Termos de autorização podem ser editados, excluídos e reativados; exclusão remove assinaturas vinculadas | 19/09 |
+| Profissionais ganham ficha expansível, opção de desativar/reativar, busca e campo de horários | 19/09 |
+| Mensagens podem ser reenviadas e excluídas, com ficha expansível | 19/09 |
+| Telas de login e cadastro ganham ícones nos botões e feedback visual de sucesso | 19/09 |
+| Dados de cada salão ficam isolados: nenhum usuário acessa informação de outro estabelecimento | 26/09 |
+| Campos de cliente em agendamento, financeiro e mensagens ganham busca rápida | 26/09 |
+| Um agendamento pode incluir serviço principal + serviços adicionais | 26/09 |
+| Controle de comissões e desempenho por profissional na fila do dia | 29/09 |
+| Sistema sugere retorno de clientes após procedimentos, com card no dashboard | 29/09 |
+| Formulários mantêm botões de ação sempre visíveis, mesmo rolando a página | 30/09 |
+| Controle de estoque com entradas/saídas, alerta de estoque baixo e histórico | 30/09 |
+| Controle de equipe: convidar funcionários por e-mail com limite por plano e permissões por papel (Free 1 / Essencial 3 / Pro 8) | 04/10 |
+| Identidade visual StudioFlow aplicada em toda a plataforma, landing page e tela de login (geração de logo, ícones PWA, sidebar e skeleton) | 13/10 |
+| Menu mobile sempre exibe a marca e o cartão do salão ativo | 14/10 |
+| Ficha do profissional com avatar de iniciais e comissão oculta quando é zero | 15/10 |
+| Cores dos profissionais na agenda atribuídas automaticamente (sem precisar escolher cor no cadastro) | 15/10 |
+| Página de produtos otimizada para celular, com filtro "Só estoque baixo" e alertas visuais | 15/10 |
+| Financeiro completo: controle de despesas, ganho líquido real (receita − comissões − despesas) e filtro de comissões por profissional | 15/10 |
+| Kimi aplica migrations sozinho pelo script `app/scripts/apply-migration.mjs` — sem ação manual do David | 15/10 |
+| Modelos prontos de termos de autorização (LGPD, procedimentos químicos, estética e uso de imagem) | 16/10 |
+| Coleta de consentimento LGPD fechada: checkbox no cadastro de cliente, aceite obrigatório no agendamento online e assinatura digital na ficha do cliente | 16/10 |
+| Tela de termos de autorização aprimorada: atalhos para criar do modelo, contador de assinaturas e ativar/desativar termos | 16/10 |
+| Melhoria no contraste dos textos secundários para facilitar a leitura | 17/10 |
+| Cards de termos ajustados para não estourar a largura no celular | 17/10 |
+| Convites de equipe podem ser reenviados e copiados por link | 17/10 |
+| Configurações do estabelecimento: dias/horários de funcionamento, pausa de almoço, antecedência do agendamento online e opção de pausar o link público | 17/10 |
+| Tela de horários de funcionamento redesenhada com botões-pílula por dia da semana | 17/10 |
+| Agendamento facilitado: cadastro rápido de cliente dentro da agenda, guia de primeiros passos (3 serviços + 3 profissionais) e lembrete de data de nascimento | 19/10 |
+| Correção de erro intermitente ao salvar dados causado por conexão ociosa com o banco | 18/10 |
+| Correção definitiva do erro ao editar lançamento financeiro (vírgula no campo de comissão) | 18/10 |
+| Ajuste responsivo para telas de tamanho médio (tablet): KPIs, tabelas e valores monetários não quebram mais | 18/10 |
+| Agendamento ganha cadastro rápido de profissional e serviço dentro do próprio formulário; serviço criado no checkout já soma no valor do atendimento | 21/10 |
 
 ---
 

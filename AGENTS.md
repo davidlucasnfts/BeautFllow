@@ -86,6 +86,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 
 ### Sincronização de Arquivos de Projeto
 - **Sempre atualizar MEMORY.md e ROADMAP.md** quando uma funcionalidade for adicionada, removida ou concluída
+- **Linguagem dos registros:** descrições em `MEMORY.md`, `SESSION-CONTEXT.md` e `ROADMAP.md` devem ser escritas PRIMEIRO em **linguagem de negócio** (o que a funcionalidade faz, quem usa, qual problema resolve). Detalhes técnicos (componentes, endpoints, migrations) só aparecem entre parênteses ou em coluna/seção técnica separada. David não é desenvolvedor — ele precisa entender o valor, não o código.
 - **Sempre atualizar arquivos mencionados** quando o usuário pedir remoção, alteração ou renomeação de qualquer item
 - Nunca deixar arquivo de documentação desatualizado após mudanças no projeto
 - **Nunca duplicar informação** entre arquivos de documentação — cada arquivo tem função única (ver `docs/documentacao-estrutura.md`)

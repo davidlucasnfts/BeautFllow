@@ -7,35 +7,42 @@
 
 ## Resumo das sessões (19/10–21/10) — Agendamento facilitado completo
 
-**Sessão 19/10 — Onboarding dentro do agendamento (commits até `34a23e5`):**
-- `ClientQuickCreate.tsx`: mini-form de cliente (nome/telefone/LGPD) dentro do dialog de agendamento — dono novo não precisa sair do fluxo
-- `OnboardingChecklist.tsx`: guia 3 serviços + 3 profissionais na agenda; modo compacto dentro do dialog avisa o que falta cadastrar; botão "Sou eu" cria o dono como profissional
-- Badge/filtro "Sem nascimento" na aba Clientes (dado alimenta relatório e promoções de aniversário)
-- Toggle "Mostrar guia de primeiros passos" em Configurações (`showOnboarding` em `salons.settings`)
-- Fix: botão duplicado de cadastrar cliente; banner PWA sempre com botão principal (passo a passo atrás do botão)
+**Sessão 19/10 — Onboarding dentro do agendamento:**
+- Dono novo consegue cadastrar o primeiro cliente dentro da própria tela de agendamento, sem sair do fluxo (nome, telefone e autorização LGPD)
+- Agenda ganha guia de primeiros passos: cadastrar 3 serviços e 3 profissionais, com botão "Sou eu" pra usar o próprio nome como profissional
+- Diálogo de novo agendamento avisa o que ainda falta cadastrar (cliente, serviço ou profissional)
+- Aba Clientes ganha filtro/badge "Sem nascimento" pra lembrar de completar a data (usada depois em relatórios e promoções de aniversário)
+- Configurações ganha toggle "Mostrar guia de primeiros passos" (o dono pode desligar quando quiser)
+- Ajustes: removeu botão duplicado de cadastrar cliente; banner de instalação no celular ficou mais limpo, com um botão principal e passo a passo escondido
 
-**Sessão 21/10 — Cadastro rápido de profissional e serviço (commit `6369656`, PUSHADO):**
-- `ProfessionalQuickCreate.tsx` (nome + comissão opcional + "Sou eu") e `ServiceQuickCreate.tsx` (nome + preço + duração) — padrão Booksy/AgendaPro: item "＋ Cadastrar novo" sempre visível nos selects
-- Serviço criado no checkout já soma no valor do atendimento
-- **Fix mobile importante (aprender):** selects/comboboxes NUNCA podem desmontar com o dropdown aberto — o portal do Radix fica órfão na tela ("drop fixo") e cobre os botões. Solução: campos sempre montados, mini-form aparece em largura total abaixo do campo, só um aberto por vez (estado único `quickCreate`)
+**Sessão 21/10 — Cadastro rápido de profissional e serviço (PUSHADO):**
+- Dono consegue cadastrar profissional e serviço direto dentro da tela de agendamento (padrão usado por Booksy e AgendaPro)
+- Profissional: nome + comissão opcional + botão "Sou eu"
+- Serviço: nome + preço + duração
+- No checkout (finalizar atendimento), dá pra criar um serviço extra e o valor já entra no total automaticamente
+- **Aprendizado técnico registrado:** no mobile, não se pode trocar um campo de seleção por um formulário enquanto o dropdown está aberto — isso deixava o menu "preso" na tela e travava os botões. Solução: campos sempre visíveis, mini-form aparece abaixo deles, e só um mini-form aberto por vez
 
-## Resumo da sessão (18/10) — Push completo + fixes Financeiro
+## Resumo da sessão (18/10) — Configurações, acessibilidade e correções no Financeiro
 
-**PUSH em 18/10 (`072ccb1`→`4faf262`, 17 commits):** Configurações v1 completa, fix Select vazio, redesign do card de horário (dias como botões-pílula), fonte base 18px só no desktop (acessibilidade), fix conexão ociosa Supabase (`idle_timeout` em `server/queries/connection.ts`) e **fix real do erro ao editar lançamento**: `commissionAmount` ia com vírgula sem conversão em `FinancialFormDialog.tsx` (erro 018 no AGENTS.md + regra global no `MestreProjects.md` §3.1).
+**PUSH em 18/10 (17 commits):** Configurações do estabelecimento concluídas, fonte maior no desktop, redesign do horário de funcionamento e correção do erro ao editar lançamento financeiro.
 
-**Lote 17/10b — Configurações v1 (commits `b62cd98`→`4e6b974`):** proposta `docs/mockups/proposta-melhorias-configuracoes.html`. Sem migration (tudo em `salons.settings` JSON): dias de funcionamento (`workDays`), pausa/almoço (`breakStart`/`breakEnd`), antecedência mín/máx do agendamento online (só no público), toggle "pausar agendamento online" (página pública mostra aviso + CTA WhatsApp), troca de segmento com reset de tema. Settings.tsx dividida em cards. **Ficaram pra depois (anotados abaixo nas pendências):** logo (item 3), WhatsApp separado + Instagram (7), lembretes automáticos (8), CNPJ/plano (9).
+**Lote 17/10b — Configurações v1:**
+- Dono pode configurar dias e horários de funcionamento, pausa de almoço e antecedência do agendamento online
+- Pode pausar o link de agendamento online (cliente vê aviso e é direcionado pro WhatsApp)
+- Pode trocar o segmento (salão/barbearia/estética), com tema atualizado automaticamente
+- **Ficaram pra depois:** upload de logo do estabelecimento, WhatsApp separado + Instagram na página pública, lembretes automáticos de WhatsApp, CNPJ/razão social e exibição do plano atual
 
-**Lote 17/10 — Contraste + fix mobile + reenvio de convite (commits `d412131`→`82245fa`):**
-- Fix contraste: textos secundários dos comboboxes herdam cor do contexto; `--muted-foreground` mais escuro (45%→32%)
-- Fix mobile: card de termo estourava a tela (título e conteúdo) — `min-w-0` + `break-words` no padrão do ServiceCard
-- Reenviar convite da equipe (proposta `docs/mockups/proposta-reenviar-convite.html`): `team.resend` (mesmo token, valida pendente/não expirado); botões "Reenviar" e "Copiar link" na lista de pendentes; sem e-mail configurado reabre a caixa do link — resolve o fluxo atual que é WhatsApp
-- Infra: fluxos públicos de convite movidos pra `invite-router.ts` (regra 400 linhas), envio de e-mail extraído pra `team-invite-mail.ts`
+**Lote 17/10 — Melhorias visuais + convites da equipe:**
+- Textos secundários ficaram mais escuros, mais fáceis de ler
+- Cards de termos de autorização ajustados pra não estourarem a tela no celular
+- Convites de equipe podem ser reenviados e copiados por link (funciona bem pelo WhatsApp enquanto o domínio de e-mail não está verificado)
 
-**Lote 16/10 — Ciclo de consentimento completo (commits `12af77c`→`d3416ee`):**
-- Modelos prontos de Termos: seletor "Começar de um modelo" no Novo Termo, 4 textos jurídicos em `src/components/consent/consent-templates.ts`
-- Ciclo fechado (proposta `docs/mockups/proposta-ciclo-consentimento.html`): checkbox LGPD no cadastro/edição de cliente (`consentGiven`/`consentGivenAt` via client-router); aceite obrigatório no agendamento público (cliente novo entra consentido); coleta de assinatura na ficha do cliente (`ClientConsentSection.tsx` — termo renderizado com nome do cliente e do salão via `render-term.ts`, `signatureData` guarda texto + agreedAt, responsável = usuário logado); aviso âmbar de `requiresConsent` no agendamento interno; botão "Resolver" do alerta LGPD → `/clients`
-**Lote 16/10 — Tela de Termos aprimorada (commits `9f73acc`→`a2a3d18`):** proposta `docs/mockups/proposta-melhorias-termos.html` aprovada na íntegra. Estado vazio com 4 atalhos que criam termo direto do modelo; desativar/reativar (coluna `isActive` que já existia) com trava: termo com assinaturas não pode ser excluído; badge "X assinaturas" por termo; card educativo LGPD recolhível. `consent.list` agora retorna inativos + count — consumidores filtram (`ClientConsentSection` filtra só ativos).
-- Antes disso o alerta LGPD nunca zerava (nenhum código gravava `consentGiven = true`) e os endpoints `consent.sign`/`signaturesByClient` não tinham tela
+**Lote 16/10 — Ciclo de consentimento LGPD fechado:**
+- Termos de autorização ganham 4 modelos prontos (LGPD, procedimentos químicos, estética e uso de imagem)
+- Cliente novo aceita os termos no cadastro e no agendamento online
+- Ficha do cliente permite coletar assinatura digital do termo
+- Tela de termos mostra quantas assinaturas cada um tem e permite ativar/desativar sem perder histórico
+- Antes dessa entrega, o alerta de consentimento pendente nunca zerava porque o sistema não gravava o aceite
 
 **TUDO PUSHADO para produção em 15/10** (~31 commits). Lotes:
 - **Marca (13-14/10):** logo original da IA do David é a fonte de tudo (pipeline `process-brand-logo.mjs` → `public/brand/` + ícones PWA); lockup em sidebar (desktop+mobile, drawer mobile corrigido pra sempre mostrar logo+cartão), landing, login, proposta, rodapés; SVGs recriados descartados
