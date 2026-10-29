@@ -1,9 +1,23 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 18/10/2026 (lote 17/10b + 18/10 PUSHADO: Configurações v1, fonte 18px desktop, fixes Financeiro/conexão)
+> **Atualizado em:** 21/10/2026 (sessões 19/10–21/10: onboarding dentro do agendamento, cadastro rápido de profissional/serviço, fix mobile. Push `6369656` em produção)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md`, não no histórico do chat (chat longo deixa o Kimi lento; regra nova no AGENTS.md).
 
 ---
+
+## Resumo das sessões (19/10–21/10) — Agendamento facilitado completo
+
+**Sessão 19/10 — Onboarding dentro do agendamento (commits até `34a23e5`):**
+- `ClientQuickCreate.tsx`: mini-form de cliente (nome/telefone/LGPD) dentro do dialog de agendamento — dono novo não precisa sair do fluxo
+- `OnboardingChecklist.tsx`: guia 3 serviços + 3 profissionais na agenda; modo compacto dentro do dialog avisa o que falta cadastrar; botão "Sou eu" cria o dono como profissional
+- Badge/filtro "Sem nascimento" na aba Clientes (dado alimenta relatório e promoções de aniversário)
+- Toggle "Mostrar guia de primeiros passos" em Configurações (`showOnboarding` em `salons.settings`)
+- Fix: botão duplicado de cadastrar cliente; banner PWA sempre com botão principal (passo a passo atrás do botão)
+
+**Sessão 21/10 — Cadastro rápido de profissional e serviço (commit `6369656`, PUSHADO):**
+- `ProfessionalQuickCreate.tsx` (nome + comissão opcional + "Sou eu") e `ServiceQuickCreate.tsx` (nome + preço + duração) — padrão Booksy/AgendaPro: item "＋ Cadastrar novo" sempre visível nos selects
+- Serviço criado no checkout já soma no valor do atendimento
+- **Fix mobile importante (aprender):** selects/comboboxes NUNCA podem desmontar com o dropdown aberto — o portal do Radix fica órfão na tela ("drop fixo") e cobre os botões. Solução: campos sempre montados, mini-form aparece em largura total abaixo do campo, só um aberto por vez (estado único `quickCreate`)
 
 ## Resumo da sessão (18/10) — Push completo + fixes Financeiro
 
