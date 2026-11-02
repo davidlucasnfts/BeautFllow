@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 21/10/2026 (sessões 19/10–21/10: onboarding dentro do agendamento, cadastro rápido de profissional/serviço, fix mobile. Push `6369656` em produção)
-> **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md`, não no histórico do chat (chat longo deixa o Kimi lento; regra nova no AGENTS.md).
+> **Atualizado em:** 02/11/2026 (sessão de análise de negócio: ROADMAP.md reescrito com fases, gaps e plano até "pronto para vender". Sessões 19/10–21/10 pushadas em produção)
+> **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md` + `ROADMAP.md`, não no histórico do chat (chat longo deixa o Kimi lento; regra nova no AGENTS.md).
 
 ---
 

@@ -1,58 +1,182 @@
-# StudioFlow — Roadmap
+# StudioFlow — Roadmap Estratégico
 
-> **Arquivo de referência.** Para contexto rápido, leia MEMORY.md primeiro.
-
-Última atualização: 19/09/2026
-
----
-
-## Plano de Progresso
-
-> Modelo obrigatório definido em `MestreProjects.md` (seção 9).
-
-| Fase | Nome | Status | Observação |
-|------|------|--------|------------|
-| 0 | Setup | ✅ | Repo, Vercel, Supabase, CI/CD, docs (05/05) |
-| 1 | MVP funcional | ✅ | Dashboard, clientes, agenda, serviços, profissionais, financeiro, mensagens, termos (07/05–24/08) |
-| 2 | Testes e estabilização | [~] | Feito: cadastro/login/onboarding, menu mobile, linguagem de balcão (106 textos), fix do auth, OAuth Kimi removido, migration 005 (RLS em salons). **Falta no smoke test:** cadastrar cliente/serviço/profissional, agendamento completo, financeiro |
-| 3 | Produção | [~] | Produção no ar (`studioflow-navy.vercel.app`). **Falta:** push das correções, testar cadastro/login em produção, remover env vars `APP_ID`/`OWNER_UNION_ID` da Vercel, decidir destino do projeto antigo `beaut-flow` |
-| 4 | Pronto para vender | ⏳ | Falta: landing pages por segmento (`/salao-de-beleza`, `/barbearia`, `/estetica`), preços definidos, domínio `studioflow.com.br` (comprar) |
-| 5 | Primeiros clientes | ⏳ | — |
-| 6 | Crescimento | ⏳ | — |
-
-**Próxima ação:** completar o smoke test da Fase 2 local → push → validar Fase 3 em produção.
+> **Última atualização:** 02/11/2026
+> **Versão:** 2.0 (revisão de negócio)
+> **Meta atual:** Fase 4 — Pronto para vender
 
 ---
 
-## 🎯 Passos para Sucesso do Produto (SaaS)
+## Resumo Executivo
 
-> Levantamento estratégico de 08/09/2026: arquitetura técnica está alinhada com o mercado (stack, segurança, processo). Os itens abaixo são os débitos que separam "app pronto" de "produto que vende".
+O **StudioFlow** é um SaaS de gestão para **salões de beleza, barbearias e clínicas de estética**. O núcleo operacional já funciona: clientes, agenda, financeiro, serviços, profissionais, estoque, termos LGPD e equipe.
 
-| Ordem | Item | Por que é crítico | Status |
-|-------|------|-------------------|--------|
-| 1 | **Cobrança recorrente** (Stripe ou Mercado Pago) | Sem billing não é SaaS — é software gratuito. Bloqueia a Fase 5 (primeiros clientes) | ⏳ |
-| 2 | **Sentry ativo em produção** | Código já integrado (`main.tsx`), mas só liga com `VITE_SENTRY_DSN` na Vercel — verificar se a env var está configurada | [~] |
-| 3 | **Analytics de uso** (ex: Plausible/Umami) | Sem dados de uso não dá para saber onde o cliente trava e o que melhorar | ⏳ |
-| 4 | **Onboarding guiado** (checklist "configure seu salão em 5 passos") | SaaS de sucesso reduz desistência do trial no dia 1 | ⏳ |
-| 5 | **Testes E2E** (Playwright) nos fluxos críticos: login, agendar, concluir atendimento, financeiro | Cobertura unitária existe (60 testes); E2E protege o que gera receita | ⏳ |
-| 6 | **Distribuição** (canal de aquisição) | Decisão de negócio do David — app bom sem canal de aquisição morre. Ligado à Fase 4 (landings por segmento) | ⏳ |
+O que separa o app atual de um **produto que vende** está no lado comercial e de comunicação: **cobrança recorrente**, **landing pages por segmento**, **confirmação/lembrete automático por WhatsApp** e **testes de ponta a ponta**.
 
-Ordem sugerida de ataque: 1 → 2 → 3 → 4 → 5 (o 6 acontece em paralelo com o negócio).
-
-### Diferenciais de produto (decidido em 12/09/2026)
-
-> Agenda em si é commodity (Booksy/Fresha têm igual). O destaque do StudioFlow vem dos pilares: **WhatsApp-first, reengajamento automático, simplicidade**. Itens abaixo são os próximos saltos de valor na agenda:
-
-| Item | Valor para o dono | Status |
-|------|-------------------|--------|
-| **Indicador de cliente atrasado** (horário passou, status ainda "agendado") | O app "trabalha por ele" — avisa que fulana não chegou | ⏳ |
-| **Confirmação automática por WhatsApp** (lembrete + botão de confirmar) | Reduz falta em até 30-50% — argumento de venda direto | ⏳ |
-| **Botão "Hoje"** na navegação semana/mês | Volta ao dia atual com 1 clique | ⏳ |
-| Reengajamento automático: cliente sumido, aniversariante, pós-atendimento | Receita recuperada sem esforço — o diferencial central | ⏳ |
+> **Próxima decisão estratégica:** definir planos e preços (Free / Essencial / Pro) e escolher gateway de pagamento (Stripe ou Mercado Pago).
 
 ---
 
-## Registro de Alterações
+## ✅ O que já está entregue (por área de negócio)
+
+### 1. Identidade e acesso
+- Cadastro e login com e-mail e senha
+- Onboarding com escolha de segmento (salão / barbearia / estética)
+- Marca StudioFlow aplicada no app, landing page e tela de login
+- Convites de equipe com permissões por papel (dono, gerente, recepcionista, profissional)
+
+### 2. Gestão de clientes
+- Cadastro de clientes com nome, telefone/WhatsApp e data de nascimento
+- Ficha do cliente com aniversário, última visita e histórico de atendimentos
+- Status automático (VIP, Sumindo, Inativo) baseado em gasto e frequência
+- Coleta de consentimento LGPD e termos de autorização
+- Busca rápida de cliente em agendamento, financeiro e mensagens
+
+### 3. Agenda e atendimentos
+- Agenda dia/semana/mês com visual estilo Google Calendar
+- Cadastro de serviços e profissionais
+- Agendamento com serviço principal + serviços adicionais
+- Fluxo de status: Agendado → Em andamento → Completo/Cancelado
+- Check-out financeiro vinculado ao atendimento
+- Retornos programados pós-procedimento
+- Link de agendamento online público para clientes
+
+### 4. Financeiro
+- Lançamentos de receita e despesa
+- Controle de comissões por profissional
+- Ganho líquido real (receita − comissões − despesas)
+- Filtros por profissional e mês
+
+### 5. Produtos e estoque
+- Cadastro de produtos
+- Entradas e saídas de estoque
+- Alerta de estoque baixo
+
+### 6. Configurações do estabelecimento
+- Dias e horários de funcionamento
+- Pausa de almoço
+- Antecedência mínima/máxima do agendamento online
+- Opção de pausar o link público
+- Troca de segmento
+- Tema e cores
+
+### 7. Compliance e segurança
+- Termos de autorização com modelos prontos
+- Assinatura digital na ficha do cliente
+- Isolamento de dados por salão
+- Logs de auditoria em operações críticas
+- Rate limiting e headers de segurança
+
+---
+
+## ⚠️ Gaps críticos para vender
+
+| # | Gap | Por que é crítico | Prioridade |
+|---|---|---|---|
+| 1 | **Sem cobrança recorrente** | Sem planos pagos, o SaaS não gera receita | Must |
+| 2 | **Sem landing pages por segmento** | Cliente não se identifica com copy genérica | Must |
+| 3 | **Sem confirmação/lembrete por WhatsApp** | Perde o principal diferencial prometido | Must |
+| 4 | **Sem testes E2E nos fluxos de receita** | Bug em produção quebra vendas e confiança | Should |
+| 5 | **Sentry/Analytics não ativos** | Não sabemos onde os usuários travam | Should |
+| 6 | **Sem domínio próprio** | Aparenta amadorismo e dificulta o marketing | Should |
+| 7 | **Sem relatórios/exportação** | Dono não consegue extrair dados do negócio | Could |
+| 8 | **Sem campanhas de reengajamento** | Clientes somem sem lembrete automático | Could |
+
+---
+
+## 🎯 Plano de fases até "Pronto para vender"
+
+### Fase 3 — Estabilização e homologação (em andamento)
+**Meta:** garantir que o app funciona de ponta a ponta sem erros graves.
+
+- [ ] Smoke test completo em produção: cadastro de cliente, serviço, profissional, agendamento, checkout e financeiro
+- [ ] Remover env vars obsoletas do Vercel (`APP_ID`, `OWNER_UNION_ID`)
+- [ ] Ativar Sentry em produção (`VITE_SENTRY_DSN`)
+- [ ] Ajustar débitos técnicos menores (lint warnings, refatorar `server/queries/salon.ts`)
+
+### Fase 4 — Monetização e posicionamento
+**Meta:** transformar o app em produto comercial.
+
+- [ ] Definir preços e limites dos planos (Free / Essencial / Pro)
+- [ ] Implementar cobrança recorrente (Stripe ou Mercado Pago)
+- [ ] Criar página de preços (`/precos`)
+- [ ] Criar landing pages por segmento (`/salao-de-beleza`, `/barbearia`, `/estetica`)
+- [ ] Comprar e configurar domínio `studioflow.com.br`
+- [ ] Adicionar Analytics (Plausible ou Google Analytics)
+
+### Fase 5 — Diferenciais de produto
+**Meta:** entregar o que a concorrência não entrega.
+
+- [ ] Confirmação automática de agendamento por WhatsApp (lembrete D-1/D-0 + botão confirmar)
+- [ ] Indicador visual de cliente atrasado na agenda
+- [ ] Reengajamento automático: cliente sumido, aniversariante e pós-atendimento
+- [ ] Upload de logo do estabelecimento
+- [ ] WhatsApp e Instagram na página pública de agendamento
+
+### Fase 6 — Relatórios e exportação
+**Meta:** dono consegue tomar decisão com dados.
+
+- [ ] Relatório de faturamento por período
+- [ ] Relatório de ocupação dos profissionais
+- [ ] Relatório de serviços mais vendidos
+- [ ] Exportação CSV/Excel
+
+### Fase 7 — Escala
+**Meta:** crescer com qualidade.
+
+- [ ] Testes E2E (Playwright) nos fluxos críticos
+- [ ] Onboarding guiado interativo no primeiro acesso
+- [ ] Programa de indicação/afiliados
+- [ ] App nativo / PWA aprimorado
+
+---
+
+## 🚀 Próximos passos imediatos (ordem recomendada)
+
+1. **Definir planos e preços** — desbloqueia toda a Fase 4
+2. **Fazer smoke test completo em produção** — validar se aguenta um cliente real
+3. **Escolher gateway de pagamento** (Stripe x Mercado Pago) e implementar
+4. **Criar landing pages por segmento** — cada uma com copy própria
+5. **Comprar domínio** e configurar na Vercel
+6. **Ativar Sentry + Analytics** — antes de começar a vender
+
+---
+
+## 📊 Requisitos funcionais (atualizado)
+
+| ID | Requisito | Prioridade | Status |
+|----|-----------|------------|--------|
+| RF-001 | Dashboard com KPIs | Must | ✅ |
+| RF-002 | CRM Clientes (CRUD) | Must | ✅ |
+| RF-003 | Agendamentos (CRUD) | Must | ✅ |
+| RF-004 | Cadastro de Serviços | Must | ✅ |
+| RF-005 | Cadastro de Profissionais | Must | ✅ |
+| RF-006 | Módulo Financeiro | Must | ✅ |
+| RF-007 | Comunicação Omnichannel | Must | ✅ |
+| RF-008 | Termos e Consentimentos LGPD | Must | ✅ |
+| RF-009 | Landing Page | Must | ✅ |
+| RF-010 | Auth (email/senha) + JWT | Must | ✅ |
+| RF-011 | Multi-tenancy por salão | Must | ✅ |
+| RF-012 | Calendário Profissional | Should | ✅ |
+| RF-013 | Landing Page que Vende | Should | ✅ |
+| RF-014 | Integração WhatsApp Business | Must | ⏳ |
+| RF-015 | Exportação PDF de relatórios | Could | ⏳ |
+| RF-016 | Notificações push | Could | ⏳ |
+| RF-017 | Webhooks para agendamentos | Could | ⏳ |
+| RF-018 | Relatórios e Analytics avançados | Should | ⏳ |
+| RF-019 | Export CSV/Excel | Could | ⏳ |
+| RF-020 | Micro-interações e UX refinada | Could | ⏳ |
+| RF-021 | Revisão LGPD completa | Should | ✅ |
+| RF-022 | Logs de auditoria operacionais | Should | ✅ |
+| RF-023 | Rate limiting em endpoints | Should | ✅ |
+| RF-024 | Backup automático documentado | Could | ✅ |
+| RF-025 | Cobrança recorrente (planos) | Must | ⏳ |
+| RF-026 | Landing pages por segmento | Must | ⏳ |
+| RF-027 | Confirmação automática por WhatsApp | Must | ⏳ |
+| RF-028 | Relatórios de faturamento/ocupação | Should | ⏳ |
+
+---
+
+## 📝 Registro de Alterações
 
 ### 19/09/2026 — Polimento das 5 páginas pendentes (padrão design system)
 - [feat] **Financeiro:** editar e excluir lançamento (endpoints novos com audit log), ficha expansível na linha, moeda pt-BR, ações na primeira coluna
@@ -64,8 +188,8 @@ Ordem sugerida de ataque: 1 → 2 → 3 → 4 → 5 (o 6 acontece em paralelo co
 
 ### 08/09/2026 — Página de Clientes: Ficha Expandida + Status Híbrido
 - [feat] Lista padrão Fila do Dia — ficha expande na linha, WhatsApp com ícone oficial, Excluir só no card aberto
-- [feat] Ficha do cliente: Aniversário dd/mm + idade, Última visita, Histórico recente (endpoint `appointment.historyByClient`)
-- [feat] Status híbrido dos clientes: regras automáticas configuráveis (VIP por R$ gasto ou nº de atendimentos no mês, dias p/ Sumindo/Inativo) + seletor manual por cliente (`segmentManual`, migration 007)
+- [feat] Ficha do cliente: Aniversário dd/mm + idade, Última visita, Histórico recente
+- [feat] Status híbrido dos clientes: regras automáticas configuráveis (VIP por R$ gasto ou nº de atendimentos no mês, dias p/ Sumindo/Inativo) + seletor manual por cliente
 - [feat] Totais reais de visitas/gasto recalculados dos agendamentos concluídos ao carregar a lista
 - [refactor] Renomeação "Visitas" → "Atendimentos" nas telas de cliente
 - [fix] Tailwind v4→v3 nos componentes shadcn — sidebar fixa não cobre mais o conteúdo
@@ -78,8 +202,8 @@ Ordem sugerida de ataque: 1 → 2 → 3 → 4 → 5 (o 6 acontece em paralelo co
 - [feat] Busca por nome ou categoria
 - [feat] Sugestão de categorias já cadastradas enquanto digita (datalist)
 - [feat] Duplicar serviço (abre formulário pré-preenchido com " (cópia)")
-- [feat] Seção "Inativos" com botão Reativar (exclusão já era lógica — backend ganhou `service.reactivate`)
-- [refactor] Página quebrada em componentes (`ServiceFormDialog`, `ServiceCard`) — respeita limite de 400 linhas
+- [feat] Seção "Inativos" com botão Reativar
+- [refactor] Página quebrada em componentes (`ServiceFormDialog`, `ServiceCard`)
 
 ### 24/08/2026 — Renomeação e Segmentação (estratégia de produto)
 - [feat] Renomeação concluída: BeautyFlow → StudioFlow (código, docs, metadados)
@@ -90,30 +214,30 @@ Ordem sugerida de ataque: 1 → 2 → 3 → 4 → 5 (o 6 acontece em paralelo co
 - [ok] Variáveis CSS dinâmicas por segmento na landing page
 
 ### 04/09/2026 — Hardening do Deploy e do Auth
-- [fix] Backend migrado de `api/` para `server/` — build Vercel não quebra mais (tsc node16)
+- [fix] Backend migrado de `api/` para `server/` — build Vercel não quebra mais
 - [fix] Entrypoint serverless: `api/index.js` é bundle esbuild de `server/vercel.ts`, versionado no Git
-- [fix] Correção do login/logout local (cookie escrito em `ctx.resHeaders`, não em ctx Hono)
+- [fix] Correção do login/logout local (cookie escrito em `ctx.resHeaders`)
 - [ref] Remoção do OAuth Kimi — app 100% independente de plataforma (auth local único)
-- [fix] Migration 004: constraint unique em salon_users("userId") — corrige criação de negócio no onboarding
+- [fix] Migration 004: constraint unique em salon_users("userId")
 - [feat] Favicon StudioFlow
 - [dev] Novo projeto Vercel `studioflow` — produção em studioflow-navy.vercel.app
-- [doc] Regra global: sempre testar local antes de produção (MestreProjects.md seção 9)
+- [doc] Regra global: sempre testar local antes de produção
 
 ### 05/09/2026 — Consolidação e Segurança do Banco
-- [doc] Arquivos mestre globais consolidados: pasta fatiada `MestreProjects/` + `MASTER_NOVO_PROJETO.md` absorvidos no `MestreProjects.md` v2.0.0 (seções 15-16, 20 erros no self-healing)
-- [sec] Migration 005: RLS na tabela `salons` (lacuna da 002) — policy `tenant_isolation_salons`
-- [sec] Auditoria de conformidade com o MestreProjects.md — app aprovado nos itens verificados
+- [doc] Arquivos mestre globais consolidados no `MestreProjects.md` v2.0.0
+- [sec] Migration 005: RLS na tabela `salons`
+- [sec] Auditoria de conformidade com o MestreProjects.md
 
 ### 05/09/2026 — Cadastro de Cliente Sem CPF/E-mail (LGPD)
-- [sec] Migration 006: remove colunas `cpf` e `email` da tabela `clients` — CPF é dado sensível sem finalidade; contato é WhatsApp no telefone
+- [sec] Migration 006: remove colunas `cpf` e `email` da tabela `clients`
 - [ref] Formulário de cliente simplificado: Nome, Telefone (WhatsApp), Nascimento, Observações
 - [doc] LGPD.md, ADR-005, RF-002 e tela de Consent atualizados
 
 ### 05/09/2026 — Padrão Brasil nos Formulários
-- [feat] Lib `input-masks.ts`: telefone (99) 99999-9999, data dd/mm/aaaa, dinheiro 1.234,56, texto só letras, slug
+- [feat] Lib `input-masks.ts`: telefone, data, dinheiro, texto, slug
 - [ref] Máscaras aplicadas em Clientes, Profissionais, Serviços, Financeiro, Onboarding e Cadastro
-- [feat] Validação de data de nascimento (impede ano inválido ex: 275760)
-- [dev] 24 testes novos da lib de máscaras (53 total)
+- [feat] Validação de data de nascimento (impede ano inválido)
+- [dev] 24 testes novos da lib de máscaras
 
 ### 05/05/2026 — Setup Inicial
 - [dev] Projeto migrado do Kimi Web para Kimi Code
@@ -147,7 +271,7 @@ Ordem sugerida de ataque: 1 → 2 → 3 → 4 → 5 (o 6 acontece em paralelo co
 - [ref] useSalon separado para fast refresh
 
 ### 12/05/2026 — Alinhamento Padrão Mestre v1.0
-- [sec] Rate limiting: 100 req/min IP, 5 req/min auth (hono-rate-limiter)
+- [sec] Rate limiting: 100 req/min IP, 5 req/min auth
 - [dev] Husky: pre-commit (lint+check), pre-push (test+build)
 - [doc] MEMORY.md + SESSION-CONTEXT.md + MestreBeaut.md criados
 - [sec] Migrations organizadas (001-002) + schema_safe.sql idempotente
@@ -158,7 +282,7 @@ Ordem sugerida de ataque: 1 → 2 → 3 → 4 → 5 (o 6 acontece em paralelo co
 - [doc] PRD + 3 User Stories (RF-001 a RF-003)
 - [dev] CI/CD com deploy automático Vercel
 - [dev] ESLint strict mode
-- [dev] Testes unitários (24 testes, 3 arquivos)
+- [dev] Testes unitários (24 testes)
 - [dev] Sentry configurado (@sentry/react + @sentry/node)
 - [doc] AGENTS.md atualizado com regras completas
 - [doc] Runbook de processos manuais criado
@@ -180,118 +304,23 @@ Ordem sugerida de ataque: 1 → 2 → 3 → 4 → 5 (o 6 acontece em paralelo co
 - [ref] Appointments.tsx refatorado (limite 400 linhas respeitado)
 
 ### 07/05/2026 — Landing Page que Vende (Fase 5 / RF-013)
-- [feat] DashboardMockup.tsx — mockup visual do app com stats, gráfico e agenda
-- [feat] TestimonialsSection.tsx — 3 depoimentos com avatares, estrelas e métricas
-- [feat] HowItWorksSection.tsx — 3 passos visuais com ícones e conector
-- [feat] SocialProofSection.tsx — logos de salões + badges de segurança (LGPD, SSL, ISO)
-- [feat] CTASection.tsx — CTA final com benefícios e checkmarks
-- [feat] Home.tsx reescrita com todos os componentes, footer expandido
+- [feat] DashboardMockup.tsx — mockup visual do app
+- [feat] TestimonialsSection.tsx — depoimentos com avatares e métricas
+- [feat] HowItWorksSection.tsx — 3 passos visuais
+- [feat] SocialProofSection.tsx — logos e badges de segurança
+- [feat] CTASection.tsx — CTA final com benefícios
+- [feat] Home.tsx reescrita com todos os componentes
 - [seo] Meta tags, Open Graph, Twitter Cards, canonical, keywords, lang=pt-BR
-- [ref] Componentes landing/ separados (regra 400 linhas/arquivo)
+- [ref] Componentes landing/ separados
 
 ### 07/05/2026 — Auth Independente + Deploy Vercel + Supabase
-- [feat] Auth local com email+senha (bcryptjs, JWT) — 100% independente de plataforma
+- [feat] Auth local com email+senha (bcryptjs, JWT)
 - [feat] Tabela local_users no schema
-- [ref] Remove pasta api/kimi/ (OAuth legado da plataforma geradora)
+- [ref] Remove pasta api/kimi/ (OAuth legado)
 - [sec] Rate limiting em memória, sanitização de input
 - [dev] Deploy Vercel: https://beaut-fllow.vercel.app/
 - [dev] Supabase PostgreSQL conectado e schema aplicado
 - [dev] GitHub: github.com/davidlucasnfts/BeautFllow
-- [doc] Skills ativas documentadas (Security, Scalability, Cost Reducer, Self-Healing)
-
----
-
-## Requisitos Funcionais
-
-| ID | Requisito | Prioridade | Status |
-|----|-----------|------------|--------|
-| RF-001 | Dashboard com KPIs | Must | ✅ |
-| RF-002 | CRM Clientes (CRUD) | Must | ✅ |
-| RF-003 | Agendamentos (CRUD) | Must | ✅ |
-| RF-004 | Cadastro de Serviços | Must | ✅ |
-| RF-005 | Cadastro de Profissionais | Must | ✅ |
-| RF-006 | Módulo Financeiro | Must | ✅ |
-| RF-007 | Comunicação Omnichannel | Must | ✅ |
-| RF-008 | Termos e Consentimentos LGPD | Must | ✅ |
-| RF-009 | Landing Page | Must | ✅ |
-| RF-010 | Auth (email/senha) + JWT — 100% independente | Must | ✅ |
-| RF-011 | Multi-tenancy por salão | Must | ✅ |
-| RF-012 | Calendário Profissional | Should | ✅ |
-| RF-013 | Landing Page que Vende | Should | ✅ |
-| RF-014 | Integração WhatsApp Business | Could | ⏳ |
-| RF-015 | Exportação PDF de relatórios | Could | ⏳ |
-| RF-016 | Notificações push | Could | ⏳ |
-| RF-017 | Webhooks para agendamentos | Could | ⏳ |
-| RF-018 | Relatórios e Analytics avançados | Could | ⏳ |
-| RF-019 | Export CSV/Excel | Could | ⏳ |
-| RF-020 | Micro-interações e UX refinada | Could | ⏳ |
-| RF-021 | Revisão LGPD completa | Should | ⏳ |
-| RF-022 | Logs de auditoria operacionais | Should | ✅ |
-| RF-023 | Rate limiting em endpoints | Should | ✅ |
-| RF-024 | Backup automático documentado | Could | ⏳ |
-
----
-
-## Fases do Projeto
-
-Status: ✅ Concluído | [~] Em andamento | ⏳ Pendente
-
-### Fase 1: Identidade Visual — ✅ (05/05)
-### Fase 2: Dashboard Rico — ✅ (05/05)
-### Fase 3: Migração Supabase — ✅ (06/05)
-
-### Fase 4: Calendário Profissional — ✅ CONCLUÍDA (07/05)
-
-### Fase 5: Landing Page que Vende — ✅ CONCLUÍDA (07/05)
-
-### Fase 6: Integrações — ⏳
-| # | Tarefa | Status |
-|---|--------|--------|
-| 6.1 | WhatsApp Business API | ⏳ |
-| 6.2 | Exportação PDF de relatórios | ⏳ |
-| 6.3 | Notificações push | ⏳ |
-| 6.4 | Webhooks para agendamentos | ⏳ |
-
-### Fase 7: Relatórios e Analytics — ⏳
-| # | Tarefa | Status |
-|---|--------|--------|
-| 7.1 | Faturamento por período | ⏳ |
-| 7.2 | Ocupação dos profissionais | ⏳ |
-| 7.3 | Serviços mais vendidos | ⏳ |
-| 7.4 | Gráficos de desempenho | ⏳ |
-| 7.5 | Export CSV/Excel | ⏳ |
-
-### Fase 8: Micro-interações e UX — ⏳
-| # | Tarefa | Status |
-|---|--------|--------|
-| 8.1 | Toasts customizados (Sonner) | ⏳ |
-| 8.2 | Loaders e estados de loading | ⏳ |
-| 8.3 | Hover effects e transições | ⏳ |
-| 8.4 | Animações de entrada nas páginas | ⏳ |
-| 8.5 | Feedback visual em formulários | ⏳ |
-
-### Fase 9: Segurança e Compliance — ✅ CONCLUÍDA (12/05)
-| # | Tarefa | Status |
-|---|--------|--------|
-| 9.1 | Revisão LGPD | ✅ |
-| 9.2 | Logs de auditoria (audit_logs) | ✅ |
-| 9.3 | Rate limiting em endpoints sensíveis | ✅ |
-| 9.4 | Backup automático do banco (Supabase) | ✅ |
-| 9.5 | RLS policies em todas as tabelas | ✅ |
-| 9.6 | ESLint strict mode | ✅ |
-| 9.7 | Husky + pre-commit/pre-push | ✅ |
-| 9.8 | CI/CD com deploy automático | ✅ |
-| 9.9 | Testes unitários (24 testes) | ✅ |
-| 9.10 | Sentry configurado | ✅ |
-
----
-
-## UX/UI (aplicar em toda implementação)
-
-- Hero compacto (sem `min-h-screen`), conteúdo acima do fold
-- Headline na dor, CTA repetido, prova social no hero
-- Cores distintas por card, botões sempre visíveis
-- Mobile: touch 44px+, stack vertical, menu hambúrguer
 
 ---
 
