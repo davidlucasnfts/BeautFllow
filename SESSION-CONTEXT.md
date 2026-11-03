@@ -1,5 +1,10 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
+> **Handoff — 02/11/2026:** O David está migrando a continuidade do projeto para outra IA. Esta é a versão mais recente do estado do projeto. A próxima IA deve começar lendo os arquivos listados abaixo e seguir estritamente o `AGENTS.md`.
+
+> **Prompt recomendado para a nova IA:**
+> "Você está assumindo o projeto StudioFlow. Leia obrigatoriamente: `AGENTS.md`, `SESSION-CONTEXT.md`, `ROADMAP.md`, `MEMORY.md` e `docs/documentacao-estrutura.md`. Siga todas as regras do `AGENTS.md`. Responda sempre em português, modo direto, priorizando linguagem de negócio. Antes de criar ou modificar qualquer arquivo de documentação, consulte `docs/documentacao-estrutura.md`. A meta atual é a Fase 4 — Pronto para vender. As decisões pendentes do David estão na seção 'Decisões pendentes / Ações manuais' deste arquivo."
+
 > **Atualizado em:** 02/11/2026 (análise de negócio completa + ROADMAP estratégico reescrito. Último push em produção: 21/10 — cadastro rápido de profissional/serviço)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md` + `ROADMAP.md`, não no histórico do chat.
 
