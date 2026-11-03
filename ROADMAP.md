@@ -103,6 +103,49 @@ O que separa o app atual de um **produto que vende** está no lado comercial e d
 - [ ] Comprar e configurar domínio `studioflow.com.br`
 - [ ] Adicionar Analytics (Plausible ou Google Analytics)
 
+#### Plano detalhado da Fase 4 — Como fazer
+
+**1. Definir planos e preços (decisão do David)**
+- Quem paga: dono do salão/barbearia/estética
+- Modelo: assinatura mensal com trial de 7 ou 14 dias
+- Sugestão inicial:
+  - **Free:** 1 usuário, 50 clientes, 100 agendamentos/mês, sem link online
+  - **Essencial:** R$ 49/mês, 3 usuários, clientes ilimitados, link online, WhatsApp manual
+  - **Pro:** R$ 97/mês, 8 usuários, tudo do Essencial + relatórios + lembretes automáticos
+- Guardar no banco: `salons.plan` (free/essential/pro) + `salons.billingStatus` + `salons.subscriptionId`
+
+**2. Implementar cobrança recorrente**
+- **Opção A — Stripe:** cartão internacional, UX madura, webhooks confiáveis. Contra: taxa em dólar, precisa de empresa para conta brasileira.
+- **Opção B — Mercado Pago:** PIX/boleto nativo, conta PJ ou PF. Contra: webhooks menos estáveis, documentação mais confusa.
+- O que implementar:
+  - Tela de upgrade com seleção de plano
+  - Criar assinatura no gateway
+  - Webhook para atualizar status no banco (pago, atrasado, cancelado)
+  - Bloqueio de funcionalidades quando o plano não permite
+  - Tela de "sua assinatura" com data de vencimento e histórico
+
+**3. Página de preços (`/precos`)**
+- Comparativo dos 3 planos
+- Botão de teste grátis
+- FAQ de dúvidas comuns
+- Depoimentos de clientes fictícios ou beta
+
+**4. Landing pages por segmento**
+- Usar os mockups já aprovados: `docs/mockups/landing-segmento-salao.html`, `landing-segmento-barbearia.html`, `landing-segmento-estetica.html`
+- Criar rotas `/salao-de-beleza`, `/barbearia`, `/estetica`
+- Copy específica por dor de segmento (ex: barbearia fala em "corte + barba"; estética fala em "procedimentos e retornos")
+- CTA para `/precos` ou trial direto
+
+**5. Domínio próprio**
+- Comprar `studioflow.com.br` (Registro.br ou Hostinger)
+- Configurar DNS na Vercel (instruções aparecem no dashboard do projeto)
+- Atualizar `RESEND_FROM` no Vercel para `contato@studioflow.com.br`
+
+**6. Analytics**
+- **Plausible:** simples, privativo, pago (~USD 9/mês)
+- **Google Analytics 4:** gratuito, mais complexo, exibe cookie banner
+- Instalar script na landing e no app; rastrear: cadastro, criação de salão, agendamento criado, upgrade de plano
+
 ### Fase 5 — Diferenciais de produto
 **Meta:** entregar o que a concorrência não entrega.
 

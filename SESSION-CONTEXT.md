@@ -1,7 +1,7 @@
 # SESSION-CONTEXT — Estado Atual do Projeto
 
-> **Atualizado em:** 02/11/2026 (sessão de análise de negócio: ROADMAP.md reescrito com fases, gaps e plano até "pronto para vender". Sessões 19/10–21/10 pushadas em produção)
-> **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md` + `ROADMAP.md`, não no histórico do chat (chat longo deixa o Kimi lento; regra nova no AGENTS.md).
+> **Atualizado em:** 02/11/2026 (análise de negócio completa + ROADMAP estratégico reescrito. Último push em produção: 21/10 — cadastro rápido de profissional/serviço)
+> **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md` + `ROADMAP.md`, não no histórico do chat.
 
 ---
 
@@ -55,10 +55,12 @@
 
 ## Onde paramos — próximos passos (ordem)
 
-1. **PUSH feito em 17/10** — tudo em produção (consentimento completo, reenvio de convite, fixes mobile e botões); Vercel deploya automático.
-2. **Homologação pendente do David:** fluxo de convite da Equipe (`/equipe` → convidar → aceitar em `/convite?token=...`) — testar local antes de apresentar.
-4. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/barbearia`, `/salao-de-beleza`, `/estetica`.
-5. Depois: Fase 4 (billing Stripe/Mercado Pago + preços).
+1. **Análise de negócio concluída (02/11)** — ROADMAP estratégico reescrito. Meta atual: **Fase 4 — Pronto para vender**.
+2. **Próxima decisão do David:** definir planos e preços (Free / Essencial / Pro) e escolher gateway de pagamento (Stripe ou Mercado Pago). Sem isso, não dá para implementar cobrança.
+3. **Smoke test em produção:** validar cadastro de cliente → serviço → profissional → agendamento → checkout → financeiro.
+4. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/salao-de-beleza`, `/barbearia`, `/estetica`.
+5. **Ativar Sentry + Analytics** antes de abrir para clientes pagantes.
+6. **Decisões operacionais pendentes:** ver seção abaixo.
 
 ---
 
@@ -75,22 +77,31 @@
 
 ## Decisões pendentes / Ações manuais (David)
 
-**Novas desta sessão:**
-- [ ] **Configurações — ficou pra depois (da proposta `docs/mockups/proposta-melhorias-configuracoes.html`):** ① upload de logo do estabelecimento (coluna `logoUrl` já existe — precisa criar bucket no Supabase Storage + exibir na página pública e header do app); ② WhatsApp público separado do telefone + link de Instagram na página pública; ③ lembretes automáticos de WhatsApp D-1/D-0 (projeto maior: Vercel Cron + integração WhatsApp); ④ CNPJ/razão social + desativar salão + ver plano atual (quando entrar cobrança/NF)
-- [ ] ~~Autorizar push dos commits locais~~ FEITO em 18/10 — tudo em produção (17 commits)
-- [ ] **Homologar em produção após push 18/10:** editar lançamento no Financeiro (bug da vírgula), Configurações (dias/pausa/segmento), fonte maior no desktop
-- [ ] Gerar logos na IA (Ideogram/Looka) com o prompt e enviar prints das favoritas pro Kimi
-- [ ] Homologar fluxo de convite da Equipe (teste local: convidar → reenviar/copiar link → aceitar em aba anônima)
-- [x] **Configurar envio de e-mail (Resend) pra convites da Equipe** — FEITO em 17/10: `RESEND_API_KEY` cadastrada na Vercel. **Limitação conhecida:** sem domínio verificado, o Resend (modo teste) só entrega e-mails para o próprio e-mail da conta — convites para terceiros caem na caixinha âmbar com link pra copiar (fluxo WhatsApp). **Pendente quando comprar o domínio:** verificar `studioflow.com.br` no Resend (criar registros DNS, ~10 min) e configurar `RESEND_FROM=StudioFlow <contato@studioflow.com.br>`
+**Prioridade 1 — bloqueiam a venda:**
+- [ ] **Definir planos e preços:** Free (1 usuário), Essencial (R$ ?/mês), Pro (R$ ?/mês). Quais limites por plano?
+- [ ] **Escolher gateway de pagamento:** Stripe (melhor UX, taxa em dólar) ou Mercado Pago (mais barato, PIX/boleto nativo)?
+- [ ] **Comprar domínio `studioflow.com.br`** e configurar na Vercel
 
-**Legadas (não esquecer):**
-- [ ] Remover env vars `APP_ID` e `OWNER_UNION_ID` do projeto Vercel `studioflow` (Settings → Environment Variables) — não são mais lidas pelo código. `APP_SECRET` e `DATABASE_URL` **permanecem**
-- [ ] Testar cadastro/login em produção (`studioflow-navy.vercel.app`) após o push
-- [ ] **Foto/logo do estabelecimento** (coluna `logoUrl` já existe) — falta criar bucket no Supabase Storage + upload na aba Configurações
-- [ ] Testar instalação do PWA em celular real (só funciona em produção/HTTPS)
-- [ ] Renomear repositório GitHub `BeautFllow` → `studioflow` (opcional)
-- [ ] Comprar domínio `studioflow.com.br` e configurar na Vercel (quando preparar para vender)
-- [ ] Apagar usuário de teste `teste.kimi.2026@gmail.com` no Supabase (opcional)
+**Prioridade 2 — segurança e monitoramento:**
+- [ ] **Ativar Sentry:** criar projeto em sentry.io e adicionar `VITE_SENTRY_DSN` no Vercel
+- [ ] **Ativar Analytics:** escolher Plausible (pago, privativo) ou Google Analytics 4 (gratuito)
+- [ ] **Remover env vars obsoletas do Vercel:** `APP_ID` e `OWNER_UNION_ID` (Settings → Environment Variables). `APP_SECRET` e `DATABASE_URL` **permanecem**
+
+**Prioridade 3 — diferenciais de produto:**
+- [ ] **WhatsApp automatizado:** escolher provedor (WhatsApp Business API oficial, Wati, Evolution API, Z-API). Projeto envolve Vercel Cron + envio de mensagens.
+- [ ] **Logo do estabelecimento:** criar bucket no Supabase Storage e habilitar upload na aba Configurações
+- [ ] **WhatsApp/Instagram na página pública:** separar do telefone do salão
+
+**Prioridade 4 — polimento:**
+- [ ] **Gerar logos na IA** (Ideogram/Looka) com o briefing e enviar prints das favoritas pro Kimi
+- [ ] **Testar instalação do PWA** em celular real (só funciona em produção/HTTPS)
+- [ ] **Renomear repositório GitHub** `BeautFllow` → `studioflow` (opcional)
+- [ ] **Apagar usuário de teste** `teste.kimi.2026@gmail.com` no Supabase (opcional)
+
+**Já feito:**
+- [x] Push 18/10 em produção (Configurações v1, fixes Financeiro)
+- [x] Push 21/10 em produção (cadastro rápido profissional/serviço)
+- [x] Envio de e-mail (Resend) configurado na Vercel para convites de equipe — lembrar: sem domínio verificado, e-mails de terceiros caem na caixa âmbar; quando comprar `studioflow.com.br`, verificar domínio no Resend e configurar `RESEND_FROM=StudioFlow <contato@studioflow.com.br>`
 
 **Migrations aplicadas direto no banco pelo Kimi** (001–014, todas ✅; convites usam `RESEND_API_KEY`/`RESEND_FROM` já configuradas)
 
