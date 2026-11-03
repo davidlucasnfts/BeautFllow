@@ -103,7 +103,7 @@ David Lucas é analista de sistemas (não desenvolvedor) que usa o Kimi Code com
 | Padrão para todos os projetos | `MestreProjects.md` | Dentro de projeto |
 | Mudança em segurança | `AGENTS.md` + `docs/adr/ADR-005-seguranca-padrao.md` | Arquivo isolado |
 | Estrutura de documentação | `docs/documentacao-estrutura.md` | Outro lugar |
-| Guia completo do projeto | `MestreBeaut.md` | Outro lugar |
+| Guia completo do projeto | `MestreStudioFlow.md` | Outro lugar |
 
 **Checklist antes de finalizar qualquer tarefa:**
 ```
@@ -588,6 +588,6 @@ npm run db:migrate # Aplicar migrations (prod)
 |-----------------|----------------------|---------------|
 | Código em português | Código em inglês, comentários/docs em português | Padrão de mercado (React, tRPC, Drizzle são em inglês). Time é 1 pessoa + IA |
 | Clean Architecture completa | Estrutura plana (api/, db/, src/) | MVP funcional. Clean Architecture quando o time crescer |
-| Testes 80% cobertura | Meta 80%, atualmente 0% | MVP em construção. Testes após estabilização |
+| Testes 80% cobertura | Meta 80%, 104 testes passando, threshold 40% | Meta 80% ainda não atingida. Testes em expansão após estabilização |
 | Kubernetes | Vercel serverless | Custo zero, deploy rápido |
 | Rate limiting 100 req/15min | 100 req/1min | Hono rate-limiter usa windowMs em ms; ajustado para MVP |

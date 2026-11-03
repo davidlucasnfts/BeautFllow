@@ -1,10 +1,10 @@
 # MestreStudioFlow — Guia Completo StudioFlow
 
-> **Versão:** 1.1.0 | **Data:** 24/08/2026 | **Status:** Ativo
+> **Versão:** 2.0.0 | **Data:** 03/11/2026 | **Status:** Ativo
 >
 > Este documento consolida 100% do padrão mestre adaptado para o StudioFlow. É o guia de referência único para todas as decisões técnicas e de negócio do projeto.
 >
-> **Última sincronização:** 24/08/2026 — renomeação de StudioFlow para StudioFlow e definição de 3 segmentos (salão de beleza, barbearia, clínica de estética).
+> **Última sincronização:** 03/11/2026 — revisão completa de negócio, roadmap estratégico reescrito e documentação alinhada para handoff entre IAs.
 
 ---
 
@@ -12,12 +12,12 @@
 
 ### O que é
 
-O **StudioFlow** é um SaaS multi-tenant de gestão para salões de beleza e centros estéticos. Este documento consolida:
-- **32 skills** — conhecimento especializado por domínio
-- **17 agentes** — personas especializadas para contextos específicos
-- **26 comandos slash** — automações executáveis
-- **4 hooks** — validações automáticas em tempo real
-- **Docs de governança** — regras, políticas e guias
+O **StudioFlow** é um SaaS multi-tenant de gestão para **salões de beleza, barbearias e clínicas de estética**. Este documento consolida:
+- **Stack e arquitetura** — decisões técnicas do produto
+- **Regras de segurança, design e desenvolvimento** — padrões obrigatórios
+- **Skills do Kimi** — conhecimento especializado por domínio
+- **Self-healing** — erros aprendidos para não repetir
+- **Docs de governança** — onde salvar cada tipo de mudança
 
 ### Filosofia
 
@@ -217,9 +217,9 @@ Banco de Dados (PostgreSQL / Supabase)
 | **API** | tRPC + Hono | 11.x / latest | ✅ |
 | **ORM** | Drizzle ORM | latest | ✅ |
 | **Banco** | PostgreSQL (Supabase) | 15+ | ✅ |
-| **Auth** | OAuth 2.0 Kimi + Local JWT | latest | ✅ |
+| **Auth** | Local JWT (auth próprio, sem OAuth de plataforma) | latest | ✅ |
 | **Deploy** | Vercel | latest | ✅ |
-| **Testes** | Vitest + React Testing Library | latest | ⚠️ 0% |
+| **Testes** | Vitest + React Testing Library | latest | ✅ 104 testes passando |
 
 ---
 
@@ -313,7 +313,7 @@ Todo projeto deve ter ADRs para decisões significativas:
 
 | Tipo | Cobertura | Ferramenta | Status |
 |------|-----------|------------|--------|
-| Unitários | 80% linhas | Vitest | ⚠️ 24 testes passando, threshold atual 40% |
+| Unitários | 80% linhas | Vitest | ✅ 104 testes passando (threshold atual 40%) |
 | Integração | 60% funções | Vitest + MSW | ❌ 0% |
 | E2E | Fluxos críticos | Playwright | ❌ 0% |
 
@@ -448,6 +448,34 @@ npm run build
 
 > **Status StudioFlow:** ✅ Configurado.
 
+### 13.3 Checklist Pré-Commit Obrigatório
+
+```
+□ 1. ROTAS DE TESTE — grep -n "teste-\|PageV[0-9]\|V[0-9]" src/App.tsx
+   → Se encontrar rotas de teste, REMOVER antes do commit
+□ 2. LINKS DE TESTE — grep -in "teste\|V[0-9]" src/components/AuthLayout.tsx
+   → Se encontrar links de teste no menu, REMOVER antes do commit
+□ 3. ARQUIVOS ORFÃOS — arquivos .tsx sem rota/import = código morto. Remover ou justificar
+□ 4. TYPE CHECK — npm run check deve passar. Zero tolerância para erros de TypeScript
+□ 5. DOCUMENTAÇÃO — MEMORY.md e SESSION-CONTEXT.md refletem tudo que foi entregue?
+□ 6. SELF-HEALING — novo erro/pegadinha aprendida? Adicionar na tabela de erros
+```
+
+### 13.4 Mockups e Visualização Externa
+
+- Toda proposta visual (botão, layout, tela nova) deve ser gerada como **HTML navegável em `docs/mockups/`** antes de implementar
+- O mockup deve conter contexto, opções renderizadas (mobile ~390px e desktop), prós/contras e recomendação
+- Sempre abrir automaticamente no navegador com `cmd //c start "" "caminho"` (Git Bash)
+- **Regra ampliada (15/10/2026):** vale para QUALQUER melhoria em tela existente. Aguardar autorização explícita do David antes de alterar código. Correção de bug que impede funcionamento é a única exceção.
+
+### 13.5 Padrão de Refatoração — Páginas de Teste
+
+1. Criar `{Nome}V2.tsx` (ou V3) em `src/pages/`, copiando a lógica original com as melhorias
+2. Adicionar rota `/teste-x` em `App.tsx` + link temporário no menu (`AuthLayout.tsx`)
+3. David testa local e aprova
+4. Só então aplicar na página principal e **remover rota e link de teste**
+5. Verificar "Páginas de Teste" no `SESSION-CONTEXT.md` ao iniciar sessão
+
 ---
 
 ## 14. Checklist de Adoção
@@ -463,11 +491,12 @@ npm run build
 - [x] Criar `AGENTS.md` com regras do projeto
 - [x] Criar `MEMORY.md` para histórico
 - [x] Criar `SESSION-CONTEXT.md` para estado atual
-- [x] Criar `MestreBeaut.md` (este arquivo)
+- [x] Criar `MestreStudioFlow.md` (este arquivo)
 - [x] Criar primeira ADR (stack escolhida)
-- [x] Habilitar RLS em todas as tabelas (migration `002-rls-policies.sql` aplicada no Supabase)
+- [x] Habilitar RLS em todas as tabelas (migrations 001–014 aplicadas no Supabase)
 - [x] Configurar headers de segurança
 - [x] Adicionar rate limiting
+- [x] Remover dependência de OAuth de plataforma (app 100% independente)
 
 ### 14.2 Novo Desenvolvedor no Time
 
@@ -475,7 +504,7 @@ npm run build
 - [x] Ler `README.md`
 - [x] Configurar `.env` local
 - [x] Rodar `npm install` e `npm run dev`
-- [x] Rodar `npm run test` (deve passar) — ✅ 24 testes passando
+- [x] Rodar `npm run test` (deve passar) — ✅ 104 testes passando
 - [x] Fazer primeiro commit em branch de teste
 
 ---
@@ -553,6 +582,21 @@ Self-healing é a capacidade de aprender com erros e nunca repeti-los. Cada erro
 | 002 | Sobrescrever arquivo fora do repo Git | 11/05/2026 | Nunca usar `overwrite` fora do working dir |
 | 003 | Duplicar informação de segurança | 10/05/2026 | Expandir arquivo existente, nunca criar duplicata |
 | 004 | Salvar no `MestreProjects.md` em vez de `AGENTS.md` | 11/05/2026 | Só salvar no global quando David disser "para todos os projetos" |
+| 005 | Criar `schema_safe.sql` manual em vez de migrations | 12/05/2026 | Usar `supabase/migrations/NNN-descricao.sql`; `schema_safe.sql` é gerado juntando as migrations |
+| 006 | Excluir registro sem confirmação (clique sem querer apagou cliente) | 06/09/2026 | Sempre abrir `AlertDialog` de confirmação antes de delete, citando o nome do item |
+| 007 | Placeholder longo quebrou a caixa do Select em 2 linhas | 06/09/2026 | Placeholder curto + `truncate` no `SelectValue` |
+| 008 | Espaço vazio grande no card de listagem | 06/09/2026 | Sobrescrever `gap` e `py` do Card base em cards de listagem |
+| 009 | Botão ícone-sozinho entregue em funcionalidade nova | 07/09/2026 | Texto + ícone sempre, inclusive em ações por linha |
+| 010 | Trocar `truncate` por `break-words` sem largura mínima | 22/09/2026 | `break-words` sempre junto de `basis-XX` + container `flex-wrap` |
+| 011 | Achar que `fromDate` do DatePicker bloqueia dias passados | 22/09/2026 | Usar `minDate`/`disabled` + trava no backend |
+| 012 | Cor fixa em componente interno quebrou tema por estabelecimento | 22/09/2026 | Dentro do app autenticado usar classes de tema (`bg-primary`, `text-foreground`) |
+| 013 | Copy de landing escrita como descrição de produto | 23/09/2026 | Landing segue estrutura de copywriting de resposta direta |
+| 014 | Resolver tRPC confiava no `salonId` do input sem validar vínculo | 26/09/2026 | Sempre validar via `assertSalonMember`/`assertSalonAdmin` |
+| 015 | Aplicar regra de botões sem olhar contexto visual | 17/10/2026 | Regra de cor é guia; layout e tamanho seguem princípios de design |
+| 016 | `SelectItem` com `value=""` quebrou a tela | 17/10/2026 | Opção vazia usa sentinel (ex: `value="none"`) convertido no `onValueChange` |
+| 017 | Investigar "Failed query" intermitente quando causa era dev server antigo | 18/10/2026 | Testar via HTTP no processo real; avisar para reiniciar `npm run dev` |
+| 018 | Assumir que "Failed query" era só conexão quando causa era vírgula em valor BR | 18/10/2026 | Todo campo `maskMoneyBR` deve ter `moneyBRToDot` no submit |
+| 019 | Desmontar Select/Combobox com dropdown aberto deixou portal órfão | 21/10/2026 | Campos de seleção ficam montados; mini-form aparece abaixo, só um aberto por vez |
 
 ---
 
@@ -624,6 +668,27 @@ Self-healing é a capacidade de aprender com erros e nunca repeti-los. Cada erro
 | Fundo página | `slate-50` |
 | Fundo card | `white` |
 
+> **⚠️ REGRA CRÍTICA — Tema por estabelecimento:** dentro do app autenticado, o `AuthLayout` aplica o tema do salão (`getThemeCssVars`). **NUNCA usar cor fixa** (`blue-600`, `bg-blue-50` etc.) em componente interno — usar classes de tema: `bg-primary`, `text-primary`, `bg-primary/10`, `border-primary/30`, `text-foreground`, `text-muted-foreground`. Cor fixa só em: landing pública, páginas de auth, e semânticas (sucesso/perigo/aviso).
+
+### 17.6 Excelência de Produto — Método de Trabalho
+
+1. **Benchmark antes de redesenhar** — comparar com 2-3 referências de mercado (Booksy, Fresha, Google Calendar etc.) antes de propor mudança visual/UX
+2. **Checklist de excelência por página** — cada página responde: estado vazio existe e orienta? ações visíveis (texto+ícone)? tarefa em 2-3 toques? mobile+desktop? dados nunca se perdem?
+3. **Conselho sincero sempre** — dizer quando algo está "bom para MVP" vs. quando merece investimento de polimento
+4. **Diferencial estratégico do StudioFlow** — WhatsApp-first, reengajamento automático (cliente sumido, aniversariante, pós-atendimento), simplicidade para dono não-técnico
+
+### 17.7 Copywriting — Regras de Marketing e Persuasão
+
+Texto de venda (landing, e-mail, anúncio, página de preço) é escrito como **copywriting de resposta direta**, não descrição de produto.
+
+1. **Estrutura obrigatória:** Dor → Custo de não agir → Mecanismo → Prova → Quebra de objeção → CTA único
+2. **Nunca listar funcionalidade seca** — toda feature vem com o benefício na vida do dono
+3. **Específico vence genérico** — número só se for verdade; quando varia, fazer o leitor somar com o número dele
+4. **Vocabulário do nicho** — falar como o dono fala (cadeira, agenda cheia, cliente sumido)
+5. **Tom: firme na dor, respeitoso com a pessoa** — público é pequeno negócio de bairro
+6. **Uma página, um leitor, uma ação** — cada landing fala com UM segmento e pede UMA coisa
+7. **Headline testável** — H1 segue fórmulas de resposta direta, não slogan de marca
+
 ---
 
 ## 18. Onde Salvar Cada Tipo de Mudança
@@ -637,7 +702,7 @@ Self-healing é a capacidade de aprender com erros e nunca repeti-los. Cada erro
 | Padrão para todos os projetos | `MestreProjects.md` | Dentro de projeto |
 | Mudança em segurança | `AGENTS.md` + `docs/adr/ADR-005-seguranca-padrao.md` | Arquivo isolado |
 | Estrutura de documentação | `docs/documentacao-estrutura.md` | Outro lugar |
-| Guia completo do projeto | `MestreBeaut.md` (este arquivo) | Outro lugar |
+| Guia completo do projeto | `MestreStudioFlow.md` (este arquivo) | Outro lugar |
 
 ---
 

@@ -4,7 +4,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 
 > **Para contexto da sessão atual, ver `SESSION-CONTEXT.md`**
 > **Para regras de desenvolvimento, ver `AGENTS.md`**
-> **Para guia completo do projeto, ver `MestreBeaut.md`**
+> **Para guia completo do projeto, ver `MestreStudioFlow.md`**
 > **Para estrutura de documentação, ver `docs/documentacao-estrutura.md`**
 
 ---
