@@ -7,18 +7,18 @@ import "./index.css";
 import { TRPCProvider } from "@/providers/trpc";
 import { SalonProvider } from "@/providers/salon";
 import App from "./App.tsx";
-import { registerSW } from "virtual:pwa-register";
 
 // Registra o service worker para PWA + notificações push
-registerSW({
-  immediate: true,
-  onRegistered(r) {
-    console.log("[pwa] Service worker registrado:", r);
-  },
-  onRegisterError(e) {
-    console.error("[pwa] Erro ao registrar service worker:", e);
-  },
-});
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/sw.js")
+    .then(registration => {
+      console.log("[pwa] Service worker registrado:", registration.scope);
+    })
+    .catch(error => {
+      console.error("[pwa] Erro ao registrar service worker:", error);
+    });
+}
 
 // Sentry — error tracking (só em produção)
 if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {

@@ -3,6 +3,14 @@ import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { toast } from "sonner";
 
+function sanitizeVapidKey(key: string): string {
+  return key.replace(/\s/g, "").replace(/^["']|["']$/g, "").trim();
+}
+
+function isValidBase64Url(key: string): boolean {
+  return /^[A-Za-z0-9_-]+=*$/.test(key) && key.length >= 80;
+}
+
 function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -83,6 +91,14 @@ export function usePushNotifications() {
 
   async function subscribe() {
     if (!salon || !publicKeyQuery.data?.publicKey) return;
+    const rawKey = sanitizeVapidKey(publicKeyQuery.data.publicKey);
+    if (!isValidBase64Url(rawKey)) {
+      console.error("[push] Chave VAPID inválida:", publicKeyQuery.data.publicKey);
+      toast.error(
+        "Chave VAPID configurada incorretamente. Verifique as variáveis de ambiente."
+      );
+      return;
+    }
     setLoading(true);
     try {
       const registration = await withTimeout(
@@ -92,9 +108,7 @@ export function usePushNotifications() {
       );
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          publicKeyQuery.data.publicKey
-        ),
+        applicationServerKey: urlBase64ToUint8Array(rawKey),
       });
       const subJson = subscription.toJSON();
       if (!subJson.endpoint || !subJson.keys?.p256dh || !subJson.keys?.auth) {
