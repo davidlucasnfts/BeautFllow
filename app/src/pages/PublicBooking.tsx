@@ -256,7 +256,12 @@ export default function PublicBooking() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F7F6] pb-24 pt-6 px-4">
+    <div
+      className="min-h-screen pb-24 pt-6 px-4"
+      style={{
+        background: `linear-gradient(180deg, ${palette.primary}10 0%, #ffffff 100%)`,
+      }}
+    >
       <div className="mx-auto max-w-md space-y-5">
         <PublicBookingHeader
           salon={data.salon}
@@ -264,7 +269,7 @@ export default function PublicBooking() {
           tagline="Agende seu horário abaixo"
         />
 
-        <BookingSteps currentStep={currentStep} />
+        <BookingSteps currentStep={currentStep} primaryColor={palette.primary} />
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 space-y-5">
           {data.services.length === 0 ? (
