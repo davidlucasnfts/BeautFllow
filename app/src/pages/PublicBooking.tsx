@@ -287,7 +287,7 @@ export default function PublicBooking() {
           ) : (
             <>
               <section className="space-y-4">
-                <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <p className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                   <span
                     className="flex h-6 w-6 items-center justify-center rounded-full text-white text-sm font-bold"
                     style={{ backgroundColor: palette.primary }}
@@ -295,7 +295,7 @@ export default function PublicBooking() {
                     1
                   </span>
                   Qual serviço?
-                </h2>
+                </p>
                 <div className="grid gap-2">
                   <Label className="font-semibold text-slate-700">Serviço *</Label>
                   <Select
@@ -344,7 +344,7 @@ export default function PublicBooking() {
               </section>
 
               <section className="space-y-4">
-                <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <p className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                   <span
                     className="flex h-6 w-6 items-center justify-center rounded-full text-white text-sm font-bold"
                     style={{ backgroundColor: palette.primary }}
@@ -352,7 +352,7 @@ export default function PublicBooking() {
                     2
                   </span>
                   Quando?
-                </h2>
+                </p>
                 <BookingDateTimeFields
                   date={date}
                   onDateChange={v => {
@@ -370,7 +370,7 @@ export default function PublicBooking() {
               </section>
 
               <section className="space-y-4">
-                <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <p className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                   <span
                     className="flex h-6 w-6 items-center justify-center rounded-full text-white text-sm font-bold"
                     style={{ backgroundColor: palette.primary }}
@@ -378,7 +378,7 @@ export default function PublicBooking() {
                     3
                   </span>
                   Seus dados
-                </h2>
+                </p>
                 <div className="grid gap-2">
                   <Label className="font-semibold text-slate-700">Seu WhatsApp *</Label>
                   <Input
