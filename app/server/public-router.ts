@@ -384,7 +384,7 @@ export const publicRouter = createRouter({
         );
         await notifySalon(salon.id, {
           title: "Novo agendamento online",
-          body: `${client.name} marcou ${service.name} para ${dateFormatted} às ${startTimeFormatted}.`,
+          body: `${input.name} marcou ${service.name} para ${dateFormatted} às ${startTimeFormatted}.`,
           icon: "/icon-192.png",
           badge: "/icon-192.png",
           tag: `appointment-${appointment?.id ?? "new"}`,
@@ -403,7 +403,7 @@ export const publicRouter = createRouter({
         date: input.date,
         startTime: input.startTime,
         endTime: addMinutes(input.startTime, service.durationMinutes),
-        clientName: client.name,
+        clientName: input.name,
       };
     }),
 });
