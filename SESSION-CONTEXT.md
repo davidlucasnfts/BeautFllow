@@ -26,6 +26,7 @@
 
 **Serviços adicionais:**
 - Campo ficou destacado com cor do tema para não passar despercebido.
+- Chips/tags de serviços adicionais já selecionados agora usam a cor do tema do estabelecimento (ex.: rosa para salão, preto/dourado para barbearia, lilás para estética) em vez de cinza padrão.
 
 **Correção de bug:**
 - Erro ao salvar edição de agendamento corrigido: `appointmentDate` estava sendo convertido para `Date` no backend, mas a coluna do banco espera string. Agora a edição salva corretamente.
