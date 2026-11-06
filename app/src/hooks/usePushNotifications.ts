@@ -14,11 +14,21 @@ function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
   return outputArray.buffer;
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} demorou mais de ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
 export function usePushNotifications() {
   const { salon } = useSalon();
   const [supported, setSupported] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [readyError, setReadyError] = useState<string | null>(null);
   const utils = trpc.useUtils();
 
   const publicKeyQuery = trpc.push.publicKey.useQuery(undefined, {
@@ -51,11 +61,20 @@ export function usePushNotifications() {
 
     async function checkExistingSubscription() {
       try {
-        const registration = await navigator.serviceWorker.ready;
+        const registration = await withTimeout(
+          navigator.serviceWorker.ready,
+          5000,
+          "service worker"
+        );
         const subscription = await registration.pushManager.getSubscription();
         setSubscribed(!!subscription);
-      } catch {
+        setReadyError(null);
+      } catch (e) {
+        console.error("[push] Service worker não ficou pronto:", e);
         setSubscribed(false);
+        setReadyError(
+          "Service worker não carregou. Recarregue a página ou limpe o cache."
+        );
       }
     }
 
@@ -66,7 +85,11 @@ export function usePushNotifications() {
     if (!salon || !publicKeyQuery.data?.publicKey) return;
     setLoading(true);
     try {
-      const registration = await navigator.serviceWorker.ready;
+      const registration = await withTimeout(
+        navigator.serviceWorker.ready,
+        5000,
+        "service worker"
+      );
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(
@@ -96,7 +119,11 @@ export function usePushNotifications() {
     if (!salon) return;
     setLoading(true);
     try {
-      const registration = await navigator.serviceWorker.ready;
+      const registration = await withTimeout(
+        navigator.serviceWorker.ready,
+        5000,
+        "service worker"
+      );
       const subscription = await registration.pushManager.getSubscription();
       if (subscription) {
         await subscription.unsubscribe();
@@ -121,6 +148,7 @@ export function usePushNotifications() {
     supported,
     subscribed,
     loading,
+    readyError,
     subscribe,
     unsubscribe,
     publicKey: publicKeyQuery.data?.publicKey,

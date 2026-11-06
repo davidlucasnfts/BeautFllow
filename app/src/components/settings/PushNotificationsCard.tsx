@@ -5,8 +5,15 @@ import { Bell, BellOff } from "lucide-react";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 export default function PushNotificationsCard() {
-  const { supported, subscribed, loading, subscribe, unsubscribe, publicKey } =
-    usePushNotifications();
+  const {
+    supported,
+    subscribed,
+    loading,
+    readyError,
+    subscribe,
+    unsubscribe,
+    publicKey,
+  } = usePushNotifications();
 
   if (!supported) {
     return (
@@ -86,6 +93,10 @@ export default function PushNotificationsCard() {
             </Button>
           )}
         </div>
+
+        {readyError && (
+          <p className="text-xs text-red-600">{readyError}</p>
+        )}
       </CardContent>
     </Card>
   );

@@ -12,6 +12,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
+      devOptions: {
+        // Permite testar notificações push localmente (localhost)
+        enabled: true,
+      },
       includeAssets: ["favicon-32.png", "apple-touch-icon.png"],
       // Manifest desativado aqui — o app serve um manifest DINÂMICO pela rota
       // /api/pwa-manifest (cor/ícones seguem o tema do estabelecimento logado).
