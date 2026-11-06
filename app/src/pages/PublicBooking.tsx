@@ -4,9 +4,7 @@ import { keepPreviousData } from "@tanstack/react-query";
 import { trpc } from "@/providers/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -34,6 +32,9 @@ import PublicBookingResult, {
   type BookResult,
 } from "@/components/public-booking/PublicBookingResult";
 import BookingDateTimeFields from "@/components/public-booking/BookingDateTimeFields";
+import BookingSteps from "@/components/public-booking/BookingSteps";
+import BookingSummary from "@/components/public-booking/BookingSummary";
+import LgpdCheckbox from "@/components/public-booking/LgpdCheckbox";
 
 export default function PublicBooking() {
   const { slug } = useParams<{ slug: string }>();
@@ -43,7 +44,6 @@ export default function PublicBooking() {
   const [startTime, setStartTime] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [notes, setNotes] = useState("");
   const [lgpdAccepted, setLgpdAccepted] = useState(false);
   const [result, setResult] = useState<BookResult | null>(null);
   const [nameManuallyEdited, setNameManuallyEdited] = useState(false);
@@ -205,7 +205,6 @@ export default function PublicBooking() {
       professionalId: professionalId ? Number(professionalId) : undefined,
       date: isoDate,
       startTime: effectiveStartTime,
-      notes: notes.trim() || undefined,
     });
   }
 
@@ -248,16 +247,26 @@ export default function PublicBooking() {
     );
   }
 
+  const currentStep =
+    !serviceId ? 1 : !date || !effectiveStartTime ? 2 : 3;
+
+  const selectedService = data?.services.find(s => s.id === Number(serviceId));
+  const selectedProfessional = data?.professionals.find(
+    p => p.id === Number(professionalId)
+  );
+
   return (
-    <div className="min-h-screen bg-slate-50 py-8 px-4">
-      <div className="mx-auto max-w-md space-y-6">
+    <div className="min-h-screen bg-[#F8F7F6] pb-24 pt-6 px-4">
+      <div className="mx-auto max-w-md space-y-5">
         <PublicBookingHeader
           salon={data.salon}
           primaryColor={palette.primary}
           tagline="Agende seu horário abaixo"
         />
 
-        <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-5">
+        <BookingSteps currentStep={currentStep} />
+
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 space-y-5">
           {data.services.length === 0 ? (
             <div className="text-center space-y-2 py-6">
               <p className="text-sm text-slate-600">
@@ -272,143 +281,165 @@ export default function PublicBooking() {
             </div>
           ) : (
             <>
-              <div className="grid gap-2">
-                <Label>Serviço *</Label>
-                <Select
-                  value={serviceId}
-                  onValueChange={v => {
-                    setServiceId(v);
-                    setStartTime(""); // duração muda → horários mudam
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {data.services.map(s => (
-                      <SelectItem key={s.id} value={String(s.id)}>
-                        {s.name} — R$ {moneyDotToBR(String(s.price))}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {data.professionals.length > 0 && (
+              <section className="space-y-4">
+                <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <span
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-white text-xs"
+                    style={{ backgroundColor: palette.primary }}
+                  >
+                    1
+                  </span>
+                  Qual serviço?
+                </h2>
                 <div className="grid gap-2">
-                  <Label>Profissional (opcional)</Label>
+                  <Label>Serviço *</Label>
                   <Select
-                    value={professionalId}
+                    value={serviceId}
                     onValueChange={v => {
-                      setProfessionalId(v);
-                      setStartTime(""); // agenda do profissional muda
+                      setServiceId(v);
+                      setStartTime("");
                     }}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Sem preferência" />
+                      <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
                     <SelectContent>
-                      {data.professionals.map(p => (
-                        <SelectItem key={p.id} value={String(p.id)}>
-                          {p.name}
+                      {data.services.map(s => (
+                        <SelectItem key={s.id} value={String(s.id)}>
+                          {s.name} — R$ {moneyDotToBR(String(s.price))}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-              )}
 
-              <BookingDateTimeFields
+                {data.professionals.length > 0 && (
+                  <div className="grid gap-2">
+                    <Label>Profissional (opcional)</Label>
+                    <Select
+                      value={professionalId}
+                      onValueChange={v => {
+                        setProfessionalId(v);
+                        setStartTime("");
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sem preferência" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {data.professionals.map(p => (
+                          <SelectItem key={p.id} value={String(p.id)}>
+                            {p.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </section>
+
+              <section className="space-y-4">
+                <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <span
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-white text-xs"
+                    style={{ backgroundColor: palette.primary }}
+                  >
+                    2
+                  </span>
+                  Quando?
+                </h2>
+                <BookingDateTimeFields
+                  date={date}
+                  onDateChange={v => {
+                    setDate(v);
+                    setStartTime("");
+                  }}
+                  effectiveStartTime={effectiveStartTime}
+                  onStartTimeChange={setStartTime}
+                  hasService={!!serviceId}
+                  isFetchingSlots={isFetchingSlots}
+                  slots={slotsRespectingRules}
+                  closedDay={closedDay}
+                  maxBookingDate={maxBookingDate}
+                />
+              </section>
+
+              <section className="space-y-4">
+                <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <span
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-white text-xs"
+                    style={{ backgroundColor: palette.primary }}
+                  >
+                    3
+                  </span>
+                  Seus dados
+                </h2>
+                <div className="grid gap-2">
+                  <Label>Seu WhatsApp *</Label>
+                  <Input
+                    value={phone}
+                    onChange={e => {
+                      const masked = maskPhoneBR(e.target.value);
+                      setPhone(masked);
+                      if (masked.length < 14) {
+                        setName("");
+                        setNameManuallyEdited(false);
+                      }
+                    }}
+                    placeholder="(11) 99999-9999"
+                    inputMode="numeric"
+                  />
+                  {existingClient?.name && !nameManuallyEdited && (
+                    <p className="text-xs text-slate-500">
+                      Cliente encontrado: {existingClient.name}
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid gap-2">
+                  <Label>Seu nome *</Label>
+                  <Input
+                    value={name}
+                    onChange={e => {
+                      setName(onlyText(e.target.value));
+                      setNameManuallyEdited(true);
+                    }}
+                    onFocus={() => setNameManuallyEdited(true)}
+                    placeholder="Nome completo"
+                  />
+                </div>
+              </section>
+
+              <BookingSummary
+                serviceName={selectedService?.name ?? ""}
+                servicePrice={selectedService?.price}
+                professionalName={
+                  selectedProfessional?.name ??
+                  (data.professionals.length > 0 ? "Sem preferência" : null)
+                }
                 date={date}
-                onDateChange={v => {
-                  setDate(v);
-                  setStartTime(""); // horários do dia mudam
-                }}
-                effectiveStartTime={effectiveStartTime}
-                onStartTimeChange={setStartTime}
-                hasService={!!serviceId}
-                isFetchingSlots={isFetchingSlots}
-                slots={slotsRespectingRules}
-                closedDay={closedDay}
-                maxBookingDate={maxBookingDate}
+                startTime={effectiveStartTime}
+                endTime={
+                  effectiveStartTime && selectedService
+                    ? (() => {
+                        const [h, m] = effectiveStartTime.split(":").map(Number);
+                        const total = h * 60 + m + selectedService.durationMinutes;
+                        return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+                      })()
+                    : undefined
+                }
+                clientName={name}
+                primaryColor={palette.primary}
               />
 
-              <div className="grid gap-2">
-                <Label>Seu WhatsApp *</Label>
-                <Input
-                  value={phone}
-                  onChange={e => {
-                    const masked = maskPhoneBR(e.target.value);
-                    setPhone(masked);
-                    // quando o telefone muda, limpa o nome para evitar mostrar
-                    // nome de outro cliente até a busca retornar
-                    if (masked.length < 14) {
-                      setName("");
-                      setNameManuallyEdited(false);
-                    }
-                  }}
-                  placeholder="(11) 99999-9999"
-                  inputMode="numeric"
-                />
-                {existingClient?.name && !nameManuallyEdited && (
-                  <p className="text-xs text-slate-500">
-                    Cliente encontrado: {existingClient.name}
-                  </p>
-                )}
-              </div>
-
-              <div className="grid gap-2">
-                <Label>Seu nome *</Label>
-                <Input
-                  value={name}
-                  onChange={e => {
-                    setName(onlyText(e.target.value));
-                    setNameManuallyEdited(true);
-                  }}
-                  onFocus={() => setNameManuallyEdited(true)}
-                  placeholder="Nome completo"
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label>Observações</Label>
-                <Textarea
-                  value={notes}
-                  onChange={e => setNotes(e.target.value)}
-                  placeholder="Opcional"
-                  rows={3}
-                />
-              </div>
-
-              <div className="flex items-start gap-2 rounded-md border border-slate-200 bg-slate-50 p-3">
-                <Checkbox
-                  id="lgpd-accept"
-                  checked={lgpdAccepted}
-                  onCheckedChange={checked => setLgpdAccepted(checked === true)}
-                  className="mt-0.5"
-                />
-                <Label
-                  htmlFor="lgpd-accept"
-                  className="text-xs text-slate-600 leading-snug cursor-pointer"
-                >
-                  Aceito o uso dos meus dados para agendamento, conforme a
-                  política do estabelecimento *
-                </Label>
-              </div>
-
-              <Button
-                className="w-full text-white"
-                style={{ backgroundColor: palette.primary }}
-                onClick={handleSubmit}
-                disabled={bookMutation.isPending || !lgpdAccepted}
-              >
-                <CalendarCheck className="mr-2 h-4 w-4" />
-                {bookMutation.isPending ? "Enviando..." : "Agendar"}
-              </Button>
+              <LgpdCheckbox
+                checked={lgpdAccepted}
+                onCheckedChange={setLgpdAccepted}
+              />
 
               <p className="text-xs text-slate-400 text-center flex items-center justify-center gap-1">
-                <Clock className="h-3 w-3" />O salão confirma seu horário pelo
-                WhatsApp
+                <Clock className="h-3 w-3" />
+                O salão confirma seu horário pelo WhatsApp
               </p>
             </>
           )}
@@ -417,6 +448,36 @@ export default function PublicBooking() {
         <footer className="text-center text-xs text-slate-400">
           Agendamento online por StudioFlow
         </footer>
+      </div>
+
+      {data.services.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 border-t border-slate-200 bg-white p-4 md:hidden">
+          <Button
+            className="w-full text-white h-12 text-base"
+            style={{ backgroundColor: palette.primary }}
+            onClick={handleSubmit}
+            disabled={bookMutation.isPending || !lgpdAccepted}
+          >
+            <CalendarCheck className="mr-2 h-4 w-4" />
+            {bookMutation.isPending ? "Enviando..." : "Agendar"}
+          </Button>
+        </div>
+      )}
+
+      <div className="hidden md:block">
+        {data.services.length > 0 && (
+          <div className="mx-auto max-w-md">
+            <Button
+              className="w-full text-white h-12 text-base"
+              style={{ backgroundColor: palette.primary }}
+              onClick={handleSubmit}
+              disabled={bookMutation.isPending || !lgpdAccepted}
+            >
+              <CalendarCheck className="mr-2 h-4 w-4" />
+              {bookMutation.isPending ? "Enviando..." : "Agendar"}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

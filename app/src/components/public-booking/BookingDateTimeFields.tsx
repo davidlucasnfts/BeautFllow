@@ -59,14 +59,14 @@ export default function BookingDateTimeFields({
                 className="truncate"
                 placeholder={
                   !hasService
-                    ? "Escolha o serviço"
+                    ? "Serviço primeiro"
                     : !date
                       ? "Informe a data"
                       : isFetchingSlots
                         ? "Carregando..."
                         : slots.length === 0
                           ? "Sem horários"
-                          : "Selecione"
+                          : "Escolha o horário"
                 }
               />
             </SelectTrigger>
