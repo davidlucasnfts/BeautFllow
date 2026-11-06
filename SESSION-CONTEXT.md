@@ -42,6 +42,7 @@
 - Card "Notificações no celular" em Configurações para o dono ativar/desativar push.
 - Timeout no carregamento do service worker evita que o botão fique travado.
 - Validação da chave VAPID no frontend alerta quando a env var está com espaços, aspas ou formato inválido.
+- Validação da chave VAPID no backend: notificações só ativam se a chave pública tiver 87 caracteres e decodificar para 65 bytes.
 - Quando uma cliente agenda pelo link online, o salão recebe notificação push com nome, procedimento, data e horário.
 - Variáveis de ambiente VAPID adicionadas ao `.env.example`.
 
