@@ -297,7 +297,7 @@ export default function PublicBooking() {
                   Qual serviço?
                 </h2>
                 <div className="grid gap-2">
-                  <Label>Serviço *</Label>
+                  <Label className="font-semibold text-slate-700">Serviço *</Label>
                   <Select
                     value={serviceId}
                     onValueChange={v => {
@@ -320,7 +320,7 @@ export default function PublicBooking() {
 
                 {data.professionals.length > 0 && (
                   <div className="grid gap-2">
-                    <Label>Profissional (opcional)</Label>
+                    <Label className="font-semibold text-slate-700">Profissional (opcional)</Label>
                     <Select
                       value={professionalId}
                       onValueChange={v => {
@@ -380,7 +380,7 @@ export default function PublicBooking() {
                   Seus dados
                 </h2>
                 <div className="grid gap-2">
-                  <Label>Seu WhatsApp *</Label>
+                  <Label className="font-semibold text-slate-700">Seu WhatsApp *</Label>
                   <Input
                     value={phone}
                     onChange={e => {
@@ -402,7 +402,7 @@ export default function PublicBooking() {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>Seu nome *</Label>
+                  <Label className="font-semibold text-slate-700">Seu nome *</Label>
                   <Input
                     value={name}
                     onChange={e => {

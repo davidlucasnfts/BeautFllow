@@ -37,7 +37,7 @@ export default function BookingDateTimeFields({
     <>
       <div className="grid grid-cols-2 gap-4">
         <div className="grid gap-2">
-          <Label>Data *</Label>
+          <Label className="font-semibold text-slate-700">Data *</Label>
           <DatePicker
             value={date}
             onChange={onDateChange}
@@ -48,7 +48,7 @@ export default function BookingDateTimeFields({
           />
         </div>
         <div className="grid gap-2">
-          <Label>Horário *</Label>
+          <Label className="font-semibold text-slate-700">Horário *</Label>
           <Select
             value={effectiveStartTime}
             onValueChange={onStartTimeChange}
