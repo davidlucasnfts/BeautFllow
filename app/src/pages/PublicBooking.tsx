@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { keepPreviousData } from "@tanstack/react-query";
 import { trpc } from "@/providers/trpc";
@@ -46,11 +46,24 @@ export default function PublicBooking() {
   const [notes, setNotes] = useState("");
   const [lgpdAccepted, setLgpdAccepted] = useState(false);
   const [result, setResult] = useState<BookResult | null>(null);
+  const [nameManuallyEdited, setNameManuallyEdited] = useState(false);
 
   const { data, isLoading, error } = trpc.public.bookingPage.useQuery(
     { slug: slug ?? "" },
     { enabled: !!slug }
   );
+
+  // Busca cliente existente pelo telefone para preencher o nome automaticamente
+  const { data: existingClient } = trpc.public.findClientByPhone.useQuery(
+    { slug: slug ?? "", phone },
+    { enabled: !!slug && /^\(\d{2}\) \d{4,5}-\d{4}$/.test(phone) }
+  );
+
+  useEffect(() => {
+    if (existingClient?.name && !nameManuallyEdited) {
+      setName(existingClient.name);
+    }
+  }, [existingClient, nameManuallyEdited]);
 
   // Horários livres do dia escolhido (grade de 30 em 30 min)
   // `date` já é ISO — vem direto do DatePicker
@@ -321,21 +334,39 @@ export default function PublicBooking() {
               />
 
               <div className="grid gap-2">
-                <Label>Seu nome *</Label>
-                <Input
-                  value={name}
-                  onChange={e => setName(onlyText(e.target.value))}
-                  placeholder="Nome completo"
-                />
-              </div>
-
-              <div className="grid gap-2">
                 <Label>Seu WhatsApp *</Label>
                 <Input
                   value={phone}
-                  onChange={e => setPhone(maskPhoneBR(e.target.value))}
+                  onChange={e => {
+                    const masked = maskPhoneBR(e.target.value);
+                    setPhone(masked);
+                    // quando o telefone muda, limpa o nome para evitar mostrar
+                    // nome de outro cliente até a busca retornar
+                    if (masked.length < 14) {
+                      setName("");
+                      setNameManuallyEdited(false);
+                    }
+                  }}
                   placeholder="(11) 99999-9999"
                   inputMode="numeric"
+                />
+                {existingClient?.name && !nameManuallyEdited && (
+                  <p className="text-xs text-slate-500">
+                    Cliente encontrado: {existingClient.name}
+                  </p>
+                )}
+              </div>
+
+              <div className="grid gap-2">
+                <Label>Seu nome *</Label>
+                <Input
+                  value={name}
+                  onChange={e => {
+                    setName(onlyText(e.target.value));
+                    setNameManuallyEdited(true);
+                  }}
+                  onFocus={() => setNameManuallyEdited(true)}
+                  placeholder="Nome completo"
                 />
               </div>
 

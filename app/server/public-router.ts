@@ -62,6 +62,23 @@ export const publicRouter = createRouter({
       };
     }),
 
+  // Busca cliente já cadastrado pelo telefone (para preencher nome no
+  // agendamento online). Retorna apenas nome e id — dados mínimos.
+  findClientByPhone: publicQuery
+    .input(z.object({ slug: z.string().min(2).max(100), phone: phoneSchema }))
+    .query(async ({ input }) => {
+      const salon = await getSalonBySlug(input.slug);
+      if (!salon) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Endereço não encontrado.",
+        });
+      }
+      const client = await getClientByPhone(salon.id, input.phone);
+      if (!client) return null;
+      return { id: client.id, name: client.name };
+    }),
+
   // Horários livres de um dia (grade de 30 em 30 min, menos os ocupados)
   availableSlots: publicQuery
     .input(
