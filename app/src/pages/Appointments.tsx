@@ -3,6 +3,7 @@ import { trpc } from "@/providers/trpc";
 import { useSalon } from "@/providers/useSalon";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
+import { useSearchParams } from "react-router";
 import {
   format,
   addDays,
@@ -53,6 +54,29 @@ export default function Appointments() {
   const [filterProfessional, setFilterProfessional] = useState<string>("all");
   const [filterService, setFilterService] = useState<string>("all");
   const [editingId, setEditingId] = useState<number | null>(null);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const highlightId = Number(searchParams.get("appointment")) || null;
+
+  const { data: highlightedAppointment } = trpc.appointment.byId.useQuery(
+    { id: highlightId ?? 0, salonId: salon?.id ?? 0 },
+    { enabled: !!salon && !!highlightId }
+  );
+
+  useEffect(() => {
+    if (!highlightedAppointment || !highlightId) return;
+    // Navega para a data do agendamento e abre o diálogo de edição
+    const date = new Date(`${highlightedAppointment.appointmentDate}T12:00:00`);
+    setSelectedDate(date);
+    setFilaDate(date);
+    loadAppointment(highlightedAppointment);
+    setEditingId(highlightedAppointment.id);
+    setOpen(true);
+    // Remove o parâmetro da URL para não reabrir em recargas futuras
+    searchParams.delete("appointment");
+    setSearchParams(searchParams, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [highlightedAppointment, highlightId]);
 
   const { form, updateField, resetForm, setForm, loadAppointment } =
     useAppointmentForm();

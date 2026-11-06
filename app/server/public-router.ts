@@ -389,7 +389,7 @@ export const publicRouter = createRouter({
           badge: "/icon-192.png",
           tag: `appointment-${appointment?.id ?? "new"}`,
           data: {
-            url: "/appointments",
+            url: `/appointments?appointment=${appointment?.id ?? ""}`,
             appointmentId: appointment?.id,
           },
         });
