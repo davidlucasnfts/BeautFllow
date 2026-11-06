@@ -35,7 +35,9 @@
 - Nova tabela `push_subscriptions` (migration 016) para guardar assinaturas de dispositivos.
 - Novo router `push` com endpoints para obter chave pública VAPID e registrar/cancelar assinatura.
 - Service worker customizado (`src/sw.ts`) com suporte a eventos `push` e `notificationclick`.
+- Registro explícito do service worker no `main.tsx` via `virtual:pwa-register` para funcionar em dev e produção.
 - Card "Notificações no celular" em Configurações para o dono ativar/desativar push.
+- Timeout no carregamento do service worker evita que o botão fique travado.
 - Quando uma cliente agenda pelo link online, o salão recebe notificação push com nome, procedimento, data e horário.
 - Variáveis de ambiente VAPID adicionadas ao `.env.example`.
 

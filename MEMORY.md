@@ -120,6 +120,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Configurações: card de horário renomeado e com explicação clara sobre regras do agendamento online | 06/11 |
 | Agenda ganha ação "Editar" em todos os status ativos (mobile e desktop), reaproveitando o diálogo de novo agendamento | 06/11 |
 | Notificações push no celular: dono ativa em Configurações e recebe alerta quando cliente agenda pelo link online | 06/11 |
+| Correção no registro do service worker para push funcionar local e em produção sem travar o botão de ativar | 06/11 |
 | Horário de funcionamento configurável 24h (abertura e fechamento de 00:00 a 23:59) | 06/11 |
 | Campo de serviços adicionais destacado com cor do tema para ficar visível | 06/11 |
 | Chips de serviços adicionais já selecionados agora usam a cor do tema do estabelecimento em vez de cinza padrão | 06/11 |
