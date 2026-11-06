@@ -123,6 +123,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Correção no registro do service worker para push funcionar local e em produção sem travar o botão de ativar | 06/11 |
 | Correção da URL aberta ao clicar na notificação push (de /agendamentos para /appointments) | 06/11 |
 | Clique na notificação push abre o agendamento específico na agenda | 06/11 |
+| Agendamento online agora exibe o nome digitado na confirmação e na notificação, mesmo quando o telefone já existe no cadastro | 06/11 |
 | Dados do estabelecimento agora atualizam na tela logo após salvar (telefone, e-mail, endereço) | 06/11 |
 | Validação da chave VAPID no frontend para evitar erro quando a env var tem espaços ou aspas | 06/11 |
 | Validação da chave VAPID no backend — notificações só ativam se a chave pública tiver 87 caracteres e 65 bytes | 06/11 |
