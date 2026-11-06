@@ -7,7 +7,7 @@ import {
   isSameDay,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarDays, CheckCheck, Play, XCircle } from "lucide-react";
+import { CalendarDays, CheckCheck, Pencil, Play, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
@@ -33,6 +33,7 @@ interface FilaDoDiaProps {
   onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
+  onEdit?: (appt: CalendarAppointment) => void;
 }
 
 /** Visão "fila de atendimento" do dia — padrão no mobile (Opção F) */
@@ -45,6 +46,7 @@ export default function FilaDoDia({
   onStart,
   onConclude,
   onCancel,
+  onEdit,
 }: FilaDoDiaProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const selectedDayRef = useRef<HTMLButtonElement>(null);
@@ -193,7 +195,7 @@ export default function FilaDoDia({
                 {/* Barra de ações (toque na linha expande) — hierarquia de peso:
                     Iniciar = tema sólido, Concluir = verde sólido, Cancelar = outline */}
                 {expanded && hasAppointmentActions(appt) && (
-                  <div className="flex justify-end gap-2 px-3 pb-3">
+                  <div className="flex flex-wrap justify-end gap-2 px-3 pb-3">
                     {(appt.status === "scheduled" ||
                       appt.status === "confirmed") && (
                       <Button
@@ -207,6 +209,20 @@ export default function FilaDoDia({
                       >
                         <Play className="h-3.5 w-3.5" />
                         Iniciar
+                      </Button>
+                    )}
+                    {onEdit && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={e => {
+                          e.stopPropagation();
+                          onEdit(appt);
+                        }}
+                        className="h-8 gap-1.5 bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                        Editar
                       </Button>
                     )}
                     <Button

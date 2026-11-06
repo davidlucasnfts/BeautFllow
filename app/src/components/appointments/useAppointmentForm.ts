@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { format } from "date-fns";
+import type { CalendarAppointment } from "@/components/calendar/types";
 
 export type AppointmentFormData = {
   clientId: string;
@@ -39,5 +40,17 @@ export function useAppointmentForm() {
     });
   }
 
-  return { form, updateField, resetForm, setForm };
+  function loadAppointment(appt: CalendarAppointment) {
+    setForm({
+      clientId: String(appt.clientId),
+      professionalId: appt.professionalId ? String(appt.professionalId) : "",
+      serviceId: String(appt.serviceId),
+      extraServiceIds: (appt.extraServices ?? []).map(e => String(e.id)),
+      appointmentDate: appt.appointmentDate,
+      startTime: appt.startTime,
+      notes: appt.notes ?? "",
+    });
+  }
+
+  return { form, updateField, resetForm, setForm, loadAppointment };
 }

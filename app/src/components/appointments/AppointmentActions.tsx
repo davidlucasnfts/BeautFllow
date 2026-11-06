@@ -1,6 +1,6 @@
 import type { MouseEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCheck, Play, XCircle } from "lucide-react";
+import { CheckCheck, Pencil, Play, XCircle } from "lucide-react";
 import type { CalendarAppointment } from "@/components/calendar/types";
 
 const ACTIVE_STATUSES = ["scheduled", "confirmed", "checked_in", "in_progress"];
@@ -10,6 +10,7 @@ interface AppointmentActionsProps {
   onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
+  onEdit?: (appt: CalendarAppointment) => void;
   className?: string;
 }
 
@@ -17,18 +18,19 @@ interface AppointmentActionsProps {
  * Ações rápidas do compromisso (desktop — EventCard semana/dia).
  *
  * Matriz por status:
- * - scheduled/confirmed: Iniciar, Concluir, Cancelar
- * - checked_in/in_progress: Concluir, Cancelar
+ * - scheduled/confirmed: Iniciar, Editar, Concluir, Cancelar
+ * - checked_in/in_progress: Editar, Concluir, Cancelar
  * - completed/cancelled/no_show: nenhuma
  *
- * Peso visual: Iniciar = tema (sólido), Concluir = verde sólido,
- * Cancelar = outline (destrutivo discreto).
+ * Peso visual: Iniciar = tema (sólido), Editar = azul sólido,
+ * Concluir = verde sólido, Cancelar = outline (destrutivo discreto).
  */
 export default function AppointmentActions({
   appt,
   onStart,
   onConclude,
   onCancel,
+  onEdit,
   className = "",
 }: AppointmentActionsProps) {
   const stop = (handler: () => void) => (e: MouseEvent) => {
@@ -52,6 +54,17 @@ export default function AppointmentActions({
         >
           <Play className="h-3 w-3" />
           Iniciar
+        </Button>
+      )}
+      {onEdit && canConclude && (
+        <Button
+          type="button"
+          size="sm"
+          onClick={stop(() => onEdit(appt))}
+          className={`${btnClass} bg-blue-600 text-white hover:bg-blue-700`}
+        >
+          <Pencil className="h-3 w-3" />
+          Editar
         </Button>
       )}
       {canConclude && (

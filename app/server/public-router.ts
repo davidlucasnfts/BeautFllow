@@ -14,6 +14,7 @@ import {
   createAppointment,
 } from "./queries/salon";
 import { auditAction } from "./lib/audit";
+import { notifySalon } from "./lib/push";
 import {
   addMinutes,
   floorToSlot,
@@ -372,6 +373,29 @@ export const publicRouter = createRouter({
         undefined,
         { source: "online", clientId: client.id }
       );
+
+      // Notifica os dispositivos do salão sobre o novo agendamento online
+      // (não bloqueia o agendamento se o push falhar)
+      try {
+        const startTimeFormatted = input.startTime.slice(0, 5);
+        const dateFormatted = new Date(`${input.date}T12:00:00`).toLocaleDateString(
+          "pt-BR",
+          { day: "2-digit", month: "2-digit" }
+        );
+        await notifySalon(salon.id, {
+          title: "Novo agendamento online",
+          body: `${client.name} marcou ${service.name} para ${dateFormatted} às ${startTimeFormatted}.`,
+          icon: "/icon-192.png",
+          badge: "/icon-192.png",
+          tag: `appointment-${appointment?.id ?? "new"}`,
+          data: {
+            url: "/agendamentos",
+            appointmentId: appointment?.id,
+          },
+        });
+      } catch (e) {
+        console.error("[push] Falha ao notificar salão:", e);
+      }
 
       return {
         salonName: salon.name,

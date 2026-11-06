@@ -48,7 +48,9 @@ interface AppointmentDialogProps {
     value: AppointmentFormData[K]
   ) => void;
   onCreate: () => void;
+  onUpdate?: () => void;
   isPending: boolean;
+  mode?: "create" | "edit";
   clients?: Client[];
   professionals?: Professional[];
   services?: Service[];
@@ -63,7 +65,9 @@ export default function AppointmentDialog({
   form,
   onFieldChange,
   onCreate,
+  onUpdate,
   isPending,
+  mode = "create",
   clients,
   professionals,
   services,
@@ -94,7 +98,9 @@ export default function AppointmentDialog({
     >
       <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
         <DialogHeader className="shrink-0">
-          <DialogTitle>Novo Agendamento</DialogTitle>
+          <DialogTitle>
+            {mode === "edit" ? "Editar Agendamento" : "Novo Agendamento"}
+          </DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4 overflow-y-auto min-h-0">
           {showSetup && (
@@ -332,8 +338,17 @@ export default function AppointmentDialog({
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DialogClose>
-          <Button onClick={onCreate} disabled={isPending}>
-            Criar
+          <Button
+            onClick={mode === "edit" ? onUpdate : onCreate}
+            disabled={isPending}
+          >
+            {mode === "edit"
+              ? isPending
+                ? "Salvando..."
+                : "Salvar"
+              : isPending
+                ? "Criando..."
+                : "Criar"}
           </Button>
         </DialogFooter>
       </DialogContent>

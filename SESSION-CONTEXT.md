@@ -5,8 +5,31 @@
 > **Prompt recomendado para a nova IA:**
 > "Você está assumindo o projeto StudioFlow. Leia obrigatoriamente: `AGENTS.md`, `SESSION-CONTEXT.md`, `ROADMAP.md`, `MEMORY.md` e `docs/documentacao-estrutura.md`. Siga todas as regras do `AGENTS.md`. Responda sempre em português, modo direto, priorizando linguagem de negócio. Antes de criar ou modificar qualquer arquivo de documentação, consulte `docs/documentacao-estrutura.md`. A meta atual é a Fase 4 — Pronto para vender. As decisões pendentes do David estão na seção 'Decisões pendentes / Ações manuais' deste arquivo."
 
-> **Atualizado em:** 03/11/2026 (análise de negócio completa + ROADMAP estratégico reescrito + `MestreStudioFlow.md` sincronizado. Último push em produção: 21/10 — cadastro rápido de profissional/serviço)
+> **Atualizado em:** 06/11/2026 (configurações ajustadas, edição de agendamentos e notificações push implementadas. Último push em produção: 21/10 — cadastro rápido de profissional/serviço)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md` + `ROADMAP.md` + `MestreStudioFlow.md`, não no histórico do chat.
+
+---
+
+## Resumo da sessão 06/11 — Configurações, edição de agendamentos e push notifications
+
+**Configurações:**
+- Removida a duplicação do card "Aparência do sistema" na tela de configurações.
+- Card de horário renomeado para "Horário de funcionamento e agendamento online" e ganhou explicação clara de que as regras valem para o link público; na agenda interna o dono agenda livremente.
+
+**Edição de agendamentos:**
+- Ação "Editar" adicionada em todos os agendamentos ativos (scheduled, confirmed, checked_in, in_progress) no mobile (Fila do Dia) e desktop (semana/dia).
+- Reaproveitado o diálogo de novo agendamento no modo edição, permitindo alterar cliente, profissional, serviço, serviços adicionais, data, horário e observações.
+- Valor e comissão continuam sendo ajustados no checkout/financeiro, não no diálogo de edição.
+
+**Notificações push no celular (Opção A implementada):**
+- Nova tabela `push_subscriptions` (migration 016) para guardar assinaturas de dispositivos.
+- Novo router `push` com endpoints para obter chave pública VAPID e registrar/cancelar assinatura.
+- Service worker customizado (`src/sw.ts`) com suporte a eventos `push` e `notificationclick`.
+- Card "Notificações no celular" em Configurações para o dono ativar/desativar push.
+- Quando uma cliente agenda pelo link online, o salão recebe notificação push com nome, procedimento, data e horário.
+- Variáveis de ambiente VAPID adicionadas ao `.env.example`.
+
+**Próxima etapa:** decidir provedor e arquitetura da Opção B (notificação por WhatsApp para o dono), documentada em `docs/adr/ADR-006-notificacoes-push-e-whatsapp.md`.
 
 ---
 

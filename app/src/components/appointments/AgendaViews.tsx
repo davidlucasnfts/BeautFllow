@@ -43,6 +43,7 @@ interface AgendaViewsProps {
   onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
+  onEdit?: (appt: CalendarAppointment) => void;
   onReschedule: (appointmentId: number, newStartTime: string) => void;
 }
 
@@ -74,6 +75,7 @@ export default function AgendaViews({
   onStart,
   onConclude,
   onCancel,
+  onEdit,
   onReschedule,
 }: AgendaViewsProps) {
   if (isLoading) return <Skeleton className="h-96 w-full bg-muted" />;
@@ -108,6 +110,7 @@ export default function AgendaViews({
             onStart={onStart}
             onConclude={onConclude}
             onCancel={onCancel}
+            onEdit={onEdit}
           />
         ) : (
           <DayView
@@ -119,6 +122,7 @@ export default function AgendaViews({
             onStart={onStart}
             onConclude={onConclude}
             onCancel={onCancel}
+            onEdit={onEdit}
             onReschedule={onReschedule}
           />
         )}
@@ -139,6 +143,7 @@ export default function AgendaViews({
           onStart={onStart}
           onConclude={onConclude}
           onCancel={onCancel}
+          onEdit={onEdit}
         />
       </div>
     );

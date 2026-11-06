@@ -119,10 +119,17 @@ export default function ScheduleSettingsCard() {
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
           <Clock className="h-4 w-4 text-slate-500" />
-          Horário de funcionamento
+          Horário de funcionamento e agendamento online
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        <p className="text-sm text-muted-foreground">
+          Essas regras valem para o seu{" "}
+          <span className="font-medium text-foreground">link de agendamento online</span>
+          . Na agenda interna, você agenda livremente, respeitando apenas os dias
+          fechados e a pausa de almoço.
+        </p>
+
         {/* Funcionamento */}
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">

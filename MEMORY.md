@@ -116,6 +116,10 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Correção definitiva do erro ao editar lançamento financeiro (vírgula no campo de comissão) | 18/10 |
 | Ajuste responsivo para telas de tamanho médio (tablet): KPIs, tabelas e valores monetários não quebram mais | 18/10 |
 | Agendamento ganha cadastro rápido de profissional e serviço dentro do próprio formulário; serviço criado no checkout já soma no valor do atendimento | 21/10 |
+| Configurações: card "Aparência do sistema" deixou de aparecer duplicado | 06/11 |
+| Configurações: card de horário renomeado e com explicação clara sobre regras do agendamento online | 06/11 |
+| Agenda ganha ação "Editar" em todos os status ativos (mobile e desktop), reaproveitando o diálogo de novo agendamento | 06/11 |
+| Notificações push no celular: dono ativa em Configurações e recebe alerta quando cliente agenda pelo link online | 06/11 |
 
 ---
 

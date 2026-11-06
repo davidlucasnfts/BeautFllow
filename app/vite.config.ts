@@ -17,9 +17,17 @@ export default defineConfig({
       // /api/pwa-manifest (cor/ícones seguem o tema do estabelecimento logado).
       // O <link rel="manifest"> está manual no index.html apontando pra lá.
       manifest: false,
+      // Service worker customizado para suportar notificações push
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.ts",
+      injectManifest: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+      },
       workbox: {
-        navigateFallback: "index.html",
         // O app depende da API para tudo — nada de cache offline de dados
+        navigateFallback: "index.html",
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
             urlPattern: /^\/api\//,

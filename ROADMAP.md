@@ -203,7 +203,7 @@ O que separa o app atual de um **produto que vende** está no lado comercial e d
 | RF-013 | Landing Page que Vende | Should | ✅ |
 | RF-014 | Integração WhatsApp Business | Must | ⏳ |
 | RF-015 | Exportação PDF de relatórios | Could | ⏳ |
-| RF-016 | Notificações push | Could | ⏳ |
+| RF-016 | Notificações push | Could | ✅ |
 | RF-017 | Webhooks para agendamentos | Could | ⏳ |
 | RF-018 | Relatórios e Analytics avançados | Should | ⏳ |
 | RF-019 | Export CSV/Excel | Could | ⏳ |
@@ -220,6 +220,13 @@ O que separa o app atual de um **produto que vende** está no lado comercial e d
 ---
 
 ## 📝 Registro de Alterações
+
+### 06/11/2026 — Configurações, edição de agendamentos e push notifications
+- [fix] Configurações: remove duplicação do card "Aparência do sistema"
+- [fix] Configurações: card de horário renomeado e com explicação clara sobre regras do link de agendamento online
+- [feat] Agenda: ação "Editar" em agendamentos ativos (mobile e desktop), reaproveitando o diálogo de novo agendamento
+- [feat] Notificações push: assinatura de dispositivos, service worker customizado e alerta ao dono quando cliente agenda pelo link online
+- [doc] ADR-006: decisão de implementar push agora e planejar notificações por WhatsApp em seguida
 
 ### 19/09/2026 — Polimento das 5 páginas pendentes (padrão design system)
 - [feat] **Financeiro:** editar e excluir lançamento (endpoints novos com audit log), ficha expansível na linha, moeda pt-BR, ações na primeira coluna

@@ -28,6 +28,7 @@ interface EventCardProps {
   onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
+  onEdit?: (appt: CalendarAppointment) => void;
   onReschedule?: (appointmentId: number, newStartTime: string) => void;
   variant?: "week" | "day";
 }
@@ -40,6 +41,7 @@ export default function EventCard({
   onStart,
   onConclude,
   onCancel,
+  onEdit,
   onReschedule,
   variant = "week",
 }: EventCardProps) {
@@ -167,6 +169,7 @@ export default function EventCard({
             onStart={onStart}
             onConclude={onConclude}
             onCancel={onCancel}
+            onEdit={onEdit}
             className={isDay ? "shrink-0 justify-end" : ""}
           />
         )}

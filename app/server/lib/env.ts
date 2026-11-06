@@ -18,4 +18,8 @@ export const env = {
   resendApiKey: process.env.RESEND_API_KEY ?? "",
   resendFrom:
     process.env.RESEND_FROM ?? "StudioFlow <onboarding@resend.dev>",
+  // Notificações push (VAPID). Opcional — sem elas push fica desativado.
+  vapidPublicKey: process.env.VAPID_PUBLIC_KEY ?? "",
+  vapidPrivateKey: process.env.VAPID_PRIVATE_KEY ?? "",
+  vapidSubject: process.env.VAPID_SUBJECT ?? "mailto:contato@studioflow.com.br",
 };

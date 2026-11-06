@@ -18,6 +18,7 @@ interface DayViewProps {
   onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
+  onEdit?: (appt: CalendarAppointment) => void;
   onReschedule?: (appointmentId: number, newStartTime: string) => void;
 }
 
@@ -30,6 +31,7 @@ export default function DayView({
   onStart,
   onConclude,
   onCancel,
+  onEdit,
   onReschedule,
 }: DayViewProps) {
   const hours = Array.from(
@@ -126,6 +128,7 @@ export default function DayView({
                 onStart={onStart}
                 onConclude={onConclude}
                 onCancel={onCancel}
+                onEdit={onEdit}
                 onReschedule={onReschedule}
                 variant="day"
               />

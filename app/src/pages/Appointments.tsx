@@ -52,8 +52,10 @@ export default function Appointments() {
   );
   const [filterProfessional, setFilterProfessional] = useState<string>("all");
   const [filterService, setFilterService] = useState<string>("all");
+  const [editingId, setEditingId] = useState<number | null>(null);
 
-  const { form, updateField, resetForm, setForm } = useAppointmentForm();
+  const { form, updateField, resetForm, setForm, loadAppointment } =
+    useAppointmentForm();
 
   // Retorno pendente vindo do Dashboard: abre o formulário pré-preenchido
   // (cliente, profissional, serviço e data sugerida) reaproveitando toda a
@@ -185,7 +187,11 @@ export default function Appointments() {
       .reduce((acc, s) => acc + s.durationMinutes, 0);
   const busyIntervals = (formDayAppointments ?? [])
     .filter(
-      a => a.status !== "cancelled" && a.status !== "no_show" && a.endTime
+      a =>
+        a.status !== "cancelled" &&
+        a.status !== "no_show" &&
+        a.endTime &&
+        a.id !== editingId
     )
     .filter(
       a =>
@@ -253,14 +259,20 @@ export default function Appointments() {
   const updateMutation = trpc.appointment.update.useMutation({
     onSuccess: () => {
       utils.appointment.list.invalidate();
-      toast.success("Situação atualizada");
     },
     onError: e => toast.error(e.message),
   });
 
   function handleStart(id: number) {
     if (!salon) return;
-    updateMutation.mutate({ id, salonId: salon.id, status: "in_progress" });
+    updateMutation.mutate(
+      { id, salonId: salon.id, status: "in_progress" },
+      {
+        onSuccess: () => {
+          toast.success("Atendimento iniciado");
+        },
+      }
+    );
   }
 
   function handleConclude(appt: CalendarAppointment) {
@@ -346,6 +358,48 @@ export default function Appointments() {
     });
   }
 
+  function handleEdit(appt: CalendarAppointment) {
+    loadAppointment(appt);
+    setEditingId(appt.id);
+    setOpen(true);
+  }
+
+  function handleUpdate() {
+    if (!salon || !editingId) return;
+    if (!form.appointmentDate) {
+      toast.error("Escolha uma data para o agendamento.");
+      return;
+    }
+    const endTime = formService
+      ? calculateEndTime(form.startTime, formTotalDuration)
+      : form.startTime;
+
+    updateMutation.mutate(
+      {
+        id: editingId,
+        salonId: salon.id,
+        clientId: Number(form.clientId),
+        professionalId: form.professionalId
+          ? Number(form.professionalId)
+          : undefined,
+        serviceId: Number(form.serviceId),
+        extraServiceIds: form.extraServiceIds.map(Number),
+        appointmentDate: form.appointmentDate,
+        startTime: form.startTime,
+        endTime,
+        notes: form.notes || undefined,
+      },
+      {
+        onSuccess: () => {
+          setOpen(false);
+          setEditingId(null);
+          resetForm();
+          toast.success("Agendamento atualizado");
+        },
+      }
+    );
+  }
+
   const filteredAppointments = useMemo(() => {
     return (
       appointments?.filter(a => {
@@ -426,18 +480,27 @@ export default function Appointments() {
           if (v) {
             // abrindo: formulário sempre limpo; a data inicial segue o
             // contexto (dia selecionado na fila no mobile, hoje no desktop)
+            if (!editingId) {
+              resetForm();
+              updateField(
+                "appointmentDate",
+                format(isMobile ? filaDate : new Date(), "yyyy-MM-dd")
+              );
+            }
+          } else {
+            setEditingId(null);
             resetForm();
-            updateField(
-              "appointmentDate",
-              format(isMobile ? filaDate : new Date(), "yyyy-MM-dd")
-            );
           }
           setOpen(v);
         }}
         form={form}
         onFieldChange={updateField}
         onCreate={handleCreate}
-        isPending={createMutation.isPending}
+        onUpdate={handleUpdate}
+        mode={editingId ? "edit" : "create"}
+        isPending={
+          editingId ? updateMutation.isPending : createMutation.isPending
+        }
         clients={clients}
             professionals={professionals}
             services={activeServices}
@@ -475,6 +538,7 @@ export default function Appointments() {
         onStart={handleStart}
         onConclude={handleConclude}
         onCancel={handleCancel}
+        onEdit={handleEdit}
         onReschedule={handleReschedule}
       />
 
@@ -491,11 +555,18 @@ export default function Appointments() {
         itemName={cancelTarget?.label ?? ""}
         onConfirm={() => {
           if (salon && cancelTarget) {
-            updateMutation.mutate({
-              id: cancelTarget.id,
-              salonId: salon.id,
-              status: "cancelled",
-            });
+            updateMutation.mutate(
+              {
+                id: cancelTarget.id,
+                salonId: salon.id,
+                status: "cancelled",
+              },
+              {
+                onSuccess: () => {
+                  toast.success("Agendamento cancelado");
+                },
+              }
+            );
             setCancelTarget(null);
           }
         }}

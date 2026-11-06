@@ -410,6 +410,30 @@ export type Appointment = typeof appointments.$inferSelect;
 export type InsertAppointment = typeof appointments.$inferInsert;
 
 // ==========================================
+// Push Subscriptions (notificações no celular)
+// ==========================================
+export const pushSubscriptions = pgTable(
+  "push_subscriptions",
+  {
+    id: serial("id").primaryKey(),
+    salonId: bigint("salonId", { mode: "number" }).notNull(),
+    userId: bigint("userId", { mode: "number" }).notNull(),
+    endpoint: text("endpoint").notNull(),
+    p256dh: text("p256dh").notNull(),
+    auth: text("auth").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => ({
+    salonIdx: index("push_subscriptions_salon_idx").on(table.salonId),
+    userIdx: index("push_subscriptions_user_idx").on(table.userId),
+    endpointIdx: index("push_subscriptions_endpoint_idx").on(table.endpoint),
+  })
+);
+
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;
+
+// ==========================================
 // Client Follow-ups (retornos pós-procedimento)
 // ==========================================
 export const clientFollowUps = pgTable(

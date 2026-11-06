@@ -24,6 +24,7 @@ import ScheduleSettingsCard from "@/components/settings/ScheduleSettingsCard";
 import AppearanceCard from "@/components/settings/AppearanceCard";
 import AccountCard from "@/components/settings/AccountCard";
 import OnboardingSettingsCard from "@/components/settings/OnboardingSettingsCard";
+import PushNotificationsCard from "@/components/settings/PushNotificationsCard";
 
 export default function Settings() {
   const { salon, setSalon } = useSalon();
@@ -69,8 +70,6 @@ export default function Settings() {
       <ScheduleSettingsCard />
 
       <OnboardingSettingsCard />
-
-      <AppearanceCard />
 
       <Card className="max-w-xl">
         <CardHeader className="pb-3">
@@ -178,6 +177,8 @@ export default function Settings() {
       </Card>
 
       <AppearanceCard />
+
+      <PushNotificationsCard />
 
       <AccountCard />
     </div>

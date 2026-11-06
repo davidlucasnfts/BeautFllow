@@ -15,6 +15,7 @@ import { followupRouter } from "./followup-router";
 import { productRouter } from "./product-router";
 import { teamRouter } from "./team-router";
 import { inviteRouter } from "./invite-router";
+import { pushRouter } from "./push-router";
 
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
@@ -34,6 +35,7 @@ export const appRouter = createRouter({
   team: teamRouter,
   invite: inviteRouter,
   dashboard: dashboardRouter,
+  push: pushRouter,
 });
 
 export type AppRouter = typeof appRouter;

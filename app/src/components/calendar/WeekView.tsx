@@ -16,6 +16,7 @@ interface WeekViewProps {
   onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
+  onEdit?: (appt: CalendarAppointment) => void;
 }
 
 /**
@@ -32,6 +33,7 @@ export default function WeekView({
   onStart,
   onConclude,
   onCancel,
+  onEdit,
 }: WeekViewProps) {
   return (
     <div className="space-y-2">
@@ -73,6 +75,7 @@ export default function WeekView({
                       onStart={onStart}
                       onConclude={onConclude}
                       onCancel={onCancel}
+                      onEdit={onEdit}
                       variant="week"
                     />
                   </div>
