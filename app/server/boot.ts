@@ -109,6 +109,54 @@ app.get("/health", async c => {
   }
 });
 
+// Diagnóstico de notificações push (não expõe chaves, apenas status)
+app.get("/api/push-debug", c => {
+  const publicKey = process.env.VAPID_PUBLIC_KEY ?? "";
+  const privateKey = process.env.VAPID_PRIVATE_KEY ?? "";
+  const subject = process.env.VAPID_SUBJECT ?? "";
+
+  function checkKey(key: string) {
+    const cleaned = key.replace(/\s/g, "").replace(/^["']|["']$/g, "").trim();
+    try {
+      const buffer = Buffer.from(
+        cleaned.replace(/-/g, "+").replace(/_/g, "/"),
+        "base64"
+      );
+      return {
+        present: true,
+        originalLength: key.length,
+        cleanedLength: cleaned.length,
+        bytes: buffer.length,
+        firstByte: buffer[0] ?? null,
+        valid: buffer.length === 65 && buffer[0] === 4,
+      };
+    } catch {
+      return {
+        present: true,
+        originalLength: key.length,
+        cleanedLength: cleaned.length,
+        bytes: null,
+        firstByte: null,
+        valid: false,
+      };
+    }
+  }
+
+  return c.json({
+    vapidPublicKey: checkKey(publicKey),
+    vapidPrivateKey: {
+      present: privateKey.length > 0,
+      length: privateKey.length,
+    },
+    vapidSubject: {
+      present: subject.length > 0,
+      length: subject.length,
+      startsWithMailto: subject.startsWith("mailto:"),
+    },
+    env: env.isProduction ? "production" : "development",
+  });
+});
+
 // Manifest PWA — ícones são o SÍMBOLO PADRÃO DA MARCA em todos os temas
 // (regra: logo não muda por estabelecimento); só o theme_color (tinta do
 // navegador) segue o tema. Fica em /api/* porque o rewrite da Vercel só
