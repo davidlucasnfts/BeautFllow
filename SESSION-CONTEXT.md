@@ -45,6 +45,7 @@
 - Clique na notificação agora abre o agendamento específico (`/appointments?appointment=ID`).
 - Agendamento online exibe o nome digitado na confirmação e na notificação, mesmo quando o telefone já existe no cadastro.
 - Agendamento online: campo WhatsApp agora vem antes do nome e preenche o nome automaticamente quando o cliente já está cadastrado.
+- Redesign da tela de agendamento online com passos visuais, resumo do agendamento, checkbox LGPD destacado e botão Agendar sticky no mobile.
 - Validação da chave VAPID no frontend alerta quando a env var está com espaços, aspas ou formato inválido.
 - Validação da chave VAPID no backend: notificações só ativam se a chave pública tiver 87 caracteres e decodificar para 65 bytes.
 - Quando uma cliente agenda pelo link online, o salão recebe notificação push com nome, procedimento, data e horário.
