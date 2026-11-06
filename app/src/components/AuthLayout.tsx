@@ -282,26 +282,41 @@ function AuthLayoutContent({
 
   useEffect(() => {
     // Salão salvo de outra conta (troca de usuário no mesmo navegador):
-    // se o salão ativo não está na lista do usuário, descarta — o efeito
-    // seguinte seleciona o primeiro salão válido.
+    // se o salão ativo não está na lista do usuário, descarta.
     if (salon && salonsData && !salonsData.some(s => s.id === salon.id)) {
       setSalon(null);
       return;
     }
-    if (salonsData && salonsData.length > 0 && !salon) {
-      const first = salonsData[0];
-      setSalon({
-        id: first.id,
-        name: first.name,
-        slug: first.slug,
-        segment: first.segment,
-        role: first.role,
-        plan: first.plan,
-        schedule: first.schedule,
-        theme: first.theme,
-        clientStatus: first.clientStatus,
-        showOnboarding: first.showOnboarding,
-      });
+    if (!salonsData || salonsData.length === 0) return;
+
+    // Sempre sincroniza o salão ativo com os dados mais recentes do servidor
+    // (inclui phone, email, endereço etc. — sem isso o formulário de dados
+    // do estabelecimento continua mostrando valores antigos depois de salvar).
+    const target = salon
+      ? salonsData.find(s => s.id === salon.id)
+      : salonsData[0];
+    if (!target) return;
+
+    const nextSalon = {
+      id: target.id,
+      name: target.name,
+      slug: target.slug,
+      segment: target.segment,
+      role: target.role,
+      plan: target.plan,
+      schedule: target.schedule,
+      theme: target.theme,
+      clientStatus: target.clientStatus,
+      showOnboarding: target.showOnboarding,
+      phone: target.phone,
+      email: target.email,
+      address: target.address,
+      city: target.city,
+      state: target.state,
+    };
+
+    if (JSON.stringify(nextSalon) !== JSON.stringify(salon)) {
+      setSalon(nextSalon);
     }
   }, [salonsData, salon, setSalon]);
 

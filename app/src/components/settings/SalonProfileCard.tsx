@@ -33,7 +33,7 @@ type ProfileForm = {
 };
 
 export default function SalonProfileCard() {
-  const { salon } = useSalon();
+  const { salon, setSalon } = useSalon();
   const utils = trpc.useUtils();
 
   const [form, setForm] = useState<ProfileForm | null>(null);
@@ -52,8 +52,20 @@ export default function SalonProfileCard() {
   }
 
   const updateMutation = trpc.salon.update.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       utils.salon.list.invalidate();
+      if (data && salon) {
+        setSalon({
+          ...salon,
+          name: data.name ?? salon.name,
+          phone: data.phone ?? null,
+          email: data.email ?? null,
+          address: data.address ?? null,
+          city: data.city ?? null,
+          state: data.state ?? null,
+          slug: data.slug ?? salon.slug,
+        });
+      }
       toast.success("Dados salvos");
     },
     onError: e => toast.error(e.message),
