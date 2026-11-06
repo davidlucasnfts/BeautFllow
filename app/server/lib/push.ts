@@ -2,9 +2,37 @@ import webPush from "web-push";
 import { env } from "./env";
 import { getSubscriptionsBySalon } from "../queries/push";
 
-const vapidPublicKey = env.vapidPublicKey;
+const rawVapidPublicKey = env.vapidPublicKey;
 const vapidPrivateKey = env.vapidPrivateKey;
 const vapidSubject = env.vapidSubject;
+
+function sanitizeKey(key: string): string {
+  return key.replace(/\s/g, "").replace(/^["']|["']$/g, "").trim();
+}
+
+function isValidVapidPublicKey(key: string): boolean {
+  try {
+    const cleaned = sanitizeKey(key);
+    const buffer = Buffer.from(
+      cleaned.replace(/-/g, "+").replace(/_/g, "/"),
+      "base64"
+    );
+    return buffer.length === 65 && buffer[0] === 4;
+  } catch {
+    return false;
+  }
+}
+
+const vapidPublicKey = rawVapidPublicKey
+  ? sanitizeKey(rawVapidPublicKey)
+  : "";
+
+if (vapidPublicKey && !isValidVapidPublicKey(vapidPublicKey)) {
+  console.error(
+    `[push] VAPID_PUBLIC_KEY inválida (${vapidPublicKey.length} chars). ` +
+      "Ela precisa ter 87 caracteres e decodificar para 65 bytes."
+  );
+}
 
 let configured = false;
 
@@ -16,12 +44,16 @@ export function configureWebPush() {
     );
     return;
   }
+  if (!isValidVapidPublicKey(vapidPublicKey)) {
+    console.error("[push] VAPID_PUBLIC_KEY inválida. Notificações push desativadas.");
+    return;
+  }
   webPush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
   configured = true;
 }
 
 export function getVapidPublicKey(): string | undefined {
-  return vapidPublicKey;
+  return isValidVapidPublicKey(vapidPublicKey) ? vapidPublicKey : undefined;
 }
 
 export interface PushPayload {
