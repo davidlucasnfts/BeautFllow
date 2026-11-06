@@ -71,7 +71,7 @@ export function ServiceMultiSelect({
             role="combobox"
             aria-expanded={open}
             disabled={disabled}
-            className="w-full justify-between border-primary/30 bg-primary/5 font-normal text-primary hover:bg-primary/10 hover:text-primary"
+            className="w-full justify-between font-normal"
           >
             <span className="truncate">{placeholder}</span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-70" />
