@@ -9,7 +9,13 @@ import { assertSalonMember } from "./lib/tenant";
 
 export const pushRouter = createRouter({
   publicKey: authedQuery.query(() => {
-    return { publicKey: getVapidPublicKey() ?? null };
+    const key = getVapidPublicKey();
+    if (key) {
+      console.log("[push] VAPID_PUBLIC_KEY carregada, comprimento:", key.length);
+    } else {
+      console.log("[push] VAPID_PUBLIC_KEY não configurada");
+    }
+    return { publicKey: key ?? null };
   }),
 
   subscribe: authedQuery

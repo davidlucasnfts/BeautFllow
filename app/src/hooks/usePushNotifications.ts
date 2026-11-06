@@ -22,6 +22,17 @@ function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
   return outputArray.buffer;
 }
 
+function decodeVapidKey(key: string): Uint8Array | null {
+  try {
+    const bytes = new Uint8Array(urlBase64ToUint8Array(key));
+    // Chave P-256 pública em raw: 65 bytes (0x04 + 32 + 32)
+    if (bytes.length !== 65 || bytes[0] !== 0x04) return null;
+    return bytes;
+  } catch {
+    return null;
+  }
+}
+
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return Promise.race([
     promise,
@@ -91,14 +102,29 @@ export function usePushNotifications() {
 
   async function subscribe() {
     if (!salon || !publicKeyQuery.data?.publicKey) return;
-    const rawKey = sanitizeVapidKey(publicKeyQuery.data.publicKey);
+    const originalKey = publicKeyQuery.data.publicKey;
+    const rawKey = sanitizeVapidKey(originalKey);
+    console.log("[push] Chave original (comprimento):", originalKey.length);
+    console.log("[push] Chave sanitizada (comprimento):", rawKey.length);
+    console.log("[push] Chave sanitizada (início/fim):", `${rawKey.slice(0, 10)}...${rawKey.slice(-10)}`);
+
     if (!isValidBase64Url(rawKey)) {
-      console.error("[push] Chave VAPID inválida:", publicKeyQuery.data.publicKey);
+      console.error("[push] Chave VAPID inválida:", originalKey);
       toast.error(
-        "Chave VAPID configurada incorretamente. Verifique as variáveis de ambiente."
+        `Chave VAPID configurada incorretamente (${originalKey.length} chars). Verifique a variável VAPID_PUBLIC_KEY na Vercel.`
       );
       return;
     }
+
+    const decoded = decodeVapidKey(rawKey);
+    if (!decoded) {
+      console.error("[push] Chave VAPID não decodifica para 65 bytes:", rawKey);
+      toast.error(
+        "Chave VAPID pública inválida. Ela precisa ser uma chave P-256 de 65 bytes em base64url."
+      );
+      return;
+    }
+
     setLoading(true);
     try {
       const registration = await withTimeout(
@@ -108,7 +134,7 @@ export function usePushNotifications() {
       );
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(rawKey),
+        applicationServerKey: decoded.buffer as ArrayBuffer,
       });
       const subJson = subscription.toJSON();
       if (!subJson.endpoint || !subJson.keys?.p256dh || !subJson.keys?.auth) {
