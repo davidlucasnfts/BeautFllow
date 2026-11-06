@@ -289,7 +289,7 @@ export default function PublicBooking() {
               <section className="space-y-4">
                 <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                   <span
-                    className="flex h-6 w-6 items-center justify-center rounded-full text-white text-xs"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-white text-base font-bold shadow-sm"
                     style={{ backgroundColor: palette.primary }}
                   >
                     1
@@ -346,7 +346,7 @@ export default function PublicBooking() {
               <section className="space-y-4">
                 <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                   <span
-                    className="flex h-6 w-6 items-center justify-center rounded-full text-white text-xs"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-white text-base font-bold shadow-sm"
                     style={{ backgroundColor: palette.primary }}
                   >
                     2
@@ -372,7 +372,7 @@ export default function PublicBooking() {
               <section className="space-y-4">
                 <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                   <span
-                    className="flex h-6 w-6 items-center justify-center rounded-full text-white text-xs"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-white text-base font-bold shadow-sm"
                     style={{ backgroundColor: palette.primary }}
                   >
                     3
