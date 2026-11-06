@@ -224,6 +224,9 @@ O que separa o app atual de um **produto que vende** está no lado comercial e d
 ### 06/11/2026 — Configurações, edição de agendamentos e push notifications
 - [fix] Configurações: remove duplicação do card "Aparência do sistema"
 - [fix] Configurações: card de horário renomeado e com explicação clara sobre regras do link de agendamento online
+- [fix] Configurações: horário de funcionamento configurável de 00:00 a 23:59
+- [fix] Agenda: erro ao salvar edição de agendamento (appointmentDate em formato Date ao invés de string)
+- [ui] Agenda: campo "Serviços adicionais" destacado com cor do tema
 - [feat] Agenda: ação "Editar" em agendamentos ativos (mobile e desktop), reaproveitando o diálogo de novo agendamento
 - [feat] Notificações push: assinatura de dispositivos, service worker customizado e alerta ao dono quando cliente agenda pelo link online
 - [doc] ADR-006: decisão de implementar push agora e planejar notificações por WhatsApp em seguida

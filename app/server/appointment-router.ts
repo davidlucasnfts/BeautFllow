@@ -195,8 +195,7 @@ export const appointmentRouter = createRouter({
           salonId,
           extraServiceIds
         );
-      if (appointmentDate !== undefined)
-        updateData.appointmentDate = new Date(appointmentDate);
+      if (appointmentDate !== undefined) updateData.appointmentDate = appointmentDate;
       if (data.status === "checked_in") updateData.checkedInAt = new Date();
       if (data.status === "completed") updateData.completedAt = new Date();
       if (data.status === "cancelled") updateData.cancelledAt = new Date();

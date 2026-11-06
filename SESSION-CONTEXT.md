@@ -5,7 +5,7 @@
 > **Prompt recomendado para a nova IA:**
 > "Você está assumindo o projeto StudioFlow. Leia obrigatoriamente: `AGENTS.md`, `SESSION-CONTEXT.md`, `ROADMAP.md`, `MEMORY.md` e `docs/documentacao-estrutura.md`. Siga todas as regras do `AGENTS.md`. Responda sempre em português, modo direto, priorizando linguagem de negócio. Antes de criar ou modificar qualquer arquivo de documentação, consulte `docs/documentacao-estrutura.md`. A meta atual é a Fase 4 — Pronto para vender. As decisões pendentes do David estão na seção 'Decisões pendentes / Ações manuais' deste arquivo."
 
-> **Atualizado em:** 06/11/2026 (configurações ajustadas, edição de agendamentos e notificações push implementadas. Último push em produção: 21/10 — cadastro rápido de profissional/serviço)
+> **Atualizado em:** 06/11/2026 (configurações ajustadas, edição de agendamentos, notificações push e ajustes pós-teste implementados. Último push em produção: 06/11)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md` + `ROADMAP.md` + `MestreStudioFlow.md`, não no histórico do chat.
 
 ---
@@ -20,6 +20,15 @@
 - Ação "Editar" adicionada em todos os agendamentos ativos (scheduled, confirmed, checked_in, in_progress) no mobile (Fila do Dia) e desktop (semana/dia).
 - Reaproveitado o diálogo de novo agendamento no modo edição, permitindo alterar cliente, profissional, serviço, serviços adicionais, data, horário e observações.
 - Valor e comissão continuam sendo ajustados no checkout/financeiro, não no diálogo de edição.
+
+**Horário de funcionamento:**
+- Abertura e fechamento agora podem ser configurados de `00:00` a `23:59`, permitindo qualquer jornada (inclusive 24h).
+
+**Serviços adicionais:**
+- Campo ficou destacado com cor do tema para não passar despercebido.
+
+**Correção de bug:**
+- Erro ao salvar edição de agendamento corrigido: `appointmentDate` estava sendo convertido para `Date` no backend, mas a coluna do banco espera string. Agora a edição salva corretamente.
 
 **Notificações push no celular (Opção A implementada):**
 - Nova tabela `push_subscriptions` (migration 016) para guardar assinaturas de dispositivos.

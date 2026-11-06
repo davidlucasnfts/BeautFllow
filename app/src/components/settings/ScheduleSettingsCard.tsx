@@ -20,8 +20,11 @@ import {
 } from "@contracts/constants";
 import { generateTimeSlots } from "@/lib/time-slots";
 
-const START_OPTIONS = generateTimeSlots("05:00", "12:00", 30);
-const END_OPTIONS = generateTimeSlots("12:00", "23:30", 30);
+const START_OPTIONS = generateTimeSlots("00:00", "23:30", 30);
+const END_OPTIONS = [
+  ...generateTimeSlots("00:30", "23:30", 30),
+  "23:59",
+];
 const SLOT_OPTIONS = [
   { value: "30", label: "30 minutos" },
   { value: "60", label: "60 minutos (1 em 1 hora)" },
@@ -38,7 +41,7 @@ const WORK_DAYS = [
 ];
 
 // faixa comum de almoço; "Sem pausa" = ""
-const BREAK_OPTIONS = generateTimeSlots("10:00", "16:30", 30);
+const BREAK_OPTIONS = generateTimeSlots("00:00", "23:30", 30);
 
 const MIN_ADVANCE_OPTIONS = [
   { value: "0", label: "Sem antecedência mínima" },
