@@ -24,6 +24,9 @@
 **Horário de funcionamento:**
 - Abertura e fechamento agora podem ser configurados de `00:00` a `23:59`, permitindo qualquer jornada (inclusive 24h).
 
+**Dados do estabelecimento:**
+- Telefone, e-mail, endereço, cidade e UF agora atualizam na tela imediatamente após salvar, sem precisar recarregar a página.
+
 **Serviços adicionais:**
 - Campo ficou destacado com cor do tema para não passar despercebido.
 - Chips/tags de serviços adicionais já selecionados agora usam a cor do tema do estabelecimento (ex.: rosa para salão, preto/dourado para barbearia, lilás para estética) em vez de cinza padrão.
