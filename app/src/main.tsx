@@ -8,10 +8,16 @@ import { TRPCProvider } from "@/providers/trpc";
 import { SalonProvider } from "@/providers/salon";
 import App from "./App.tsx";
 
-// Registra o service worker para PWA + notificações push
+// Registra o service worker para PWA + notificações push.
+// Não usamos o helper virtual:pwa-register: no nosso setup o módulo
+// virtual caía no fallback do SPA (devolvia index.html) e o registro
+// nunca acontecia. A URL é explícita por ambiente:
+// dev → /dev-sw.js?dev-sw (gerado em runtime pelo vite-plugin-pwa, como módulo)
+// prod → /sw.js (bundle do build, formato clássico injetado pelo Workbox)
 if ("serviceWorker" in navigator) {
+  const swUrl = import.meta.env.DEV ? "/dev-sw.js?dev-sw" : "/sw.js";
   navigator.serviceWorker
-    .register("/sw.js")
+    .register(swUrl, import.meta.env.DEV ? { type: "module" } : undefined)
     .then(registration => {
       console.log("[pwa] Service worker registrado:", registration.scope);
     })

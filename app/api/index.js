@@ -97375,8 +97375,7 @@ var appointmentRouter = createRouter({
         salonId,
         extraServiceIds
       );
-    if (appointmentDate !== void 0)
-      updateData.appointmentDate = new Date(appointmentDate);
+    if (appointmentDate !== void 0) updateData.appointmentDate = appointmentDate;
     if (data.status === "checked_in") updateData.checkedInAt = /* @__PURE__ */ new Date();
     if (data.status === "completed") updateData.completedAt = /* @__PURE__ */ new Date();
     if (data.status === "cancelled") updateData.cancelledAt = /* @__PURE__ */ new Date();
@@ -97732,9 +97731,30 @@ var dashboardRouter = createRouter({
 var import_web_push = __toESM(require_src26(), 1);
 init_env();
 init_push();
-var vapidPublicKey = env.vapidPublicKey;
+var rawVapidPublicKey = env.vapidPublicKey;
 var vapidPrivateKey = env.vapidPrivateKey;
 var vapidSubject = env.vapidSubject;
+function sanitizeKey(key) {
+  return key.replace(/\s/g, "").replace(/^["']|["']$/g, "").trim();
+}
+function isValidVapidPublicKey(key) {
+  try {
+    const cleaned = sanitizeKey(key);
+    const buffer2 = Buffer.from(
+      cleaned.replace(/-/g, "+").replace(/_/g, "/"),
+      "base64"
+    );
+    return buffer2.length === 65 && buffer2[0] === 4;
+  } catch {
+    return false;
+  }
+}
+var vapidPublicKey = rawVapidPublicKey ? sanitizeKey(rawVapidPublicKey) : "";
+if (vapidPublicKey && !isValidVapidPublicKey(vapidPublicKey)) {
+  console.error(
+    `[push] VAPID_PUBLIC_KEY inv\xE1lida (${vapidPublicKey.length} chars). Ela precisa ter 87 caracteres e decodificar para 65 bytes.`
+  );
+}
 var configured = false;
 function configureWebPush() {
   if (configured) return;
@@ -97744,11 +97764,15 @@ function configureWebPush() {
     );
     return;
   }
+  if (!isValidVapidPublicKey(vapidPublicKey)) {
+    console.error("[push] VAPID_PUBLIC_KEY inv\xE1lida. Notifica\xE7\xF5es push desativadas.");
+    return;
+  }
   import_web_push.default.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
   configured = true;
 }
 function getVapidPublicKey() {
-  return vapidPublicKey;
+  return isValidVapidPublicKey(vapidPublicKey) ? vapidPublicKey : void 0;
 }
 async function sendPushNotification(endpoint, p256dh, auth, payload) {
   configureWebPush();
@@ -97886,6 +97910,20 @@ var publicRouter = createRouter({
       services: services2,
       professionals: professionals2
     };
+  }),
+  // Busca cliente já cadastrado pelo telefone (para preencher nome no
+  // agendamento online). Retorna apenas nome e id — dados mínimos.
+  findClientByPhone: publicQuery.input(external_exports.object({ slug: external_exports.string().min(2).max(100), phone: phoneSchema })).query(async ({ input }) => {
+    const salon = await getSalonBySlug(input.slug);
+    if (!salon) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Endere\xE7o n\xE3o encontrado."
+      });
+    }
+    const client = await getClientByPhone(salon.id, input.phone);
+    if (!client) return null;
+    return { id: client.id, name: client.name };
   }),
   // Horários livres de um dia (grade de 30 em 30 min, menos os ocupados)
   availableSlots: publicQuery.input(
@@ -98144,12 +98182,12 @@ var publicRouter = createRouter({
       );
       await notifySalon(salon.id, {
         title: "Novo agendamento online",
-        body: `${client.name} marcou ${service.name} para ${dateFormatted} \xE0s ${startTimeFormatted}.`,
+        body: `${input.name} marcou ${service.name} para ${dateFormatted} \xE0s ${startTimeFormatted}.`,
         icon: "/icon-192.png",
         badge: "/icon-192.png",
         tag: `appointment-${appointment?.id ?? "new"}`,
         data: {
-          url: "/agendamentos",
+          url: `/appointments?appointment=${appointment?.id ?? ""}`,
           appointmentId: appointment?.id
         }
       });
@@ -98162,7 +98200,7 @@ var publicRouter = createRouter({
       date: input.date,
       startTime: input.startTime,
       endTime: addMinutes(input.startTime, service.durationMinutes),
-      clientName: client.name
+      clientName: input.name
     };
   })
 });
@@ -99100,7 +99138,13 @@ var inviteRouter = createRouter({
 init_push();
 var pushRouter = createRouter({
   publicKey: authedQuery.query(() => {
-    return { publicKey: getVapidPublicKey() ?? null };
+    const key = getVapidPublicKey();
+    if (key) {
+      console.log("[push] VAPID_PUBLIC_KEY carregada, comprimento:", key.length);
+    } else {
+      console.log("[push] VAPID_PUBLIC_KEY n\xE3o configurada");
+    }
+    return { publicKey: key ?? null };
   }),
   subscribe: authedQuery.input(
     external_exports.object({
@@ -99239,6 +99283,50 @@ app.get("/health", async (c) => {
   } catch {
     return c.json({ status: "error", db: "disconnected", ts: Date.now() }, 503);
   }
+});
+app.get("/api/push-debug", (c) => {
+  const publicKey = process.env.VAPID_PUBLIC_KEY ?? "";
+  const privateKey = process.env.VAPID_PRIVATE_KEY ?? "";
+  const subject = process.env.VAPID_SUBJECT ?? "";
+  function checkKey(key) {
+    const cleaned = key.replace(/\s/g, "").replace(/^["']|["']$/g, "").trim();
+    try {
+      const buffer2 = Buffer.from(
+        cleaned.replace(/-/g, "+").replace(/_/g, "/"),
+        "base64"
+      );
+      return {
+        present: true,
+        originalLength: key.length,
+        cleanedLength: cleaned.length,
+        bytes: buffer2.length,
+        firstByte: buffer2[0] ?? null,
+        valid: buffer2.length === 65 && buffer2[0] === 4
+      };
+    } catch {
+      return {
+        present: true,
+        originalLength: key.length,
+        cleanedLength: cleaned.length,
+        bytes: null,
+        firstByte: null,
+        valid: false
+      };
+    }
+  }
+  return c.json({
+    vapidPublicKey: checkKey(publicKey),
+    vapidPrivateKey: {
+      present: privateKey.length > 0,
+      length: privateKey.length
+    },
+    vapidSubject: {
+      present: subject.length > 0,
+      length: subject.length,
+      startsWithMailto: subject.startsWith("mailto:")
+    },
+    env: env.isProduction ? "production" : "development"
+  });
 });
 app.get("/api/pwa-manifest", (c) => {
   const themeParam = c.req.query("theme");

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -31,6 +32,7 @@ interface EventCardProps {
   onEdit?: (appt: CalendarAppointment) => void;
   onReschedule?: (appointmentId: number, newStartTime: string) => void;
   variant?: "week" | "day";
+  isHighlighted?: boolean;
 }
 
 export default function EventCard({
@@ -44,29 +46,49 @@ export default function EventCard({
   onEdit,
   onReschedule,
   variant = "week",
+  isHighlighted,
 }: EventCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
   const isDay = variant === "day";
-  // cor do evento = cor do profissional (configuração única, já feita no
-  // cadastro de profissionais). Sem cor cadastrada, cai no visual padrão.
-  const eventColor = professional?.color ?? null;
 
-  const cardStyle = eventColor
+  useEffect(() => {
+    if (isHighlighted && cardRef.current) {
+      cardRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [isHighlighted]);
+
+  // Cards seguem SEMPRE a cor do tema do estabelecimento (sutil), sem cores
+  // sorteadas de profissional — visual limpo e padronizado por segmento
+  // (rosa salão / dourado-preto barbearia / lilás estética). Via style
+  // inline porque o token `primary` do Tailwind não suporta opacidade
+  // (sem <alpha-value>) e classes arbitrárias com var() não são geradas.
+  const cardStyle = isDay
     ? {
-        backgroundColor: isDay ? `${eventColor}18` : `${eventColor}15`,
-        borderLeft: isDay
-          ? `4px solid ${eventColor}`
-          : `3px solid ${eventColor}`,
+        backgroundColor: "hsl(var(--primary) / 0.07)",
+        borderLeft: "3px solid hsl(var(--primary) / 0.55)",
       }
-    : undefined;
+    : {
+        backgroundColor: "hsl(var(--primary) / 0.05)",
+      };
+
+  // Destaque do push: mesma cor do tema, mais evidente
+  const style = isHighlighted
+    ? { ...cardStyle, backgroundColor: "hsl(var(--primary) / 0.15)" }
+    : cardStyle;
 
   return (
     <div
+      ref={cardRef}
       className={`border rounded-md shadow-sm ${
         isDay
-          ? "p-2 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
+          ? "h-full overflow-hidden p-2 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
           : "p-2 text-xs"
+      } ${
+        // Destaque segue SEMPRE a cor primária do tema do estabelecimento
+        // (anel + fundo aplicado em `style` acima)
+        isHighlighted ? "ring-2 ring-primary ring-offset-1" : ""
       }`}
-      style={cardStyle}
+      style={style}
       draggable={!!onReschedule && isDay}
       onDragStart={e => {
         if (onReschedule && isDay) {

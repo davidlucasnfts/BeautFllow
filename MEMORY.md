@@ -133,6 +133,11 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Campo de serviços adicionais destacado com cor do tema para ficar visível | 06/11 |
 | Chips de serviços adicionais já selecionados agora usam a cor do tema do estabelecimento em vez de cinza padrão | 06/11 |
 | Correção do erro ao salvar edição de agendamento (data no formato errado) | 06/11 |
+| Clique na notificação push abre a visão Dia com o agendamento destacado (scroll + destaque), em vez de abrir direto o formulário de edição | 07/11 |
+| Botão Concluir só aparece depois de Iniciar (status Em andamento); botão Iniciar agora também cobra cliente que já chegou (checked_in) | 07/11 |
+| Grade da visão Dia segue o horário de funcionamento configurado pelo salão (antes fixa 8h–20h) e expande automaticamente para mostrar agendamentos fora do horário | 07/11 |
+| Cards da agenda não se sobrepõem mais (altura mínima real + cascata) e usam cor sutil do tema do estabelecimento (sem cores sorteadas de profissional) — visual padronizado por segmento | 07/11 |
+| Push local funcionando: service worker corrigido para dev (registro por ambiente + ativação imediata) | 07/11 |
 
 ---
 

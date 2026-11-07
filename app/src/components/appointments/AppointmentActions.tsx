@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import { CheckCheck, Pencil, Play, XCircle } from "lucide-react";
 import type { CalendarAppointment } from "@/components/calendar/types";
 
-const ACTIVE_STATUSES = ["scheduled", "confirmed", "checked_in", "in_progress"];
+const START_STATUSES = ["scheduled", "confirmed", "checked_in"];
+const EDIT_STATUSES = ["scheduled", "confirmed", "checked_in", "in_progress"];
+const CANCEL_STATUSES = ["scheduled", "confirmed", "checked_in", "in_progress"];
 
 interface AppointmentActionsProps {
   appt: CalendarAppointment;
@@ -18,8 +20,8 @@ interface AppointmentActionsProps {
  * Ações rápidas do compromisso (desktop — EventCard semana/dia).
  *
  * Matriz por status:
- * - scheduled/confirmed: Iniciar, Editar, Concluir, Cancelar
- * - checked_in/in_progress: Editar, Concluir, Cancelar
+ * - scheduled/confirmed/checked_in: Iniciar, Editar, Cancelar
+ * - in_progress: Editar, Concluir, Cancelar
  * - completed/cancelled/no_show: nenhuma
  *
  * Peso visual: Iniciar = tema (sólido), Editar = azul sólido,
@@ -38,8 +40,10 @@ export default function AppointmentActions({
     handler();
   };
 
-  const canStart = appt.status === "scheduled" || appt.status === "confirmed";
-  const canConclude = ACTIVE_STATUSES.includes(appt.status);
+  const canStart = START_STATUSES.includes(appt.status);
+  const canEdit = EDIT_STATUSES.includes(appt.status);
+  const canConclude = appt.status === "in_progress";
+  const canCancel = CANCEL_STATUSES.includes(appt.status);
 
   const btnClass = "h-auto gap-1 px-1.5 py-1 text-[10px] font-medium";
 
@@ -56,7 +60,7 @@ export default function AppointmentActions({
           Iniciar
         </Button>
       )}
-      {onEdit && canConclude && (
+      {onEdit && canEdit && (
         <Button
           type="button"
           size="sm"
@@ -78,7 +82,7 @@ export default function AppointmentActions({
           Concluir
         </Button>
       )}
-      {canConclude && (
+      {canCancel && (
         <Button
           type="button"
           size="sm"

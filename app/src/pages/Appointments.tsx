@@ -57,6 +57,7 @@ export default function Appointments() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const highlightId = Number(searchParams.get("appointment")) || null;
+  const [flashId, setFlashId] = useState<number | null>(null);
 
   const { data: highlightedAppointment } = trpc.appointment.byId.useQuery(
     { id: highlightId ?? 0, salonId: salon?.id ?? 0 },
@@ -65,13 +66,13 @@ export default function Appointments() {
 
   useEffect(() => {
     if (!highlightedAppointment || !highlightId) return;
-    // Navega para a data do agendamento e abre o diálogo de edição
+    // Vindo de notificação push: mostra o agendamento no dia, destacado,
+    // com as ações rápidas visíveis — sem abrir o formulário de edição.
     const date = new Date(`${highlightedAppointment.appointmentDate}T12:00:00`);
+    setViewMode("day");
     setSelectedDate(date);
     setFilaDate(date);
-    loadAppointment(highlightedAppointment);
-    setEditingId(highlightedAppointment.id);
-    setOpen(true);
+    setFlashId(highlightedAppointment.id);
     // Remove o parâmetro da URL para não reabrir em recargas futuras
     searchParams.delete("appointment");
     setSearchParams(searchParams, { replace: true });
@@ -545,6 +546,8 @@ export default function Appointments() {
         salonId={salon?.id}
         filterProfessional={filterProfessional}
         filterService={filterService}
+        dayStart={salon?.schedule.dayStart}
+        dayEnd={salon?.schedule.dayEnd}
         dayAppointments={dayAppointments as CalendarAppointment[]}
         weekDays={weekDays}
         appointmentsByDay={
@@ -559,6 +562,7 @@ export default function Appointments() {
         clients={clients ?? []}
         services={services ?? []}
         professionals={professionals ?? []}
+        highlightId={flashId}
         onStart={handleStart}
         onConclude={handleConclude}
         onCancel={handleCancel}

@@ -1,14 +1,31 @@
 /// <reference lib="es2020" />
 /// <reference lib="webworker" />
 
-import { precacheAndRoute } from "workbox-precaching";
-
 declare const self: ServiceWorkerGlobalScope & {
-  __WB_MANIFEST: Array<{ url: string; revision: string | null }>;
+  __WB_MANIFEST?: Array<{ url: string; revision: string | null }>;
 };
 
-// Precache dos assets do app (injetado pelo Workbox no build)
-precacheAndRoute(self.__WB_MANIFEST);
+// Precache dos assets do app (injetado pelo Workbox no build).
+// Import dinâmico proposital: no dev o manifest é vazio e o import estático
+// do workbox quebrava a avaliação do dev-sw.js (módulo externo não
+// resolvido pelo navegador), matando os handlers de push junto.
+const manifest = self.__WB_MANIFEST ?? [];
+if (manifest.length > 0) {
+  void import("workbox-precaching").then(({ precacheAndRoute }) => {
+    precacheAndRoute(manifest);
+  });
+}
+
+// Ativação imediata: sem isso o SW novo fica em "waiting" e o
+// navigator.serviceWorker.ready nunca resolve até fechar o navegador
+// (era a causa do timeout de 5s no cadastro de push em dev).
+self.addEventListener("install", () => {
+  void self.skipWaiting();
+});
+
+self.addEventListener("activate", event => {
+  event.waitUntil(self.clients.claim());
+});
 
 self.addEventListener("push", event => {
   let payload: {

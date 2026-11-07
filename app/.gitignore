@@ -36,6 +36,8 @@ db/migrations/*.sql
 # Build outputs
 dist/
 build/
+# PWA dev service worker output (vite-plugin-pwa)
+dev-dist/
 # Test coverage
 coverage/
 .nyc_output/

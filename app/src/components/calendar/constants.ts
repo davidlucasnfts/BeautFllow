@@ -19,8 +19,6 @@ export const STATUS_LABELS: Record<string, string> = {
 };
 
 export const HOUR_HEIGHT = 64;
-export const START_HOUR = 8;
-export const END_HOUR = 20;
 
 const ACTIVE_STATUSES = ["scheduled", "confirmed", "checked_in", "in_progress"];
 

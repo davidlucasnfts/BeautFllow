@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import EventCard from "./EventCard";
-import { HOUR_HEIGHT, START_HOUR, END_HOUR } from "./constants";
+import { HOUR_HEIGHT } from "./constants";
 import type {
   CalendarAppointment,
   CalendarClient,
@@ -15,11 +15,23 @@ interface DayViewProps {
   clients: CalendarClient[];
   services: CalendarService[];
   professionals: CalendarProfessional[];
+  /** Horário de abertura do salão ("HH:mm") — define o início da grade */
+  dayStart?: string;
+  /** Horário de fechamento do salão ("HH:mm") — define o fim da grade */
+  dayEnd?: string;
+  highlightId?: number | null;
   onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
   onEdit?: (appt: CalendarAppointment) => void;
   onReschedule?: (appointmentId: number, newStartTime: string) => void;
+}
+
+function toMinutes(hhmm: string | null | undefined): number | null {
+  if (!hhmm) return null;
+  const [h, m] = hhmm.split(":").map(Number);
+  if (!Number.isInteger(h) || h < 0 || h > 23) return null;
+  return h * 60 + (Number.isInteger(m) ? m : 0);
 }
 
 export default function DayView({
@@ -28,19 +40,63 @@ export default function DayView({
   clients,
   services,
   professionals,
+  dayStart,
+  dayEnd,
+  highlightId,
   onStart,
   onConclude,
   onCancel,
   onEdit,
   onReschedule,
 }: DayViewProps) {
-  const hours = Array.from(
-    { length: END_HOUR - START_HOUR + 1 },
-    (_, i) => START_HOUR + i
-  );
-
+  // Faixa da grade segue o horário de funcionamento do salão (fallback
+  // 7–21, o padrão do Schedule). Agendamentos fora do horário (ex: manual)
+  // expandem a faixa para que nunca fiquem invisíveis "fora da tela".
+  // Cálculo em minutos para não cortar eventos que terminam com minutos
+  // (ex: 21:30 precisa da grade até 22:00).
   const sortedAppointments = [...appointments].sort((a, b) =>
     (a.startTime ?? "").localeCompare(b.startTime ?? "")
+  );
+  let startMin = toMinutes(dayStart) ?? 7 * 60;
+  let endMin = toMinutes(dayEnd) ?? 21 * 60;
+  for (const appt of sortedAppointments) {
+    const s = toMinutes(appt.startTime);
+    const e = toMinutes(appt.endTime);
+    if (s !== null && s < startMin) startMin = s;
+    if (e !== null && e > endMin) endMin = e;
+  }
+  if (endMin <= startMin) endMin = startMin + 60;
+  const startHour = Math.floor(startMin / 60);
+  const endHour = Math.ceil(endMin / 60);
+
+  const hours = Array.from(
+    { length: endHour - startHour + 1 },
+    (_, i) => startHour + i
+  );
+
+  // Posicionamento em cascata: o conteúdo do card (3 linhas + ações) é
+  // maior que a altura de serviços curtos (30min = 32px), então o card
+  // esticava e cobria o seguinte. Cada card tem altura mínima que acomoda
+  // o conteúdo e nunca inicia antes do fim do card anterior.
+  const MIN_CARD_HEIGHT = 80;
+  let previousBottom = 0;
+  const positioned = sortedAppointments.map(appt => {
+    const timeTop = getTimePosition(appt.startTime, startHour);
+    const top = Math.max(timeTop, previousBottom);
+    const height = Math.max(
+      getDurationHeight(
+        appt.startTime,
+        appt.endTime,
+        services.find(s => s.id === appt.serviceId)?.durationMinutes
+      ),
+      MIN_CARD_HEIGHT
+    );
+    previousBottom = top + height;
+    return { appt, top, height };
+  });
+  const timelineHeight = Math.max(
+    hours.length * HOUR_HEIGHT,
+    previousBottom
   );
 
   return (
@@ -65,7 +121,7 @@ export default function DayView({
       </div>
 
       {/* Timeline */}
-      <div className="relative" style={{ height: hours.length * HOUR_HEIGHT }}>
+      <div className="relative" style={{ height: timelineHeight }}>
         {/* Grid de horários (drop zones) */}
         {hours.map((hour, index) => (
           <div
@@ -101,21 +157,14 @@ export default function DayView({
         ))}
 
         {/* Eventos */}
-        {sortedAppointments.map(appt => {
-          const top = getTimePosition(appt.startTime);
-          const height = getDurationHeight(
-            appt.startTime,
-            appt.endTime,
-            services.find(s => s.id === appt.serviceId)?.durationMinutes
-          );
-
+        {positioned.map(({ appt, top, height }) => {
           return (
             <div
               key={appt.id}
               className="absolute left-16 right-2"
               style={{
                 top,
-                height: Math.max(height, 48),
+                height,
               }}
             >
               <EventCard
@@ -131,6 +180,7 @@ export default function DayView({
                 onEdit={onEdit}
                 onReschedule={onReschedule}
                 variant="day"
+                isHighlighted={appt.id === highlightId}
               />
             </div>
           );
@@ -144,10 +194,10 @@ function capitalizeFirst(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-function getTimePosition(timeStr: string | null): number {
+function getTimePosition(timeStr: string | null, startHour: number): number {
   if (!timeStr) return 0;
   const [hours, minutes] = timeStr.split(":").map(Number);
-  const hourIndex = hours - START_HOUR;
+  const hourIndex = hours - startHour;
   return hourIndex * HOUR_HEIGHT + (minutes / 60) * HOUR_HEIGHT;
 }
 

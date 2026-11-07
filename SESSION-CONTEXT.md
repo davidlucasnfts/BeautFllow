@@ -5,8 +5,45 @@
 > **Prompt recomendado para a nova IA:**
 > "Você está assumindo o projeto StudioFlow. Leia obrigatoriamente: `AGENTS.md`, `SESSION-CONTEXT.md`, `ROADMAP.md`, `MEMORY.md` e `docs/documentacao-estrutura.md`. Siga todas as regras do `AGENTS.md`. Responda sempre em português, modo direto, priorizando linguagem de negócio. Antes de criar ou modificar qualquer arquivo de documentação, consulte `docs/documentacao-estrutura.md`. A meta atual é a Fase 4 — Pronto para vender. As decisões pendentes do David estão na seção 'Decisões pendentes / Ações manuais' deste arquivo."
 
-> **Atualizado em:** 06/11/2026 (configurações ajustadas, edição de agendamentos, notificações push e ajustes pós-teste implementados. Último push em produção: 06/11)
+> **Atualizado em:** 07/11/2026 (fluxo de notificação, botões por status, grade dinâmica do dia e push local. Ainda NÃO pushado em produção — validações locais OK: check + 104 testes)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md` + `ROADMAP.md` + `MestreStudioFlow.md`, não no histórico do chat.
+
+---
+
+## Resumo da sessão 07/11 — Fluxo de notificação, ações por status, grade dinâmica e push local
+
+**Clique na notificação push → Dia destacado (em vez de edição):**
+- Ao clicar no alerta de novo agendamento online, o app abre na visão Dia do atendimento com o card destacado (borda + scroll automático), ações rápidas visíveis — não abre mais o formulário de edição.
+- Desktop: destaque no EventCard da DayView. Mobile: item destacado e expandido na Fila do Dia.
+- Fluxo aprovado pelo David em 07/11.
+
+**Botões de ação corrigidos por status:**
+- Antes, "Concluir" aparecia mesmo em agendamento recém-criado (scheduled). Agora: Concluir só aparece com status `in_progress` (após Iniciar).
+- Matriz atual: scheduled/confirmed/checked_in → Iniciar, Editar, Cancelar · in_progress → Editar, Concluir, Cancelar · demais → sem ações.
+- Iniciar agora também aparece para checked_in (cliente que já chegou).
+- Arquivos: `AppointmentActions.tsx`, `FilaDoDia.tsx`.
+
+**Cards da agenda na cor do tema (decisão do David 07/11):**
+- Removida a cor sorteada do profissional dos cards (visão dia e semana). Antes cada profissional tinha uma cor da paleta rotativa (`PROFESSIONAL_COLORS`), deixando a agenda com "muitas cores".
+- Agora todos os cards usam cor sutil do tema do estabelecimento via `hsl(var(--primary) / x)`: fundo 7% + borda lateral 55% no dia; fundo 5% na semana; destaque de push 15% + anel.
+- Visual padronizado por segmento automaticamente: rosa (salão), dourado/preto (barbearia), lilás (estética).
+- Cor do profissional restante só no avatar/tooltip da ficha (identificação sutil).
+- Motivo técnico do style inline: token `primary` do Tailwind sem `<alpha-value>` não gera utilitários com opacidade, e classes arbitrárias com `var()` não são geradas no build.
+
+**Grade da visão Dia dinâmica:**
+- Antes fixa em 8h–20h (constantes START_HOUR/END_HOUR), escondendo agendamentos fora da faixa (relato: agendamento das 21h não aparecia).
+- Agora a grade segue o horário de funcionamento do salão (Configurações → Horário) e expande automaticamente para incluir agendamentos fora do horário (cálculo em minutos para não cortar eventos com minutos, ex: 21:30).
+- Constantes fixas removidas de `calendar/constants.ts`. Arquivos: `DayView.tsx`, `AgendaViews.tsx`, `Appointments.tsx`.
+
+**Push local funcionando (service worker no dev):**
+- O registro via `virtual:pwa-register` caía no fallback do SPA (devolvia index.html) — o service worker nunca registrava. Corrigido com registro manual por ambiente em `main.tsx` (dev: `/dev-sw.js?dev-sw` como módulo · prod: `/sw.js`).
+- `sw.ts` ganhou `skipWaiting()` + `clients.claim()` (sem isso o SW ficava em "waiting" e o `serviceWorker.ready` estourava o timeout de 5s) e o workbox só é carregado em produção (import dinâmico — no dev o import estático quebrava a avaliação do dev-sw.js e matava os handlers de push).
+- Fluxo validado pelo David: agendou pelo link online → toast do Windows → clique abriu no dia destacado.
+- Detalhe de teste local: a notificação chega como toast nativo do Windows mesmo com a janela em segundo plano; o modo "device toolbar" do F12 não interfere.
+
+**Validações:** `npm run check` ✅ · `npm run test` 104/104 ✅. **Não pushado em produção.**
+
+**Próximo passo:** push para produção (Vercel) + smoke test no celular real (só funciona em HTTPS).
 
 ---
 
@@ -106,11 +143,12 @@
 ## Onde paramos — próximos passos (ordem)
 
 1. **Análise de negócio concluída (02/11)** — ROADMAP estratégico reescrito. Meta atual: **Fase 4 — Pronto para vender**.
-2. **Próxima decisão do David:** definir planos e preços (Free / Essencial / Pro) e escolher gateway de pagamento (Stripe ou Mercado Pago). Sem isso, não dá para implementar cobrança.
-3. **Smoke test em produção:** validar cadastro de cliente → serviço → profissional → agendamento → checkout → financeiro.
-4. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/salao-de-beleza`, `/barbearia`, `/estetica`.
-5. **Ativar Sentry + Analytics** antes de abrir para clientes pagantes.
-6. **Decisões operacionais pendentes:** ver seção abaixo.
+2. **Push em produção das melhorias de 07/11** (notificação → dia destacado, botões por status, grade dinâpela, fix do service worker) — tudo validado local, aguardando deploy.
+3. **Próxima decisão do David:** definir planos e preços (Free / Essencial / Pro) e escolher gateway de pagamento (Stripe ou Mercado Pago). Sem isso, não dá para implementar cobrança.
+4. **Smoke test em produção:** validar cadastro de cliente → serviço → profissional → agendamento → checkout → financeiro.
+5. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/salao-de-beleza`, `/barbearia`, `/estetica`.
+6. **Ativar Sentry + Analytics** antes de abrir para clientes pagantes.
+7. **Decisões operacionais pendentes:** ver seção abaixo.
 
 ---
 

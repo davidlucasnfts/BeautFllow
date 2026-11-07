@@ -27,6 +27,9 @@ interface AgendaViewsProps {
   salonId?: number;
   filterProfessional: string;
   filterService: string;
+  /** Horário de funcionamento do salão — define a faixa da grade do dia */
+  dayStart?: string;
+  dayEnd?: string;
   dayAppointments: CalendarAppointment[];
   // semana
   weekDays: Date[];
@@ -40,6 +43,7 @@ interface AgendaViewsProps {
   clients: Client[];
   services: Service[];
   professionals: Professional[];
+  highlightId?: number | null;
   onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
@@ -62,6 +66,8 @@ export default function AgendaViews({
   salonId,
   filterProfessional,
   filterService,
+  dayStart,
+  dayEnd,
   dayAppointments,
   weekDays,
   appointmentsByDay,
@@ -72,6 +78,7 @@ export default function AgendaViews({
   clients,
   services,
   professionals,
+  highlightId,
   onStart,
   onConclude,
   onCancel,
@@ -107,6 +114,7 @@ export default function AgendaViews({
             appointments={filaAppointments}
             services={services as CalendarService[]}
             clients={clients}
+            highlightId={highlightId}
             onStart={onStart}
             onConclude={onConclude}
             onCancel={onCancel}
@@ -119,6 +127,9 @@ export default function AgendaViews({
             clients={clients as CalendarClient[]}
             services={services as CalendarService[]}
             professionals={professionals as CalendarProfessional[]}
+            dayStart={dayStart}
+            dayEnd={dayEnd}
+            highlightId={highlightId}
             onStart={onStart}
             onConclude={onConclude}
             onCancel={onCancel}

@@ -30,6 +30,7 @@ interface FilaDoDiaProps {
   appointments: CalendarAppointment[];
   services: CalendarService[];
   clients: FilaClient[];
+  highlightId?: number | null;
   onStart: (id: number) => void;
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
@@ -43,6 +44,7 @@ export default function FilaDoDia({
   appointments,
   services,
   clients,
+  highlightId,
   onStart,
   onConclude,
   onCancel,
@@ -50,6 +52,17 @@ export default function FilaDoDia({
 }: FilaDoDiaProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const selectedDayRef = useRef<HTMLButtonElement>(null);
+  const itemRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    if (!highlightId) return;
+    const el = itemRefs.current[highlightId];
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      // expande o item destacado para mostrar as ações
+      setExpandedId(highlightId);
+    }
+  }, [highlightId]);
 
   const monthDays = useMemo(
     () =>
@@ -137,6 +150,9 @@ export default function FilaDoDia({
             return (
               <div key={appt.id}>
                 <div
+                  ref={el => {
+                    itemRefs.current[appt.id] = el;
+                  }}
                   role="button"
                   tabIndex={0}
                   onClick={() => setExpandedId(expanded ? null : appt.id)}
@@ -148,6 +164,10 @@ export default function FilaDoDia({
                   }}
                   className={`flex w-full cursor-pointer flex-wrap items-center gap-x-3 gap-y-1 p-3 text-left transition-colors hover:bg-blue-50/50 ${
                     cancelled ? "opacity-60" : ""
+                  } ${
+                    appt.id === highlightId
+                      ? "ring-2 ring-primary ring-inset"
+                      : ""
                   }`}
                 >
                   <div className="w-14 shrink-0 text-center">
@@ -197,7 +217,8 @@ export default function FilaDoDia({
                 {expanded && hasAppointmentActions(appt) && (
                   <div className="flex flex-wrap justify-end gap-2 px-3 pb-3">
                     {(appt.status === "scheduled" ||
-                      appt.status === "confirmed") && (
+                      appt.status === "confirmed" ||
+                      appt.status === "checked_in") && (
                       <Button
                         type="button"
                         size="sm"
@@ -211,45 +232,56 @@ export default function FilaDoDia({
                         Iniciar
                       </Button>
                     )}
-                    {onEdit && (
+                    {(appt.status === "scheduled" ||
+                      appt.status === "confirmed" ||
+                      appt.status === "checked_in" ||
+                      appt.status === "in_progress") &&
+                      onEdit && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={e => {
+                            e.stopPropagation();
+                            onEdit(appt);
+                          }}
+                          className="h-8 gap-1.5 bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          Editar
+                        </Button>
+                      )}
+                    {appt.status === "in_progress" && (
                       <Button
                         type="button"
                         size="sm"
                         onClick={e => {
                           e.stopPropagation();
-                          onEdit(appt);
+                          onConclude(appt);
                         }}
-                        className="h-8 gap-1.5 bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700"
+                        className="h-8 gap-1.5 bg-green-600 px-3 text-xs font-semibold text-white hover:bg-green-700"
                       >
-                        <Pencil className="h-3.5 w-3.5" />
-                        Editar
+                        <CheckCheck className="h-3.5 w-3.5" />
+                        Concluir
                       </Button>
                     )}
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={e => {
-                        e.stopPropagation();
-                        onConclude(appt);
-                      }}
-                      className="h-8 gap-1.5 bg-green-600 px-3 text-xs font-semibold text-white hover:bg-green-700"
-                    >
-                      <CheckCheck className="h-3.5 w-3.5" />
-                      Concluir
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={e => {
-                        e.stopPropagation();
-                        onCancel(appt.id);
-                      }}
-                      className="h-8 gap-1.5 border-red-600 px-3 text-xs font-semibold text-red-600 hover:bg-red-50 hover:text-red-600"
-                    >
-                      <XCircle className="h-3.5 w-3.5" />
-                      Cancelar
-                    </Button>
+                    {(appt.status === "scheduled" ||
+                      appt.status === "confirmed" ||
+                      appt.status === "checked_in" ||
+                      appt.status === "in_progress") && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={e => {
+                          e.stopPropagation();
+                          onCancel(appt.id);
+                        }}
+                        className="h-8 gap-1.5 border-red-600 px-3 text-xs font-semibold text-red-600 hover:bg-red-50 hover:text-red-600"
+                      >
+                        <XCircle className="h-3.5 w-3.5" />
+                        Cancelar
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>
