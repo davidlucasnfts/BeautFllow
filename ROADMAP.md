@@ -1,6 +1,6 @@
 # StudioFlow — Roadmap Estratégico
 
-> **Última atualização:** 02/11/2026
+> **Última atualização:** 09/11/2026 (auditoria de concorrência + funil)
 > **Versão:** 2.0 (revisão de negócio)
 > **Meta atual:** Fase 4 — Pronto para vender
 
@@ -82,6 +82,47 @@ O que separa o app atual de um **produto que vende** está no lado comercial e d
 | 8 | **Sem campanhas de reengajamento** | Clientes somem sem lembrete automático | Could |
 
 ---
+
+## 🕵️ Concorrência direta (pesquisa 09/11/2026)
+
+| Concorrente | Preço de entrada | Modelo | Ponto forte | Brecha pra nós |
+|---|---|---|---|---|
+| **Trinks** | R$ 76–89/mês | Por faixa de profissionais + marketplace | Marca tradicional, marketplace traz cliente | Caro p/ negócio pequeno; sem foco em estética |
+| **Booksy** | Sob consulta | Por profissional (R$ 20/prof. extra) + marketplace | Marketplace global, UX madura | Cobra por cabeça; suporte fraco no BR |
+| **Avec** | R$ 88,90/mês | Faixa de profissionais | PIX e maquininha integrados | Preço alto; pouco flexível |
+| **Irrivio** | R$ 89–149/mês | Por colaborador | Agente de IA no WhatsApp | Mais caro que nossa proposta |
+| **GENDA** | R$ 39,90/mês | Por faixa | Preço baixo, lembretes com confirmação | Menos completo em gestão (sem financeiro/produtos) |
+
+**Leitura estratégica:**
+- Faixa de mercado: R$ 40–150/mês. Nossa sugestão (Free / R$ 49 / R$ 97) está **abaixo da maioria** — bom pra entrada, com margem pra subir depois.
+- Todos cobram por profissional ou faixa — nosso limite por plano (1/3/8 usuários) é competitivo.
+- Diferenciais que a concorrência não tem: **3 segmentos num só produto** (salão + barbearia + estética), **LGPD nativa** (assinatura digital + termos), link público sem app pro cliente.
+- Tendência do mercado: **IA no WhatsApp** (Irrivio já entrega). Nosso roadmap de WhatsApp automatizado é obrigatório pra não ficar pra trás.
+
+## 🔄 Funil de conversão atual (análise 09/11/2026)
+
+```
+Descoberta → Cadastro → Criação do salão → Ativação → 1º agendamento → Hábito → Pagamento
+ (landing)   (/login)  (3 campos)        (checklist)  (cadastro rápido)  (semanal)   ❌ inexistente
+```
+
+| Etapa | Estado | Atrito identificado |
+|---|---|---|
+| Descoberta | Landing com SEO básico | Sem ads/conteúdo; depende de indicação |
+| Cadastro | Email+senha direto, sem confirmação | Sem login social; sem verificação de e-mail (bom pra conversão, ruim p/ base) |
+| Criação do salão | 3 campos (nome, link, segmento) | Campo "link/slug" confunde quem não é digital |
+| Ativação | Checklist 3 serviços + 3 profissionais | Pode ser desligado e nunca completado |
+| 1º agendamento | Cadastro rápido de cliente inline | ✅ Sem atrito relevante |
+| Hábito | Agenda, checkout, financeiro | ⚠️ Sem lembrete pro dono (só push manual) |
+| Pagamento | ❌ Não existe | Sem cobrança, sem trial, sem upgrade |
+
+**Métricas instrumentadas: nenhuma.** Sentry configurado no código mas sem DSN ativo; sem Analytics. Hoje não é possível saber em qual etapa o usuário desiste — **ligar Analytics é pré-requisito de qualquer decisão de funil.**
+
+**Recomendações por prioridade:**
+1. **Analytics antes de vender** (sem dados, o funil é cego)
+2. **Confirmação automática por WhatsApp** (única etapa que todo concorrente cobre e ainda não temos)
+3. **Onboarding com progresso salvo** (não deixar desligar o checklist antes de completar o básico)
+4. **Trial de 14 dias no plano pago** quando a cobrança existir
 
 ## 🎯 Plano de fases até "Pronto para vender"
 

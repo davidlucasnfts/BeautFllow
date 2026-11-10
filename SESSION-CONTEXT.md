@@ -5,7 +5,7 @@
 > **Prompt recomendado para a nova IA:**
 > "Você está assumindo o projeto StudioFlow. Leia obrigatoriamente: `AGENTS.md`, `SESSION-CONTEXT.md`, `ROADMAP.md`, `MEMORY.md` e `docs/documentacao-estrutura.md`. Siga todas as regras do `AGENTS.md`. Responda sempre em português, modo direto, priorizando linguagem de negócio. Antes de criar ou modificar qualquer arquivo de documentação, consulte `docs/documentacao-estrutura.md`. A meta atual é a Fase 4 — Pronto para vender. As decisões pendentes do David estão na seção 'Decisões pendentes / Ações manuais' deste arquivo."
 
-> **Atualizado em:** 07/11/2026 (fluxo de notificação, botões por status, grade dinâmica do dia e push local. Ainda NÃO pushado em produção — validações locais OK: check + 104 testes)
+> **Atualizado em:** 09/11/2026 (auditoria técnica completa + análise de concorrência e funil registradas; melhorias de 07/11 em produção — commit `285c9ab`)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md` + `ROADMAP.md` + `MestreStudioFlow.md`, não no histórico do chat.
 
 ---
@@ -142,13 +142,14 @@
 
 ## Onde paramos — próximos passos (ordem)
 
-1. **Análise de negócio concluída (02/11)** — ROADMAP estratégico reescrito. Meta atual: **Fase 4 — Pronto para vender**.
-2. **Push em produção das melhorias de 07/11** (notificação → dia destacado, botões por status, grade dinâpela, fix do service worker) — tudo validado local, aguardando deploy.
-3. **Próxima decisão do David:** definir planos e preços (Free / Essencial / Pro) e escolher gateway de pagamento (Stripe ou Mercado Pago). Sem isso, não dá para implementar cobrança.
-4. **Smoke test em produção:** validar cadastro de cliente → serviço → profissional → agendamento → checkout → financeiro.
-5. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/salao-de-beleza`, `/barbearia`, `/estetica`.
-6. **Ativar Sentry + Analytics** antes de abrir para clientes pagantes.
-7. **Decisões operacionais pendentes:** ver seção abaixo.
+1. **AUDITORIA TÉCNICA CONCLUÍDA (09/11)** — ver seção "Auditoria técnica" abaixo. **✅ `npm audit fix` executado em 09/11** (só `package-lock.json`, zod HIGH corrigido; 21 moderadas restantes, todas dev-only/transitórias). Check + 104 testes + build validados. **Próxima ação de código: implementar cobrança (depende da decisão de planos/gateway do David)**.
+2. **Análise de negócio concluída (02/11, ampliada 09/11)** — ROADMAP estratégico com concorrência e funil. Meta atual: **Fase 4 — Pronto para vender**.
+3. **Push em produção feito em 07/11** (commit `285c9ab`): notificação → dia destacado, botões por status, grade dinâmica, cards na cor do tema, fix do service worker. Falta: smoke test.
+4. **Próxima decisão do David:** definir planos e preços (Free / Essencial / Pro) e escolher gateway de pagamento (Stripe ou Mercado Pago). Sem isso, não dá para implementar cobrança. (Sugestão de preços e comparativo já estão no ROADMAP.)
+5. **Smoke test em produção:** validar cadastro de cliente → serviço → profissional → agendamento → checkout → financeiro.
+6. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/salao-de-beleza`, `/barbearia`, `/estetica`.
+7. **Ativar Sentry + Analytics** antes de abrir para clientes pagantes (funil está cego — ver análise no ROADMAP).
+8. **Decisões operacionais pendentes:** ver seção abaixo.
 
 ---
 
@@ -195,10 +196,23 @@
 
 ---
 
+## Auditoria técnica — 09/11/2026 (pré-handoff)
+
+**Saúde geral: boa.** TODOs/FIXMEs praticamente zero, rotas legadas ativas (nenhuma página morta), check/test/build passando.
+
+**Vulnerabilidades (`npm audit`): ✅ RESOLVIDO em 09/11** — era 46 (14 high), agora 21 (2 low, 19 moderate), todas dev-only/transitórias:
+- 🔴 `zod < 4.6.6` (HIGH) — **corrigido** via `npm audit fix` (só lockfile, sem mudança no package.json). Validado: check + 104 testes + build.
+- 🟡 Restantes: `vite` (dev-server only, não afeta produção — build é esbuild) e transitórias do typescript-eslint. Não usar `--force` (risco de breaking change sem ganho real).
+
+**Dependências desatualizadas:** Radix UI ~1 versão atrás (21 pacotes), tRPC 11.17→11.26, Sentry 10→11 e @hono/node-server 1→2 (majors, exigem teste). Nenhuma emergência além do zod.
+
+**Cobertura de testes: 69%** (stmts; meta 80%). 104 testes passando, concentrados em libs/validators — routers e componentes de tela sem cobertura. Débito registrado abaixo.
+
 ## Débitos técnicos conhecidos (não urgentes)
 - `server/queries/salon.ts` ~900 linhas (limite 400) — quebrar em arquivos por domínio
 - `consent.create` aceita `serviceId` no Zod mas a tabela não tem a coluna (campo morto) — **ganhou propósito:** implementar vínculo termo↔serviço quando fizer o fluxo de exigência de assinatura (checkbox "Exige termo" hoje só mostra selo no card)
 - `financial.create` exige `clientId` mas o schema permite null
+- 14 erros de lint pré-existentes (`PublicBooking.tsx`, `ProductFormDialog.tsx`, `FilaDoDia.tsx`, `EventCard.tsx` etc.) — regras `set-state-in-effect` e `no-non-null-assertion`; limpar quando tocar nesses arquivos
 - Mesma melhoria de "busca sem resultado" de Serviços (`7df16e7`) provavelmente se aplica a Produtos/Profissionais/Clientes — padronizar quando tocar nelas
 
 ---
