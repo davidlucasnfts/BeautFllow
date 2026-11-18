@@ -201,6 +201,12 @@
 
 ---
 
+## Análise de melhorias geral — 18/11/2026
+
+**Arquivo navegável:** `docs/mockups/proposta-melhorias-geral.html` — 13 áreas analisadas no código real, cada uma com "como está hoje" (wireframe) vs "proposta" (wireframe), e tabela de prioridades.
+
+**Achado principal:** a landing promete o que NÃO existe (confirmações automáticas, fotos antes/depois, lista de espera, QR code, avaliação, mensagens automáticas) — corrigir copy antes de anunciar (item 1 da priorização). Demais prioridades: WhatsApp automático, widget "Precisa da sua atenção" no Início, filtros por status + "Trazer de volta" em Clientes, gráfico + exportar CSV no Financeiro, landings por segmento, link de assinatura de termos, venda de produto no checkout.
+
 ## Auditoria de segurança — 18/11/2026
 
 **Veredito: sólido para o estágio.** Nenhuma vulnerabilidade crítica. Verificado no código: JWT HS256 c/ expiração, bcrypt cost 12, cookie httpOnly+secure, mensagens anti-enumeração no login/reset, password reset c/ hash+expiração+uso único, CORS restrito, CSP `default-src 'self'`, rate limit IP+auth, Zod em todas as procedures, guards de tenancy com membership real em TODOS os routers, Drizzle com parâmetros bindados (sem SQLi), audit logs completos.

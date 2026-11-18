@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StudioFlow — Propostas de Melhoria (análise completa)</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 0; line-height: 1.55; }
+  .topbar { background: #1e1b4b; color: #fff; padding: 20px 24px; }
+  .topbar h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  .topbar .sub { color: #c7d2fe; font-size: 0.9rem; }
+  .nav { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 24px; background: #312e81; position: sticky; top: 0; z-index: 50; }
+  .nav a { color: #c7d2fe; text-decoration: none; font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,0.06); }
+  .nav a:hover { background: rgba(255,255,255,0.18); color: #fff; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 24px; }
+  h2 { font-size: 1.2rem; margin: 40px 0 12px; border-left: 4px solid #8b5cf6; padding-left: 10px; }
+  h2 .num { color: #8b5cf6; margin-right: 8px; }
+  .resumo { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px 24px; margin-top: 24px; }
+  .alerta { background: #fef2f2; border: 2px solid #ef4444; border-radius: 12px; padding: 16px 20px; margin: 16px 0; }
+  .area { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px 24px; margin: 16px 0; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-right: 6px; }
+  .t-alta { background: #fee2e2; color: #b91c1c; }
+  .t-media { background: #fef3c7; color: #b45309; }
+  .t-baixa { background: #e0e7ff; color: #4338ca; }
+  .t-ok { background: #dcfce7; color: #15803d; }
+  .comparar { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+  @media (max-width: 720px) { .comparar { grid-template-columns: 1fr; } }
+  .col-hoje h4, .col-nova h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 8px; }
+  .col-hoje h4 { color: #b91c1c; }
+  .col-nova h4 { color: #15803d; }
+  .painel { border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; background: #fff; font-size: 0.85rem; }
+  .painel ul { margin: 8px 0 0; padding-left: 18px; }
+  .painel li { margin-bottom: 4px; }
+  /* wireframes */
+  .wf { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; padding: 12px; margin-top: 10px; font-size: 0.8rem; }
+  .wf-bar { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .wf-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+  .wf-btn { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 600; margin: 2px; }
+  .b-prim { background: #8b5cf6; color: #fff; }
+  .b-verde { background: #16a34a; color: #fff; }
+  .b-azul { background: #2563eb; color: #fff; }
+  .b-verm { background: #fff; color: #dc2626; border: 1px solid #dc2626; }
+  .b-cinza { background: #e2e8f0; color: #475569; }
+  .b-novo { background: #dcfce7; color: #15803d; border: 1px dashed #15803d; }
+  .wf-chip { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.68rem; font-weight: 600; margin: 2px; background: #e2e8f0; color: #475569; }
+  .wf-chip.on { background: #8b5cf6; color: #fff; }
+  .wf-kpi { display: inline-block; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; margin: 4px; min-width: 110px; }
+  .wf-kpi b { display: block; font-size: 1rem; }
+  .wf-kpi span { font-size: 0.68rem; color: #64748b; }
+  .wf-graf { height: 60px; background: linear-gradient(180deg, #ede9fe, #ddd6fe); border-radius: 6px; display: flex; align-items: flex-end; gap: 4px; padding: 6px; margin-top: 8px; }
+  .wf-graf i { flex: 1; background: #8b5cf6; border-radius: 3px 3px 0 0; opacity: 0.75; }
+  .wf-meta { color: #64748b; font-size: 0.72rem; margin-top: 6px; }
+  .nota { color: #64748b; font-size: 0.8rem; margin-top: 8px; }
+  .decisao { background: #f5f3ff; border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px 20px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>StudioFlow — Propostas de Melhoria</h1>
+  <div class="sub">Análise completa do app + site principal · gerado em 18/11/2026 · 13 áreas analisadas no código real</div>
+</div>
+<div class="nav">
+  <a href="#resumo">Resumo</a>
+  <a href="#dashboard">1 Início</a>
+  <a href="#clientes">2 Clientes</a>
+  <a href="#agenda">3 Agenda</a>
+  <a href="#servicos">4 Serviços</a>
+  <a href="#profissionais">5 Profissionais</a>
+  <a href="#produtos">6 Produtos</a>
+  <a href="#financeiro">7 Financeiro</a>
+  <a href="#mensagens">8 Mensagens</a>
+  <a href="#termos">9 Termos</a>
+  <a href="#equipe">10 Equipe</a>
+  <a href="#config">11 Configurações</a>
+  <a href="#landing">12 Site principal</a>
+  <a href="#online">13 Agendamento online</a>
+  <a href="#prioridades">Prioridades</a>
+</div>
+<div class="wrap">
+
+<div class="resumo" id="resumo">
+  <h2 style="margin-top:0">Resumo executivo</h2>
+  <p>O app está <strong>funcionalmente sólido</strong> nas operações do dia a dia (agenda, financeiro com comissão corrigida, clientes com LGPD, configurações). As melhorias com maior impacto agora são:</p>
+  <ul>
+    <li><strong>Honestidade do site:</strong> a landing promete o que não existe (confirmação automática por WhatsApp, fotos, QR code, lista de espera) — corrigir antes de anunciar</li>
+    <li><strong>WhatsApp automático:</strong> o diferencial que a concorrência já cobra — lembrete D-1 + confirmação</li>
+    <li><strong>Polimento visual:</strong> filtros rápidos por status em Clientes, gráfico no Financeiro, exportação CSV</li>
+    <li><strong>Pequenas fricções:</strong> reagendamento mobile, link de assinatura pública de termos</li>
+  </ul>
+</div>
+
+<div class="alerta">
+  <strong>⚠️ ACHADO IMPORTANTE — site principal promete o que não existe</strong><br>
+  A landing fala em "confirmações automáticas", "fotos antes/depois", "lista de espera", "cliente confirma chegada pelo QR code", "avaliação" — <strong>nenhuma dessas funcionalidades existe no app hoje</strong>. Se você anunciar assim, o cliente entra esperando e se decepciona. Detalhes na seção 12.
+</div>
+
+<!-- ============ 1. INÍCIO (DASHBOARD) ============ -->
+<h2 id="dashboard"><span class="num">1</span>Início (Dashboard)</h2>
+<div class="area">
+  <span class="tag t-media">MÉDIA</span><span class="tag t-ok">Já funcional</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje</h4>
+      <div class="painel">
+        KPIs do mês + alertas + link público + boards do dia e retornos.
+        <div class="wf">
+          <span class="wf-kpi"><b>12</b><span>Atendimentos hoje</span></span>
+          <span class="wf-kpi"><b>R$ 3.2k</b><span>Receita do mês</span></span>
+          <span class="wf-kpi"><b>8</b><span>Novos clientes</span></span>
+          <div class="wf-card">📅 Atendimentos de hoje (lista simples)</div>
+          <div class="wf-card">⚠️ 3 clientes sem autorização LGPD</div>
+        </div>
+        <p class="nota">Os números existem, mas o dono precisa sair do dashboard pra agir em cada alerta (clientes sumindo, estoque baixo, consentimentos).</p>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        Widget único <strong>"Precisa da sua atenção"</strong> consolidando todos os alertas acionáveis, com botão de ação direto em cada um.
+        <div class="wf">
+          <div class="wf-card"><b>Precisa da sua atenção</b><br>
+            🔴 3 sem LGPD <span class="wf-btn b-prim">Revisar</span><br>
+            🟠 5 clientes sumindo <span class="wf-btn b-verde">Trazer de volta</span><br>
+            🟡 2 produtos com estoque baixo <span class="wf-btn b-cinza">Ver produtos</span>
+          </div>
+        </div>
+        <p class="nota">Cada alerta vira uma ação de 1 clique — o dono resolve tudo sem sair do Início.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 2. CLIENTES ============ -->
+<h2 id="clientes"><span class="num">2</span>Clientes</h2>
+<div class="area">
+  <span class="tag t-alta">ALTA</span><span class="tag t-ok">Base boa</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje</h4>
+      <div class="painel">
+        Lista expansível com status automático (Novo/Ativo/VIP/Sumindo/Inativo), ficha com histórico e LGPD. Mas <strong>não há filtro visual por status</strong> — pra achar quem está sumindo, o dono rola a lista inteira.
+        <div class="wf">
+          <div class="wf-bar">🔍 Buscar cliente... <span class="wf-btn b-prim">+ Novo</span></div>
+          <div class="wf-card">Ana Julia <span class="wf-chip">VIP</span></div>
+          <div class="wf-card">Maria Silva <span class="wf-chip">Sumindo</span></div>
+          <div class="wf-card">João Pedro <span class="wf-chip">Inativo</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        <strong>Filtros por status (chips)</strong> no topo + ação <strong>"Trazer de volta"</strong> na ficha com mensagem pronta no WhatsApp.
+        <div class="wf">
+          <span class="wf-chip">Todos</span><span class="wf-chip">Novo</span><span class="wf-chip">Ativo</span><span class="wf-chip">VIP</span><span class="wf-chip on">Sumindo</span><span class="wf-chip">Inativo</span>
+          <div class="wf-card">Maria Silva — 45 dias sem vir<br>
+            <span class="wf-btn b-verde">💬 Trazer de volta</span> <span class="wf-btn b-cinza">Ver ficha</span>
+          </div>
+        </div>
+        <p class="nota">Filtrou "Sumindo" → lista só quem precisa de ação → 1 toque abre o WhatsApp com texto pronto de reengajamento.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 3. AGENDA ============ -->
+<h2 id="agenda"><span class="num">3</span>Agenda</h2>
+<div class="area">
+  <span class="tag t-baixa">BAIXA</span><span class="tag t-ok">Recém-melhorada</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje</h4>
+      <div class="painel">
+        Dia/semana/mês, ações em massa, fechamento 1 toque, editar em todos os status. <strong>Reagendamento por arraste só funciona no desktop</strong> — no mobile não há como mover horário sem abrir o formulário.
+        <div class="wf">
+          <div class="wf-card">09:00 Ana — Escova</div>
+          <div class="wf-card">10:00 David — Escova</div>
+          <div class="nota">No celular, mudar o horário = Editar → trocar data/hora → salvar (4 toques)</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        <strong>Reagendar rápido no mobile</strong> e filtro por status além de profissional/serviço.
+        <div class="wf">
+          <div class="wf-card">09:00 Ana <span class="wf-btn b-cinza">↔ Reagendar</span></div>
+          <span class="wf-chip">Profissional ▾</span><span class="wf-chip">Serviço ▾</span><span class="wf-chip on">Status: Em andamento ▾</span>
+        </div>
+        <p class="nota">Toque em "Reagendar" → escolhe novo horário na grade (sem abrir formulário completo). Filtro de status ajuda a achar "o que falta concluir hoje".</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 4. SERVIÇOS ============ -->
+<h2 id="servicos"><span class="num">4</span>Serviços</h2>
+<div class="area">
+  <span class="tag t-baixa">BAIXA</span><span class="tag t-ok">Completo</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje</h4>
+      <div class="painel">
+        Catálogo completo: preço, duração, categoria, duplicar, inativos, pré/pós-cuidados. Ordem alfabética fixa — não dá pra ver <strong>quais serviços mais vendem</strong>.
+        <div class="wf">
+          <div class="wf-card">Escova — R$ 80 · 45min</div>
+          <div class="wf-card">Hidratação — R$ 120 · 60min</div>
+          <div class="wf-card">Manicure — R$ 45 · 45min</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        <strong>Ordenar por mais vendidos</strong> (contagem de atendimentos concluídos) + badge "Top do mês".
+        <div class="wf">
+          <div class="wf-card">🔥 Escova — R$ 80 <span class="wf-chip on">23× no mês</span></div>
+          <div class="wf-card">Manicure — R$ 45 <span class="wf-chip">12×</span></div>
+          <div class="wf-card">Hidratação — R$ 120 <span class="wf-chip">6×</span></div>
+        </div>
+        <p class="nota">O dono descobre o carro-chefe do negócio num relance — ajuda em promoções e precificação.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 5. PROFISSIONAIS ============ -->
+<h2 id="profissionais"><span class="num">5</span>Profissionais</h2>
+<div class="area">
+  <span class="tag t-media">MÉDIA</span><span class="tag t-ok">Base boa</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje</h4>
+      <div class="painel">
+        Ficha com avatar de iniciais, comissão, desempenho. Sem foto real e sem comparativo de desempenho no tempo.
+        <div class="wf">
+          <div class="wf-card">👤 Teste Teste — Comissão 10%<br>Desempenho: R$ 1.2k no mês</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        <strong>Comparativo mês a mês</strong> no desempenho (atual vs anterior) + foto do profissional (upload) em vez de iniciais.
+        <div class="wf">
+          <div class="wf-card">👤 Teste Teste<br>
+            Nov: R$ 1.2k &nbsp; <b style="color:#15803d">+20%</b> vs Out: R$ 1.0k
+            <div class="wf-graf"><i style="height:40%"></i><i style="height:70%"></i><i style="height:55%"></i><i style="height:90%"></i></div>
+          </div>
+        </div>
+        <p class="nota">O dono vê se cada profissional está crescendo ou caindo — base pra comissão e conversa de desempenho.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 6. PRODUTOS ============ -->
+<h2 id="produtos"><span class="num">6</span>Produtos</h2>
+<div class="area">
+  <span class="tag t-media">MÉDIA</span><span class="tag t-ok">Estoque funcional</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje</h4>
+      <div class="painel">
+        Cadastro, entradas/saídas de estoque, alerta de estoque baixo. <strong>Venda de produto é separada do atendimento</strong> — se a cliente leva um shampoo junto com a escova, o dono lança em 2 lugares.
+        <div class="wf">
+          <div class="wf-card">Escova (atendimento) → Financeiro R$ 80</div>
+          <div class="wf-card">Shampoo (produto) → lançamento separado</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        <strong>Vender produto no checkout</strong> do atendimento: além de serviços adicionais, o dono adiciona produtos e o valor soma no total. Baixa o estoque automaticamente.
+        <div class="wf">
+          <div class="wf-card"><b>Checkout — Ana Julia</b><br>
+            Escova R$ 80 + Shampoo R$ 45 = <b>R$ 125</b><br>
+            <span class="nota">estoque do shampoo: 4 → 3 automaticamente</span>
+          </div>
+        </div>
+        <p class="nota">Um só lançamento, estoque coerente, sem esquecer de cobrar o produto.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 7. FINANCEIRO ============ -->
+<h2 id="financeiro"><span class="num">7</span>Financeiro</h2>
+<div class="area">
+  <span class="tag t-alta">ALTA</span><span class="tag t-ok">Comissão corrigida</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje</h4>
+      <div class="painel">
+        Resumo (líquido, comissões, despesas), lançamentos com edição, comissões por profissional. <strong>Sem gráfico de evolução</strong> e <strong>sem exportação</strong> — o dono não consegue levar os dados pro contador nem ver a tendência.
+        <div class="wf">
+          <span class="wf-kpi"><b>R$ 3.2k</b><span>Ganho líquido</span></span>
+          <span class="wf-kpi"><b>R$ 400</b><span>Despesas</span></span>
+          <div class="wf-card">Lista de lançamentos (sem gráfico)</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        <strong>Gráfico receita × despesas por mês</strong> + <strong>exportação CSV</strong> do período filtrado.
+        <div class="wf">
+          <div class="wf-graf"><i style="height:30%"></i><i style="height:50%"></i><i style="height:45%"></i><i style="height:75%"></i><i style="height:60%"></i><i style="height:90%"></i></div>
+          <div class="wf-meta">Jun Jul Ago Set Out Nov</div>
+          <span class="wf-btn b-prim">⬇ Exportar CSV do período</span>
+        </div>
+        <p class="nota">CSV com data, descrição, cliente, valor, comissão, forma de pagamento — pronto pro contador (RF-019, já previsto no roadmap).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 8. MENSAGENS ============ -->
+<h2 id="mensagens"><span class="num">8</span>Mensagens</h2>
+<div class="area">
+  <span class="tag t-alta">ALTA — maior gap do produto</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje</h4>
+      <div class="painel">
+        Histórico de mensagens com reenvio e exclusão. <strong>Toda mensagem é manual</strong> — não existe lembrete automático de horário, confirmação de agendamento nem reengajamento automático.
+        <div class="wf">
+          <div class="wf-card">Lembrete — enviada manualmente</div>
+          <div class="wf-card">Confirmação — enviada manualmente</div>
+          <div class="nota">Sem automação: o dono precisa lembrar de mandar cada mensagem</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        <strong>Automação por WhatsApp</strong>: lembrete D-1 automático + botão "Confirmar presença" do cliente + reengajamento de quem sumiu.
+        <div class="wf">
+          <div class="wf-card">🤖 <b>Automações ativas</b><br>
+            ✅ Lembrete 1 dia antes (automático)<br>
+            ✅ "Confirme sua presença" (botão do cliente)<br>
+            ✅ Cliente 45 dias sem vir → mensagem de retorno
+          </div>
+        </div>
+        <p class="nota">É o que a concorrência já entrega (Trinks, Irrivio, GENDA). Dependência: escolher provedor (Evolution API, Z-API, oficial) — decisão sua, já listada nas pendências.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 9. TERMOS ============ -->
+<h2 id="termos"><span class="num">9</span>Termos e Autorizações</h2>
+<div class="area">
+  <span class="tag t-media">MÉDIA</span><span class="tag t-ok">LGPD funcional</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje</h4>
+      <div class="painel">
+        Modelos prontos, assinatura digital na ficha do cliente, contador de assinaturas. <strong>Assinar exige o dono abrir a ficha e clicar</strong> — não dá pra mandar um link pro cliente assinar sozinho.
+        <div class="wf">
+          <div class="wf-card">Termo LGPD — 3 assinaturas<br><span class="nota">Assinatura só acontece com o dono operando a ficha</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        <strong>Link público de assinatura</strong> (o cliente abre no celular, lê e assina sozinho) + vincular termo ao serviço que o exige.
+        <div class="wf">
+          <div class="wf-card">Termo "Procedimentos químicos"<br>
+            <span class="wf-btn b-prim">🔗 Copiar link de assinatura</span><br>
+            <span class="nota">Cliente abre no celular → lê → assina com o dedo → salvo na ficha</span>
+          </div>
+        </div>
+        <p class="nota">O campo <code>serviceId</code> do termo (hoje morto) ganha função: serviço marcado "Exige termo" só agenda com assinatura feita.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 10. EQUIPE ============ -->
+<h2 id="equipe"><span class="num">10</span>Equipe</h2>
+<div class="area">
+  <span class="tag t-baixa">BAIXA</span><span class="tag t-ok">Convites funcionam</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje</h4>
+      <div class="painel">
+        Convites por e-mail com papel, limite por plano. Não mostra <strong>último acesso</strong> nem o que cada papel pode fazer na prática.
+        <div class="wf">
+          <div class="wf-card">Ana (Profissional) — ativa</div>
+          <div class="wf-card">Bruno (Recepcionista) — convite pendente</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        Mostrar <strong>o que cada papel acessa</strong> (matriz de permissões visível) + último acesso de cada membro.
+        <div class="wf">
+          <div class="wf-card">Ana — Profissional · acesso: agenda própria<br><span class="nota">último acesso: hoje 09:12</span></div>
+          <div class="wf-card">Bruno — Recepcionista · acesso: agenda + clientes<br><span class="nota">nunca acessou (convite pendente)</span></div>
+        </div>
+        <p class="nota">O dono entende as permissões sem adivinhar, e percebe quem não está usando o sistema.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 11. CONFIGURAÇÕES ============ -->
+<h2 id="config"><span class="num">11</span>Configurações</h2>
+<div class="area">
+  <span class="tag t-baixa">BAIXA</span><span class="tag t-ok">Bem completo</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje</h4>
+      <div class="painel">
+        Dados do estabelecimento, horários, fechamento, status de clientes, aparência, push, conta. <strong>Sem logo do estabelecimento</strong> (só o símbolo padrão StudioFlow) e sem prévia do agendamento online.
+        <div class="wf">
+          <div class="wf-card">Dados do estabelecimento — sem campo de logo</div>
+          <div class="wf-card">Fechamento de atendimentos ✓</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        <strong>Upload de logo</strong> do estabelecimento (aparece no link público e no PWA) + <strong>prévia do agendamento online</strong> embutida nas configurações.
+        <div class="wf">
+          <div class="wf-card">Logo do estabelecimento <span class="wf-btn b-prim">⬆ Enviar logo</span></div>
+          <div class="wf-card">Prévia do link de agendamento <span class="wf-btn b-cinza">👁 Ver como o cliente vê</span></div>
+        </div>
+        <p class="nota">Depende de bucket no Supabase Storage (ação manual sua, já listada nas pendências). A prévia evita sair pra conferir o link.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 12. SITE PRINCIPAL (LANDING) ============ -->
+<h2 id="landing"><span class="num">12</span>Site principal (landing) — ⚠️ prioridade máxima</h2>
+<div class="area">
+  <span class="tag t-alta">ALTA — honestidade de venda</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje (problema)</h4>
+      <div class="painel">
+        A copy promete funcionalidades que <strong>não existem no app</strong>:
+        <ul>
+          <li>"confirmações automáticas" — não existe (WhatsApp é manual)</li>
+          <li>"fotos antes/depois" — não existe no cadastro</li>
+          <li>"lista de espera" — não existe</li>
+          <li>"cliente confirma chegada pelo QR code" — não existe</li>
+          <li>"avaliação" — não existe</li>
+          <li>"Mensagens Automáticas" — não existe automação</li>
+        </ul>
+        <div class="wf">
+          <div class="wf-card">❌ Prometido: "Lembretes de horário pelo WhatsApp"<br><span class="nota">Real: toda mensagem é manual</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        <strong>1. Corrigir a copy pro que existe de verdade</strong> (hoje):
+        <ul>
+          <li>✅ Agendamento online pelo link, sem app pro cliente</li>
+          <li>✅ Financeiro com comissão calculada no fechamento</li>
+          <li>✅ Fechamento em 1 toque + ações em massa</li>
+          <li>✅ LGPD com assinatura digital</li>
+          <li>✅ Notificações push no celular do dono</li>
+          <li>✅ 3 segmentos num só produto</li>
+        </ul>
+        <strong>2. Landings por segmento</strong> (mockups já aprovados): <code>/salao-de-beleza</code>, <code>/barbearia</code>, <code>/estetica</code> — copy com a dor de cada um.<br>
+        <strong>3. Página de preços</strong> (<code>/precos</code>) com planos reais quando a cobrança existir.
+        <p class="nota">Regra: nunca prometer no site o que o app não entrega — destrói a confiança na 1ª semana de uso.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 13. AGENDAMENTO ONLINE ============ -->
+<h2 id="online"><span class="num">13</span>Agendamento online (página pública)</h2>
+<div class="area">
+  <span class="tag t-media">MÉDIA</span><span class="tag t-ok">Redesign recente</span>
+  <div class="comparar">
+    <div class="col-hoje">
+      <h4>Como está hoje</h4>
+      <div class="painel">
+        Fluxo em passos, resumo, aceite LGPD, WhatsApp antes do nome (preenche se já é cliente), push pro dono. O cliente agenda e <strong>não recebe confirmação nem lembrete</strong> — só o aviso "o salão confirma pelo WhatsApp".
+        <div class="wf">
+          <div class="wf-card">✅ Agendado!<br><span class="nota">"O salão confirma seu horário pelo WhatsApp" (manual)</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-nova">
+      <h4>Proposta</h4>
+      <div class="painel">
+        <strong>Confirmação imediata</strong> na tela + lembrete automático D-1 (quando o WhatsApp automatizado existir) + opção de <strong>cancelar pelo link</strong> (com prazo).
+        <div class="wf">
+          <div class="wf-card">✅ Horário reservado!<br>12/11 às 14:00 com Teste Teste<br>
+            <span class="wf-btn b-prim">📅 Adicionar ao calendário</span>
+            <span class="wf-btn b-verm">Cancelar agendamento</span>
+          </div>
+        </div>
+        <p class="nota">Cancelar pelo link reduz no-show e o trabalho do dono de desmarcar por WhatsApp. O lembrete D-1 depende do provedor de WhatsApp (seção 8).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PRIORIDADES ============ -->
+<h2 id="prioridades">Como priorizar (sugestão)</h2>
+<div class="area">
+  <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+    <tr style="background:#f1f5f9"><th style="text-align:left; padding:8px">#</th><th style="text-align:left; padding:8px">Melhoria</th><th style="text-align:left; padding:8px">Área</th><th style="text-align:left; padding:8px">Por quê</th></tr>
+    <tr><td style="padding:8px">1</td><td style="padding:8px"><strong>Corrigir copy do site</strong></td><td style="padding:8px">Landing</td><td style="padding:8px">Honestidade antes de anunciar (esforço baixo)</td></tr>
+    <tr><td style="padding:8px">2</td><td style="padding:8px"><strong>WhatsApp automático</strong></td><td style="padding:8px">Mensagens + Online</td><td style="padding:8px">O diferencial que a concorrência cobra</td></tr>
+    <tr><td style="padding:8px">3</td><td style="padding:8px"><strong>Widget "Precisa da sua atenção"</strong></td><td style="padding:8px">Início</td><td style="padding:8px">Alertas viram ação de 1 clique</td></tr>
+    <tr><td style="padding:8px">4</td><td style="padding:8px"><strong>Filtros por status + Trazer de volta</strong></td><td style="padding:8px">Clientes</td><td style="padding:8px">Reengajamento direto = receita</td></tr>
+    <tr><td style="padding:8px">5</td><td style="padding:8px"><strong>Gráfico + exportar CSV</strong></td><td style="padding:8px">Financeiro</td><td style="padding:8px">Contador e tendência (RF-019)</td></tr>
+    <tr><td style="padding:8px">6</td><td style="padding:8px"><strong>Landings por segmento</strong></td><td style="padding:8px">Site</td><td style="padding:8px">Mockups aprovados, só codificar</td></tr>
+    <tr><td style="padding:8px">7</td><td style="padding:8px"><strong>Link de assinatura de termos</strong></td><td style="padding:8px">Termos</td><td style="padding:8px">LGPD sem o dono operar</td></tr>
+    <tr><td style="padding:8px">8</td><td style="padding:8px"><strong>Venda de produto no checkout</strong></td><td style="padding:8px">Produtos</td><td style="padding:8px">Cobrança completa + estoque coerente</td></tr>
+  </table>
+  <p class="nota">As demais (reagendar mobile, mais vendidos, comparativo de desempenho, permissões visíveis, logo, prévia) são polimento — boas para rodadas posteriores.</p>
+</div>
+
+</div>
+</body>
+</html>
