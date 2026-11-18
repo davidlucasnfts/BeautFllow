@@ -26,10 +26,12 @@ const ACTIVE_STATUSES = [...START_STATUSES, "in_progress"];
 type BulkAction = "start" | "conclude" | "cancel";
 
 interface DayBulkActionsProps {
-  /** Atendimentos do dia já filtrados (profissional/serviço ativos na tela) */
+  /** Atendimentos do período já filtrados (profissional/serviço ativos na tela) */
   appointments: CalendarAppointment[];
   /** Lista completa de serviços (tipo real é Service do schema, com price) */
   services: Array<CalendarService & { price?: string | number | null }>;
+  /** Escopo exibido nos textos: "do dia" (visão Dia) ou "da semana" (visão Semana) */
+  scope: "day" | "week";
 }
 
 /** Ações em massa do dia: Iniciar todos, Concluir todos (gera o financeiro
@@ -40,6 +42,7 @@ interface DayBulkActionsProps {
 export default function DayBulkActions({
   appointments,
   services,
+  scope,
 }: DayBulkActionsProps) {
   const { salon } = useSalon();
   const utils = trpc.useUtils();
@@ -123,7 +126,7 @@ export default function DayBulkActions({
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-muted/40 px-3 py-2">
       <span className="text-xs font-medium text-muted-foreground">
-        Ações do dia:
+        {scope === "day" ? "Ações do dia:" : "Ações da semana:"}
       </span>
       {toStart.length > 0 && (
         <Button
@@ -173,11 +176,11 @@ export default function DayBulkActions({
             </AlertDialogTitle>
             <AlertDialogDescription>
               {confirm === "start" &&
-                "Todos os atendimentos agendados do dia vão para 'Em andamento'."}
+                `Todos os atendimentos agendados ${scope === "day" ? "do dia" : "da semana"} vão para 'Em andamento'.`}
               {confirm === "conclude" &&
                 `O financeiro será gerado para cada um com a comissão do profissional calculada. Total estimado: R$ ${moneyDotToBR(concludeTotal)}.`}
               {confirm === "cancel" &&
-                "Todos os atendimentos ativos do dia serão cancelados. Cada um poderá ser reagendado depois, individualmente."}
+                `Todos os atendimentos ativos ${scope === "day" ? "do dia" : "da semana"} serão cancelados. Cada um poderá ser reagendado depois, individualmente.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

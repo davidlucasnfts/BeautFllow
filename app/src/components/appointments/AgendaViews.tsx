@@ -119,6 +119,7 @@ export default function AgendaViews({
         <DayBulkActions
           appointments={bulkAppointments}
           services={services as CalendarService[]}
+          scope="day"
         />
         {isMobile ? (
           <FilaDoDia
@@ -155,9 +156,17 @@ export default function AgendaViews({
   }
 
   if (viewMode === "week") {
+    // Ações em massa da semana: todos os atendimentos da faixa visível
+    // (appointmentsByDay já vem filtrado por profissional/serviço)
+    const weekAppointments = Object.values(appointmentsByDay).flat();
     return (
       <div className="space-y-4">
         {pendingAlert}
+        <DayBulkActions
+          appointments={weekAppointments}
+          services={services as CalendarService[]}
+          scope="week"
+        />
         <WeekView
           weekDays={weekDays}
           today={today}
