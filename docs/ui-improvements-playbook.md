@@ -39,8 +39,17 @@
 3. Implementar → `npm run check && npm run lint && npx vitest run` (baseline 60 testes) → commit.
 4. Registrar entregas no `MEMORY.md` (formato `Nome — DD/MM`).
 
-## 6. Estado atual da Agenda (referência)
+## 6. Estado atual da Agenda (referência — atualizado em 13/11/2026)
 
 - Mobile = Fila do dia; desktop = semana/dia (WeekView/DayView).
-- Componentes-chave: `appointments/FilaDoDia.tsx`, `appointments/AppointmentActions.tsx`, `appointments/CheckoutDialog.tsx` (check-out gera lançamento financeiro vinculado), `calendar/constants.ts` (status), `home/TodayAppointmentsBoard.tsx`.
-- Ciclo completo com dinheiro: Concluir → `financial.create` com `appointmentId` → status `completed`.
+- Componentes-chave: `appointments/FilaDoDia.tsx`, `appointments/AppointmentActions.tsx`, `appointments/DayBulkActions.tsx` (ações em massa), `appointments/CheckoutDialog.tsx`, `hooks/useConcludeQuick.ts` (fechamento 1 toque), `calendar/constants.ts` (status), `home/TodayAppointmentsBoard.tsx`.
+- **Ciclo com dinheiro — 2 caminhos (RN-009):**
+  - Fechamento automático (1 toque): `appointment.conclude` cria lançamento (valor da tabela + extras, pagamento padrão) **com comissão calculada do profissional** e conclui numa operação só.
+  - "Concluir com adicionais": abre o `CheckoutDialog` (desconto, extras, pagamento).
+  - Config em `salons.settings.autoCheckout` (Configurações → Fechamento de atendimentos).
+- **Matriz de botões por status** (ordem única: Iniciar → Concluir → Concluir com adicionais → Editar → Cancelar):
+  - `scheduled/confirmed/checked_in`: Iniciar, Editar, Cancelar
+  - `in_progress`: Concluir (+ Concluir com adicionais no automático), Editar, Cancelar
+  - `completed/cancelled/no_show`: nenhuma
+- **Ações em massa** (Dia e Semana): barra sobre os atendimentos filtrados, com confirmação (contagem + total estimado). Só aparece com itens no status correspondente.
+- Layout mobile: grid 2 colunas nos botões do atendimento; barra em massa empilhada.

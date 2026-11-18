@@ -1,6 +1,6 @@
 # Regras de Negócio — StudioFlow
 
-> **Data:** 06/09/2026
+> **Data:** 13/11/2026 (adicionada RN-009 — Fechamento de Atendimentos)
 > **Função:** Referência única das regras de negócio (RN). Consultar SEMPRE antes de criar/editar funcionalidades.
 > **Formato:** RN-NNN — cada regra tem ID, categoria e pseudo-código executável
 
@@ -189,6 +189,46 @@ Lançamentos de agendamento "concluído" NÃO podem ser editados
 
 NENHUM lançamento é apagado: cancelamentos usam lançamento de estorno.
 ```
+
+---
+
+## RN-009 — Fechamento de Atendimentos (automático e manual)
+
+| Campo | Valor |
+|-------|-------|
+| ID | RN-009 |
+| Categoria | Automação + Validação |
+
+**Regra:**
+
+```
+SÓ é possível concluir atendimento com status "in_progress".
+
+Fechamento AUTOMÁTICO (1 toque — config salons.settings.autoCheckout.enabled = true):
+    Botão "Concluir" fecha sem abrir o checkout e gera o lançamento:
+        valor = preço do serviço (tabela) + extras registrados no agendamento
+        pagamento = forma padrão configurada (default: Pix)
+        comissão = valor × professional.commissionRate (calculada no backend)
+    Botão "Concluir com adicionais" abre o checkout completo
+        (desconto, extras criados na hora, outra forma de pagamento).
+
+Fechamento MANUAL (autoCheckout.enabled = false):
+    "Concluir" sempre abre o checkout completo.
+
+TODO atendimento concluído DEVE ter valor > 0 (senão erro).
+
+O lançamento gerado PODE ser editado depois no Financeiro
+    (valor, pagamento, comissão) — com audit log (RN-003/RN-008).
+
+AÇÕES EM MASSA (visões Dia e Semana):
+    "Iniciar todos" / "Concluir todos" / "Cancelar todos"
+    atuam SOMENTE nos atendimentos já filtrados na tela
+    (profissional/serviço ativos nos filtros).
+    DEVE haver confirmação com a contagem (e total estimado no "Concluir todos").
+    "Concluir todos" só aparece com o fechamento automático ligado.
+```
+
+> Histórico: antes de 13/11/2026, o fechamento manual não calculava a comissão (gravava "0,00"). A automação corrigiu esse gap nos dois caminhos.
 
 ---
 
