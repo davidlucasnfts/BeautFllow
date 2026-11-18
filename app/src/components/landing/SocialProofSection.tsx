@@ -1,5 +1,4 @@
-import { ShieldCheck, Lock, Server, Award } from "lucide-react";
-import { getSegmentLabel, type SalonSegment } from "@contracts/segment-labels";
+import { ShieldCheck, Lock, Database, FileCheck } from "lucide-react";
 
 const badges = [
   {
@@ -7,54 +6,28 @@ const badges = [
     label: "Dados protegidos (LGPD)",
     desc: "Autorização assinada pelo celular",
   },
-  { icon: Lock, label: "SSL 256-bit", desc: "Criptografia de ponta a ponta" },
+  { icon: Lock, label: "Conexão segura (HTTPS)", desc: "Criptografia em trânsito" },
   {
-    icon: Server,
-    label: "Hospedado no Brasil",
-    desc: "Servidores rápidos no Brasil",
+    icon: Database,
+    label: "Dados isolados",
+    desc: "Cada estabelecimento só vê os próprios dados",
   },
   {
-    icon: Award,
-    label: "ISO 27001",
-    desc: "Segurança de dados certificada",
+    icon: FileCheck,
+    label: "Histórico de auditoria",
+    desc: "Operações sensíveis registradas",
   },
 ];
 
-const logos = [
-  "Studio Mariana",
-  "Barbearia JP",
-  "Spa Luiza",
-  "Espaço Bella",
-  "Salão Glamour",
-  "Clínica Estética Rio",
-  "Cabelos & Cia",
-  "Beleza Pura",
-];
-
-export function SocialProofSection({ segment }: { segment: SalonSegment }) {
-  const segmentNamePlural = getSegmentLabel(
-    segment,
-    "segmentNamePlural"
-  ).toLowerCase();
+/** Prova de segurança real (sem logos de clientes inventados nem selos
+ *  falsos como "ISO 27001" — removidos por honestidade de venda). */
+export function SocialProofSection() {
   return (
     <section className="px-6 py-16 border-y border-border/40 bg-background">
       <div className="max-w-7xl mx-auto">
-        {/* Trusted by */}
         <p className="text-center text-xs font-medium text-muted-foreground uppercase tracking-wider mb-8">
-          Confiado por {segmentNamePlural} em todo o Brasil
+          Segurança e privacidade de verdade
         </p>
-        <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 mb-16 opacity-60">
-          {logos.map(logo => (
-            <span
-              key={logo}
-              className="text-sm font-semibold text-muted-foreground whitespace-nowrap"
-            >
-              {logo}
-            </span>
-          ))}
-        </div>
-
-        {/* Security badges */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {badges.map(b => (
             <div

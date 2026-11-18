@@ -144,6 +144,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Ações em massa nas visões Dia e Semana: Iniciar todos, Concluir todos (financeiro + comissão de cada um, com total estimado na confirmação) e Cancelar todos — respeitam os filtros ativos da agenda e pedem confirmação | 13/11 |
 | Botões da agenda padronizados: ordem única (Iniciar → Concluir → Concluir com adicionais → Editar → Cancelar) e grid 2 colunas no mobile — sem quebra irregular | 13/11 |
 | Auditoria de segurança completa (veredito: sólido, nenhuma vulnerabilidade crítica) + hardening: push-debug só em dev, links de convite/reset validados contra allowlist de origens | 18/11 |
+| Landing page honesta: removidas todas as promessas inexistentes (confirmações automáticas, fotos, lista de espera, QR code, depoimentos e métricas inventados, ISO 27001, "200 salões", planos pagos) — copy agora reflete só o que o app entrega | 18/11 |
 
 ---
 

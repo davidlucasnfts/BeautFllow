@@ -201,6 +201,16 @@
 
 ---
 
+## ✅ Copy da landing corrigida — 18/11/2026 (melhoria 1 da proposta geral)
+
+Todas as promessas inexistentes foram removidas da landing e substituídas por copy do que o app entrega:
+- **Home.tsx:** stats reais, 6 features reais (agendamento online, status de clientes, fechamento com comissão, LGPD, push, estoque), planos pagos substituídos por "Grátis durante o beta", hero sem "lembretes automáticos", footer sem links mortos
+- **TestimonialsSection:** depoimentos inventados (com métricas fabricadas) substituídos por 3 cards de diferenciais reais
+- **SocialProofSection:** logos fictícios e selo "ISO 27001" removidos; badges reais (LGPD, HTTPS, dados isolados, auditoria)
+- **HowItWorksSection:** removidos "importação CSV", "lembretes WhatsApp", "lista de espera"
+- **CTASection:** removidos "teste 14 dias", "200 salões", "suporte WhatsApp"
+- **index.html:** meta description sem "comunicação omnichannel"
+
 ## Análise de melhorias geral — 18/11/2026
 
 **Arquivo navegável:** `docs/mockups/proposta-melhorias-geral.html` — 13 áreas analisadas no código real, cada uma com "como está hoje" (wireframe) vs "proposta" (wireframe), e tabela de prioridades.

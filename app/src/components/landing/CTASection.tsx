@@ -5,27 +5,27 @@ import type { SalonSegment } from "@contracts/segment-labels";
 import { getSegmentPalette } from "@contracts/segment-palettes";
 
 const benefits = [
-  "Teste grátis por 14 dias",
+  "Grátis durante o beta",
   "Sem cartão de crédito",
   "Deixar pronto em menos de 5 minutos",
-  "Suporte humano no WhatsApp",
+  "Todos os recursos liberados",
 ];
 
 const ctaCopy: Record<SalonSegment, { title: string; subtitle: string }> = {
   beauty_salon: {
     title: "Pronto para organizar seu salão?",
     subtitle:
-      "Junte-se a mais de 200 salões que já economizam tempo, reduzem faltas e faturam mais com o StudioFlow.",
+      "Agenda inteligente, fechamento em 1 toque com comissão calculada e termos LGPD no celular — tudo grátis durante o beta.",
   },
   barbershop: {
     title: "Pronto para organizar sua barbearia?",
     subtitle:
-      "Junte-se a dezenas de barbearias que já controlam agenda, clientes e comissões com o StudioFlow.",
+      "Agenda por profissional, cadastro de clientes e comissão calculada no fechamento — tudo grátis durante o beta.",
   },
   aesthetic_clinic: {
     title: "Pronto para organizar sua estética?",
     subtitle:
-      "Junte-se a estéticas que já gerenciam serviços, clientes e LGPD com o StudioFlow.",
+      "Serviços, histórico de clientes e termos LGPD assinados no celular — tudo grátis durante o beta.",
   },
 };
 

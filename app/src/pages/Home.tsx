@@ -23,27 +23,27 @@ import {
 } from "@contracts/segment-palettes";
 
 const stats = [
-  { value: "35%", label: "Menos clientes faltando" },
   { value: "5min", label: "Pronto para usar em" },
+  { value: "3", label: "Segmentos num só app" },
+  { value: "1 toque", label: "Para fechar o atendimento" },
   { value: "LGPD", label: "Dados protegidos por lei" },
-  { value: "100%", label: "WhatsApp, SMS e e-mail" },
 ];
 
 const features = [
   {
     icon: CalendarDays,
     title: "Agendamento Inteligente",
-    desc: "Vários profissionais na mesma agenda, clientes marcam sozinhos pelo link, confirmações automáticas e lista de espera.",
+    desc: "Vários profissionais na mesma agenda, clientes marcam sozinhos pelo link (sem instalar nada) e ações em massa no dia e na semana.",
   },
   {
     icon: Users,
     title: "Cadastro de Clientes",
-    desc: "Ficha de cada cliente com histórico, fotos antes/depois e aniversário — para atender ela como ninguém.",
+    desc: "Ficha de cada cliente com histórico e aniversário. Status automático (VIP, Sumindo, Inativo) baseado em gasto e frequência.",
   },
   {
-    icon: MessageSquare,
-    title: "Mensagens Automáticas",
-    desc: "Lembretes de horário pelo WhatsApp e mensagens prontas para trazer clientes de volta.",
+    icon: TrendingUp,
+    title: "Fechamento & Comissões",
+    desc: "Concluir em 1 toque gera o lançamento financeiro com a comissão do profissional calculada — sem digitar nada no fim do dia.",
   },
   {
     icon: ShieldCheck,
@@ -51,58 +51,32 @@ const features = [
     desc: "Seus clientes assinam pelo celular e você fica protegido, com tudo guardado conforme a LGPD.",
   },
   {
-    icon: TrendingUp,
-    title: "Financeiro & Comissões",
-    desc: "Anote ganhos por serviço/produto, controle comissões de cada profissional e veja quanto entrou no mês.",
+    icon: MessageSquare,
+    title: "Notificações no Celular",
+    desc: "Você recebe um alerta no celular sempre que um cliente agenda pelo link — nome, serviço, data e horário na hora.",
   },
   {
     icon: Sparkles,
-    title: "Experiência do Cliente",
-    desc: "Cliente confirma chegada pelo QR code, recebe os cuidados antes e depois do serviço e ainda avalia você.",
+    title: "Produtos & Estoque",
+    desc: "Controle de produtos com entradas e saídas de estoque e alerta de estoque baixo, junto com receitas e despesas.",
   },
 ];
 
 const plans = [
   {
-    name: "Free",
+    name: "Grátis durante o beta",
     price: "R$ 0",
-    period: "/mês",
+    period: "",
     features: [
-      "1 profissional",
-      "30 agendamentos/mês",
-      "Confirmação por e-mail",
-      "Cadastro de clientes",
+      "Todos os recursos liberados",
+      "Agendamento online pelo link",
+      "Financeiro com comissão calculada",
+      "Termos LGPD com assinatura digital",
+      "Notificações push no celular",
+      "Sem cartão de crédito",
     ],
-    cta: "Começar",
-    highlight: false,
-  },
-  {
-    name: "Essencial",
-    price: "R$ 89",
-    period: "/mês",
-    features: [
-      "Até 3 profissionais",
-      "Agendamento ilimitado",
-      "WhatsApp (500 mensagens)",
-      "Cadastro completo de clientes",
-      "Financeiro simples",
-    ],
-    cta: "Assinar",
+    cta: "Começar Grátis",
     highlight: true,
-  },
-  {
-    name: "Pro",
-    price: "R$ 179",
-    period: "/mês",
-    features: [
-      "Até 8 profissionais",
-      "Termos digitais",
-      "Mensagens automáticas para clientes voltarem",
-      "Comissões avançadas",
-      "2000 msg/mês",
-    ],
-    cta: "Assinar",
-    highlight: false,
   },
 ];
 
@@ -119,17 +93,17 @@ const segmentHeroCopy: Record<
   beauty_salon: {
     title: "salões de beleza",
     subtitle:
-      "Do primeiro contato ao pós-venda. Agenda inteligente, cadastro de clientes, lembretes automáticos e clientes voltando sempre — tudo em um só lugar.",
+      "Agenda inteligente, cadastro de clientes com status automático, fechamento em 1 toque com comissão calculada e termos LGPD assinados no celular — tudo em um só lugar.",
   },
   barbershop: {
     title: "barbearias",
     subtitle:
-      "Organize cortes, barbas e combos. Controle de agenda, clientes, comissões dos barbeiros e comunicação automática — tudo em uma única plataforma.",
+      "Organize cortes, barbas e combos. Agenda por profissional, cadastro de clientes, comissão calculada no fechamento e notificação no seu celular a cada novo agendamento online.",
   },
   aesthetic_clinic: {
     title: "estéticas",
     subtitle:
-      "Gerencie serviços, histórico de clientes, autorizações assinadas no celular, comissões e mensagens para trazer clientes de volta — tudo em um só lugar.",
+      "Gerencie serviços, histórico de clientes, autorizações assinadas no celular (LGPD), comissões calculadas no fechamento e controle de estoque — tudo em um só lugar.",
   },
 };
 
@@ -292,18 +266,18 @@ export default function Home() {
       <TestimonialsSection />
 
       {/* Social proof */}
-      <SocialProofSection segment={segment} />
+      <SocialProofSection />
 
       {/* Pricing */}
-      <section className="px-6 py-16 max-w-5xl mx-auto">
+      <section className="px-6 py-16 max-w-md mx-auto">
         <h2 className="text-3xl font-bold text-center mb-4">
-          Planos simples e justos
+          Grátis durante o beta
         </h2>
         <p className="text-center text-muted-foreground mb-12 max-w-lg mx-auto">
-          Comece grátis e evolua conforme seu negócio cresce. Sem taxa de setup,
-          sem surpresas.
+          Todos os recursos liberados enquanto preparamos os planos pagos.
+          Sem cartão de crédito, sem surpresas.
         </p>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid gap-6">
           {plans.map(p => (
             <Card
               key={p.name}
@@ -375,17 +349,9 @@ export default function Home() {
             &copy; {new Date().getFullYear()} StudioFlow. Todos os direitos
             reservados.
           </p>
-          <div className="flex gap-6 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">
-              Privacidade
-            </a>
-            <a href="#" className="hover:text-foreground transition-colors">
-              Termos
-            </a>
-            <a href="#" className="hover:text-foreground transition-colors">
-              Contato
-            </a>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            Feito para salões, barbearias e clínicas de estética.
+          </p>
         </div>
       </footer>
     </div>

@@ -20,7 +20,7 @@ function getSteps(segment: SalonSegment): Step[] {
       icon: CalendarPlus,
       details: [
         "Sem cartão de crédito",
-        "Importação de clientes via CSV",
+        "Cadastro guiado de serviços e profissionais",
         "A gente te guia no passo a passo",
       ],
     },
@@ -28,24 +28,24 @@ function getSteps(segment: SalonSegment): Step[] {
       number: "02",
       title: "Organize seus agendamentos",
       description:
-        "Use o calendário inteligente, envie lembretes automáticos e reduza faltas.",
+        "Use o calendário inteligente, clientes agendam pelo link e você fecha cada atendimento em 1 toque.",
       icon: Sparkles,
       details: [
         "Vários profissionais na mesma agenda",
-        "Lembretes WhatsApp/e-mail",
-        "Lista de espera inteligente",
+        "Agendamento online pelo link (sem app pro cliente)",
+        "Ações em massa no dia e na semana",
       ],
     },
     {
       number: "03",
       title: "Acompanhe e cresça",
       description:
-        "Acompanhe quanto entrou, comissões e quais clientes voltaram.",
+        "Acompanhe quanto entrou, comissões calculadas e quais clientes estão sumindo.",
       icon: TrendingUp,
       details: [
         "Resumo do dia em tempo real",
         "Quanto entrou no mês",
-        "Clientes que voltaram",
+        "Comissão calculada no fechamento",
       ],
     },
   ];
