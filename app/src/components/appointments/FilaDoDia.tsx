@@ -274,7 +274,7 @@ export default function FilaDoDia({
                           type="button"
                           size="sm"
                           variant="outline"
-                          title="Concluir com ajustes (desconto, extras, forma de pagamento)"
+                          title="Concluir com adicionais (desconto, extras, forma de pagamento)"
                           onClick={e => {
                             e.stopPropagation();
                             onConclude(appt);
@@ -282,7 +282,7 @@ export default function FilaDoDia({
                           className="h-8 gap-1.5 border-green-600 px-3 text-xs font-semibold text-green-700 hover:bg-green-50"
                         >
                           <SlidersHorizontal className="h-3.5 w-3.5" />
-                          Ajustes
+                          Concluir com adicionais
                         </Button>
                       </>
                     )}

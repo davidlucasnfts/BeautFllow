@@ -1,8 +1,10 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
 import WeekView from "@/components/calendar/WeekView";
 import DayView from "@/components/calendar/DayView";
 import MonthView from "@/components/calendar/MonthView";
 import FilaDoDia from "@/components/appointments/FilaDoDia";
+import DayBulkActions from "@/components/appointments/DayBulkActions";
 import PendingPastAlert from "@/components/appointments/PendingPastAlert";
 import type { Client, Professional, Service } from "@db/schema";
 import type {
@@ -104,9 +106,20 @@ export default function AgendaViews({
   );
 
   if (viewMode === "day") {
+    // Ações em massa: no mobile usam o dia da fila (filaDate), no desktop o
+    // dia selecionado — sempre sobre os atendimentos já filtrados da tela
+    const bulkAppointments = isMobile
+      ? filaAppointments.filter(
+          a => a.appointmentDate === format(filaDate, "yyyy-MM-dd")
+        )
+      : dayAppointments;
     return (
       <div className="space-y-4">
         {pendingAlert}
+        <DayBulkActions
+          appointments={bulkAppointments}
+          services={services as CalendarService[]}
+        />
         {isMobile ? (
           <FilaDoDia
             selectedDay={filaDate}

@@ -99,12 +99,12 @@ export default function AppointmentActions({
           type="button"
           size="sm"
           variant="outline"
-          title="Concluir com ajustes (desconto, extras, forma de pagamento)"
+          title="Concluir com adicionais (desconto, extras, forma de pagamento)"
           onClick={stop(() => onConclude(appt))}
           className={`${btnClass} border-green-600 text-green-700 hover:bg-green-50`}
         >
           <SlidersHorizontal className="h-3 w-3" />
-          Ajustes
+          Concluir com adicionais
         </Button>
       )}
       {canConclude && !auto && (
