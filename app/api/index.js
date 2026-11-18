@@ -102816,6 +102816,15 @@ function getSessionCookieOptions(headers) {
   };
 }
 
+// server/lib/origin.ts
+init_env();
+function requestOrigin(ctx) {
+  const origin = ctx.req.headers.get("origin");
+  const allowed = env.isProduction ? [env.corsOrigin || "https://studioflow.vercel.app"] : ["http://localhost:3000", "http://localhost:5173"];
+  if (origin && allowed.includes(origin)) return origin;
+  return env.corsOrigin || "http://localhost:3000";
+}
+
 // server/local-auth-router.ts
 var JWT_ALG = "HS256";
 async function signToken(payload) {
@@ -102967,8 +102976,7 @@ var localAuthRouter = createRouter({
       tokenHash,
       expiresAt
     });
-    const origin = ctx.req.headers.get("origin") || env.corsOrigin || "http://localhost:3000";
-    const link = `${origin}/redefinir-senha?token=${token}`;
+    const link = `${requestOrigin(ctx)}/redefinir-senha?token=${token}`;
     if (env.resendApiKey) {
       const { Resend: Resend2 } = await Promise.resolve().then(() => (init_dist(), dist_exports));
       const resend = new Resend2(env.resendApiKey);
@@ -107545,9 +107553,6 @@ init_schema2();
 
 // server/team-invite-mail.ts
 init_env();
-function requestOrigin(ctx) {
-  return ctx.req.headers.get("origin") || env.corsOrigin || "http://localhost:3000";
-}
 async function sendInviteEmail({
   salonName,
   email: email3,
@@ -108054,6 +108059,7 @@ app.get("/health", async (c) => {
   }
 });
 app.get("/api/push-debug", (c) => {
+  if (env.isProduction) return c.json({ error: "Not Found" }, 404);
   const publicKey = process.env.VAPID_PUBLIC_KEY ?? "";
   const privateKey = process.env.VAPID_PRIVATE_KEY ?? "";
   const subject = process.env.VAPID_SUBJECT ?? "";

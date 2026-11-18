@@ -143,6 +143,7 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Fechamento automático de atendimentos: Concluir em 1 toque gera o lançamento no financeiro com a comissão do profissional calculada; "Concluir com adicionais" mantém o checkout completo; configuração em Configurações (ligada por padrão, pagamento padrão Pix) — corrigiu a comissão que gravava zerada | 13/11 |
 | Ações em massa nas visões Dia e Semana: Iniciar todos, Concluir todos (financeiro + comissão de cada um, com total estimado na confirmação) e Cancelar todos — respeitam os filtros ativos da agenda e pedem confirmação | 13/11 |
 | Botões da agenda padronizados: ordem única (Iniciar → Concluir → Concluir com adicionais → Editar → Cancelar) e grid 2 colunas no mobile — sem quebra irregular | 13/11 |
+| Auditoria de segurança completa (veredito: sólido, nenhuma vulnerabilidade crítica) + hardening: push-debug só em dev, links de convite/reset validados contra allowlist de origens | 18/11 |
 
 ---
 

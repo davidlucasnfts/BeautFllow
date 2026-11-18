@@ -1,12 +1,5 @@
 import { env } from "./lib/env";
-
-export function requestOrigin(ctx: { req: Request }): string {
-  return (
-    ctx.req.headers.get("origin") ||
-    env.corsOrigin ||
-    "http://localhost:3000"
-  );
-}
+export { requestOrigin } from "./lib/origin";
 
 interface SendInviteEmailParams {
   salonName: string;

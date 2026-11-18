@@ -10,6 +10,7 @@ import { env } from "./lib/env";
 import { TRPCError } from "@trpc/server";
 import * as cookie from "cookie";
 import { getSessionCookieOptions } from "./lib/cookies";
+import { requestOrigin } from "./lib/origin";
 import { Session } from "@contracts/constants";
 
 const JWT_ALG = "HS256";
@@ -240,11 +241,7 @@ export const localAuthRouter = createRouter({
         expiresAt,
       });
 
-      const origin =
-        ctx.req.headers.get("origin") ||
-        env.corsOrigin ||
-        "http://localhost:3000";
-      const link = `${origin}/redefinir-senha?token=${token}`;
+      const link = `${requestOrigin(ctx)}/redefinir-senha?token=${token}`;
 
       if (env.resendApiKey) {
         const { Resend } = await import("resend");

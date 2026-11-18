@@ -109,8 +109,11 @@ app.get("/health", async c => {
   }
 });
 
-// Diagnóstico de notificações push (não expõe chaves, apenas status)
+// Diagnóstico de notificações push (não expõe chaves, apenas status).
+// SÓ em desenvolvimento: em produção é informação desnecessária exposta
+// (comprimento/validade das chaves VAPID) sem autenticação.
 app.get("/api/push-debug", c => {
+  if (env.isProduction) return c.json({ error: "Not Found" }, 404);
   const publicKey = process.env.VAPID_PUBLIC_KEY ?? "";
   const privateKey = process.env.VAPID_PRIVATE_KEY ?? "";
   const subject = process.env.VAPID_SUBJECT ?? "";

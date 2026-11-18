@@ -201,6 +201,18 @@
 
 ---
 
+## Auditoria de segurança — 18/11/2026
+
+**Veredito: sólido para o estágio.** Nenhuma vulnerabilidade crítica. Verificado no código: JWT HS256 c/ expiração, bcrypt cost 12, cookie httpOnly+secure, mensagens anti-enumeração no login/reset, password reset c/ hash+expiração+uso único, CORS restrito, CSP `default-src 'self'`, rate limit IP+auth, Zod em todas as procedures, guards de tenancy com membership real em TODOS os routers, Drizzle com parâmetros bindados (sem SQLi), audit logs completos.
+
+**Achados de hardening (por prioridade):**
+1. ✅ **CORRIGIDO 18/11:** `/api/push-debug` agora retorna 404 em produção (só funciona em dev).
+2. 🟠 RLS no Supabase é DECORATIVO no fluxo atual: o backend conecta com service role (ignora RLS). A linha real de defesa são os guards no código (completos). Manter RLS como defesa em profundidade futura, mas não contar com ela.
+3. 🟡 JWT stateless: logout não invalida o token e changePassword não encerra sessões antigas. Mitigação futura: versão de token/blacklist.
+4. ✅ **CORRIGIDO 18/11:** `requestOrigin` agora valida contra allowlist (novo `server/lib/origin.ts`) — convites de equipe e reset de senha só geram links com origens conhecidas.
+5. 🟡 `sameSite=None` no cookie de produção: risco CSRF baixo (tRPC usa POST JSON c/ preflight), mas endurecer validando Origin nas mutations ou usar Lax.
+6. 🟡 `findClientByPhone` (público) revela se um telefone é cliente do salão — trade-off da feature; considerar rate limit dedicado.
+
 ## Auditoria técnica — 09/11/2026 (pré-handoff)
 
 **Saúde geral: boa.** TODOs/FIXMEs praticamente zero, rotas legadas ativas (nenhuma página morta), check/test/build passando.
