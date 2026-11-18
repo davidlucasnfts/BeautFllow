@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StudioFlow — Proposta de Design do Novo Site (direções visuais)</title>
+<style>
+  :root {
+    --ink: #0f172a;
+    --muted: #57534e;
+    --line: #e7e5e4;
+    --bg: #fafafa;
+    --rose: #e8a0bf;
+    --rose-dark: #9d4e6b;
+    --gold: #d4af37;
+    --gold-soft: #faf3dd;
+    --green: #16a34a;
+    --red: #dc2626;
+    --amber: #b45309;
+    --amber-soft: #fffbeb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.55;
+    padding: 24px 16px 80px;
+  }
+  .wrap { max-width: 1280px; margin: 0 auto; }
+  header h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; }
+  header .meta { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  h2.part { font-size: 21px; font-weight: 800; margin: 46px 0 4px; display: flex; align-items: center; gap: 10px; }
+  h2.part .num {
+    width: 28px; height: 28px; border-radius: 999px; background: var(--ink); color: #fff;
+    font-size: 13px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .lead { color: var(--muted); font-size: 14px; max-width: 860px; margin-bottom: 16px; }
+  .box {
+    background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; margin: 14px 0; font-size: 14px;
+  }
+  .box.reco { background: var(--gold-soft); border-color: #e3d29a; }
+  .box.reco b { color: #8a6d15; }
+  .box.warn { background: var(--amber-soft); border-color: #fde68a; }
+  .box.warn b { color: var(--amber); }
+  code { background: #f1f5f9; padding: 1px 6px; border-radius: 6px; font-size: 12px; }
+
+  .frames { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; margin: 20px 0 8px; }
+  .frame-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+  .phone, .desktop {
+    background: #fff; border: 1px solid #cbd5e1; border-radius: 16px; padding: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.06);
+  }
+  .phone { width: 390px; flex-shrink: 0; }
+  .desktop { width: 940px; max-width: 100%; }
+  .screen { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff; }
+
+  /* ================================================================
+     DIREÇÃO 1 — EDITORIAL PREMIUM (movimento mínimo, tipografia, espaço)
+     ================================================================ */
+  .d1-stage { background: linear-gradient(175deg, #fdf2f7 0%, #ffffff 70%); padding: 64px 32px 56px; text-align: center; position: relative; overflow: hidden; }
+  .d1-eyebrow { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--rose-dark); font-weight: 700; margin-bottom: 22px; }
+  .d1-h1 {
+    font-family: Georgia, 'Times New Roman', serif; font-size: 54px; line-height: 1.05;
+    letter-spacing: -0.03em; font-weight: 700; margin-bottom: 20px;
+    opacity: 0; transform: translateY(24px);
+    animation: d1reveal 1s cubic-bezier(.22,1,.36,1) .2s forwards;
+  }
+  .d1-h1 em { font-style: italic; color: var(--rose-dark); }
+  .d1-sub { font-size: 17px; color: var(--muted); max-width: 560px; margin: 0 auto 30px; opacity: 0; transform: translateY(24px); animation: d1reveal 1s cubic-bezier(.22,1,.36,1) .45s forwards; }
+  @keyframes d1reveal { to { opacity: 1; transform: translateY(0); } }
+  .d1-cta {
+    display: inline-block; background: var(--ink); color: #fff; padding: 15px 32px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    opacity: 0; transform: translateY(24px); animation: d1reveal 1s cubic-bezier(.22,1,.36,1) .7s forwards;
+    transition: transform .3s, box-shadow .3s;
+  }
+  .d1-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(15,23,42,.25); }
+  /* mockup do app flutuando com sombra longa e leve inclinação */
+  .d1-mockwrap { perspective: 1400px; margin: 46px auto 0; max-width: 660px; }
+  .d1-mock {
+    background: #fff; border: 1px solid #e5e0e4; border-radius: 18px;
+    box-shadow: 0 40px 80px -20px rgba(157,78,107,.28), 0 8px 24px rgba(15,23,42,.08);
+    padding: 18px; text-align: left;
+    transform: rotateX(14deg) rotateY(-8deg);
+    animation: d1float 7s ease-in-out infinite;
+    transition: transform .8s cubic-bezier(.22,1,.36,1);
+  }
+  .d1-mockwrap:hover .d1-mock { transform: rotateX(4deg) rotateY(-2deg); }
+  @keyframes d1float {
+    0%,100% { translate: 0 0; }
+    50% { translate: 0 -12px; }
+  }
+  .d1-mock h4 { font-size: 12px; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; }
+  .d1-mock h4 span { color: var(--muted); font-weight: 500; }
+  .d1-row { display: flex; align-items: center; gap: 10px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 9px; margin-bottom: 7px; font-size: 12.5px; opacity: 0; animation: d1reveal .6s ease forwards; }
+  .d1-row:nth-child(2) { animation-delay: 1s; } .d1-row:nth-child(3) { animation-delay: 1.25s; } .d1-row:nth-child(4) { animation-delay: 1.5s; }
+  .d1-row .t { font-weight: 700; width: 42px; color: var(--rose-dark); }
+  .d1-row .who { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .d1-row .who .svc { color: var(--muted); }
+  .d1-badge { font-size: 10.5px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: #ecfdf5; color: var(--green); border: 1px solid #bbf7d0; white-space: nowrap; }
+  .d1-badge.warn { background: var(--gold-soft); color: #8a6d15; border-color: #e3d29a; }
+  .d1-rule { width: 56px; height: 2px; background: var(--rose-dark); margin: 0 auto 22px; }
+
+  /* ================================================================
+     DIREÇÃO 2 — SHOWCASE 3D (mockup em perspectiva + brilho + parallax)
+     ================================================================ */
+  .d2-stage { background: radial-gradient(1200px 500px at 70% -10%, #fbd9e8 0%, transparent 60%), linear-gradient(180deg, #0f172a 0%, #1e1030 100%); color: #fff; padding: 64px 32px 60px; text-align: center; position: relative; overflow: hidden; }
+  .d2-blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .5; pointer-events: none; }
+  .d2-blob.a { width: 340px; height: 340px; background: #e8a0bf; top: -120px; left: -80px; animation: d2drift 11s ease-in-out infinite alternate; }
+  .d2-blob.b { width: 280px; height: 280px; background: #d4af37; bottom: -100px; right: -60px; animation: d2drift 13s ease-in-out infinite alternate-reverse; }
+  @keyframes d2drift { from { transform: translate(0,0) scale(1); } to { transform: translate(50px, 34px) scale(1.12); } }
+  .d2-eyebrow { position: relative; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: #f3d7e2; font-weight: 700; margin-bottom: 18px; }
+  .d2-h1 { font-family: Georgia, serif; font-size: 52px; line-height: 1.06; letter-spacing: -0.02em; margin-bottom: 18px; position: relative; }
+  .d2-h1 .grad {
+    background: linear-gradient(90deg, #e8a0bf, #d4af37, #e8a0bf); background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: d2shine 4s linear infinite;
+  }
+  @keyframes d2shine { to { background-position: 200% center; } }
+  .d2-sub { font-size: 16px; color: #cbd5e1; max-width: 540px; margin: 0 auto 28px; position: relative; }
+  .d2-cta { position: relative; display: inline-block; background: linear-gradient(90deg, #e8a0bf, #d4af37); color: #1c1917; padding: 15px 32px; border-radius: 12px; font-weight: 700; font-size: 15px; box-shadow: 0 0 0 0 rgba(232,160,191,.5); animation: d2pulse 2.4s ease-out infinite; }
+  @keyframes d2pulse { 0% { box-shadow: 0 0 0 0 rgba(232,160,191,.45); } 70% { box-shadow: 0 0 0 18px rgba(232,160,191,0); } 100% { box-shadow: 0 0 0 0 rgba(232,160,191,0); } }
+  .d2-mockwrap { perspective: 1600px; margin: 50px auto 0; max-width: 620px; position: relative; }
+  .d2-mock {
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.18); border-radius: 18px;
+    backdrop-filter: blur(10px); padding: 18px; text-align: left;
+    transform: rotateX(18deg) rotateY(-14deg) rotateZ(2deg);
+    transform-style: preserve-3d;
+    animation: d2tilt 9s ease-in-out infinite;
+    box-shadow: 0 50px 100px -20px rgba(0,0,0,.55);
+  }
+  @keyframes d2tilt {
+    0%,100% { transform: rotateX(18deg) rotateY(-14deg) rotateZ(2deg); }
+    50% { transform: rotateX(12deg) rotateY(-6deg) rotateZ(1deg); }
+  }
+  .d2-mock h4 { font-size: 12px; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; color: #f1f5f9; }
+  .d2-mock h4 span { color: #94a3b8; font-weight: 500; }
+  .d2-row { display: flex; align-items: center; gap: 10px; padding: 9px 11px; border: 1px solid rgba(255,255,255,.14); border-radius: 9px; margin-bottom: 7px; font-size: 12.5px; background: rgba(255,255,255,.05); }
+  .d2-row .t { font-weight: 700; width: 42px; color: #e8a0bf; }
+  .d2-row .who { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .d2-row .who .svc { color: #94a3b8; }
+  .d2-badge { font-size: 10.5px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: rgba(22,163,74,.18); color: #86efac; border: 1px solid rgba(134,239,172,.3); white-space: nowrap; }
+  .d2-badge.warn { background: rgba(212,175,55,.16); color: #fde68a; border-color: rgba(253,230,138,.3); }
+  .d2-glowbar { position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%); width: 70%; height: 60px; background: radial-gradient(ellipse at center, rgba(232,160,191,.4), transparent 70%); filter: blur(18px); }
+
+  /* ================================================================
+     DIREÇÃO 3 — IMERSIVO MOTION (partículas + montagem no scroll)
+     ================================================================ */
+  .d3-stage { background: #0b1020; color: #fff; padding: 64px 32px 60px; text-align: center; position: relative; overflow: hidden; }
+  .d3-canvas { position: absolute; inset: 0; }
+  .d3-canvas i {
+    position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(232,160,191,.9), rgba(232,160,191,0) 70%);
+    animation: d3rise linear infinite;
+  }
+  @keyframes d3rise {
+    from { transform: translateY(105vh) scale(.6); opacity: 0; }
+    10% { opacity: .8; }
+    90% { opacity: .8; }
+    to { transform: translateY(-8vh) scale(1.1); opacity: 0; }
+  }
+  .d3-inner { position: relative; }
+  .d3-eyebrow { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: #e8a0bf; font-weight: 700; margin-bottom: 18px; }
+  .d3-h1 { font-family: Georgia, serif; font-size: 52px; line-height: 1.06; letter-spacing: -0.02em; margin-bottom: 18px; }
+  .d3-h1 em { font-style: italic; color: #e8a0bf; }
+  .d3-sub { font-size: 16px; color: #cbd5e1; max-width: 540px; margin: 0 auto 28px; }
+  .d3-cta { display: inline-block; background: #e8a0bf; color: #1c1917; padding: 15px 32px; border-radius: 12px; font-weight: 700; font-size: 15px; }
+  /* mockup que "se monta" pedaço a pedaço */
+  .d3-mock { margin: 48px auto 0; max-width: 620px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.14); border-radius: 18px; padding: 18px; text-align: left; backdrop-filter: blur(8px); }
+  .d3-mock h4 { font-size: 12px; font-weight: 700; margin-bottom: 10px; color: #f1f5f9; }
+  .d3-piece { opacity: 0; transform: translateY(30px) scale(.96); animation: d3build .7s cubic-bezier(.22,1,.36,1) forwards; }
+  .d3-piece:nth-child(2) { animation-delay: .4s; } .d3-piece:nth-child(3) { animation-delay: .9s; }
+  .d3-piece:nth-child(4) { animation-delay: 1.4s; } .d3-piece:nth-child(5) { animation-delay: 1.9s; }
+  @keyframes d3build { to { opacity: 1; transform: translateY(0) scale(1); } }
+  .d3-row { display: flex; align-items: center; gap: 10px; padding: 9px 11px; border: 1px solid rgba(255,255,255,.14); border-radius: 9px; margin-bottom: 7px; font-size: 12.5px; background: rgba(255,255,255,.05); }
+  .d3-row .t { font-weight: 700; width: 42px; color: #e8a0bf; }
+  .d3-row .who { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .d3-row .who .svc { color: #94a3b8; }
+  .d3-badge { font-size: 10.5px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: rgba(22,163,74,.18); color: #86efac; border: 1px solid rgba(134,239,172,.3); white-space: nowrap; }
+
+  /* mobile das 3 direções */
+  .phone .d1-h1, .phone .d2-h1, .phone .d3-h1 { font-size: 30px; }
+  .phone .d1-sub, .phone .d2-sub, .phone .d3-sub { font-size: 14.5px; }
+  .phone .d1-stage, .phone .d2-stage, .phone .d3-stage { padding: 44px 16px 40px; }
+  .phone .d1-mock, .phone .d2-mock, .phone .d3-mock { transform: none; animation: none; }
+  .phone .d1-mockwrap:hover .d1-mock { transform: none; }
+  .phone .d1-row .who .svc, .phone .d2-row .who .svc, .phone .d3-row .who .svc { display: none; }
+  .phone .d1-cta, .phone .d2-cta, .phone .d3-cta { width: 100%; }
+
+  .opt-title { display: flex; align-items: center; gap: 10px; margin: 40px 0 6px; font-size: 18px; font-weight: 800; flex-wrap: wrap; }
+  .opt-title .letter {
+    width: 30px; height: 30px; border-radius: 9px; background: var(--ink); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0;
+  }
+  .opt-title .rec { font-size: 11px; font-weight: 700; color: #8a6d15; background: var(--gold-soft); border: 1px solid #e3d29a; padding: 3px 11px; border-radius: 999px; }
+  .pc { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0 26px; }
+  .pc .col { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font-size: 13.5px; }
+  .pc .col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+  .pc .pro h4 { color: var(--green); }
+  .pc .con h4 { color: var(--red); }
+  .pc ul { list-style: none; }
+  .pc li { padding: 3px 0 3px 16px; position: relative; color: var(--muted); }
+  .pc li::before { content: "·"; position: absolute; left: 4px; font-weight: 800; }
+  @media (max-width: 700px) { .pc { grid-template-columns: 1fr; } }
+
+  table.viab { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin: 10px 0 20px; }
+  table.viab th, table.viab td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  table.viab th { background: #f8fafc; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  table.viab tr:last-child td { border-bottom: none; }
+  .cost { font-weight: 700; white-space: nowrap; }
+  .cost.low { color: var(--green); } .cost.mid { color: var(--amber); } .cost.high { color: var(--red); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Proposta — Design visual do novo site</h1>
+    <div class="meta">Direções de arte: efeitos, motion e 3D · prévias animadas de verdade · para decidir antes de codar</div>
+  </header>
+
+  <div class="box">
+    <b>O que é isso:</b> a proposta anterior resolveu <b>conteúdo e estrutura</b> (o que o site diz, quantas páginas).
+    Esta resolve <b>aparência e movimento</b>. Cada direção abaixo está <b>animada na tela agora</b> — não é descrição,
+    é o efeito funcionando. As três são compatíveis com qualquer das opções de estrutura (A, B ou C) que você escolher.
+  </div>
+
+  <div class="box warn">
+    <b>Restrição real que manda no design:</b> seu público é dono de salão/barbearia — muitos usam <b>celular de entrada</b>
+    e internet 4G oscilante. Efeito pesado (WebGL, partículas 3D) quebra, trava e <b>despeja o visitante antes do CTA</b>.
+    Por isso a régua de decisão aqui não é "o mais bonito", é <b>"o mais bonito que continua fluido num Moto antigo"</b>.
+    Referência usada: a própria régua do briefing da marca (Cal.com, Aesop, Glossier — beleza com polimento tech).
+  </div>
+
+  <!-- ============ DIREÇÃO 1 ============ -->
+  <div class="opt-title"><span class="letter">1</span> Editorial Premium — o movimento serve ao conteúdo <span class="rec">RECOMENDADA</span></div>
+  <p class="lead">Estética de revista: tipografia serifada grande, muito espaço em branco, o mockup do app aparece em <b>perspectiva 3D suave flutuando</b> e se endireita quando o mouse passa. Tudo em CSS puro + animações leves — carrega instantâneo e roda em qualquer celular. É o estilo da Cal.com e do briefing da marca.</p>
+
+  <div class="frames">
+    <div>
+      <div class="frame-label">Desktop — Direção 1 (passe o mouse no mockup)</div>
+      <div class="desktop"><div class="screen">
+        <div class="d1-stage">
+          <div class="d1-eyebrow">StudioFlow · Gestão para beleza</div>
+          <div class="d1-rule"></div>
+          <div class="d1-h1">Cliente marca sozinho.<br /><em>Você só atende.</em></div>
+          <div class="d1-sub">O link de agendamento que enche sua agenda enquanto você cuida do salão.</div>
+          <div class="d1-cta">Criar conta grátis</div>
+          <div class="d1-mockwrap">
+            <div class="d1-mock">
+              <h4>Agenda de hoje <span>segunda-feira, 16</span></h4>
+              <div class="d1-row"><span class="t">09:00</span><span class="who">Mariana S. <span class="svc">· Escova + Hidratação</span></span><span class="d1-badge">Confirmado</span></div>
+              <div class="d1-row"><span class="t">10:30</span><span class="who">Paula R. <span class="svc">· Coloração</span></span><span class="d1-badge">Confirmado</span></div>
+              <div class="d1-row"><span class="t">14:00</span><span class="who">Novo agendamento pelo link <span class="svc">· Corte</span></span><span class="d1-badge warn">Chegou agora 🔔</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+    <div>
+      <div class="frame-label">Mobile — 390px</div>
+      <div class="phone"><div class="screen">
+        <div class="d1-stage">
+          <div class="d1-eyebrow">StudioFlow</div>
+          <div class="d1-rule"></div>
+          <div class="d1-h1">Cliente marca sozinho. <em>Você só atende.</em></div>
+          <div class="d1-sub">O link de agendamento que enche sua agenda.</div>
+          <div class="d1-cta">Criar conta grátis</div>
+          <div class="d1-mockwrap">
+            <div class="d1-mock">
+              <h4>Agenda de hoje <span>seg, 16</span></h4>
+              <div class="d1-row"><span class="t">09:00</span><span class="who">Mariana S.</span><span class="d1-badge">Confirmado</span></div>
+              <div class="d1-row"><span class="t">14:00</span><span class="who">Pelo link online</span><span class="d1-badge warn">Novo 🔔</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="pc">
+    <div class="col pro"><h4>Prós</h4><ul>
+      <li>Carrega instantâneo — nada de WebGL; roda liso até em celular de entrada</li>
+      <li>Parece produto premium (Cal.com, Aesop) — combina com o briefing da marca</li>
+      <li>Perspectiva 3D + flutuação dá vida sem peso; o hover "endireitar" convida a interagir</li>
+      <li>Custo de implementação baixo e manutenção simples</li>
+    </ul></div>
+    <div class="col con"><h4>Contras</h4><ul>
+      <li>É sutil — se você quiser "impacto de comercial", ela é contida</li>
+      <li>Depende de tipografia e espaçamento impecáveis para não parecer "página simples"</li>
+    </ul></div>
+  </div>
+
+  <!-- ============ DIREÇÃO 2 ============ -->
+  <div class="opt-title"><span class="letter">2</span> Showcase 3D — escuro, brilhante, com garra</div>
+  <p class="lead">Hero escuro com <b>manchas de cor que flutuam</b>, título com <b>brilho animado em gradiente</b>, botão com <b>pulso de luz</b> e o app em <b>perspectiva 3D contínua</b> (glassmorphism). Tudo ainda em CSS + SVG — sem WebGL — então roda bem, mas com mais elementos animados. É o estilo de Stripe/Figma.</p>
+
+  <div class="frames">
+    <div>
+      <div class="frame-label">Desktop — Direção 2</div>
+      <div class="desktop"><div class="screen">
+        <div class="d2-stage">
+          <div class="d2-blob a"></div><div class="d2-blob b"></div>
+          <div class="d2-eyebrow">StudioFlow</div>
+          <div class="d2-h1">Sua agenda cheia,<br /><span class="grad">sem depender de mensagem.</span></div>
+          <div class="d2-sub">Link de agendamento + aviso no celular + financeiro real. Um sistema, zero bagunça.</div>
+          <div class="d2-cta">Criar conta grátis</div>
+          <div class="d2-mockwrap">
+            <div class="d2-mock">
+              <h4>Agenda de hoje <span>seg, 16</span></h4>
+              <div class="d2-row"><span class="t">09:00</span><span class="who">Mariana S. <span class="svc">· Escova</span></span><span class="d2-badge">Confirmado</span></div>
+              <div class="d2-row"><span class="t">10:30</span><span class="who">Paula R. <span class="svc">· Coloração</span></span><span class="d2-badge">Confirmado</span></div>
+              <div class="d2-row"><span class="t">14:00</span><span class="who">Novo pelo link <span class="svc">· Corte</span></span><span class="d2-badge warn">🔔 Agora</span></div>
+            </div>
+            <div class="d2-glowbar"></div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+    <div>
+      <div class="frame-label">Mobile — 390px</div>
+      <div class="phone"><div class="screen">
+        <div class="d2-stage">
+          <div class="d2-blob a"></div><div class="d2-blob b"></div>
+          <div class="d2-eyebrow">StudioFlow</div>
+          <div class="d2-h1">Agenda cheia, <span class="grad">sem mensagem.</span></div>
+          <div class="d2-sub">Cliente agenda sozinho pelo link. Você recebe o aviso.</div>
+          <div class="d2-cta">Criar conta grátis</div>
+          <div class="d2-mockwrap">
+            <div class="d2-mock">
+              <h4>Agenda de hoje <span>seg, 16</span></h4>
+              <div class="d2-row"><span class="t">09:00</span><span class="who">Mariana S.</span><span class="d2-badge">OK</span></div>
+              <div class="d2-row"><span class="t">14:00</span><span class="who">Pelo link</span><span class="d2-badge warn">Novo</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="pc">
+    <div class="col pro"><h4>Prós</h4><ul>
+      <li>Mais "cara de SaaS moderno" — escuro destaca o mockup do app como joia</li>
+      <li>Gradiente animado no título e pulso no botão chamam atenção sem peso real</li>
+      <li>Ainda sem WebGL — performance segura na maior parte dos celulares</li>
+    </ul></div>
+    <div class="col con"><h4>Contras</h4><ul>
+      <li>Combina menos com o briefing da marca (que pedia base clara, elegante, tipo Aesop)</li>
+      <li>Escuro derruba contraste de print/anúncio e é mais arriscado pra público leigo</li>
+      <li>Mais elementos animados = mais chance de travar em celular antigo que a Direção 1</li>
+    </ul></div>
+  </div>
+
+  <!-- ============ DIREÇÃO 3 ============ -->
+  <div class="opt-title"><span class="letter">3</span> Imersivo Motion — partículas + app que se monta no scroll</div>
+  <p class="lead">A versão "comercial": fundo com <b>partículas subindo</b>, e o mockup do app <b>se monta pedaço a pedaço</b> (header, cliente 1, cliente 2, aviso) conforme a pessoa rola a página. Aqui a simulação toca automaticamente pra você ver o ritmo. O real seria atrelado ao scroll (Framer Motion).</p>
+
+  <div class="frames">
+    <div>
+      <div class="frame-label">Desktop — Direção 3 (o mockup se monta sozinho)</div>
+      <div class="desktop"><div class="screen">
+        <div class="d3-stage">
+          <div class="d3-canvas">
+            <i style="left:8%;  width:10px; height:10px; animation-duration:11s; animation-delay:0s"></i>
+            <i style="left:20%; width:7px;  height:7px;  animation-duration:14s; animation-delay:2s"></i>
+            <i style="left:35%; width:12px; height:12px; animation-duration:10s; animation-delay:4s"></i>
+            <i style="left:52%; width:8px;  height:8px;  animation-duration:13s; animation-delay:1s"></i>
+            <i style="left:66%; width:10px; height:10px; animation-duration:12s; animation-delay:3s"></i>
+            <i style="left:80%; width:6px;  height:6px;  animation-duration:15s; animation-delay:5s"></i>
+            <i style="left:92%; width:9px;  height:9px;  animation-duration:9s;  animation-delay:2.5s"></i>
+          </div>
+          <div class="d3-inner">
+            <div class="d3-eyebrow">StudioFlow</div>
+            <div class="d3-h1">Enquanto você atende,<br /><em>sua agenda trabalha.</em></div>
+            <div class="d3-sub">O cliente escolhe o horário pelo link. Você só recebe o aviso e confere o dia.</div>
+            <div class="d3-cta">Criar conta grátis</div>
+            <div class="d3-mock">
+              <h4 class="d3-piece">Agenda de hoje</h4>
+              <div class="d3-row d3-piece"><span class="t">09:00</span><span class="who">Mariana S. <span class="svc">· Escova</span></span><span class="d3-badge">Confirmado</span></div>
+              <div class="d3-row d3-piece"><span class="t">10:30</span><span class="who">Paula R. <span class="svc">· Coloração</span></span><span class="d3-badge">Confirmado</span></div>
+              <div class="d3-row d3-piece"><span class="t">14:00</span><span class="who">Novo pelo link <span class="svc">· Corte</span></span><span class="d3-badge">🔔 Agora</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+    <div>
+      <div class="frame-label">Mobile — 390px</div>
+      <div class="phone"><div class="screen">
+        <div class="d3-stage">
+          <div class="d3-canvas">
+            <i style="left:15%; width:8px; height:8px; animation-duration:12s;"></i>
+            <i style="left:55%; width:6px; height:6px; animation-duration:14s; animation-delay:3s;"></i>
+            <i style="left:85%; width:9px; height:9px; animation-duration:10s; animation-delay:1.5s;"></i>
+          </div>
+          <div class="d3-inner">
+            <div class="d3-eyebrow">StudioFlow</div>
+            <div class="d3-h1">Enquanto você atende, <em>sua agenda trabalha.</em></div>
+            <div class="d3-sub">Cliente agenda pelo link. Você só recebe o aviso.</div>
+            <div class="d3-cta">Criar conta grátis</div>
+            <div class="d3-mock">
+              <h4 class="d3-piece">Agenda de hoje</h4>
+              <div class="d3-row d3-piece"><span class="t">09:00</span><span class="who">Mariana S.</span><span class="d3-badge">OK</span></div>
+              <div class="d3-row d3-piece"><span class="t">14:00</span><span class="who">Pelo link</span><span class="d3-badge">Novo</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="pc">
+    <div class="col pro"><h4>Prós</h4><ul>
+      <li>Efeito "uau" — a agenda se montando conta a história do produto sozinha</li>
+      <li>Ideal pra vídeo/anúncio e pra primeira dobra de campanha</li>
+      <li>O scroll-reveal pode ser usado só nas seções-chave (barato) ou em toda a página</li>
+    </ul></div>
+    <div class="col con"><h4>Contras</h4><ul>
+      <li>Mais pesado: partículas + reveal em toda a página arriscam travar celular de entrada</li>
+      <li>Exige lib de animação (Framer Motion) e mais código pra manter</li>
+      <li>Sombrio e agitado — pode competir com o conteúdo em vez de servir a ele</li>
+    </ul></div>
+  </div>
+
+  <!-- ============ TABELA DE VIABILIDADE ============ -->
+  <h2 class="part"><span class="num">✓</span> Viabilidade técnica — o que cada efeito custa</h2>
+  <table class="viab">
+    <thead>
+      <tr><th>Efeito</th><th>Como é feito</th><th>Custo de impl.</th><th>Risco em celular fraco</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Perspectiva 3D do app (D1, D2)</td><td>CSS <code>transform: rotateX/rotateY</code> + sombras</td><td class="cost low">Baixo</td><td class="cost low">Nenhum — é só CSS</td></tr>
+      <tr><td>Flutuação / pulso de luz (D1, D2)</td><td>CSS keyframes</td><td class="cost low">Baixo</td><td class="cost low">Nenhum</td></tr>
+      <tr><td>Gradiente animado no título (D2)</td><td>CSS background-clip</td><td class="cost low">Baixo</td><td class="cost low">Nenhum</td></tr>
+      <tr><td>Manchas de cor ao fundo (D2)</td><td>CSS radial-gradient + blur animado</td><td class="cost low">Baixo</td><td class="cost mid">Baixo–médio (blur animado pesa em GPU fraca)</td></tr>
+      <tr><td>App que se monta no scroll (D3)</td><td>Framer Motion / IntersectionObserver</td><td class="cost mid">Médio</td><td class="cost low">Baixo (se limitado às dobras principais)</td></tr>
+      <tr><td>Partículas subindo (D3)</td><td>CSS animado (leve) ou canvas (pesado)</td><td class="cost mid">Médio</td><td class="cost high">Médio–alto em celular de entrada</td></tr>
+      <tr><td>3D real WebGL / Three.js</td><td>Renderização 3D no navegador</td><td class="cost high">Alto</td><td class="cost high">Alto — trava e drena bateria</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box reco">
+    <b>Recomendação: Direção 1 como base, com 2 elementos da 2 e 1 da 3.</b>
+    Fundo claro e editorial (D1: tipografia serifada, espaço, mockup 3D flutuando com hover que endireita),
+    mais o <b>gradiente de brilho no título e o pulso suave no botão da D2</b> (chamam atenção sem peso),
+    e o <b>reveal no scroll só nas seções-chave da D3</b> (hero → funcionalidades → CTA), sem partículas.
+    Ou seja: movimento onde converte, silêncio onde o cliente lê. Nada de WebGL.
+    <br /><br />
+    <b>Assumindo que:</b> você prefere elegância premium a impacto de comercial (combinando com o briefing de marca),
+    e que performance em celular simples vale mais que efeito espetacular. Se quiser, a D2 inteira (escura) é a
+    alternativa — basta dizer "quero a 2".
+    <br /><br />
+    <b>Próximo passo:</b> você escolhe a direção visual (1, 2 ou 3 — ou "1 com toques da 2 e 3" que é a recomendada)
+    <b>+</b> a opção de estrutura da proposta anterior (A, B ou C). Com as duas decisões, eu codifico em branch local
+    pra você homologar no <code>localhost:3000</code> antes de qualquer subida.
+  </div>
+
+</div>
+</body>
+</html>

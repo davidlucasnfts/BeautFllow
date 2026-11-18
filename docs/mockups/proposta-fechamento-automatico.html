@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Proposta — Fechamento Automático de Atendimentos</title>
+<style>
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 24px; line-height: 1.6; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  .sub { color: #64748b; margin-bottom: 24px; }
+  h2 { font-size: 1.15rem; margin-top: 32px; border-left: 4px solid #8b5cf6; padding-left: 10px; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin: 12px 0; }
+  .tag-gap { display: inline-block; background: #fee2e2; color: #b91c1c; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-right: 6px; }
+  .tag-melhoria { display: inline-block; background: #fef3c7; color: #b45309; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-right: 6px; }
+  .tag-recomendado { display: inline-block; background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .antes { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 0.9rem; }
+  .depois { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 0.9rem; }
+  .como-funciona { background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 12px; padding: 16px 20px; margin: 16px 0; }
+  .como-funciona li { margin-bottom: 6px; }
+  .esforco { color: #64748b; font-size: 0.85rem; margin-top: 6px; }
+  .decisao { background: #f5f3ff; border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px 20px; margin-top: 32px; }
+  code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+  .opcoes { display: grid; gap: 8px; margin: 8px 0; }
+  .opcao { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 0.9rem; background: #fff; }
+  .opcao.recomendada { border-color: #15803d; background: #f0fdf4; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 12px 0; }
+  th, td { border: 1px solid #e2e8f0; padding: 8px 10px; text-align: left; }
+  th { background: #f1f5f9; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Proposta — Fechamento Automático de Atendimentos</h1>
+  <p class="sub">Gerado em 13/11/2026 · <strong style="color:#15803d">✅ IMPLEMENTADA em 13/11/2026</strong> (opção C aprovada pelo David: 1 toque + ajuste opcional, automático ligado por padrão, pagamento padrão Pix — conforme as 3 decisões desta proposta)</p>
+
+  <div class="como-funciona">
+    <strong>Como o fechamento funciona hoje (análise do código real):</strong>
+    <ul>
+      <li>O dono clica em <strong>Concluir</strong> no atendimento (status "Em andamento")</li>
+      <li>Abre o <strong>checkout</strong>: valor pré-preenchido (serviço + extras), forma de pagamento (padrão Pix), checkbox "gerar lançamento no financeiro"</li>
+      <li>Confirma → cria o lançamento financeiro → marca o atendimento como completo</li>
+      <li>São <strong>4–5 interações por atendimento</strong>, mesmo quando nada muda (o valor já está certo, o pagamento é sempre o mesmo)</li>
+    </ul>
+  </div>
+
+  <h2>1. Problema — comissão do profissional fica ZERADA no fechamento</h2>
+  <div class="card">
+    <span class="tag-gap">GAP</span><span class="tag-recomendado">Recomendado corrigir junto</span>
+    <div class="antes"><strong>Hoje:</strong> o checkout chama <code>financial.create</code> <strong>sem</strong> <code>commissionAmount</code> — a comissão grava "0,00" no lançamento. A tela de Comissões e o desempenho do profissional ficam errados (ou dependem de edição manual de cada lançamento depois)</div>
+    <div class="depois"><strong>Proposta:</strong> no fechamento, calcular a comissão automaticamente a partir do <code>commissionRate</code> do profissional (% sobre o valor do atendimento). Zero trabalho manual e as telas de comissão passam a refletir a realidade</div>
+    <p class="esforco">Esforço: pequeno — o % do profissional já existe no cadastro</p>
+  </div>
+
+  <h2>2. O fechamento em si — 4 caminhos possíveis</h2>
+  <div class="card">
+    <div class="opcoes">
+      <div class="opcao">
+        <strong>A) Conclusão 1-toque</strong> — clicar em Concluir fecha na hora (valor da tabela + pagamento padrão + comissão calculada), sem abrir nada.<br>
+        ✅ Quem cobra valor de tabela (a maioria) ganha muito tempo · ❌ Desconto só dá pra fazer editando o lançamento depois
+      </div>
+      <div class="opcao">
+        <strong>B) Fechamento em lote (fim do dia)</strong> — tela "Fechamento do dia" lista os atendimentos abertos e confirma tudo junto.<br>
+        ✅ Quem atende corrido fecha o caixa uma vez ao final · ❌ Financeiro fica desatualizado durante o dia
+      </div>
+      <div class="opcao recomendada">
+        <strong>C) HÍBRIDO — 1 toque padrão + ajuste opcional</strong> ⭐ RECOMENDADO<br>
+        <strong>Concluir</strong> fecha direto com os padrões (1 toque). Um botão secundário <strong>"Concluir com ajustes"</strong> abre o checkout atual pra desconto, serviço extra criado na hora ou outro pagamento.<br>
+        ✅ Fluxo comum vira 1 toque · ✅ Caso excepcional continua existindo · ✅ Comissão calculada nos dois caminhos · ✅ Lançamento continua editável depois no Financeiro (edição já existe)
+      </div>
+      <div class="opcao">
+        <strong>D) Regras por serviço</strong> — serviços de valor fixo fecham automático; variáveis (pacotes, combos) abrem checkout.<br>
+        ✅ Preciso · ❌ Mais configuração pro dono entender e manter
+      </div>
+    </div>
+    <p class="esforco">Minha recomendação: <strong>opção C</strong> — o caso comum fica instantâneo sem tirar a flexibilidade de quem precisa ajustar</p>
+  </div>
+
+  <h2>3. Como funcionaria depois (opção C)</h2>
+  <div class="card">
+    <div class="depois">
+      <strong>Fluxo principal (90% dos atendimentos):</strong><br>
+      1. Atendimento termina → dono toca em <strong>Concluir</strong><br>
+      2. Pronto. Lançamento criado com: valor do serviço + extras registrados, pagamento padrão do salão, comissão do profissional calculada, atendimento completo<br>
+      3. Toast confirma: "Concluído — R$ 80,00 no financeiro"
+    </div>
+    <div class="depois">
+      <strong>Fluxo com ajuste (10%):</strong><br>
+      1. Toque na seta ao lado de Concluir → <strong>"Concluir com ajustes"</strong><br>
+      2. Abre o checkout de hoje (valor editável, extras, pagamento, comissão visível)<br>
+      3. Confirma normal
+    </div>
+    <div class="depois">
+      <strong>Correção posterior (sempre possível):</strong><br>
+      O lançamento gerado aparece no Financeiro e pode ser editado (valor, pagamento, comissão) — edição já existe hoje
+    </div>
+  </div>
+
+  <h2>4. Configuração necessária</h2>
+  <div class="card">
+    <p>Nova seção em <strong>Configurações → Financeiro</strong>:</p>
+    <table>
+      <tr><th>Configuração</th><th>O que faz</th><th>Padrão</th></tr>
+      <tr><td>Fechamento automático</td><td>Concluir fecha em 1 toque, sem abrir checkout</td><td>Ligado</td></tr>
+      <tr><td>Forma de pagamento padrão</td><td>Usada no fechamento automático</td><td>Pix</td></tr>
+    </table>
+    <p class="esforco">Quem preferir o comportamento de hoje, desliga o toggle e o Concluir volta a abrir o checkout sempre</p>
+  </div>
+
+  <h2>5. O que muda tecnicamente</h2>
+  <div class="card">
+    <ul>
+      <li><strong>Novo endpoint</strong> <code>appointment.conclude</code>: cria lançamento + conclui atendimento em uma operação só (com audit log)</li>
+      <li><strong>Cálculo de comissão</strong> no backend: <code>valor × commissionRate do profissional</code></li>
+      <li><strong>Config salva</strong> em <code>salons.settings</code> (mesmo padrão do horário/tema — sem migration nova)</li>
+      <li><strong>UI</strong>: botão Concluir vira principal + "Concluir com ajustes" secundário (apenas no modo automático); toast de confirmação com o valor</li>
+      <li><strong>Checkout atual</strong> não é removido — vira o caminho "com ajustes"</li>
+    </ul>
+    <p class="esforco">Esforço total: <strong>médio</strong> (~1 sessão). Sem migration de banco. Nada quebrado — o fluxo antigo continua disponível no toggle</p>
+  </div>
+
+  <h2>6. Impacto nas telas existentes</h2>
+  <div class="card">
+    <ul>
+      <li><strong>Financeiro:</strong> sem mudança visual — passa a receber lançamentos com comissão preenchida</li>
+      <li><strong>Comissões:</strong> passa a mostrar valores reais sem edição manual</li>
+      <li><strong>Agenda (dia/semana/mobile):</strong> botão Concluir ganha a opção "com ajustes" (dropdown ou botão secundário, seguindo o padrão de botões visíveis do design system — sem esconder ação em menu de 3 pontos)</li>
+      <li><strong>Desempenho do profissional:</strong> comissões refletem a realidade</li>
+    </ul>
+  </div>
+
+  <div class="decisao">
+    <strong>DECISÃO NECESSÁRIA — David</strong>
+    <ol>
+      <li><strong>Aprova a opção C</strong> (híbrido: 1 toque + ajuste opcional)? Ou prefere outra (A pura, B lote, D por serviço)?</li>
+      <li><strong>Fechamento automático vem ligado por padrão</strong> para salões novos? (recomendo sim — quem preferir o manual desliga no toggle)</li>
+      <li><strong>Forma de pagamento padrão:</strong> Pix (recomendo) ou deixar o dono escolher na config?</li>
+    </ol>
+    <p style="margin-bottom:0">Ao aprovar, a implementação segue na próxima sessão de código, com validação completa (check + testes + build) antes do push.</p>
+  </div>
+</div>
+</body>
+</html>

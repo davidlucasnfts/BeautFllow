@@ -7,10 +7,12 @@ import {
   isSameDay,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarDays, CheckCheck, Pencil, Play, XCircle } from "lucide-react";
+import { CalendarDays, CheckCheck, Pencil, Play, SlidersHorizontal, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
+import { useSalon } from "@/providers/useSalon";
+import { useConcludeQuick } from "@/hooks/useConcludeQuick";
 import {
   STATUS_COLORS,
   STATUS_LABELS,
@@ -50,6 +52,9 @@ export default function FilaDoDia({
   onCancel,
   onEdit,
 }: FilaDoDiaProps) {
+  const { salon } = useSalon();
+  const { concludeQuick, isPending: concludePending } = useConcludeQuick();
+  const auto = salon?.autoCheckout.enabled === true;
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const selectedDayRef = useRef<HTMLButtonElement>(null);
   const itemRefs = useRef<Record<number, HTMLDivElement | null>>({});
@@ -250,7 +255,38 @@ export default function FilaDoDia({
                           Editar
                         </Button>
                       )}
-                    {appt.status === "in_progress" && (
+                    {appt.status === "in_progress" && auto && salon && (
+                      <>
+                        <Button
+                          type="button"
+                          size="sm"
+                          disabled={concludePending}
+                          onClick={e => {
+                            e.stopPropagation();
+                            concludeQuick(appt, salon.id);
+                          }}
+                          className="h-8 gap-1.5 bg-green-600 px-3 text-xs font-semibold text-white hover:bg-green-700"
+                        >
+                          <CheckCheck className="h-3.5 w-3.5" />
+                          {concludePending ? "Concluindo..." : "Concluir"}
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          title="Concluir com ajustes (desconto, extras, forma de pagamento)"
+                          onClick={e => {
+                            e.stopPropagation();
+                            onConclude(appt);
+                          }}
+                          className="h-8 gap-1.5 border-green-600 px-3 text-xs font-semibold text-green-700 hover:bg-green-50"
+                        >
+                          <SlidersHorizontal className="h-3.5 w-3.5" />
+                          Ajustes
+                        </Button>
+                      </>
+                    )}
+                    {appt.status === "in_progress" && !auto && (
                       <Button
                         type="button"
                         size="sm"

@@ -4,8 +4,10 @@ import type { SalonSegment } from "@contracts/segment-labels";
 import {
   type ScheduleSettings,
   type ClientStatusSettings,
+  type AutoCheckoutSettings,
   defaultScheduleSettings,
   defaultClientStatusSettings,
+  defaultAutoCheckoutSettings,
 } from "@contracts/constants";
 
 export type SalonRole = "owner" | "admin" | "professional" | "receptionist";
@@ -21,6 +23,7 @@ export type SalonContextType = {
   theme?: string | null;
   clientStatus: ClientStatusSettings;
   showOnboarding: boolean;
+  autoCheckout: AutoCheckoutSettings;
   phone?: string | null;
   email?: string | null;
   address?: string | null;
@@ -50,6 +53,10 @@ export function SalonProvider({ children }: { children: ReactNode }) {
             ...(parsed.clientStatus ?? {}),
           },
           showOnboarding: parsed.showOnboarding !== false,
+          autoCheckout: {
+            ...defaultAutoCheckoutSettings,
+            ...(parsed.autoCheckout ?? {}),
+          },
         };
       }
     } catch {

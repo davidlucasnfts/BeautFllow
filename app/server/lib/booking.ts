@@ -92,6 +92,11 @@ export function findFreeProfessional(
   );
 }
 
+/** Comissão do profissional sobre o valor do atendimento (arredondada em centavos) */
+export function calcCommission(amount: number, commissionRate: number): number {
+  return Number(((amount * commissionRate) / 100).toFixed(2));
+}
+
 /** Slots livres para "sem preferência": ALGUM profissional livre no intervalo */
 export function freeSlotsForAnyone(
   professionals: { id: number }[],

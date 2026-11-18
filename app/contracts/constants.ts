@@ -74,6 +74,56 @@ export const defaultClientStatusSettings: ClientStatusSettings = {
   inactiveDays: 90,
 };
 
+// Configuração do fechamento automático de atendimentos (salva em salons.settings como JSON)
+export type AutoCheckoutPaymentMethod =
+  | "pix"
+  | "cash"
+  | "credit_card"
+  | "debit_card";
+
+export interface AutoCheckoutSettings {
+  /** true = Concluir fecha em 1 toque, sem abrir o checkout */
+  enabled: boolean;
+  /** Forma de pagamento usada no fechamento automático */
+  defaultPaymentMethod: AutoCheckoutPaymentMethod;
+}
+
+export const defaultAutoCheckoutSettings: AutoCheckoutSettings = {
+  enabled: true,
+  defaultPaymentMethod: "pix",
+};
+
+const PAYMENT_METHODS: AutoCheckoutPaymentMethod[] = [
+  "pix",
+  "cash",
+  "credit_card",
+  "debit_card",
+];
+
+/** Lê o JSON de settings e devolve a config de fechamento automático (ou o padrão) */
+export function parseAutoCheckoutSettings(
+  raw: string | null | undefined
+): AutoCheckoutSettings {
+  const d = defaultAutoCheckoutSettings;
+  try {
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (!parsed || typeof parsed !== "object") return d;
+    const a = (parsed as { autoCheckout?: Partial<AutoCheckoutSettings> })
+      .autoCheckout;
+    if (!a || typeof a !== "object") return d;
+    return {
+      enabled: a.enabled !== false,
+      defaultPaymentMethod: PAYMENT_METHODS.includes(
+        a.defaultPaymentMethod as AutoCheckoutPaymentMethod
+      )
+        ? (a.defaultPaymentMethod as AutoCheckoutPaymentMethod)
+        : d.defaultPaymentMethod,
+    };
+  } catch {
+    return d;
+  }
+}
+
 const POSITIVE_INT = /^\d+$/;
 /** Lê o JSON salvo no banco e devolve a configuração de status válida (ou o padrão) */
 export function parseClientStatusSettings(

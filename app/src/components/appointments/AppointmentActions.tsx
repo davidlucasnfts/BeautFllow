@@ -1,7 +1,9 @@
 import type { MouseEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCheck, Pencil, Play, XCircle } from "lucide-react";
+import { CheckCheck, Pencil, Play, SlidersHorizontal, XCircle } from "lucide-react";
 import type { CalendarAppointment } from "@/components/calendar/types";
+import { useSalon } from "@/providers/useSalon";
+import { useConcludeQuick } from "@/hooks/useConcludeQuick";
 
 const START_STATUSES = ["scheduled", "confirmed", "checked_in"];
 const EDIT_STATUSES = ["scheduled", "confirmed", "checked_in", "in_progress"];
@@ -10,6 +12,7 @@ const CANCEL_STATUSES = ["scheduled", "confirmed", "checked_in", "in_progress"];
 interface AppointmentActionsProps {
   appt: CalendarAppointment;
   onStart: (id: number) => void;
+  /** Abre o checkout completo (Concluir com ajustes / modo manual) */
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
   onEdit?: (appt: CalendarAppointment) => void;
@@ -24,8 +27,12 @@ interface AppointmentActionsProps {
  * - in_progress: Editar, Concluir, Cancelar
  * - completed/cancelled/no_show: nenhuma
  *
+ * Fechamento automático (config do salão): "Concluir" fecha em 1 toque
+ * (lançamento + comissão calculadas) e "Ajustes" abre o checkout completo.
+ * Modo manual: "Concluir" abre o checkout, como antes.
+ *
  * Peso visual: Iniciar = tema (sólido), Editar = azul sólido,
- * Concluir = verde sólido, Cancelar = outline (destrutivo discreto).
+ * Concluir = verde sólido, Ajustes/Cancelar = outline.
  */
 export default function AppointmentActions({
   appt,
@@ -35,6 +42,10 @@ export default function AppointmentActions({
   onEdit,
   className = "",
 }: AppointmentActionsProps) {
+  const { salon } = useSalon();
+  const { concludeQuick, isPending } = useConcludeQuick();
+  const auto = salon?.autoCheckout.enabled === true;
+
   const stop = (handler: () => void) => (e: MouseEvent) => {
     e.stopPropagation();
     handler();
@@ -71,7 +82,32 @@ export default function AppointmentActions({
           Editar
         </Button>
       )}
-      {canConclude && (
+      {canConclude && auto && salon && (
+        <Button
+          type="button"
+          size="sm"
+          disabled={isPending}
+          onClick={stop(() => concludeQuick(appt, salon.id))}
+          className={`${btnClass} bg-green-600 text-white hover:bg-green-700`}
+        >
+          <CheckCheck className="h-3 w-3" />
+          {isPending ? "Concluindo..." : "Concluir"}
+        </Button>
+      )}
+      {canConclude && auto && (
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          title="Concluir com ajustes (desconto, extras, forma de pagamento)"
+          onClick={stop(() => onConclude(appt))}
+          className={`${btnClass} border-green-600 text-green-700 hover:bg-green-50`}
+        >
+          <SlidersHorizontal className="h-3 w-3" />
+          Ajustes
+        </Button>
+      )}
+      {canConclude && !auto && (
         <Button
           type="button"
           size="sm"

@@ -308,6 +308,7 @@ function AuthLayoutContent({
       theme: target.theme,
       clientStatus: target.clientStatus,
       showOnboarding: target.showOnboarding,
+      autoCheckout: target.autoCheckout,
       phone: target.phone,
       email: target.email,
       address: target.address,

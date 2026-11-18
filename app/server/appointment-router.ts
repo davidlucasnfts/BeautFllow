@@ -8,8 +8,14 @@ import {
   getAppointmentById,
   getClientHistory,
   getServicesBySalon,
+  getSalonById,
+  getServiceById,
+  getProfessionalById,
+  createFinancialRecord,
   updateAppointment,
 } from "./queries/salon";
+import { parseAutoCheckoutSettings } from "@contracts/constants";
+import { calcCommission } from "./lib/booking";
 import { auditAction } from "./lib/audit";
 import { assertSalonMember } from "./lib/tenant";
 import {
@@ -224,5 +230,116 @@ export const appointmentRouter = createRouter({
         data
       );
       return result;
+    }),
+
+  // Fechamento automático (1 toque): cria o lançamento financeiro com a
+  // comissão calculada e conclui o atendimento numa operação só. Usa os
+  // padrões do salão (forma de pagamento) salvos em salons.settings.
+  conclude: authedQuery
+    .input(z.object({ id: z.number(), salonId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      await assertSalonMember(ctx.user.id, input.salonId);
+      const { id, salonId } = input;
+
+      const appt = await getAppointmentById(id, salonId);
+      if (!appt) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Agendamento não encontrado.",
+        });
+      }
+      if (appt.status !== "in_progress") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Só é possível concluir um atendimento em andamento.",
+        });
+      }
+
+      const [salon, service, professional] = await Promise.all([
+        getSalonById(salonId),
+        getServiceById(appt.serviceId, salonId),
+        appt.professionalId
+          ? getProfessionalById(appt.professionalId, salonId)
+          : Promise.resolve(null),
+      ]);
+
+      // Valor = preço do serviço (tabela) + extras registrados no agendamento
+      // (mesmo cálculo do checkout manual)
+      const extras = appt.extraServices ?? [];
+      const extrasTotal = extras.reduce(
+        (acc, e) => acc + Number(e.price),
+        0
+      );
+      const amount = Number(
+        (Number(service?.price ?? 0) + extrasTotal).toFixed(2)
+      );
+      if (amount <= 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "Este atendimento não tem valor. Use 'Concluir com ajustes' para informar o valor.",
+        });
+      }
+
+      // Comissão = % do profissional sobre o valor (antes sempre zerada)
+      const rate = Number(professional?.commissionRate ?? 0);
+      const commissionAmount = calcCommission(amount, rate);
+
+      const { defaultPaymentMethod } = parseAutoCheckoutSettings(
+        salon?.settings
+      );
+
+      const description = [service?.name, ...extras.map(e => e.name)]
+        .filter(Boolean)
+        .join(" + ");
+
+      const record = await createFinancialRecord({
+        salonId,
+        appointmentId: appt.id,
+        clientId: appt.clientId,
+        professionalId: appt.professionalId,
+        type: "service",
+        description,
+        amount: amount.toFixed(2),
+        commissionAmount: commissionAmount.toFixed(2),
+        paymentMethod: defaultPaymentMethod,
+        recordDate: appt.appointmentDate,
+      });
+      await auditAction(
+        "create",
+        "financial",
+        salonId,
+        ctx.user?.id,
+        record?.id ?? undefined,
+        appt.clientId,
+        { source: "auto-checkout", appointmentId: appt.id }
+      );
+
+      const result = await updateAppointment(id, salonId, {
+        status: "completed",
+        completedAt: new Date(),
+      });
+      // Retornos pós-atendimento (mesma regra do update manual) — falha
+      // aqui não pode impedir a conclusão
+      try {
+        await createFollowUpsFromAppointment(id, salonId);
+      } catch (e) {
+        console.error("Falha ao criar retornos pós-atendimento:", e);
+      }
+      await auditAction(
+        "update",
+        "appointment",
+        salonId,
+        ctx.user?.id,
+        id,
+        undefined,
+        { status: "completed", autoCheckout: true }
+      );
+
+      return {
+        appointment: result,
+        amount: amount.toFixed(2),
+        commissionAmount: commissionAmount.toFixed(2),
+      };
     }),
 });

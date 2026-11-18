@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StudioFlow — Protótipo navegável do novo site</title>
+<style>
+  :root {
+    --ink: #0f172a;
+    --muted: #57534e;
+    --line: #e7e5e4;
+    --bg: #ffffff;
+    --card: #ffffff;
+    --acc: #9d4e6b;        /* acento do segmento (muda por página) */
+    --acc-soft: #e8a0bf;
+    --acc-bg: #fdf2f7;
+    --acc-line: #f5c8da;
+    --green: #16a34a;
+    --amber: #b45309;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.55;
+  }
+  a { color: inherit; text-decoration: none; cursor: pointer; }
+  button { font-family: inherit; cursor: pointer; }
+
+  /* ===== barra do protótipo (não entra no site real) ===== */
+  .proto-bar {
+    position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 10px;
+    background: var(--ink); color: #fff; padding: 8px 16px; font-size: 12.5px; flex-wrap: wrap;
+  }
+  .proto-bar b { letter-spacing: .02em; }
+  .proto-bar .hint { color: #94a3b8; }
+  .theme-switch { display: flex; gap: 6px; margin-left: auto; }
+  .theme-switch button {
+    background: transparent; color: #cbd5e1; border: 1px solid #334155; border-radius: 999px;
+    padding: 5px 12px; font-size: 11.5px; font-weight: 600;
+  }
+  .theme-switch button.on { background: #e8a0bf; color: #1c1917; border-color: #e8a0bf; }
+
+  /* ===== nav do site ===== */
+  .snav {
+    position: sticky; top: 40px; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 28px; border-bottom: 1px solid var(--line); background: var(--bg);
+  }
+  .snav .brand { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 16px; letter-spacing: -0.01em; }
+  .snav .brand img { height: 26px; width: auto; }
+  .snav .links { display: flex; gap: 20px; font-size: 13.5px; align-items: center; }
+  .snav .links a { color: var(--muted); transition: color .2s; }
+  .snav .links a:hover { color: var(--ink); }
+  .snav .links a.on { color: var(--acc); font-weight: 700; }
+  .sbtn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    border-radius: 999px; font-weight: 600; font-size: 13.5px; padding: 10px 18px;
+    border: 1px solid transparent; transition: transform .25s, box-shadow .25s, background .25s;
+  }
+  .sbtn.primary { background: var(--ink); color: #fff; }
+  .sbtn.primary:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(15,23,42,.25); }
+  .sbtn.ghost { border-color: var(--line); color: var(--ink); background: var(--bg); }
+  .sbtn.acc { background: var(--acc); color: #fff; }
+  .sbtn.big { padding: 15px 30px; font-size: 15px; }
+
+  /* ===== hero ===== */
+  .hero { text-align: center; padding: 72px 24px 48px; position: relative; overflow: hidden; }
+  .kicker {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--acc); background: var(--acc-bg); border: 1px solid var(--acc-line);
+    padding: 6px 15px; border-radius: 999px; margin-bottom: 22px;
+  }
+  .rule { width: 56px; height: 2px; background: var(--acc); margin: 0 auto 22px; }
+  .hero h1 {
+    font-family: Georgia, 'Times New Roman', serif; font-size: 52px; line-height: 1.06;
+    letter-spacing: -0.025em; font-weight: 700; margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: italic; color: var(--acc); }
+  .hero .sub { font-size: 18px; color: var(--muted); max-width: 600px; margin: 0 auto 30px; }
+  .hero .ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .micro { font-size: 12.5px; color: var(--muted); margin-top: 16px; }
+
+  /* mockup do app em 3D */
+  .mockwrap { perspective: 1500px; margin: 52px auto 0; max-width: 680px; }
+  .mock {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    box-shadow: 0 40px 80px -20px rgba(15,23,42,.22), 0 8px 24px rgba(15,23,42,.07);
+    padding: 18px; text-align: left;
+    transform: rotateX(13deg) rotateY(-7deg);
+    animation: float 7s ease-in-out infinite;
+    transition: transform .8s cubic-bezier(.22,1,.36,1);
+  }
+  .mockwrap:hover .mock { transform: rotateX(3deg) rotateY(-1deg); }
+  @keyframes float { 0%,100% { translate: 0 0; } 50% { translate: 0 -12px; } }
+  .mock h4 { font-size: 12px; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; }
+  .mock h4 span { color: var(--muted); font-weight: 500; }
+  .mrow { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; font-size: 13px; }
+  .mrow .t { font-weight: 700; width: 46px; color: var(--acc); flex-shrink: 0; }
+  .mrow .who { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mrow .who .svc { color: var(--muted); }
+  .mbadge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #ecfdf5; color: var(--green); border: 1px solid #bbf7d0; white-space: nowrap; }
+  .mbadge.warn { background: #fffbeb; color: var(--amber); border-color: #fde68a; }
+
+  /* ===== seções ===== */
+  .section { padding: 72px 24px; max-width: 1080px; margin: 0 auto; }
+  .section h2 { font-family: Georgia, serif; font-size: 36px; letter-spacing: -0.015em; text-align: center; margin-bottom: 10px; }
+  .section .lead { text-align: center; color: var(--muted); max-width: 560px; margin: 0 auto 44px; font-size: 15.5px; }
+  .rv { opacity: 0; transform: translateY(28px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+  .rv.in { opacity: 1; transform: translateY(0); }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 22px 14px; text-align: center; }
+  .stat b { display: block; font-size: 26px; color: var(--acc); font-family: Georgia, serif; }
+  .stat span { font-size: 13px; color: var(--muted); }
+
+  .feats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .feat { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; transition: transform .3s, box-shadow .3s; }
+  .feat:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(15,23,42,.1); }
+  .feat .ic {
+    width: 42px; height: 42px; border-radius: 11px; background: var(--acc-bg); border: 1px solid var(--acc-line);
+    display: flex; align-items: center; justify-content: center; font-size: 19px; margin-bottom: 14px;
+  }
+  .feat h3 { font-size: 16px; margin-bottom: 6px; }
+  .feat p { font-size: 13.5px; color: var(--muted); }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .step { border: 1px solid var(--line); border-radius: 16px; padding: 26px 22px; background: var(--card); }
+  .step .n {
+    width: 32px; height: 32px; border-radius: 999px; background: var(--acc); color: #fff; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 14px; font-size: 14px;
+  }
+  .step h3 { font-size: 16px; margin-bottom: 6px; }
+  .step p { font-size: 13.5px; color: var(--muted); }
+
+  .segcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .segcard { border: 1px solid var(--line); border-radius: 18px; padding: 26px; background: var(--card); transition: transform .3s, box-shadow .3s, border-color .3s; }
+  .segcard:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(15,23,42,.12); border-color: var(--acc); }
+  .segcard .em { font-size: 26px; margin-bottom: 10px; }
+  .segcard h3 { font-size: 17px; margin-bottom: 6px; }
+  .segcard p { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  .segcard .go { font-size: 13px; font-weight: 700; color: var(--acc); }
+
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+  .plan { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 26px; display: flex; flex-direction: column; position: relative; }
+  .plan.hot { border: 2px solid var(--acc); }
+  .plan .tag { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--acc); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 999px; white-space: nowrap; }
+  .plan h3 { font-size: 14px; color: var(--muted); font-weight: 600; }
+  .plan .price { font-size: 34px; font-weight: 800; margin: 4px 0 4px; font-family: Georgia, serif; }
+  .plan .price small { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .plan .soon { font-size: 11.5px; color: var(--amber); background: #fffbeb; border: 1px solid #fde68a; padding: 3px 10px; border-radius: 999px; display: inline-block; margin-bottom: 14px; }
+  .plan ul { list-style: none; margin: 6px 0 20px; flex: 1; }
+  .plan li { font-size: 13.5px; color: var(--muted); padding: 5px 0 5px 18px; position: relative; }
+  .plan li::before { content: ""; position: absolute; left: 4px; top: 12px; width: 6px; height: 6px; border-radius: 999px; background: var(--acc-soft); }
+
+  .cta-final { text-align: center; padding: 80px 24px; background: linear-gradient(135deg, var(--acc) 0%, var(--ink) 130%); color: #fff; }
+  .cta-final h2 { font-family: Georgia, serif; font-size: 36px; margin-bottom: 12px; }
+  .cta-final p { color: rgba(255,255,255,.85); margin-bottom: 28px; }
+  .cta-final .sbtn.primary { background: #fff; color: var(--ink); }
+
+  .sfooter { padding: 30px 28px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--muted); background: var(--bg); }
+  .sfooter img { height: 22px; width: auto; }
+
+  /* ===== TEMA 2 — SHOWCASE 3D (escuro) ===== */
+  body.t2 { --bg: #0f172a; --card: #1e293b; --line: #334155; --ink: #f1f5f9; --muted: #94a3b8; }
+  body.t2 .hero { background: radial-gradient(900px 400px at 75% -10%, rgba(232,160,191,.25), transparent 60%); }
+  body.t2 .hero h1 .grad {
+    background: linear-gradient(90deg, #e8a0bf, #d4af37, #e8a0bf); background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shine 4s linear infinite; font-style: normal;
+  }
+  @keyframes shine { to { background-position: 200% center; } }
+  body.t2 .sbtn.primary { background: linear-gradient(90deg, #e8a0bf, #d4af37); color: #1c1917; animation: pulse 2.4s ease-out infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(232,160,191,.4); } 70% { box-shadow: 0 0 0 16px rgba(232,160,191,0); } 100% { box-shadow: 0 0 0 0 rgba(232,160,191,0); } }
+  body.t2 .mock { box-shadow: 0 50px 100px -20px rgba(0,0,0,.6); border-color: rgba(255,255,255,.14); }
+  body.t2 .mrow, body.t2 .feat, body.t2 .step, body.t2 .segcard, body.t2 .stat, body.t2 .plan { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12); }
+  body.t2 .cta-final { background: linear-gradient(135deg, #7d3e55, #0f172a); }
+  body.t2 .feat .ic { background: rgba(232,160,191,.12); border-color: rgba(232,160,191,.3); }
+  body.t2 .sfooter { background: #0f172a; }
+
+  /* ===== TEMA 3 — IMERSIVO (partículas) ===== */
+  body.t3 { --bg: #0b1020; --card: #131a30; --line: #263252; --ink: #f1f5f9; --muted: #94a3b8; }
+  body.t3 .hero { background: #0b1020; }
+  body.t3 #particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  body.t3 #particles i {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,160,191,.85), rgba(232,160,191,0) 70%);
+    animation: rise linear infinite;
+  }
+  @keyframes rise {
+    from { transform: translateY(105%) scale(.6); opacity: 0; }
+    12% { opacity: .8; } 88% { opacity: .8; }
+    to { transform: translateY(-12vh) scale(1.1); opacity: 0; }
+  }
+  body.t3 .sbtn.primary { background: #e8a0bf; color: #1c1917; }
+  body.t3 .rv { transition-duration: .9s; }
+  body.t3 .mock { box-shadow: 0 50px 100px -20px rgba(0,0,0,.65); }
+  body.t3 .mrow, body.t3 .feat, body.t3 .step, body.t3 .segcard, body.t3 .stat, body.t3 .plan { background: rgba(255,255,255,.045); border-color: rgba(255,255,255,.12); }
+  body.t3 .cta-final { background: linear-gradient(160deg, #131a30, #7d3e55 160%); }
+  body.t3 .feat .ic { background: rgba(232,160,191,.12); border-color: rgba(232,160,191,.3); }
+  body.t3 .sfooter { background: #0b1020; }
+  body.t3 .hero h1 em { color: #e8a0bf; }
+
+  /* ===== modal do protótipo ===== */
+  .modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #fff; color: var(--ink); border-radius: 18px; padding: 30px; max-width: 420px; width: 100%; text-align: center; }
+  .modal h3 { font-family: Georgia, serif; font-size: 22px; margin-bottom: 10px; }
+  .modal p { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+  .modal .sbtn { width: 100%; }
+
+  @media (max-width: 860px) {
+    .stats, .feats, .steps, .segcards, .plans { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 34px; }
+    .hero .sub { font-size: 15.5px; }
+    .snav { padding: 12px 16px; top: 74px; }
+    .snav .links a.navlink { display: none; }
+  }
+  @media (max-width: 560px) {
+    .stats, .feats, .steps, .segcards, .plans { grid-template-columns: 1fr; }
+    .mock { transform: none; animation: none; }
+    .mockwrap:hover .mock { transform: none; }
+    .mrow .who .svc { display: none; }
+    .hero .ctas .sbtn { width: 100%; }
+    .section h2 { font-size: 28px; }
+  }
+</style>
+</head>
+<body class="t1">
+
+  <div class="proto-bar">
+    <b>PROTÓTIPO</b>
+    <span class="hint">navegue pelo menu · o botão abaixo troca o design ao vivo (não entra no site real)</span>
+    <div class="theme-switch">
+      <button data-t="t1" class="on">Direção 1 · Editorial</button>
+      <button data-t="t2">Direção 2 · Showcase 3D</button>
+      <button data-t="t3">Direção 3 · Imersivo</button>
+    </div>
+  </div>
+
+  <nav class="snav">
+    <a class="brand" href="#/"><img src="../../app/public/brand/logo.png" alt="StudioFlow" /></a>
+    <div class="links">
+      <a href="#/salao-de-beleza" class="navlink" data-nav="salao-de-beleza">Salão</a>
+      <a href="#/barbearia" class="navlink" data-nav="barbearia">Barbearia</a>
+      <a href="#/estetica" class="navlink" data-nav="estetica">Estética</a>
+      <a href="#/precos" class="navlink" data-nav="precos">Preços</a>
+      <a href="#/" data-nav="">Início</a>
+      <button class="sbtn primary" onclick="openModal()">Criar conta grátis</button>
+    </div>
+  </nav>
+
+  <main id="app"></main>
+
+  <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <h3>Aqui abriria o cadastro real</h3>
+      <p>Este é o protótipo do novo site. No ar, este botão leva pra criar a conta grátis (nome, e-mail e senha — sem cartão).</p>
+      <button class="sbtn primary" onclick="closeModal()">Voltar ao protótipo</button>
+    </div>
+  </div>
+
+<script>
+/* ================= dados por segmento ================= */
+const SEGMENTS = {
+  "salao-de-beleza": {
+    nav: "Salão", em: "💇", name: "Salão de Beleza",
+    kicker: "Feito para salão de beleza",
+    h1a: "Pare de perder cliente", h1b: "entre uma mensagem e outra.",
+    sub: "Sua cliente agenda escova, coloração ou progressiva sozinha pelo seu link — escolhendo só horário livre. Você recebe o aviso no celular e a agenda enche sem você tirar o avental.",
+    svc1: "Mariana S.", svc1d: "Escova + Hidratação",
+    svc2: "Paula R.", svc2d: "Coloração",
+    svc3: "Agendou pelo link", svc3d: "Corte + Hidratação",
+    painTitle: "Sua agenda não pode depender de você olhar o WhatsApp",
+    painText: "Enquanto você faz uma progressiva, ninguém responde a cliente que quer marcar. Ela espera… e marca no salão do lado. O StudioFlow resolve com um link: ela escolhe o horário sozinha, em qualquer hora do dia — até às 23h, quando sua agenda já está fechada.",
+    segLine: "escova, coloração, progressiva, manicure e comissão por profissional"
+  },
+  "barbearia": {
+    nav: "Barbearia", em: "✂️", name: "Barbearia",
+    kicker: "Feito para barbearia",
+    h1a: "Quanto custa pra sua barbearia", h1b: "uma cadeira parada hoje?",
+    sub: "Enquanto você corta, ninguém atende o WhatsApp. Com o seu link de agendamento, o cliente escolhe corte, barba ou combo sozinho — e você ainda controla a comissão de cada barbeiro.",
+    svc1: "Rafael T.", svc1d: "Corte + Barba",
+    svc2: "Diego M.", svc2d: "Corte navalhado",
+    svc3: "Agendou pelo link", svc3d: "Combo",
+    painTitle: "Cliente esperando resposta é cliente procurando concorrente",
+    painText: "Na barbearia o ritmo é fila: quem demora a responder, perde o corte. O link do StudioFlow deixa o cliente marcar sozinho no horário livre do barbeiro favorito — e você vê a comissão de cada um sem planilha.",
+    segLine: "corte, barba, combo e comissão por barbeiro"
+  },
+  "estetica": {
+    nav: "Estética", em: "✨", name: "Clínica de Estética",
+    kicker: "Feito para clínica de estética",
+    h1a: "Procedimento marcado, termo assinado", h1b: "e retorno na hora certa.",
+    sub: "A cliente agenda limpeza de pele ou massagem pelo link, assina o termo de autorização no celular e o sistema ainda sugere o retorno depois do procedimento. Tudo registrado, tudo protegido.",
+    svc1: "Camila F.", svc1d: "Limpeza de pele",
+    svc2: "Beatriz L.", svc2d: "Massagem modeladora",
+    svc3: "Agendou pelo link", svc3d: "Drenagem",
+    painTitle: "Papel impresso e retorno no achismo não combinam com estética",
+    painText: "Termo de autorização amassado na gaveta e cliente que some depois do procedimento. O StudioFlow guarda a assinatura digital do termo, registra cada atendimento e avisa quando é a hora certa de chamar a cliente de volta.",
+    segLine: "procedimentos, retornos, termos assinados e comissões"
+  }
+};
+
+const FEATURES = [
+  { ic: "🔗", t: "Link de agendamento 24h", d: "Você manda seu link no WhatsApp, Instagram ou bio. O cliente escolhe o horário livre sozinho, sem instalar nada — e só vê horário disponível." },
+  { ic: "🔔", t: "Aviso no seu celular", d: "Quando entra agendamento pelo link, você recebe notificação com nome, serviço, dia e horário. A agenda enche enquanto você atende." },
+  { ic: "💰", t: "Financeiro de verdade", d: "Receitas, despesas e comissão de cada profissional. O ganho líquido real (receita − comissões − despesas) aparece pronto, sem planilha." },
+  { ic: "📦", t: "Estoque sob controle", d: "Cadastre produtos, dê entrada e saída e receba alerta quando algo estiver acabando. Nunca mais descobrir em cima da hora." },
+  { ic: "👥", t: "Sua equipe no sistema", d: "Convide funcionários por e-mail com permissão por papel (dono, gerente, recepcionista, profissional). Cada um vê o que precisa." },
+  { ic: "🖊️", t: "Termos assinados no celular", d: "Modelos prontos de autorização (LGPD, químicos, estética, imagem). A cliente assina na tela e fica tudo guardado e protegido." },
+  { ic: "❤️", t: "Cliente VIP, Sumindo ou Inativo", d: "O sistema classifica cada cliente por gasto e frequência. Você sabe exatamente em quem focar pra encher a semana." },
+  { ic: "🔁", t: "Retorno pós-procedimento", d: "Depois do atendimento, o sistema sugere o retorno certo. A cliente volta na hora certa e você não perde a receita." },
+  { ic: "🎨", t: "Com a cara do seu negócio", d: "9 temas visuais (3 por segmento) e o app fica nas suas cores. Instala no celular como aplicativo (PWA)." }
+];
+
+const STEPS = [
+  { n: "1", t: "Crie sua conta", d: "Nome, e-mail e senha. Em 5 minutos seu salão já está no sistema — sem cartão, sem instalação." },
+  { n: "2", t: "Mande seu link", d: "Você recebe um link público com seus serviços e horários. Compartilha no WhatsApp, Instagram, onde quiser." },
+  { n: "3", t: "Cliente agenda sozinho", d: "Ele escolhe o serviço, o profissional e o horário livre. Você só recebe o aviso e confere a agenda cheia." }
+];
+
+const PLANS = [
+  { name: "Grátis", price: "R$ 0", small: "/mês", tag: null, soon: null,
+    feats: ["1 usuário", "Agenda completa", "Link de agendamento online", "Cadastro de clientes", "Notificação de novos agendamentos"] },
+  { name: "Essencial", price: "—", small: "/mês", tag: "Mais popular", soon: "Valor a definir",
+    feats: ["Tudo do Grátis", "Até 3 usuários", "Financeiro completo (receitas, despesas, ganho líquido)", "Estoque com alertas", "Termos de autorização digitais"] },
+  { name: "Pro", price: "—", small: "/mês", tag: null, soon: "Valor a definir",
+    feats: ["Tudo do Essencial", "Até 8 usuários", "Reengajamento automático (em breve)", "Relatórios avançados (em breve)"] }
+];
+
+/* ================= templates ================= */
+function mockHTML(s) {
+  return `<div class="mockwrap rv"><div class="mock">
+    <h4>Agenda de hoje <span>segunda-feira, 16</span></h4>
+    <div class="mrow"><span class="t">09:00</span><span class="who">${s.svc1} <span class="svc">· ${s.svc1d}</span></span><span class="mbadge">Confirmado</span></div>
+    <div class="mrow"><span class="t">10:30</span><span class="who">${s.svc2} <span class="svc">· ${s.svc2d}</span></span><span class="mbadge">Confirmado</span></div>
+    <div class="mrow"><span class="t">14:00</span><span class="who">${s.svc3} <span class="svc">· ${s.svc3d}</span></span><span class="mbadge warn">🔔 Chegou agora</span></div>
+  </div></div>`;
+}
+
+function painSection(s) {
+  return `<section class="section"><div class="rv" style="max-width:680px;margin:0 auto;text-align:center">
+    <h2 style="margin-bottom:14px">${s.painTitle}</h2>
+    <p class="lead" style="margin-bottom:0">${s.painText}</p>
+  </div></section>`;
+}
+
+function featuresSection() {
+  return `<section class="section" id="features">
+    <h2 class="rv">Tudo que existe de verdade, num só lugar</h2>
+    <p class="lead rv">Nada de promessa em slide: cada item abaixo já funciona hoje no StudioFlow.</p>
+    <div class="feats">${FEATURES.map((f,i)=>`<div class="feat rv" style="transition-delay:${i*40}ms"><div class="ic">${f.ic}</div><h3>${f.t}</h3><p>${f.d}</p></div>`).join("")}</div>
+  </section>`;
+}
+
+function stepsSection() {
+  return `<section class="section">
+    <h2 class="rv">Começa a funcionar em 5 minutos</h2>
+    <p class="lead rv">Três passos e sua agenda já pode receber agendamento.</p>
+    <div class="steps">${STEPS.map((s,i)=>`<div class="step rv" style="transition-delay:${i*80}ms"><div class="n">${s.n}</div><h3>${s.t}</h3><p>${s.d}</p></div>`).join("")}</div>
+  </section>`;
+}
+
+function plansSection() {
+  return `<section class="section" id="precos">
+    <h2 class="rv">Comece grátis. Evolua quando quiser.</h2>
+    <p class="lead rv">Sem cartão pra começar, sem taxa de setup, sem surpresa. Os valores dos planos pagos serão definidos em breve.</p>
+    <div class="plans">${PLANS.map((p,i)=>`<div class="plan rv ${p.tag?"hot":""}" style="transition-delay:${i*80}ms">
+      ${p.tag?`<span class="tag">${p.tag}</span>`:""}
+      <h3>${p.name}</h3>
+      <div class="price">${p.price} <small>${p.small}</small></div>
+      ${p.soon?`<span class="soon">${p.soon}</span>`:""}
+      <ul>${p.feats.map(f=>`<li>${f}</li>`).join("")}</ul>
+      <button class="sbtn ${p.tag?"acc":"ghost"}" style="width:100%" onclick="openModal()">${p.name==="Grátis"?"Criar conta grátis":"Quero ser avisado"}</button>
+    </div>`).join("")}</div>
+  </section>`;
+}
+
+function ctaFinal(s) {
+  return `<section class="cta-final"><div class="rv">
+    <h2>${s ? `Seu ${s.name.toLowerCase()} com a agenda cheia` : "Sua agenda cheia, sem depender de mensagem"}</h2>
+    <p>Grátis pra começar · Pronto em 5 minutos · Funciona no celular</p>
+    <button class="sbtn primary big" onclick="openModal()">Criar conta grátis</button>
+  </div></section>`;
+}
+
+function footerHTML() {
+  return `<footer class="sfooter">
+    <img src="../../app/public/brand/logo.png" alt="StudioFlow" />
+    <span>© 2026 StudioFlow · protótipo navegável — não é o site em produção</span>
+    <span>Privacidade · Termos · Contato</span>
+  </footer>`;
+}
+
+/* ================= rotas ================= */
+function pageHome() {
+  const segCards = Object.entries(SEGMENTS).map(([slug,s],i)=>`
+    <a class="segcard rv" style="transition-delay:${i*70}ms" href="#/${slug}">
+      <div class="em">${s.em}</div><h3>${s.name}</h3>
+      <p>${s.segLine} — página feita pra você.</p>
+      <span class="go">Ver página de ${s.nav.toLowerCase()} →</span>
+    </a>`).join("");
+  return `
+  <section class="hero">
+    <div id="particles"></div>
+    <div class="rv"><div class="kicker">Para salão de beleza, barbearia e clínica de estética</div></div>
+    <div class="rule rv"></div>
+    <h1 class="rv">Cliente marca sozinho.<br /><em>Você só atende.</em></h1>
+    <p class="sub rv">Mande seu link de agendamento e o cliente escolhe o horário livre direto no celular — sem instalar nada, sem te encher de mensagem. Agenda, clientes, comissões, estoque e financeiro num sistema que cabe no bolso.</p>
+    <div class="ctas rv">
+      <button class="sbtn primary big" onclick="openModal()">Criar conta grátis</button>
+      <a class="sbtn ghost big" href="#escolha">Escolha seu segmento ↓</a>
+    </div>
+    <p class="micro rv">Sem cartão · Pronto em 5 minutos · Seus dados protegidos (LGPD)</p>
+    ${mockHTML({svc1:"Mariana S.",svc1d:"Escova + Hidratação",svc2:"Paula R.",svc2d:"Coloração",svc3:"Agendou pelo link",svc3d:"Corte"})}
+  </section>
+
+  <section class="section" id="escolha">
+    <h2 class="rv">Feito pro seu tipo de negócio</h2>
+    <p class="lead rv">Cada página fala a língua do seu nicho — com a copy, os serviços e as cores certas.</p>
+    <div class="segcards">${segCards}</div>
+  </section>
+
+  <section class="section">
+    <div class="stats">
+      <div class="stat rv"><b>24h</b><span>agendando mesmo com você ocupado</span></div>
+      <div class="stat rv"><b>5 min</b><span>pra criar a conta e começar</span></div>
+      <div class="stat rv"><b>R$ 0</b><span>pra testar, sem pedir cartão</span></div>
+      <div class="stat rv"><b>LGPD</b><span>termos e dados protegidos</span></div>
+    </div>
+  </section>
+
+  ${painSection({painTitle:"Sua agenda não pode depender de você olhar o WhatsApp",painText:"Enquanto você atende, ninguém responde quem quer marcar. O link do StudioFlow deixa o cliente escolher o horário sozinho — de dia, de noite, fim de semana. Você só recebe o aviso."})}
+  ${featuresSection()}
+  ${stepsSection()}
+  ${plansSection()}
+  ${ctaFinal(null)}
+  ${footerHTML()}`;
+}
+
+function pageSegment(slug) {
+  const s = SEGMENTS[slug];
+  document.documentElement.style.setProperty("--acc", slug==="barbearia" ? "#8a6d15" : slug==="estetica" ? "#7c5cbf" : "#9d4e6b");
+  return `
+  <section class="hero">
+    <div id="particles"></div>
+    <div class="rv"><div class="kicker">${s.kicker}</div></div>
+    <div class="rule rv"></div>
+    <h1 class="rv">${s.h1a}<br /><em>${s.h1b}</em></h1>
+    <p class="sub rv">${s.sub}</p>
+    <div class="ctas rv">
+      <button class="sbtn primary big" onclick="openModal()">Testar grátis no meu ${s.nav.toLowerCase()}</button>
+    </div>
+    <p class="micro rv">Sem cartão · Pronto em 5 minutos · Funciona no celular</p>
+    ${mockHTML(s)}
+  </section>
+
+  ${painSection(s)}
+  ${featuresSection()}
+  ${stepsSection()}
+  ${plansSection()}
+  ${ctaFinal(s)}
+  ${footerHTML()}`;
+}
+
+function pagePrecos() {
+  return `
+  <section class="hero">
+    <div id="particles"></div>
+    <div class="rv"><div class="kicker">Planos</div></div>
+    <div class="rule rv"></div>
+    <h1 class="rv">Comece grátis.<br /><em>Evolua quando quiser.</em></h1>
+    <p class="sub rv">Sem taxa de setup, sem fidelidade, sem surpresa. Você começa no Grátis hoje e migra quando o negócio crescer.</p>
+  </section>
+  ${plansSection()}
+  ${featuresSection()}
+  ${ctaFinal(null)}
+  ${footerHTML()}`;
+}
+
+/* ================= router ================= */
+function route() {
+  const hash = location.hash.replace(/^#\/?/, "").split("?")[0];
+  const app = document.getElementById("app");
+  if (SEGMENTS[hash]) app.innerHTML = pageSegment(hash);
+  else if (hash === "precos") app.innerHTML = pagePrecos();
+  else app.innerHTML = pageHome();
+  // marca nav ativa
+  document.querySelectorAll("[data-nav]").forEach(a => {
+    a.classList.toggle("on", a.dataset.nav === hash);
+  });
+  if (hash !== "precos") document.documentElement.style.setProperty("--acc", "#9d4e6b");
+  window.scrollTo({ top: 0 });
+  mountFX();
+}
+window.addEventListener("hashchange", route);
+
+/* ================= efeitos ================= */
+let observer;
+function mountFX() {
+  observer && observer.disconnect();
+  observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); observer.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll(".rv").forEach(el => observer.observe(el));
+  // partículas (tema 3)
+  const p = document.getElementById("particles");
+  if (p) {
+    let html = "";
+    for (let i = 0; i < 12; i++) {
+      const size = 5 + Math.round(Math.random() * 8);
+      html += `<i style="left:${4 + Math.round(Math.random() * 92)}%;width:${size}px;height:${size}px;animation-duration:${9 + Math.round(Math.random() * 7)}s;animation-delay:${(Math.random() * 6).toFixed(1)}s"></i>`;
+    }
+    p.innerHTML = html;
+  }
+}
+
+/* ================= troca de tema ================= */
+document.querySelectorAll(".theme-switch button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.body.className = btn.dataset.t;
+    document.querySelectorAll(".theme-switch button").forEach(b => b.classList.toggle("on", b === btn));
+  });
+});
+
+/* ================= modal ================= */
+function openModal() { document.getElementById("modalBg").classList.add("open"); }
+function closeModal() { document.getElementById("modalBg").classList.remove("open"); }
+
+/* ================= boot ================= */
+route();
+</script>
+</body>
+</html>

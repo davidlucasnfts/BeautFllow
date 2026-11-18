@@ -6,6 +6,7 @@ import {
   parseThemeSettings,
   parseClientStatusSettings,
   parseOnboardingSettings,
+  parseAutoCheckoutSettings,
 } from "@contracts/constants";
 import { defaultThemeForSegment } from "@contracts/segment-palettes";
 import {
@@ -62,6 +63,7 @@ export const salonRouter = createRouter({
         defaultThemeForSegment(salon.segment).id,
       clientStatus: parseClientStatusSettings(salon.settings),
       showOnboarding: parseOnboardingSettings(salon.settings),
+      autoCheckout: parseAutoCheckoutSettings(salon.settings),
     }));
   }),
 
@@ -102,11 +104,23 @@ export const salonRouter = createRouter({
             inactiveDays: z.number().int().min(15).max(730),
           })
           .optional(),
+        autoCheckout: z
+          .object({
+            enabled: z.boolean(),
+            defaultPaymentMethod: z.enum([
+              "pix",
+              "cash",
+              "credit_card",
+              "debit_card",
+            ]),
+          })
+          .optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       await assertSalonOwner(ctx.user.id, input.id);
-      const { id, theme, clientStatus, showOnboarding, ...rest } = input;
+      const { id, theme, clientStatus, showOnboarding, autoCheckout, ...rest } =
+        input;
       // merge: preserva chaves desconhecidas já salvas em settings; cada
       // seção da tela de Configurações salva só as próprias chaves
       const current = await getSalonById(id);
@@ -124,6 +138,7 @@ export const salonRouter = createRouter({
       if (theme) merged.theme = theme;
       if (clientStatus) merged.clientStatus = clientStatus;
       if (showOnboarding !== undefined) merged.showOnboarding = showOnboarding;
+      if (autoCheckout) merged.autoCheckout = autoCheckout;
       // valida pausa contra o resultado do merge (breakEnd > breakStart)
       const schedule = parseScheduleSettings(JSON.stringify(merged));
       if (

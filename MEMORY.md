@@ -139,7 +139,8 @@ SaaS multi-tenant de gestão para salões de beleza. React 19 + TypeScript + Vit
 | Cards da agenda não se sobrepõem mais (altura mínima real + cascata) e usam cor sutil do tema do estabelecimento (sem cores sorteadas de profissional) — visual padronizado por segmento | 07/11 |
 | Push local funcionando: service worker corrigido para dev (registro por ambiente + ativação imediata) | 07/11 |
 | Auditoria pré-handoff: concorrência (5 players com preços 2026) e funil de conversão mapeados no ROADMAP | 09/11 |
-| Segurança: 46 vulnerabilidades npm reduzidas para 21 (zod HIGH corrigido) — só lockfile, validado com check + 104 testes + build | 09/11 |
+| Segurança: 46 vulnerabilidades npm reduzidas para 21 (zod HIGH corrigido) — só lockfile, validado com check + testes + build | 09/11 |
+| Fechamento automático de atendimentos: Concluir em 1 toque gera o lançamento no financeiro com a comissão do profissional calculada; "Concluir com ajustes" mantém o checkout completo; configuração em Configurações (ligada por padrão, pagamento padrão Pix) — corrigiu a comissão que gravava zerada | 13/11 |
 
 ---
 

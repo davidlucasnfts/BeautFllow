@@ -7,6 +7,7 @@ import {
   isProfessionalFree,
   findFreeProfessional,
   freeSlotsForAnyone,
+  calcCommission,
   type BusyAppointment,
 } from "../booking";
 
@@ -42,6 +43,19 @@ describe("generateSlots", () => {
 
   it("não inclui o horário de fechamento", () => {
     expect(generateSlots("08:00", "08:30", 30)).toEqual(["08:00"]);
+  });
+});
+
+describe("calcCommission", () => {
+  it("calcula percentual sobre o valor", () => {
+    expect(calcCommission(80, 10)).toBe(8);
+    expect(calcCommission(150, 40)).toBe(60);
+    expect(calcCommission(100, 0)).toBe(0);
+  });
+
+  it("arredonda centavos sem erro de ponto flutuante", () => {
+    expect(calcCommission(33.33, 15)).toBe(5);
+    expect(calcCommission(99.99, 33.33)).toBe(33.33);
   });
 });
 

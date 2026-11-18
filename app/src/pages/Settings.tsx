@@ -21,6 +21,7 @@ import {
 import { onlyDigits } from "@/lib/input-masks";
 import SalonProfileCard from "@/components/settings/SalonProfileCard";
 import ScheduleSettingsCard from "@/components/settings/ScheduleSettingsCard";
+import AutoCheckoutCard from "@/components/settings/AutoCheckoutCard";
 import AppearanceCard from "@/components/settings/AppearanceCard";
 import AccountCard from "@/components/settings/AccountCard";
 import OnboardingSettingsCard from "@/components/settings/OnboardingSettingsCard";
@@ -68,6 +69,8 @@ export default function Settings() {
       <SalonProfileCard />
 
       <ScheduleSettingsCard />
+
+      <AutoCheckoutCard />
 
       <OnboardingSettingsCard />
 

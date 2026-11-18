@@ -5,7 +5,7 @@
 > **Prompt recomendado para a nova IA:**
 > "Você está assumindo o projeto StudioFlow. Leia obrigatoriamente: `AGENTS.md`, `SESSION-CONTEXT.md`, `ROADMAP.md`, `MEMORY.md` e `docs/documentacao-estrutura.md`. Siga todas as regras do `AGENTS.md`. Responda sempre em português, modo direto, priorizando linguagem de negócio. Antes de criar ou modificar qualquer arquivo de documentação, consulte `docs/documentacao-estrutura.md`. A meta atual é a Fase 4 — Pronto para vender. As decisões pendentes do David estão na seção 'Decisões pendentes / Ações manuais' deste arquivo."
 
-> **Atualizado em:** 09/11/2026 (auditoria técnica completa + análise de concorrência e funil registradas; melhorias de 07/11 em produção — commit `285c9ab`)
+> **Atualizado em:** 13/11/2026 (fechamento automático de atendimentos implementado e aprovado pelo David — ver item 2 de "Onde paramos". Commits em produção: `285c9ab` em 07/11, `0aa18a5` em 09/11)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md` + `ROADMAP.md` + `MestreStudioFlow.md`, não no histórico do chat.
 
 ---
@@ -142,14 +142,15 @@
 
 ## Onde paramos — próximos passos (ordem)
 
-1. **AUDITORIA TÉCNICA CONCLUÍDA (09/11)** — ver seção "Auditoria técnica" abaixo. **✅ `npm audit fix` executado em 09/11** (só `package-lock.json`, zod HIGH corrigido; 21 moderadas restantes, todas dev-only/transitórias). Check + 104 testes + build validados. **Próxima ação de código: implementar cobrança (depende da decisão de planos/gateway do David)**.
-2. **Análise de negócio concluída (02/11, ampliada 09/11)** — ROADMAP estratégico com concorrência e funil. Meta atual: **Fase 4 — Pronto para vender**.
-3. **Push em produção feito em 07/11** (commit `285c9ab`): notificação → dia destacado, botões por status, grade dinâmica, cards na cor do tema, fix do service worker. Falta: smoke test.
-4. **Próxima decisão do David:** definir planos e preços (Free / Essencial / Pro) e escolher gateway de pagamento (Stripe ou Mercado Pago). Sem isso, não dá para implementar cobrança. (Sugestão de preços e comparativo já estão no ROADMAP.)
-5. **Smoke test em produção:** validar cadastro de cliente → serviço → profissional → agendamento → checkout → financeiro.
-6. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/salao-de-beleza`, `/barbearia`, `/estetica`.
-7. **Ativar Sentry + Analytics** antes de abrir para clientes pagantes (funil está cego — ver análise no ROADMAP).
-8. **Decisões operacionais pendentes:** ver seção abaixo.
+1. **AUDITORIA TÉCNICA CONCLUÍDA (09/11)** — ver seção "Auditoria técnica" abaixo. **✅ `npm audit fix` executado em 09/11** (só `package-lock.json`, zod HIGH corrigido; 21 moderadas restantes, todas dev-only/transitórias). Check + 104 testes + build validados.
+2. **✅ FECHAMENTO AUTOMÁTICO IMPLEMENTADO (13/11, aprovado pelo David)** — commit na fila abaixo. Concluir em 1 toque: gera o lançamento financeiro (valor da tabela + comissão calculada do profissional) sem abrir o checkout; "Concluir com ajustes" abre o checkout completo. Configuração em Configurações → Fechamento de atendimentos (vem ligada por padrão, pagamento padrão Pix). Corrigiu o gap da comissão zerada. Detalhes: `docs/mockups/proposta-fechamento-automatico.html`. **Falta: validação manual em produção (fechar um atendimento real e conferir o financeiro).**
+3. **Análise de negócio concluída (02/11, ampliada 09/11)** — ROADMAP estratégico com concorrência e funil. Meta atual: **Fase 4 — Pronto para vender**.
+4. **Push em produção feito em 07/11** (commit `285c9ab`) + **09/11** (`0aa18a5`, audit fix): notificação → dia destacado, botões por status, grade dinâmica, cards na cor do tema, fix do service worker. Falta: smoke test.
+5. **Próxima decisão do David:** definir planos e preços (Free / Essencial / Pro) e escolher gateway de pagamento (Stripe ou Mercado Pago). Sem isso, não dá para implementar cobrança. (Sugestão de preços e comparativo já estão no ROADMAP.)
+6. **Smoke test em produção:** validar cadastro de cliente → serviço → profissional → agendamento → checkout → financeiro.
+7. **Landings por segmento:** mockups aprovados em `docs/mockups/landing-segmento-*.html` → codificar rotas `/salao-de-beleza`, `/barbearia`, `/estetica`.
+8. **Ativar Sentry + Analytics** antes de abrir para clientes pagantes (funil está cego — ver análise no ROADMAP).
+9. **Decisões operacionais pendentes:** ver seção abaixo.
 
 ---
 

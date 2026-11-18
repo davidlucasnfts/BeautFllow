@@ -101546,6 +101546,33 @@ var defaultClientStatusSettings = {
   atRiskDays: 45,
   inactiveDays: 90
 };
+var defaultAutoCheckoutSettings = {
+  enabled: true,
+  defaultPaymentMethod: "pix"
+};
+var PAYMENT_METHODS = [
+  "pix",
+  "cash",
+  "credit_card",
+  "debit_card"
+];
+function parseAutoCheckoutSettings(raw2) {
+  const d = defaultAutoCheckoutSettings;
+  try {
+    const parsed = raw2 ? JSON.parse(raw2) : null;
+    if (!parsed || typeof parsed !== "object") return d;
+    const a = parsed.autoCheckout;
+    if (!a || typeof a !== "object") return d;
+    return {
+      enabled: a.enabled !== false,
+      defaultPaymentMethod: PAYMENT_METHODS.includes(
+        a.defaultPaymentMethod
+      ) ? a.defaultPaymentMethod : d.defaultPaymentMethod
+    };
+  } catch {
+    return d;
+  }
+}
 var POSITIVE_INT = /^\d+$/;
 function parseClientStatusSettings(raw2) {
   const d = defaultClientStatusSettings;
@@ -103702,7 +103729,8 @@ var salonRouter = createRouter({
       schedule: parseScheduleSettings(salon.settings),
       theme: parseThemeSettings(salon.settings) ?? defaultThemeForSegment(salon.segment).id,
       clientStatus: parseClientStatusSettings(salon.settings),
-      showOnboarding: parseOnboardingSettings(salon.settings)
+      showOnboarding: parseOnboardingSettings(salon.settings),
+      autoCheckout: parseAutoCheckoutSettings(salon.settings)
     }));
   }),
   updateSettings: authedQuery.input(
@@ -103724,11 +103752,20 @@ var salonRouter = createRouter({
         vipThreshold: external_exports.number().int().min(1).max(1e5),
         atRiskDays: external_exports.number().int().min(7).max(365),
         inactiveDays: external_exports.number().int().min(15).max(730)
+      }).optional(),
+      autoCheckout: external_exports.object({
+        enabled: external_exports.boolean(),
+        defaultPaymentMethod: external_exports.enum([
+          "pix",
+          "cash",
+          "credit_card",
+          "debit_card"
+        ])
       }).optional()
     })
   ).mutation(async ({ input: input2, ctx }) => {
     await assertSalonOwner(ctx.user.id, input2.id);
-    const { id, theme, clientStatus, showOnboarding, ...rest } = input2;
+    const { id, theme, clientStatus, showOnboarding, autoCheckout, ...rest } = input2;
     const current = await getSalonById(id);
     let existing = {};
     try {
@@ -103744,6 +103781,7 @@ var salonRouter = createRouter({
     if (theme) merged.theme = theme;
     if (clientStatus) merged.clientStatus = clientStatus;
     if (showOnboarding !== void 0) merged.showOnboarding = showOnboarding;
+    if (autoCheckout) merged.autoCheckout = autoCheckout;
     const schedule = parseScheduleSettings(JSON.stringify(merged));
     if (schedule.breakStart && schedule.breakEnd && schedule.breakEnd <= schedule.breakStart) {
       throw new TRPCError({
@@ -104176,6 +104214,72 @@ var professionalRouter = createRouter({
     return { success: true };
   })
 });
+
+// server/lib/booking.ts
+function addMinutes(hhmm, minutes) {
+  const [h, m] = hhmm.split(":").map(Number);
+  const total = (h * 60 + m + minutes) % (24 * 60);
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(
+    total % 60
+  ).padStart(2, "0")}`;
+}
+function floorToSlot(hhmm, stepMinutes = 30) {
+  const [h, m] = hhmm.split(":").map(Number);
+  const total = h * 60 + m;
+  const floored = total - total % stepMinutes;
+  return `${String(Math.floor(floored / 60)).padStart(2, "0")}:${String(
+    floored % 60
+  ).padStart(2, "0")}`;
+}
+function generateSlots(dayStart, dayEnd, stepMinutes) {
+  const [sh, sm] = dayStart.split(":").map(Number);
+  const [eh, em] = dayEnd.split(":").map(Number);
+  const slots = [];
+  let t2 = sh * 60 + sm;
+  const end = eh * 60 + em;
+  while (t2 < end) {
+    slots.push(
+      `${String(Math.floor(t2 / 60)).padStart(2, "0")}:${String(
+        t2 % 60
+      ).padStart(2, "0")}`
+    );
+    t2 += stepMinutes;
+  }
+  return slots;
+}
+var IGNORED_STATUSES = ["cancelled", "no_show"];
+function intervalsOverlap(startA, endA, startB, endB) {
+  return startA < endB && endA > startB;
+}
+function isProfessionalFree(professionalId, appointments2, startTime, endTime) {
+  return !appointments2.some((a) => {
+    if (IGNORED_STATUSES.includes(a.status))
+      return false;
+    if (a.professionalId !== professionalId || !a.endTime) return false;
+    return intervalsOverlap(a.startTime, a.endTime, startTime, endTime);
+  });
+}
+function findFreeProfessional(professionals2, appointments2, startTime, endTime) {
+  return professionals2.find(
+    (p) => isProfessionalFree(p.id, appointments2, startTime, endTime)
+  ) ?? null;
+}
+function calcCommission(amount, commissionRate) {
+  return Number((amount * commissionRate / 100).toFixed(2));
+}
+function freeSlotsForAnyone(professionals2, appointments2, schedule, durationMinutes) {
+  if (professionals2.length === 0) return [];
+  return generateSlots(
+    schedule.dayStart,
+    schedule.dayEnd,
+    schedule.slotMinutes
+  ).filter((slot) => {
+    const slotEnd = addMinutes(slot, durationMinutes);
+    return professionals2.some(
+      (p) => isProfessionalFree(p.id, appointments2, slot, slotEnd)
+    );
+  });
+}
 
 // server/queries/followup.ts
 init_drizzle_orm();
@@ -106039,6 +106143,95 @@ var appointmentRouter = createRouter({
       data
     );
     return result;
+  }),
+  // Fechamento automático (1 toque): cria o lançamento financeiro com a
+  // comissão calculada e conclui o atendimento numa operação só. Usa os
+  // padrões do salão (forma de pagamento) salvos em salons.settings.
+  conclude: authedQuery.input(external_exports.object({ id: external_exports.number(), salonId: external_exports.number() })).mutation(async ({ input: input2, ctx }) => {
+    await assertSalonMember(ctx.user.id, input2.salonId);
+    const { id, salonId } = input2;
+    const appt = await getAppointmentById(id, salonId);
+    if (!appt) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Agendamento n\xE3o encontrado."
+      });
+    }
+    if (appt.status !== "in_progress") {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "S\xF3 \xE9 poss\xEDvel concluir um atendimento em andamento."
+      });
+    }
+    const [salon, service, professional] = await Promise.all([
+      getSalonById(salonId),
+      getServiceById(appt.serviceId, salonId),
+      appt.professionalId ? getProfessionalById(appt.professionalId, salonId) : Promise.resolve(null)
+    ]);
+    const extras = appt.extraServices ?? [];
+    const extrasTotal = extras.reduce(
+      (acc, e) => acc + Number(e.price),
+      0
+    );
+    const amount = Number(
+      (Number(service?.price ?? 0) + extrasTotal).toFixed(2)
+    );
+    if (amount <= 0) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Este atendimento n\xE3o tem valor. Use 'Concluir com ajustes' para informar o valor."
+      });
+    }
+    const rate = Number(professional?.commissionRate ?? 0);
+    const commissionAmount = calcCommission(amount, rate);
+    const { defaultPaymentMethod } = parseAutoCheckoutSettings(
+      salon?.settings
+    );
+    const description = [service?.name, ...extras.map((e) => e.name)].filter(Boolean).join(" + ");
+    const record2 = await createFinancialRecord({
+      salonId,
+      appointmentId: appt.id,
+      clientId: appt.clientId,
+      professionalId: appt.professionalId,
+      type: "service",
+      description,
+      amount: amount.toFixed(2),
+      commissionAmount: commissionAmount.toFixed(2),
+      paymentMethod: defaultPaymentMethod,
+      recordDate: appt.appointmentDate
+    });
+    await auditAction(
+      "create",
+      "financial",
+      salonId,
+      ctx.user?.id,
+      record2?.id ?? void 0,
+      appt.clientId,
+      { source: "auto-checkout", appointmentId: appt.id }
+    );
+    const result = await updateAppointment(id, salonId, {
+      status: "completed",
+      completedAt: /* @__PURE__ */ new Date()
+    });
+    try {
+      await createFollowUpsFromAppointment(id, salonId);
+    } catch (e) {
+      console.error("Falha ao criar retornos p\xF3s-atendimento:", e);
+    }
+    await auditAction(
+      "update",
+      "appointment",
+      salonId,
+      ctx.user?.id,
+      id,
+      void 0,
+      { status: "completed", autoCheckout: true }
+    );
+    return {
+      appointment: result,
+      amount: amount.toFixed(2),
+      commissionAmount: commissionAmount.toFixed(2)
+    };
   })
 });
 
@@ -106451,69 +106644,6 @@ async function notifySalon(salonId, payload) {
     })
   );
   return { sent, failed };
-}
-
-// server/lib/booking.ts
-function addMinutes(hhmm, minutes) {
-  const [h, m] = hhmm.split(":").map(Number);
-  const total = (h * 60 + m + minutes) % (24 * 60);
-  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(
-    total % 60
-  ).padStart(2, "0")}`;
-}
-function floorToSlot(hhmm, stepMinutes = 30) {
-  const [h, m] = hhmm.split(":").map(Number);
-  const total = h * 60 + m;
-  const floored = total - total % stepMinutes;
-  return `${String(Math.floor(floored / 60)).padStart(2, "0")}:${String(
-    floored % 60
-  ).padStart(2, "0")}`;
-}
-function generateSlots(dayStart, dayEnd, stepMinutes) {
-  const [sh, sm] = dayStart.split(":").map(Number);
-  const [eh, em] = dayEnd.split(":").map(Number);
-  const slots = [];
-  let t2 = sh * 60 + sm;
-  const end = eh * 60 + em;
-  while (t2 < end) {
-    slots.push(
-      `${String(Math.floor(t2 / 60)).padStart(2, "0")}:${String(
-        t2 % 60
-      ).padStart(2, "0")}`
-    );
-    t2 += stepMinutes;
-  }
-  return slots;
-}
-var IGNORED_STATUSES = ["cancelled", "no_show"];
-function intervalsOverlap(startA, endA, startB, endB) {
-  return startA < endB && endA > startB;
-}
-function isProfessionalFree(professionalId, appointments2, startTime, endTime) {
-  return !appointments2.some((a) => {
-    if (IGNORED_STATUSES.includes(a.status))
-      return false;
-    if (a.professionalId !== professionalId || !a.endTime) return false;
-    return intervalsOverlap(a.startTime, a.endTime, startTime, endTime);
-  });
-}
-function findFreeProfessional(professionals2, appointments2, startTime, endTime) {
-  return professionals2.find(
-    (p) => isProfessionalFree(p.id, appointments2, startTime, endTime)
-  ) ?? null;
-}
-function freeSlotsForAnyone(professionals2, appointments2, schedule, durationMinutes) {
-  if (professionals2.length === 0) return [];
-  return generateSlots(
-    schedule.dayStart,
-    schedule.dayEnd,
-    schedule.slotMinutes
-  ).filter((slot) => {
-    const slotEnd = addMinutes(slot, durationMinutes);
-    return professionals2.some(
-      (p) => isProfessionalFree(p.id, appointments2, slot, slotEnd)
-    );
-  });
 }
 
 // server/public-router.ts
