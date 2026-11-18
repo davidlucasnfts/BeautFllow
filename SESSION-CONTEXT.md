@@ -5,7 +5,7 @@
 > **Prompt recomendado para a nova IA:**
 > "Você está assumindo o projeto StudioFlow. Leia obrigatoriamente: `AGENTS.md`, `SESSION-CONTEXT.md`, `ROADMAP.md`, `MEMORY.md` e `docs/documentacao-estrutura.md`. Siga todas as regras do `AGENTS.md`. Responda sempre em português, modo direto, priorizando linguagem de negócio. Antes de criar ou modificar qualquer arquivo de documentação, consulte `docs/documentacao-estrutura.md`. A meta atual é a Fase 4 — Pronto para vender. As decisões pendentes do David estão na seção 'Decisões pendentes / Ações manuais' deste arquivo."
 
-> **Atualizado em:** 13/11/2026 (fechamento automático de atendimentos implementado e aprovado pelo David — ver item 2 de "Onde paramos". Commits em produção: `285c9ab` em 07/11, `0aa18a5` em 09/11)
+> **Atualizado em:** 13/11/2026 (fechamento automático + ações em massa + padronização de botões entregues — ver item 2 de "Onde paramos". Commits do dia: `17425e5` → `f68ff6b`, todos em produção)
 > **Sessão atual encerrada.** Próxima sessão: abrir um **chat novo** e dizer "continua do SESSION-CONTEXT.md" — a memória do projeto está neste arquivo + `MEMORY.md` + `AGENTS.md` + `ROADMAP.md` + `MestreStudioFlow.md`, não no histórico do chat.
 
 ---
@@ -143,7 +143,11 @@
 ## Onde paramos — próximos passos (ordem)
 
 1. **AUDITORIA TÉCNICA CONCLUÍDA (09/11)** — ver seção "Auditoria técnica" abaixo. **✅ `npm audit fix` executado em 09/11** (só `package-lock.json`, zod HIGH corrigido; 21 moderadas restantes, todas dev-only/transitórias). Check + 104 testes + build validados.
-2. **✅ FECHAMENTO AUTOMÁTICO IMPLEMENTADO (13/11, aprovado pelo David)** — commits `17425e5` (fechamento 1 toque) + ações em massa na fila abaixo. Concluir em 1 toque: gera o lançamento financeiro (valor da tabela + comissão calculada do profissional) sem abrir o checkout; "Concluir com adicionais" abre o checkout completo. Configuração em Configurações → Fechamento de atendimentos (vem ligada por padrão, pagamento padrão Pix). Corrigiu o gap da comissão zerada. Na mesma entrega: **barra de ações em massa nas visões Dia e Semana** (Iniciar todos / Concluir todos com total estimado / Cancelar todos, com confirmação, respeitando os filtros ativos). Detalhes: `docs/mockups/proposta-fechamento-automatico.html`. **Falta: validação manual em produção (fechar um atendimento real e conferir o financeiro).**
+2. **✅ FECHAMENTO AUTOMÁTICO + AÇÕES EM MASSA IMPLEMENTADOS (13/11, aprovado pelo David)** — commits `17425e5` → `f68ff6b`. Entregas:
+   - **Concluir em 1 toque:** gera o lançamento financeiro (valor da tabela + comissão calculada do profissional) sem abrir o checkout; "Concluir com adicionais" abre o checkout completo. Corrigiu o gap da comissão zerada. Configuração em Configurações → Fechamento de atendimentos (ligada por padrão, pagamento padrão Pix).
+   - **Ações em massa nas visões Dia e Semana:** barra Iniciar todos / Concluir todos (total estimado na confirmação) / Cancelar todos, respeitando os filtros ativos. Só aparece quando há itens no status correspondente.
+   - **Padronização visual:** ordem única (Iniciar → Concluir → Concluir com adicionais → Editar → Cancelar), grid 2 colunas nos botões da fila mobile, barra em massa responsiva (mobile empilhado / desktop em linha).
+   - Detalhes: `docs/mockups/proposta-fechamento-automatico.html`. **Falta: validação manual em produção (fechar um atendimento real e conferir o financeiro).**
 3. **Análise de negócio concluída (02/11, ampliada 09/11)** — ROADMAP estratégico com concorrência e funil. Meta atual: **Fase 4 — Pronto para vender**.
 4. **Push em produção feito em 07/11** (commit `285c9ab`) + **09/11** (`0aa18a5`, audit fix): notificação → dia destacado, botões por status, grade dinâmica, cards na cor do tema, fix do service worker. Falta: smoke test.
 5. **Próxima decisão do David:** definir planos e preços (Free / Essencial / Pro) e escolher gateway de pagamento (Stripe ou Mercado Pago). Sem isso, não dá para implementar cobrança. (Sugestão de preços e comparativo já estão no ROADMAP.)
