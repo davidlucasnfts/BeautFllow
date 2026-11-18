@@ -12,7 +12,7 @@ const CANCEL_STATUSES = ["scheduled", "confirmed", "checked_in", "in_progress"];
 interface AppointmentActionsProps {
   appt: CalendarAppointment;
   onStart: (id: number) => void;
-  /** Abre o checkout completo (Concluir com ajustes / modo manual) */
+  /** Abre o checkout completo (Concluir com adicionais / modo manual) */
   onConclude: (appt: CalendarAppointment) => void;
   onCancel: (id: number) => void;
   onEdit?: (appt: CalendarAppointment) => void;
@@ -22,17 +22,21 @@ interface AppointmentActionsProps {
 /**
  * Ações rápidas do compromisso (desktop — EventCard semana/dia).
  *
+ * Ordem padronizada (mesma da fila mobile):
+ * Iniciar → Concluir → Concluir com adicionais → Editar → Cancelar
+ *
  * Matriz por status:
  * - scheduled/confirmed/checked_in: Iniciar, Editar, Cancelar
- * - in_progress: Editar, Concluir, Cancelar
+ * - in_progress: Concluir (+ Concluir com adicionais no modo automático),
+ *   Editar, Cancelar
  * - completed/cancelled/no_show: nenhuma
  *
  * Fechamento automático (config do salão): "Concluir" fecha em 1 toque
- * (lançamento + comissão calculadas) e "Ajustes" abre o checkout completo.
- * Modo manual: "Concluir" abre o checkout, como antes.
+ * (lançamento + comissão calculadas) e "Concluir com adicionais" abre o
+ * checkout completo. Modo manual: "Concluir" abre o checkout, como antes.
  *
- * Peso visual: Iniciar = tema (sólido), Editar = azul sólido,
- * Concluir = verde sólido, Ajustes/Cancelar = outline.
+ * Peso visual: Iniciar = tema (sólido), Concluir = verde sólido,
+ * Editar = azul sólido, Adicionais/Cancelar = outline.
  */
 export default function AppointmentActions({
   appt,
@@ -71,17 +75,6 @@ export default function AppointmentActions({
           Iniciar
         </Button>
       )}
-      {onEdit && canEdit && (
-        <Button
-          type="button"
-          size="sm"
-          onClick={stop(() => onEdit(appt))}
-          className={`${btnClass} bg-blue-600 text-white hover:bg-blue-700`}
-        >
-          <Pencil className="h-3 w-3" />
-          Editar
-        </Button>
-      )}
       {canConclude && auto && salon && (
         <Button
           type="button"
@@ -116,6 +109,17 @@ export default function AppointmentActions({
         >
           <CheckCheck className="h-3 w-3" />
           Concluir
+        </Button>
+      )}
+      {onEdit && canEdit && (
+        <Button
+          type="button"
+          size="sm"
+          onClick={stop(() => onEdit(appt))}
+          className={`${btnClass} bg-blue-600 text-white hover:bg-blue-700`}
+        >
+          <Pencil className="h-3 w-3" />
+          Editar
         </Button>
       )}
       {canCancel && (

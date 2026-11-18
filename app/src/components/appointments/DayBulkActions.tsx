@@ -121,10 +121,12 @@ export default function DayBulkActions({
     }
   }
 
-  const btnClass = "h-8 gap-1.5 px-3 text-xs font-semibold";
+  // No mobile: rótulo em cima, botões empilhados em largura total.
+  // No desktop: tudo numa linha (rótulo + botões à esquerda).
+  const btnClass = "h-9 sm:h-8 w-full sm:w-auto gap-1.5 px-3 text-xs font-semibold justify-center";
 
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-muted/40 px-3 py-2">
+    <div className="flex flex-col gap-2 rounded-lg border bg-muted/40 px-3 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
       <span className="text-xs font-medium text-muted-foreground">
         {scope === "day" ? "Ações do dia:" : "Ações da semana:"}
       </span>

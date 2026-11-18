@@ -217,10 +217,11 @@ export default function FilaDoDia({
                   </div>
                 </div>
 
-                {/* Barra de ações (toque na linha expande) — hierarquia de peso:
-                    Iniciar = tema sólido, Concluir = verde sólido, Cancelar = outline */}
+                {/* Barra de ações (toque na linha expande) — grid 2 colunas
+                    p/ não quebrar irregular no mobile. Ordem: Iniciar →
+                    Concluir → Concluir com adicionais → Editar → Cancelar */}
                 {expanded && hasAppointmentActions(appt) && (
-                  <div className="flex flex-wrap justify-end gap-2 px-3 pb-3">
+                  <div className="grid grid-cols-2 gap-2 px-3 pb-3">
                     {(appt.status === "scheduled" ||
                       appt.status === "confirmed" ||
                       appt.status === "checked_in") && (
@@ -231,30 +232,12 @@ export default function FilaDoDia({
                           e.stopPropagation();
                           onStart(appt.id);
                         }}
-                        className="h-8 gap-1.5 bg-primary px-3 text-xs font-semibold text-primary-foreground hover:bg-primary/90"
+                        className="h-9 w-full gap-1.5 bg-primary px-3 text-xs font-semibold text-primary-foreground hover:bg-primary/90 justify-center"
                       >
                         <Play className="h-3.5 w-3.5" />
                         Iniciar
                       </Button>
                     )}
-                    {(appt.status === "scheduled" ||
-                      appt.status === "confirmed" ||
-                      appt.status === "checked_in" ||
-                      appt.status === "in_progress") &&
-                      onEdit && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          onClick={e => {
-                            e.stopPropagation();
-                            onEdit(appt);
-                          }}
-                          className="h-8 gap-1.5 bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700"
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                          Editar
-                        </Button>
-                      )}
                     {appt.status === "in_progress" && auto && salon && (
                       <>
                         <Button
@@ -265,7 +248,7 @@ export default function FilaDoDia({
                             e.stopPropagation();
                             concludeQuick(appt, salon.id);
                           }}
-                          className="h-8 gap-1.5 bg-green-600 px-3 text-xs font-semibold text-white hover:bg-green-700"
+                          className="h-9 w-full gap-1.5 bg-green-600 px-3 text-xs font-semibold text-white hover:bg-green-700 justify-center"
                         >
                           <CheckCheck className="h-3.5 w-3.5" />
                           {concludePending ? "Concluindo..." : "Concluir"}
@@ -279,7 +262,7 @@ export default function FilaDoDia({
                             e.stopPropagation();
                             onConclude(appt);
                           }}
-                          className="h-8 gap-1.5 border-green-600 px-3 text-xs font-semibold text-green-700 hover:bg-green-50"
+                          className="h-9 w-full gap-1.5 border-green-600 px-3 text-xs font-semibold text-green-700 hover:bg-green-50 justify-center"
                         >
                           <SlidersHorizontal className="h-3.5 w-3.5" />
                           Concluir com adicionais
@@ -294,12 +277,30 @@ export default function FilaDoDia({
                           e.stopPropagation();
                           onConclude(appt);
                         }}
-                        className="h-8 gap-1.5 bg-green-600 px-3 text-xs font-semibold text-white hover:bg-green-700"
+                        className="h-9 w-full gap-1.5 bg-green-600 px-3 text-xs font-semibold text-white hover:bg-green-700 justify-center"
                       >
                         <CheckCheck className="h-3.5 w-3.5" />
                         Concluir
                       </Button>
                     )}
+                    {(appt.status === "scheduled" ||
+                      appt.status === "confirmed" ||
+                      appt.status === "checked_in" ||
+                      appt.status === "in_progress") &&
+                      onEdit && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={e => {
+                            e.stopPropagation();
+                            onEdit(appt);
+                          }}
+                          className="h-9 w-full gap-1.5 bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700 justify-center"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          Editar
+                        </Button>
+                      )}
                     {(appt.status === "scheduled" ||
                       appt.status === "confirmed" ||
                       appt.status === "checked_in" ||
@@ -312,7 +313,7 @@ export default function FilaDoDia({
                           e.stopPropagation();
                           onCancel(appt.id);
                         }}
-                        className="h-8 gap-1.5 border-red-600 px-3 text-xs font-semibold text-red-600 hover:bg-red-50 hover:text-red-600"
+                        className="h-9 w-full gap-1.5 border-red-600 px-3 text-xs font-semibold text-red-600 hover:bg-red-50 hover:text-red-600 justify-center"
                       >
                         <XCircle className="h-3.5 w-3.5" />
                         Cancelar
